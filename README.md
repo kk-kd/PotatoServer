@@ -12,19 +12,16 @@
 
 `cd ./model`  
 `npm install`  
-`npm start`  
-or  
-`npm run app`
-to use nodemon
+`npm start`
 
 ## Server Terminal Start Up
 
 - Submission Server: ssh zz160@vcm-23793.vm.duke.edu  
-  [backend](vcm-23793.vm.duke.edu:3000) [frontend](vcm-23793.vm.duke.edu:3001)
+  [backend](http://vcm-23793.vm.duke.edu:3000) [frontend](http://vcm-23793.vm.duke.edu:3001)
 - Beta Server: ssh zz160@vcm-23919.vm.duke.edu  
-  [backend](vcm-23919.vm.duke.edu:3000) [frontend](vcm-23919.vm.duke.edu:3001)
+  [backend](http://vcm-23919.vm.duke.edu:3000) [frontend](http://vcm-23919.vm.duke.edu:3001)
 - Dev Server: ssh zz160@vcm-23920.vm.duke.edu  
-  [backend](vcm-23920.vm.duke.edu:3000) [frontend](vcm-23920.vm.duke.edu:3001)
+  [backend](http://vcm-23920.vm.duke.edu:3000) [frontend](http://vcm-23920.vm.duke.edu:3001)
 
 ## Dependencies
 
