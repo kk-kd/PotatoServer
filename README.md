@@ -19,9 +19,12 @@ to use nodemon
 
 ## Server Terminal Start Up
 
-- Submission Server: ssh zz160@vcm-23793.vm.duke.edu
-- Beta Server: ssh zz160@vcm-23919.vm.duke.edu
-- Dev Server: ssh zz160@vcm-23920.vm.duke.edu
+- Submission Server: ssh zz160@vcm-23793.vm.duke.edu  
+  [backend](vcm-23793.vm.duke.edu:3000) [frontend](vcm-23793.vm.duke.edu:3001)
+- Beta Server: ssh zz160@vcm-23919.vm.duke.edu  
+  [backend](vcm-23919.vm.duke.edu:3000) [frontend](vcm-23919.vm.duke.edu:3001)
+- Dev Server: ssh zz160@vcm-23920.vm.duke.edu  
+  [backend](vcm-23920.vm.duke.edu:3000) [frontend](vcm-23920.vm.duke.edu:3001)
 
 ## Dependencies
 
@@ -29,3 +32,5 @@ to use nodemon
 - Starting node from npm init -y
 - Express from npm express
 - react-router-dom for routing
+- react-hot-loader on babel
+- nodemon
