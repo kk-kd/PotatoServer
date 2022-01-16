@@ -21,7 +21,7 @@
 - Beta Server: ssh zz160@vcm-23919.vm.duke.edu  
   [backend](http://vcm-23919.vm.duke.edu:3000) [frontend](http://vcm-23919.vm.duke.edu:3001)
 - Dev Server: ssh zz160@vcm-23920.vm.duke.edu  
-  [backend](http://vcm-23920.vm.duke.edu:3000) [frontend](http://vcm-23920.vm.duke.edu:3001)
+  [backend](https://vcm-23920.vm.duke.edu:3000) [frontend](http://vcm-23920.vm.duke.edu:3001)
 
 ## Dependencies
 
