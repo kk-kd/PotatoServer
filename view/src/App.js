@@ -6,8 +6,10 @@ import React, { useState } from 'react';
 import LoginPage from './login/LoginPage';
 
 export const App = () => {
-  const [token, setToken] = useState()
-  if (!token) {
+    
+  const [token, setToken] = useState();
+  
+  if (!token) {  
     return <div >
       <Routes>
       <Route path = "/" element = {<LoginPage setToken={setToken}/>} />
