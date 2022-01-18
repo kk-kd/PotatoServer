@@ -8,7 +8,11 @@ import LoginPage from './login/LoginPage';
 export const App = () => {
   const [token, setToken] = useState()
   if (!token) {
-    return <LoginPage setToken={setToken} />
+    return <div >
+      <Routes>
+      <Route path = "/" element = {<LoginPage setToken={setToken}/>} />
+      </Routes>
+      </div>
   }
   else {
     return (
