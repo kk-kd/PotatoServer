@@ -17,11 +17,11 @@
 ## Server Terminal Start Up
 
 - Submission Server: ssh zz160@vcm-23793.vm.duke.edu  
-  [backend](http://vcm-23793.vm.duke.edu:3000) [frontend](http://vcm-23793.vm.duke.edu:3001)
+  [link](https://vcm-23793.vm.duke.edu:3000)
 - Beta Server: ssh zz160@vcm-23919.vm.duke.edu  
-  [backend](http://vcm-23919.vm.duke.edu:3000) [frontend](http://vcm-23919.vm.duke.edu:3001)
+  [link](https://vcm-23919.vm.duke.edu:3000)
 - Dev Server: ssh zz160@vcm-23920.vm.duke.edu  
-  [backend](https://vcm-23920.vm.duke.edu:3000) [frontend](http://vcm-23920.vm.duke.edu:3001)
+  [backend](https://vcm-23920.vm.duke.edu:3000) [frontend](https://vcm-23920.vm.duke.edu:3001)
 
 ## Dependencies
 
