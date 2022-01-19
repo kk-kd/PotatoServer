@@ -10,10 +10,13 @@ var certificate = fs.readFileSync(
 
 var credentials = { key: privateKey, cert: certificate };
 var express = require("express");
+const path = require("path");
 var app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.use(express.static(path.join(__dirname, "..", "view", "build")));
+
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(__dirname, "..", "view", "build", "index.html"));
 });
 
 var httpsServer = https.createServer(credentials, app);
