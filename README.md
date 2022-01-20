@@ -15,13 +15,21 @@
 `npm start`
 
 ## Server Links
-
-- Submission Server: ssh zz160@vcm-23793.vm.duke.edu  
+- **Submission**: production!
+- - sh zz160@vcm-23793.vm.duke.edu  
   [link](https://vcm-23793.vm.duke.edu:3000)
-- Beta Server: ssh zz160@vcm-23919.vm.duke.edu  
+- **Beta** = production-light  
+- - ssh zz160@vcm-23919.vm.duke.edu  
   [link](https://vcm-23919.vm.duke.edu:3000)
-- Dev Server: ssh zz160@vcm-23920.vm.duke.edu  
+- **Gamma** = integration
+-  - sh zz160@vcm-23920.vm.duke.edu  
   [backend](https://vcm-23920.vm.duke.edu:3000) [frontend](https://vcm-23920.vm.duke.edu:3001)
+
+- **Devs** = personal testing  
+- - Nolan: 
+- - Megan: 
+- - Jackson:
+- - Cady:  
   
 ## Server Start-up 
 - pm2 status : check status 
