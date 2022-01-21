@@ -1,10 +1,11 @@
 import "reflect-metadata";
-import { createConnection } from "typeorm";
+import { Connection, createConnection } from "typeorm";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
 import { Routes } from "./routes";
 import { User } from "./entity/User";
+import { UserController } from "./controller/UserController";
 import { School } from "./entity/School";
 
 createConnection()
@@ -13,7 +14,7 @@ createConnection()
     const app = express();
     app.use(bodyParser.json());
 
-    // register express routes from defined application routes
+    // register all express routes from defined application routes
     Routes.forEach((route) => {
       (app as any)[route.method](
         route.route,
@@ -41,6 +42,31 @@ createConnection()
 
     // start express server
     app.listen(3000);
+
+    const userRepository = connection.getCustomRepository(UserController);
+    const newUser = new User();
+    newUser.email = "test2user@email.com";
+    newUser.firstName = "test2 First Name";
+    newUser.middleName = "test2 Middle Name";
+    newUser.lastName = "test2 Last Name";
+    newUser.address = "test2 example address";
+    newUser.longitude = 101.1;
+    newUser.latitude = 102.1;
+    newUser.isAdmin = true;
+    await userRepository.save(newUser);
+
+    // Find the person we just saved to the database using the custom query
+    // method we wrote in the person repository.
+    const existingUser = await userRepository.findByUserName(
+      "test2 First Name"
+    );
+    if (!existingUser) {
+      throw Error("Unable to find test2 User entry.");
+    }
+    else{
+      await userRepository.updateUserName(existingUser.uid, "Test 2 New First Name", "Test 2 New Middle Name", "Test 2 New Last Name");
+    }
+
 
     // insert new users for test
     await connection.manager.save(

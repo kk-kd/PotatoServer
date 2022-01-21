@@ -14,10 +14,10 @@ export const Routes = [{
     method: "post",
     route: "/users",
     controller: UserController,
-    action: "save"
+    action: "saveUser"
 }, {
     method: "delete",
     route: "/users/:id",
     controller: UserController,
-    action: "remove"
+    action: "deleteUser"
 }];
