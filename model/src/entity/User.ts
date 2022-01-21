@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id: number;
+  uid: number;
 
   @Column()
   email: string;
@@ -20,12 +20,12 @@ export class User {
   @Column()
   address: string;
 
+  @Column("decimal")
+  longitude: number;
+
+  @Column("decimal")
+  latitude: number;
+
   @Column()
   isAdmin: boolean;
-
-  @Column()
-  hasStudents: boolean;
-
-  @Column()
-  familyId: number;
 }
