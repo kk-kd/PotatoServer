@@ -14,13 +14,18 @@ export class Student {
   @PrimaryGeneratedColumn()
   studentId: number;
 
-  @Column("int")
+  @Column({
+    type: "int",
+    nullable: true,
+  })
   assignedId: number;
 
   @Column()
   firstName: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   middleName: string;
 
   @Column()

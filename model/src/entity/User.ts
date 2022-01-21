@@ -11,7 +11,9 @@ export class User {
   @Column()
   firstName: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   middleName: string;
 
   @Column()
@@ -29,3 +31,4 @@ export class User {
   @Column()
   isAdmin: boolean;
 }
+[];
