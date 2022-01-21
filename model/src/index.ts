@@ -7,13 +7,13 @@ import { Routes } from "./routes";
 import { User } from "./entity/User";
 import { UserController } from "./controller/UserController";
 import { School } from "./entity/School";
-
 createConnection()
   .then(async (connection) => {
     // create express app
     const app = express();
     app.use(bodyParser.json());
-
+    var cors = require('cors')
+    app.use(cors())
     // register all express routes from defined application routes
     Routes.forEach((route) => {
       (app as any)[route.method](
@@ -63,9 +63,9 @@ createConnection()
     if (!existingUser) {
       throw Error("Unable to find test2 User entry.");
     }
-    else{
-      await userRepository.updateUserName(existingUser.uid, "Test 2 New First Name", "Test 2 New Middle Name", "Test 2 New Last Name");
-    }
+    // else{
+    //   await userRepository.updateUserName(existingUser.uid, "Test 2 New First Name", "Test 2 New Middle Name", "Test 2 New Last Name");
+    // }
 
 
     // insert new users for test
