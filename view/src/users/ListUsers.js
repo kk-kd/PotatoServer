@@ -1,23 +1,29 @@
-import "./ListSchools.css";
+import "./ListUsers.css";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 
-export const ListSchools = () => {
+export const ListUsers = () => {
   const data = useMemo(
       () => [
         {
-          name: "Duke University",
-          address: "123 Campus Dr, Durham, NC"
+          email_address: "abc123@duke.edu",
+          name: "Amy Bac Cant",
+          administrator: "false"
         },
         {
-          name: "Random Middle School",
-          address: "33 Real St, City, State"
+          email_address: "thatperson@randommiddle.edu",
+          name: "That Person",
+          address: "33 Real St, City, State",
+          administrator: "true",
+          students: "This Person, A Person"
         },
         {
-          name: "Canada Elementary School",
-          address: "7 Canda Rd, Alberta, CA"
+          email_address: "canada@element.com",
+          name: "Frederick Beacon",
+          address: "7 Canda Rd, Alberta, CA",
+          administrator: "true"
         }
       ],
       []
@@ -26,7 +32,12 @@ export const ListSchools = () => {
   const columns = useMemo(
       () => [
         {
-          Header: 'Name',
+          Header: 'Email Address',
+          Filter: DefaultColumnFilter,
+          accessor: 'email_address'
+        },
+        {
+          Header: 'Full Name',
           Filter: DefaultColumnFilter,
           accessor: 'name'
         },
@@ -34,6 +45,16 @@ export const ListSchools = () => {
           Header: 'Address',
           disableFilters: true,
           accessor: 'address'
+        },
+        {
+          Header: 'Administrator',
+          disableFilters: true,
+          accessor: 'administrator'
+        },
+        {
+          Header: 'Students',
+          disableFilters: true,
+          accessor: 'students'
         }
       ],
       []
@@ -46,13 +67,13 @@ export const ListSchools = () => {
     rows,
     prepareRow
   } = useTable({ columns, data },
-    useFilters,
-    useSortBy);
+      useFilters,
+      useSortBy);
   return (
-      <div id="schoolListing">
+      <div id="userListing">
         <h1>List Schools</h1>
-        <Link to="/Schools/create">
-          <button>Create School</button>
+        <Link to="/Users/create">
+          <button>Create User</button>
         </Link>
         <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
@@ -60,8 +81,8 @@ export const ListSchools = () => {
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => (
                     <th
-                        {...column.getHeaderProps(column.id === "name" && column.getSortByToggleProps())}
-                        style={column.id === "name" ? {
+                        {...column.getHeaderProps((column.id === "name" || column.id === "email_address") && column.getSortByToggleProps())}
+                        style={column.id === "name" || column.id === "email_address" ? {
                           borderBottom: 'solid 3px red',
                           background: 'aliceblue',
                           color: 'black',
@@ -96,7 +117,7 @@ export const ListSchools = () => {
                               background: 'papayawhip',
                             }}
                         >
-                          <Link to="/Schools/info">
+                          <Link to="/Users/info">
                             {cell.render('Cell')}
                           </Link>
                         </td>
