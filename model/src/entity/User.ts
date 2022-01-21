@@ -20,11 +20,11 @@ export class User {
   @Column()
   address: string;
 
-  @Column()
-  longitude: string;
+  @Column("decimal")
+  longitude: number;
 
-  @Column()
-  latitude: string;
+  @Column("decimal")
+  latitude: number;
 
   @Column()
   isAdmin: boolean;
