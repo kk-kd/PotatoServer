@@ -5,6 +5,7 @@ import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
 import { Routes } from "./routes";
 import { User } from "./entity/User";
+import { School } from "./entity/School";
 
 createConnection()
   .then(async (connection) => {
@@ -44,22 +45,26 @@ createConnection()
     // insert new users for test
     await connection.manager.save(
       connection.manager.create(User, {
-        uid: 101,
         email: "jdm109@duk.edu",
         firstName: "Jackson",
-        middleName: "David",
         lastName: "McNabb",
         address: "102 Example Lane",
-        longitude: "example longitude",
-        latitude: "example latitude",
+        longitude: 32.5,
+        latitude: 432.54,
         isAdmin: false,
       })
     );
+
+    // await connection.manager.save(
+    //   connection.manager.create(School, {
+
+    //   })
+    // )
 
     console.log(
       "Express server has started on port 3000. Open http://localhost:3000/users to see results"
     );
 
-    console.log()
+    console.log();
   })
   .catch((error) => console.log(error));
