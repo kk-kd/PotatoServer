@@ -19,13 +19,21 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   address: string;
 
-  @Column("decimal")
+  @Column({
+    type: "decimal",
+    nullable: true,
+  })
   longitude: number;
 
-  @Column("decimal")
+  @Column({
+    type: "decimal",
+    nullable: true,
+  })
   latitude: number;
 
   @Column()
