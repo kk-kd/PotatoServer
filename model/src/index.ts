@@ -44,21 +44,22 @@ createConnection()
     // insert new users for test
     await connection.manager.save(
       connection.manager.create(User, {
-        firstName: "Timber",
-        lastName: "Saw",
-        age: 27,
-      })
-    );
-    await connection.manager.save(
-      connection.manager.create(User, {
-        firstName: "Phantom",
-        lastName: "Assassin",
-        age: 24,
+        uid: 101,
+        email: "jdm109@duk.edu",
+        firstName: "Jackson",
+        middleName: "David",
+        lastName: "McNabb",
+        address: "102 Example Lane",
+        longitude: "example longitude",
+        latitude: "example latitude",
+        isAdmin: false,
       })
     );
 
     console.log(
       "Express server has started on port 3000. Open http://localhost:3000/users to see results"
     );
+
+    console.log()
   })
   .catch((error) => console.log(error));
