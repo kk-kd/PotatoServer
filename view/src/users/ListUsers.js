@@ -1,45 +1,35 @@
 import "./ListUsers.css";
-import { useMemo } from "react";
+import axios from 'axios';
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 
 export const ListUsers = () => {
-  const data = useMemo(
-      () => [
-        {
-          email_address: "abc123@duke.edu",
-          name: "Amy Bac Cant",
-          administrator: "false"
-        },
-        {
-          email_address: "thatperson@randommiddle.edu",
-          name: "That Person",
-          address: "33 Real St, City, State",
-          administrator: "true",
-          students: "This Person, A Person"
-        },
-        {
-          email_address: "canada@element.com",
-          name: "Frederick Beacon",
-          address: "7 Canda Rd, Alberta, CA",
-          administrator: "true"
-        }
-      ],
-      []
-  );
+  const [ data, setData ] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedData = await axios.get("http://localhost:3000/users");
+        setData(fetchedData.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, []);
 
   const columns = useMemo(
       () => [
         {
           Header: 'Email Address',
           Filter: DefaultColumnFilter,
-          accessor: 'email_address'
+          accessor: 'email'
         },
         {
           Header: 'Full Name',
           Filter: DefaultColumnFilter,
-          accessor: 'name'
+          accessor: 'firstName'
         },
         {
           Header: 'Address',
@@ -49,7 +39,10 @@ export const ListUsers = () => {
         {
           Header: 'Administrator',
           disableFilters: true,
-          accessor: 'administrator'
+          accessor: 'isAdmin',
+          Cell: (props) => {
+            return (<label>{props.value.toString()}</label>);
+          }
         },
         {
           Header: 'Students',
