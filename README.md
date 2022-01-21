@@ -17,7 +17,8 @@
 ## Server Links
 - **Submission**: production!
 - - sh zz160@vcm-23793.vm.duke.edu  
-  [link](https://vcm-23793.vm.duke.edu:3000)
+  [link](https://potato.colab.duke.edu/0)
+  
 - **Beta** = production-light  
 - - ssh zz160@vcm-23919.vm.duke.edu  
   [link](https://vcm-23919.vm.duke.edu:3000)
