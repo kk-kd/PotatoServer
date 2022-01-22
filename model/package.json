@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^17.0.10",
     "express": "^4.17.2",
     "mysql": "^2.18.1",
     "pg": "^8.7.1",
@@ -21,7 +22,6 @@
     "typescript": "^4.5.5"
   },
   "devDependencies": {
-    "@types/node": "^17.0.10",
     "mocha": "^9.1.4",
     "nodemon": "^2.0.15",
     "supertest": "^6.2.1",
