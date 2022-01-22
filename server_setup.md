@@ -69,25 +69,25 @@ copy-paste what's given
 ## SSL
 
 follow certbot instruction  
-`sudo apt -y install snapd`
+`sudo apt -y install snapd`  
 `sudo snap install core; sudo snap refresh core`  
-`sudo snap install --classic certbot`
-`sudo ln -s /snap/bin/certbot /usr/bin/certbot`  
-`sudo certbot certonly --standalone`
+`sudo snap install --classic certbot`  
+`sudo ln -s /snap/bin/certbot /usr/bin/certbot`    
+`sudo certbot certonly --standalone`  
 
 ## Create safe user group
 
 `sudo addgroup ssl-cert`  
-`sudo adduser <name> ssl-cert`
-`sudo adduser root ssl-cert`
+`sudo adduser <name> ssl-cert`  
+`sudo adduser root ssl-cert`  
 
-Transfer certificate folder ownership  
-`sudo chgrp -R ssl-cert /etc/letsencrypt/live`  
-`sudo chgrp -R ssl-cert /etc/letsencrypt/archive`
+Transfer certificate folder ownership   
+`sudo chgrp -R ssl-cert /etc/letsencrypt/live`    
+`sudo chgrp -R ssl-cert /etc/letsencrypt/archive`  
 
 Allow group to open relevant folders  
-`sudo chmod -R 750 /etc/letsencrypt/live`
-`sudo chmod -R 750 /etc/letsencrypt/archive`
+`sudo chmod -R 750 /etc/letsencrypt/live`  
+`sudo chmod -R 750 /etc/letsencrypt/archive`  
 
 Restart the server
 
