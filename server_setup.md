@@ -99,10 +99,10 @@ Rebuild static frontend
 `npm run build`
 
 Start pm2  
-`cd ../model`
+`cd ../model`  
 `npm install`  
 `npm run build`  
-`pm2 start index.js`  
+`pm2 start build/index.js`  
 Use `example_redirect.js` to replace `index.js` for testing purpose
 
 # Connect to Remote Database for Local Testing
