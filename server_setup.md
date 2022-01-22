@@ -38,7 +38,7 @@
 
 `sudo passwd postgres` change user password  
 `su postgres`  
-`psql` and change user password with `ALTER USER postgres PASSWORD '<new password>';`
+`psql` and change user password with `ALTER USER postgres PASSWORD '<new password>';`  
 `create database bus;`
 
 ## Clone the repo
