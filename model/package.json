@@ -7,7 +7,7 @@
     "test": "mocha ./tests/* --exit",
     "start": "nodemon",
     "type-start": "ts-node src/index.ts",
-    "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
