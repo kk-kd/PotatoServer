@@ -114,3 +114,7 @@ Forward local port 5432 to the database
 
 - Change port to 443
 - Change certificate path
+- Make sure react-api key is in .env; jwt keys are in secrets
+  `cd secrets`  
+  `openssl rsa -in jwt_private.pem -pubout jwt_public.key`  
+  `openssl rsa -in jwt_private.pem -pubout -out jwt_public.key`
