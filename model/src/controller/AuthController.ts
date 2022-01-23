@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
+import * as EmailValidator from "email-validator";
 
 var passwordValidator = require("password-validator");
 var schema = new passwordValidator();
@@ -22,11 +23,49 @@ schema
   .spaces(); // Should not have spaces
 
 class AuthController {
+  static register = async (request: Request, response: Response) => {
+    let { email, password, isAdmin } = request.body;
+    if (!(email && password && isAdmin)) {
+      response
+        .status(401)
+        .send("User Register: email/password/isAdmin is not provided.");
+      return;
+    }
+
+    if (!EmailValidator.validate(email)) {
+      response.status(401).send("User Register: Email validation failed");
+      return;
+    }
+
+    if (!schema.validate(password)) {
+      response.status(401).send("User Register: Password validation failed");
+      return;
+    }
+
+    let user = new User();
+    const userRepository = getRepository(User);
+    try {
+      user.password = await bcrypt.hash(password, 10);
+      user.email = email;
+      user.isAdmin = isAdmin;
+      await userRepository.save(user);
+    } catch (error) {
+      response.status(401).send("User Register: " + error);
+    }
+
+    response.status(201).send("User Register: User created");
+  };
+
   static login = async (request: Request, response: Response) => {
     //Check if username and password are set
     let { email, password } = request.body;
     if (!(email && password)) {
       response.status(400).send("User Login: Email or password missing");
+    }
+
+    if (!EmailValidator.validate(email)) {
+      response.status(401).send("User Login: Email validation failed");
+      return;
     }
 
     if (!schema.validate(password)) {
