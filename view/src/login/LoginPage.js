@@ -8,26 +8,32 @@ export default function Login( {setToken} ) {
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
 
-  const handleLoginSubmit = async e => {
-    e.preventDefault();
+  async function handleLoginSubmit (e) {
+    e.preventDefault() // prevents page reload on submission
     console.log("Form Submitted with username " + username + " and password " + password)
-      try {
-        let token = await loginUser({
-          'username': username,
-          'password': password
-        });
-        console.log("Token = " + token)
-        setToken(JSON.parse(token)?.token);
+    try {
+      let login_response = await loginUser({
+            'username': username,
+            'password': password
+      }).catch ((error) => {
+        //avoids warning
+      })
+      let token = login_response.token
+      let status = login_response.status
+      
+      if (status === 200) {
+        setToken(token)
+        sessionStorage.setItem('token', token)
       }
-      catch (error) {
-        console.log(error)
-        if (error.response.status === 404) {
-          throw alert("Login Failed because server was not found. Please check your internet connection and try again.");
-        }
-        else if (error.response.status === 400) {
-          throw alert("The username and password you entered do not match those in our system. Please Try Again");
-        };  
+      if (status === 404) {
+        throw alert ("Login Failed Because the Server was Not Reached.")
       } 
+      else if (status === 401) {
+        throw alert ("Login Failed Because username and password did not match records")
+    }
+  } catch {
+    // avoids warning
+   }
   }
 
   return(
@@ -48,8 +54,4 @@ export default function Login( {setToken} ) {
     </form>
     </div>
   )
-}
-
-Login.propTypes = {
-  setToken: PropTypes.func.isRequired
 }
