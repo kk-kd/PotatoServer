@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './Login.css';
-import loginUser from '../user_input_api.js';
+import loginUser from '../api/login_api';
 
 
 export default function Login( {setToken} ) {
@@ -10,13 +10,18 @@ export default function Login( {setToken} ) {
 
   const handleLoginSubmit = async e => {
     e.preventDefault();
-    const token = await loginUser({
-      username,
-      password
-    });
     console.log("Form Submitted with username " + username + " and password " + password)
-    setToken(JSON.parse(token)?.token);
-    console.log('Token set to ' + JSON.parse(token)?.token);
+    try {
+      const token = await loginUser({
+        username,
+        password
+      });
+      setToken(JSON.parse(token)?.token);
+      console.log('Token set to ' + JSON.parse(token)?.token);
+    }
+    catch (error) {
+      throw alert("Login Failed. Please Try Again")
+    }
   }
 
   return(
