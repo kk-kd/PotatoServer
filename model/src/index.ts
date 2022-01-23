@@ -15,6 +15,24 @@ import { RouteController } from "./controller/RouteController";
 import { School } from "./entity/School";
 import { SchoolController } from "./controller/SchoolController";
 
+// Test
+// const https_port = 3000;
+// const http_port = 2999;
+// const privateKeyAddr = __dirname + "/../../../cert/server.key";
+// const certificateAddr = __dirname + "/../../../cert/server.cert";
+
+// Prod
+const https_port = 443;
+const http_port = 80;
+const privateKeyAddr =
+  "/etc/letsencrypt/live/potato.colab.duke.edu/privkey.pem";
+const certificateAddr = "/etc/letsencrypt/live/potato.colab.duke.edu/cert.pem";
+
+var fs = require("fs");
+var privateKey = fs.readFileSync(privateKeyAddr, "utf8");
+var certificate = fs.readFileSync(certificateAddr, "utf8");
+var credentials = { key: privateKey, cert: certificate };
+
 createConnection()
   .then(async (connection) => {
     // create express app
@@ -46,10 +64,31 @@ createConnection()
     });
 
     // setup express app here
-    // ...
+    const path = require("path");
+    app.use(express.static(path.join(__dirname, "..", "..", "view", "build")));
+    app.get("/*", function (req, res) {
+      res.sendFile(
+        path.join(__dirname, "..", "..", "view", "build", "index.html")
+      );
+    });
 
     // start express server
-    app.listen(3000);
+    var https = require("https");
+    var httpsServer = https.createServer(credentials, app);
+    httpsServer.listen(https_port, () => {
+      console.log(`Example app listening at https://localhost:${https_port}`);
+    });
+
+        // Redirect from http port 80 to https
+    var http = require("http");
+    http
+      .createServer(function (req, res) {
+        res.writeHead(301, {
+          Location: "https://" + req.headers["host"] + req.url,
+        });
+        res.end();
+      })
+      .listen(http_port);
 
     // Clean the tables:
     let tableNames: string[] = ["users", "students", "schools", "routes"]; //TODO: Clean other tables by adding strings here if needed
@@ -146,12 +185,6 @@ createConnection()
     //     isAdmin: false,
     //   })
     // );
-
-    // await connection.manager.save(
-    //   connection.manager.create(School, {
-
-    //   })
-    // )
 
     console.log(
       "Express server has started on port 3000. Open http://localhost:3000/users or: /students /routes /schools to see results"
