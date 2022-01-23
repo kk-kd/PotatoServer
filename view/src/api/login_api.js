@@ -9,7 +9,7 @@ export default async function loginUser(credentials) {
   }).catch(error => {
       status = error.response.status;
   }); 
-  return {'status': 200, 'data': '8124'}
+  return {'status': 200, 'token': '8124'} // Mock so the rest of the app will work! 
   //return {'status': status, 'data': token}
   }
 
