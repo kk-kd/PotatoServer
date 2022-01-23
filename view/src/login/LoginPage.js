@@ -11,17 +11,22 @@ export default function Login( {setToken} ) {
   const handleLoginSubmit = async e => {
     e.preventDefault();
     console.log("Form Submitted with username " + username + " and password " + password)
-    try {
-      const token = await loginUser({
-        username,
-        password
-      });
-      setToken(JSON.parse(token)?.token);
-      console.log('Token set to ' + JSON.parse(token)?.token);
-    }
-    catch (error) {
-      throw alert("Login Failed. Please Try Again")
-    }
+      try {
+        let token = await loginUser({
+          'username': username,
+          'password': password
+        });
+        setToken(JSON.parse(token)?.token);
+      }
+      catch (error) {
+        console.log(error)
+        if (error.response.status === 404) {
+          throw alert("Login Failed because server was not found. Please check your internet connection and try again.");
+        }
+        else if (error.response.status === 400) {
+          throw alert("The username and password you entered do not match those in our system. Please Try Again");
+        };  
+      } 
   }
 
   return(
