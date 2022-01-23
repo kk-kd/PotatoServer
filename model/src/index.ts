@@ -3,7 +3,7 @@ import { createConnection } from "typeorm";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
-import { Routes } from "./routes";
+import { userRoutes } from "./routes/userRoutes";
 import { User } from "./entity/User";
 import { UserController } from "./controller/UserController";
 
@@ -32,7 +32,7 @@ createConnection()
     app.use(bodyParser.json());
 
     // register all express routes from defined application routes
-    Routes.forEach((route) => {
+    userRoutes.forEach((route) => {
       (app as any)[route.method](
         route.route,
         (req: Request, res: Response, next: Function) => {
