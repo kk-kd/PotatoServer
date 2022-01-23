@@ -16,6 +16,7 @@ export default function Login( {setToken} ) {
           'username': username,
           'password': password
         });
+        console.log("Token = " + token)
         setToken(JSON.parse(token)?.token);
       }
       catch (error) {
