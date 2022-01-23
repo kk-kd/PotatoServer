@@ -5,25 +5,33 @@ import { useFilters, useSortBy, useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 
 export const ListUsers = () => {
+  function generateUserDetailLink(userid) {
+    let base = "Users/Info"
+    console.log(userid)
+    return base + ":" + String(userid)
+  }
   const data = useMemo(
       () => [
         {
           email_address: "abc123@duke.edu",
           name: "Amy Bac Cant",
-          administrator: "false"
+          administrator: "false",
+          userid: "0"
         },
         {
           email_address: "thatperson@randommiddle.edu",
           name: "That Person",
           address: "33 Real St, City, State",
           administrator: "true",
-          students: "This Person, A Person"
+          students: "This Person, A Person",
+          userid: "1"
         },
         {
           email_address: "canada@element.com",
           name: "Frederick Beacon",
           address: "7 Canda Rd, Alberta, CA",
-          administrator: "true"
+          administrator: "true",
+          userid: "2"
         }
       ],
       []
@@ -55,6 +63,14 @@ export const ListUsers = () => {
           Header: 'Students',
           disableFilters: true,
           accessor: 'students'
+        },
+        {
+          Header: ' ',
+          disableFilters: true,
+          accessor: 'userid',
+          Cell: ({value}) => { 
+            return <Link to = {generateUserDetailLink(value)}> {"View User Detail"} </Link> 
+        },
         }
       ],
       []
@@ -117,9 +133,9 @@ export const ListUsers = () => {
                               background: 'papayawhip',
                             }}
                         >
-                          <Link to="/Users/info">
-                            {cell.render('Cell')}
-                          </Link>
+            
+                          {cell.render('Cell')}
+                          
                         </td>
                     )
                   })}
