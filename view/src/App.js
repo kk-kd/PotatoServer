@@ -24,11 +24,11 @@ export const App = () => {
       <div className="App">
         <Header />
         <Routes>
-          <Route path="Schools/*" element={<Schools />} />
-          <Route path="Users" element={<label>Users List</label>} />
-          <Route path="Students" element={<label>Students List</label>} />
-          <Route path="Routes" element={<label>Routes List</label>} />
-          <Route path="*" element={<label>Whoops</label>} />
+        <Route path="Schools/*" element={<Schools />} /> 
+        <Route path="Users/*" element={<Users />} />
+         <Route path="Students/*" element={<Students />} /> 
+         <Route path="Routes/*" element={<BusRoutes />} />
+         <Route path="*" element={<label>Whoops</label>} />
         </Routes>
       </div>
     );
