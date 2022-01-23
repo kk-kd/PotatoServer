@@ -1,12 +1,24 @@
 import "reflect-metadata";
-import { Connection, createConnection } from "typeorm";
+import { createConnection } from "typeorm";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
 import { Routes } from "./routes";
 import { User } from "./entity/User";
 import { UserController } from "./controller/UserController";
-import { School } from "./entity/School";
+
+const https_port = 3000;
+const http_port = 2999;
+// const privateKeyAddr =
+// "/etc/letsencrypt/live/potato.colab.duke.edu/privkey.pem";
+// const certificateAddr = "/etc/letsencrypt/live/potato.colab.duke.edu/cert.pem";
+const privateKeyAddr = __dirname + "/../../../cert/server.key";
+const certificateAddr = __dirname + "/../../../cert/server.cert";
+
+var fs = require("fs");
+var privateKey = fs.readFileSync(privateKeyAddr, "utf8");
+var certificate = fs.readFileSync(certificateAddr, "utf8");
+var credentials = { key: privateKey, cert: certificate };
 
 createConnection()
   .then(async (connection) => {
@@ -38,11 +50,31 @@ createConnection()
     });
 
     // setup express app here
-    // ...
+    const path = require("path");
+    app.use(express.static(path.join(__dirname, "..", "view", "build")));
+    app.get("/*", function (req, res) {
+      res.sendFile(path.join(__dirname, "..", "view", "build", "index.html"));
+    });
 
     // start express server
-    app.listen(3000);
+    var https = require("https");
+    var httpsServer = https.createServer(credentials, app);
+    httpsServer.listen(https_port, () => {
+      console.log(`Example app listening at https://localhost:${https_port}`);
+    });
 
+    // Redirect from http port 80 to https
+    var http = require("http");
+    http
+      .createServer(function (req, res) {
+        res.writeHead(301, {
+          Location: "https://" + req.headers["host"] + req.url,
+        });
+        res.end();
+      })
+      .listen(http_port);
+
+    // temporary testings
     const userRepository = connection.getCustomRepository(UserController);
     const newUser = new User();
     newUser.email = "test2user@email.com";
@@ -62,11 +94,14 @@ createConnection()
     );
     if (!existingUser) {
       throw Error("Unable to find test2 User entry.");
+    } else {
+      await userRepository.updateUserName(
+        existingUser.uid,
+        "Test 2 New First Name",
+        "Test 2 New Middle Name",
+        "Test 2 New Last Name"
+      );
     }
-    else{
-      await userRepository.updateUserName(existingUser.uid, "Test 2 New First Name", "Test 2 New Middle Name", "Test 2 New Last Name");
-    }
-
 
     // insert new users for test
     await connection.manager.save(
@@ -80,12 +115,6 @@ createConnection()
         isAdmin: false,
       })
     );
-
-    // await connection.manager.save(
-    //   connection.manager.create(School, {
-
-    //   })
-    // )
 
     console.log(
       "Express server has started on port 3000. Open http://localhost:3000/users to see results"
