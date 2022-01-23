@@ -6,9 +6,9 @@ import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 
 export const ListUsers = () => {
   function generateUserDetailLink(userid) {
-    let base = "Users/Info"
+    let base = "/Users/info"
     console.log(userid)
-    return base + ":" + String(userid)
+    return base + "/" + String(userid)
   }
   const data = useMemo(
       () => [

@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useFilters, useSortBy, useTable } from "react-table";
-import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
+import {useTable } from "react-table";
 
 export const ShowUserDetail = () => {
   const data = useMemo(
@@ -20,23 +19,19 @@ export const ShowUserDetail = () => {
       () => [
         {
             Header: 'Full Name',
-            Filter: DefaultColumnFilter,
             accessor: 'name'
         },
         {
           Header: 'Email Address',
-          Filter: DefaultColumnFilter,
           accessor: 'email_address'
         },
 
         {
           Header: 'Address',
-          disableFilters: true,
           accessor: 'address'
         },
         {
           Header: 'Administrator',
-          disableFilters: true,
           accessor: 'administrator'
         },
         {
@@ -59,14 +54,12 @@ export const ShowUserDetail = () => {
     headerGroups,
     rows,
     prepareRow
-  } = useTable({ columns, data },
-      useFilters,
-      useSortBy);
+  } = useTable({ columns, data });
   return (
       <div id="userListing">
-        <h1>List Schools</h1>
-        <Link to="/Users/create">
-          <button>Create User</button>
+        <h1>User Detail</h1>
+        <Link to="/Users/edit">
+          <button>Edit User Details</button>
         </Link>
         <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
@@ -74,7 +67,7 @@ export const ShowUserDetail = () => {
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => (
                     <th
-                        {...column.getHeaderProps((column.id === "name" || column.id === "email_address") && column.getSortByToggleProps())}
+                        {...column.getHeaderProps((column.id === "name" || column.id === "email_address"))}
                         style={column.id === "name" || column.id === "email_address" ? {
                           borderBottom: 'solid 3px red',
                           background: 'aliceblue',
@@ -110,9 +103,7 @@ export const ShowUserDetail = () => {
                               background: 'papayawhip',
                             }}
                         >
-                           <Link to="/Users/info"> 
                             {cell.render('Cell')}
-                           </Link>
                         </td>
                     )
                   })}

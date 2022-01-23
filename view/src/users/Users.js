@@ -7,9 +7,10 @@ export const Users = () => {
   return (
       <Routes>
         <Route path="list" element={<ListUsers />} />
-        <Route path ="info" element = {<ShowUserDetail/>} />
+        <Route path ="info/*" element = {<ShowUserDetail/>} />
         <Route path="create" element={<CreateUser />} />
         <Route path="*" element={<Navigate from="*" to="list" />} />
       </Routes>
   );
 }
+//
