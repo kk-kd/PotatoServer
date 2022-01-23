@@ -1,4 +1,4 @@
-import { EntityRepository, Repository, getRepository } from "typeorm";
+import { EntityRepository, Repository, getRepository, getConnection } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { User } from "../entity/User";
 
@@ -44,5 +44,4 @@ export class UserController extends Repository<User> {
       .where("users.uid = :uid", { uid })
       .execute();
   }
-
 }
