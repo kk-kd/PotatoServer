@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import { userRoutes } from "./routes/userRoutes";
 import { User } from "./entity/User";
 import { UserController } from "./controller/UserController";
+import authRoutes from "./routes/authRoutes";
 
 // Test
 // const https_port = 3000;
@@ -30,6 +31,8 @@ createConnection()
     // create express app
     const app = express();
     app.use(bodyParser.json());
+
+    app.use("/api", authRoutes);
 
     // register all express routes from defined application routes
     userRoutes.forEach((route) => {
