@@ -2,26 +2,47 @@ import { EntityRepository, Repository, getRepository } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
+import * as bcrypt from "bcryptjs";
 
-@EntityRepository(User)
-export class AuthController extends Repository<User> {
-  private userRepository = getRepository(User);
+var passwordValidator = require("password-validator");
+var schema = new passwordValidator();
+schema
+  .is()
+  .min(8) // Minimum length 8
+  .is()
+  .max(64) // Maximum length 100
+  .has()
+  .uppercase() // Must have uppercase letters
+  .has()
+  .lowercase() // Must have lowercase letters
+  .has()
+  .digits(2) // Must have at least 2 digits
+  .has()
+  .not()
+  .spaces(); // Should not have spaces
 
-  async login(request: Request, response: Response, next: NextFunction) {
+class AuthController {
+  static login = async (request: Request, response: Response) => {
     //Check if username and password are set
     let { email, password } = request.body;
     if (!(email && password)) {
       response.status(400).send("User Login: Email or password missing");
     }
 
+    if (!schema.validate(password)) {
+      response.status(401).send("User Login: Password validation failed");
+      return;
+    }
+
+    const userRepository = getRepository(User);
     let user: User;
     try {
-      user = await this.userRepository.findOneOrFail({ where: { email } });
+      user = await userRepository.findOneOrFail({ where: { email } });
     } catch (error) {
       response.status(401).send("User Login: User not registered");
     }
 
-    if (!user.checkIfUnencryptedPasswordIsValid(password)) {
+    if (!(await bcrypt.compare(password, user.password))) {
       response.status(401).send("User Login: Incorrect password");
       return;
     }
@@ -30,7 +51,7 @@ export class AuthController extends Repository<User> {
     var privateKey = fs.readFileSync("../secrets/jwt_private.key");
     var payload = {
       uid: user.uid,
-      email: user.password,
+      email: user.email,
       isAdmin: user.isAdmin,
     };
     var signOptions = {
@@ -43,5 +64,54 @@ export class AuthController extends Repository<User> {
 
     const token = jwt.sign(payload, privateKey, signOptions);
     response.send(token);
-  }
+  };
+
+  static changePassword = async (request: Request, response: Response) => {
+    const id = response.locals.jwtPayload.uid;
+
+    const { oldPassword, newPassword } = request.body;
+    if (!(oldPassword && newPassword)) {
+      response
+        .status(400)
+        .send("User Password Change: old or new password missing");
+    }
+
+    if (!schema.validate(oldPassword)) {
+      response.status(401).send("User Login: Old Password validation failed");
+      return;
+    }
+
+    if (!schema.validate(newPassword)) {
+      response.status(401).send("User Login: New Password validation failed");
+      return;
+    }
+
+    const userRepository = getRepository(User);
+    let user: User;
+    try {
+      user = await userRepository.findOneOrFail(id);
+    } catch (id) {
+      response
+        .status(401)
+        .send(
+          "User Paasword Change: You know what? This session doesn't belong to u. Checkmate."
+        );
+    }
+
+    //Check if old password matchs
+    if (!(await bcrypt.compare(oldPassword, user.password))) {
+      response.status(401).send("User Password Change: Incorrect Old Password");
+      return;
+    }
+
+    try {
+      user.password = await bcrypt.hash(newPassword, 10);
+      await userRepository.save(user);
+    } catch (error) {
+      response.status(401).send("User Password Change: " + error);
+    }
+
+    response.status(204).send("User Password Change: Success");
+  };
 }
+export default AuthController;
