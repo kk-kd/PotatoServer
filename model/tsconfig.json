@@ -1,10 +1,7 @@
 {
+   "version": "2.4.2",
    "compilerOptions": {
       "target": "es6",
-      "lib": [
-        "es6",
-        "dom"
-      ],
       "module": "commonjs",
       "rootDir": "./src",
       "moduleResolution": "node",
@@ -12,5 +9,8 @@
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
       "sourceMap": true
-   }
+   },     
+   "exclude": [
+      "node_modules"
+  ]
 }

@@ -2,12 +2,12 @@
   "name": "model",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "mocha ./tests/* --exit",
     "start": "nodemon",
     "type-start": "ts-node src/index.ts",
-    "build": "tsc"
+    "build": "rm -rf ./build; tsc"
   },
   "keywords": [],
   "author": "",
