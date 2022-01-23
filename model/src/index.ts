@@ -51,9 +51,11 @@ createConnection()
 
     // setup express app here
     const path = require("path");
-    app.use(express.static(path.join(__dirname, "..", "view", "build")));
+    app.use(express.static(path.join(__dirname, "..", "..", "view", "build")));
     app.get("/*", function (req, res) {
-      res.sendFile(path.join(__dirname, "..", "view", "build", "index.html"));
+      res.sendFile(
+        path.join(__dirname, "..", "..", "view", "build", "index.html")
+      );
     });
 
     // start express server
