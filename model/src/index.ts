@@ -154,7 +154,7 @@ createConnection()
     // )
 
     console.log(
-      "Express server has started on port 3000. Open http://localhost:3000/users or http://localhost:3000/students to see results"
+      "Express server has started on port 3000. Open http://localhost:3000/users or: /students /routes /schools to see results"
     );
 
     console.log();
