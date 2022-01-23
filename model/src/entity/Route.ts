@@ -7,10 +7,10 @@ import {
 } from "typeorm";
 import { School } from "./School";
 
-@Entity()
+@Entity({ name: "routes" })
 export class Route {
   @PrimaryGeneratedColumn()
-  rid: number;
+  uid: number;
 
   @Column()
   name: string;
@@ -18,7 +18,7 @@ export class Route {
   @Column()
   desciption: string;
 
-  @JoinColumn()
-  @OneToOne((type) => School)
-  school: School;
+  // @JoinColumn()
+  // @OneToOne((type) => School)
+  // school: School;
 }
