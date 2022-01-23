@@ -1,4 +1,4 @@
-#schoolListing {
+#userListing {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
@@ -6,6 +6,6 @@
   width: 70%;
 }
 
-#schoolListing > * {
+#userListing > * {
   margin: 10px;
 }

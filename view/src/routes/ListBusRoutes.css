@@ -1,4 +1,4 @@
-#schoolListing {
+#routeListing {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
@@ -6,6 +6,6 @@
   width: 70%;
 }
 
-#schoolListing > * {
+#routeListing > * {
   margin: 10px;
 }

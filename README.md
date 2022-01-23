@@ -14,14 +14,28 @@
 `npm install`  
 `npm start`
 
-## Server Terminal Start Up
+## Server Links
+- **Submission**: production!
+- - sh zz160@vcm-23793.vm.duke.edu  
+  [link](https://potato.colab.duke.edu/0)
+  
+- **Beta** = production-light  
+- - ssh zz160@vcm-23919.vm.duke.edu  
+  [link](https://vcm-23919.vm.duke.edu:3000)
+- **Gamma** = integration
+-  - sh zz160@vcm-23920.vm.duke.edu  
+  [backend](https://vcm-23920.vm.duke.edu:3000) [frontend](https://vcm-23920.vm.duke.edu:3001)
 
-- Submission Server: ssh zz160@vcm-23793.vm.duke.edu  
-  [backend](http://vcm-23793.vm.duke.edu:3000) [frontend](http://vcm-23793.vm.duke.edu:3001)
-- Beta Server: ssh zz160@vcm-23919.vm.duke.edu  
-  [backend](http://vcm-23919.vm.duke.edu:3000) [frontend](http://vcm-23919.vm.duke.edu:3001)
-- Dev Server: ssh zz160@vcm-23920.vm.duke.edu  
-  [backend](http://vcm-23920.vm.duke.edu:3000) [frontend](http://vcm-23920.vm.duke.edu:3001)
+- **Devs** = personal testing  
+- - Nolan: 
+- - Megan: 
+- - Jackson:
+- - Cady:  
+  
+## Server Start-up 
+- pm2 status : check status 
+- cd PotatoServer
+- sh run_production.sh 
 
 ## Dependencies
 
