@@ -61,6 +61,7 @@ class AuthController {
     let { email, password } = request.body;
     if (!(email && password)) {
       response.status(400).send("User Login: Email or password missing");
+      return;
     }
 
     if (!EmailValidator.validate(email)) {
@@ -113,6 +114,8 @@ class AuthController {
       response
         .status(400)
         .send("User Password Change: old or new password missing");
+
+      return;
     }
 
     if (!schema.validate(oldPassword)) {
