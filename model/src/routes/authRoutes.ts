@@ -5,7 +5,7 @@ import AuthController from "../controller/AuthController";
 const authRoutes = Router();
 //Login route
 authRoutes.post("/login", AuthController.login);
-authRoutes.post("register", AuthController.register);
+authRoutes.post("/register", AuthController.register);
 
 //Change my password
 authRoutes.post("/change-password", [checkJwt], AuthController.changePassword);
