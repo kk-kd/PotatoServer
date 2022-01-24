@@ -25,10 +25,10 @@ schema
 class AuthController {
   static register = async (request: Request, response: Response) => {
     let { email, firstName, middleName, lastName, address, longitude, latitude, password, isAdmin } = request.body;
-    if (!(email && password && isAdmin != null)) {
+    if (!(email && password && firstName && lastName && isAdmin != null)) {
       response
         .status(401)
-        .send("User Register: email/password/isAdmin is not provided.");
+        .send("User Register: email/password/isAdmin/firstName/lastName is not provided.");
       return;
     }
 
@@ -47,6 +47,12 @@ class AuthController {
     try {
       user.password = await bcrypt.hash(password, 10);
       user.email = email;
+      user.firstName = firstName;
+      user.middleName = middleName;
+      user.lastName = lastName;
+      user.address = address;
+      user.longitude = longitude;
+      user.latitude = latitude;
       user.isAdmin = isAdmin;
       await userRepository.save(user);
     } catch (error) {
