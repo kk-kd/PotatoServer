@@ -23,7 +23,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     issuer: "Potato",
     subject: jwtPayload.email,
     audience: "potato.colab.duke.edu",
-    expiresIn: "6h",
+    expiresIn: "2h",
     algorithm: "RS256",
   };
 

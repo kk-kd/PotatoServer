@@ -106,7 +106,7 @@ class AuthController {
       issuer: "Potato",
       subject: user.email,
       audience: "potato.colab.duke.edu",
-      expiresIn: "6h",
+      expiresIn: "2h",
       algorithm: "RS256",
     };
 
