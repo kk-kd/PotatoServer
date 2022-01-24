@@ -1,9 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+} from "typeorm";
+import { Route } from "./Route";
 
-@Entity()
+@Entity({ name: "schools" })
 export class School {
   @PrimaryGeneratedColumn()
-  schoolId: number;
+  uid: number;
 
   @Column()
   name: string;
@@ -16,4 +23,7 @@ export class School {
 
   @Column("decimal")
   latitude: number;
+
+  // @Column()
+  // students: string;
 }

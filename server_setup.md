@@ -118,3 +118,5 @@ Forward local port 5432 to the database
   `cd secrets`  
   `openssl genrsa -out jwt_private.key 512`  
   `openssl rsa -in jwt_private.key -pubout -out jwt_public.key`
+- Check that f**\*\*** ormconfig file is in .js
+- delete and restart pm2 process if necessary

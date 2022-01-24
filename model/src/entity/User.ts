@@ -1,7 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm";
 
 @Entity({ name: "users" })
+<<<<<<< HEAD
 @Unique(["email"])
+=======
+>>>>>>> dev
 export class User {
   @PrimaryGeneratedColumn()
   uid: number;

@@ -9,16 +9,16 @@ import { Route } from "./Route";
 import { School } from "./School";
 import { User } from "./User";
 
-@Entity()
+@Entity({ name: "students" })
 export class Student {
   @PrimaryGeneratedColumn()
-  studentId: number;
+  uid: number;
 
   @Column({
     type: "int",
     nullable: true,
   })
-  assignedId: number;
+  id: number;
 
   @Column()
   firstName: string;
@@ -31,15 +31,15 @@ export class Student {
   @Column()
   lastName: string;
 
-  @JoinColumn()
-  @OneToOne((type) => School)
-  school: School;
+  // @JoinColumn()
+  // @OneToOne((type) => School)
+  // school: School;
 
-  @JoinColumn()
-  @OneToOne((type) => Route)
-  route: Route;
+  // @JoinColumn()
+  // @OneToOne((type) => Route)
+  // route: Route;
 
-  @JoinColumn()
-  @OneToOne((type) => User)
-  parent: User;
+  // @JoinColumn()
+  // @OneToOne((type) => User)
+  // parent: User;
 }

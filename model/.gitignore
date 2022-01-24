@@ -8,6 +8,8 @@
 # testing
 /coverage
 
+# ormconfig
+ormconfig.json
 # production
 /build
 
