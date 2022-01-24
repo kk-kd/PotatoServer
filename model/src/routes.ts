@@ -1,23 +1,49 @@
-import {UserController} from "./controller/UserController";
+import { UserController } from "./controller/UserController";
+import { StudentController } from "./controller/StudentController";
+import { RouteController } from "./controller/RouteController";
+import { SchoolController } from "./controller/SchoolController";
 
-export const Routes = [{
+export const Routes = [
+  {
     method: "get",
-    route: "/users",
+    route: "/api/users",
     controller: UserController,
-    action: "all"
-}, {
+    action: "all",
+  },
+  {
     method: "get",
-    route: "/users/:id",
+    route: "/api/users/:id",
     controller: UserController,
-    action: "one"
-}, {
+    action: "one",
+  },
+  {
     method: "post",
-    route: "/users",
+    route: "/api/users",
     controller: UserController,
-    action: "saveUser"
-}, {
+    action: "saveUser",
+  },
+  {
     method: "delete",
-    route: "/users/:id",
+    route: "/api/users/:id",
     controller: UserController,
-    action: "deleteUser"
-}];
+    action: "deleteUser",
+  },
+  {
+    method: "get",
+    route: "/api/students",
+    controller: StudentController,
+    action: "all",
+  },
+  {
+    method: "get",
+    route: "/api/routes",
+    controller: RouteController,
+    action: "all",
+  },
+  {
+    method: "get",
+    route: "/api/schools",
+    controller: SchoolController,
+    action: "all",
+  },
+];
