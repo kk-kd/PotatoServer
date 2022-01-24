@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm";
-import { Length, IsNotEmpty } from "class-validator";
 
 @Entity({ name: "users" })
 @Unique(["email"])

@@ -96,7 +96,7 @@ class AuthController {
     }
 
     var fs = require("fs");
-    var privateKey = fs.readFileSync("../secrets/jwt_private.key");
+    var privateKey = fs.readFileSync(__dirname + "../secrets/jwt_private.key");
     var payload = {
       uid: user.uid,
       email: user.email,
