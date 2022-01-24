@@ -17,24 +17,24 @@ import { School } from "./entity/School";
 import { SchoolController } from "./controller/SchoolController";
 
 // Test
-// const https_port = 3000;
-// const http_port = 2999;
-// const privateKeyAddr = __dirname + "/../../../cert/server.key";
-// const certificateAddr = __dirname + "/../../../cert/server.cert";
+const https_port = 3000;
+const http_port = 2999;
+const privateKeyAddr = __dirname + "/../../../cert/server.key";
+const certificateAddr = __dirname + "/../../../cert/server.cert";
 
-const https_port = 443;
-const http_port = 80;
-const privateKeyAddr =
-  "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/privkey.pem";
-const certificateAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/cert.pem";
-const chainAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/chain.pem";
+// const https_port = 443;
+// const http_port = 80;
+// const privateKeyAddr =
+//   "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/privkey.pem";
+// const certificateAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/cert.pem";
+// const chainAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/chain.pem";
 
 var fs = require("fs");
 var privateKey = fs.readFileSync(privateKeyAddr, "utf8");
 var certificate = fs.readFileSync(certificateAddr, "utf8");
-var chain = fs.readFileSync(chainAddr, "utf8");
-var credentials = { key: privateKey, ca: chain, cert: certificate };
-// var credentials = { key: privateKey, cert: certificate };
+// var chain = fs.readFileSync(chainAddr, "utf8");
+// var credentials = { key: privateKey, ca: chain, cert: certificate };
+var credentials = { key: privateKey, cert: certificate };
 
 createConnection()
   .then(async (connection) => {
@@ -106,94 +106,95 @@ createConnection()
     //     .execute();
     // }
 
-    // const userRepository = connection.getCustomRepository(UserController);
+    const userRepository = connection.getCustomRepository(UserController);
 
-    // let nameIter: string[] = [
-    //   "first",
-    //   "second",
-    //   "third",
-    //   "fourth",
-    //   "fifth",
-    //   "sixth",
-    //   "seventh",
-    //   "eighth",
-    //   "ninth",
-    //   "tenth",
-    // ];
-    // var count = 0.1;
-    // var AdminBoolean = false;
-    // for (var userNumber in nameIter) {
-    //   AdminBoolean = !AdminBoolean;
-    //   count = count + 1;
-    //   const userName = nameIter[userNumber] + "User";
-    //   const newUser = new User();
-    //   newUser.email = userName + "Email@email.com";
-    //   newUser.firstName = userName + "FirstName";
-    //   newUser.middleName = userName + "MiddleName";
-    //   newUser.lastName = userName + "LastName";
-    //   newUser.address = userName + " address Road";
-    //   newUser.longitude = count;
-    //   newUser.latitude = count - 1;
-    //   newUser.isAdmin = AdminBoolean;
-    //   await userRepository.save(newUser);
-    // }
+    let nameIter: string[] = [
+      "first",
+      "second",
+      "third",
+      "fourth",
+      "fifth",
+      "sixth",
+      "seventh",
+      "eighth",
+      "ninth",
+      "tenth",
+    ];
+    var count = 0.1;
+    var AdminBoolean = false;
+    for (var userNumber in nameIter) {
+      AdminBoolean = !AdminBoolean;
+      count = count + 1;
+      const userName = nameIter[userNumber] + "User";
+      const newUser = new User();
+      newUser.email = userName + newUser.uid + "Email@email.com";
+      newUser.firstName = userName + "FirstName";
+      newUser.middleName = userName + "MiddleName";
+      newUser.lastName = userName + "LastName";
+      newUser.address = userName + " address Road";
+      newUser.longitude = count;
+      newUser.latitude = count - 1;
+      newUser.isAdmin = AdminBoolean;
+      newUser.password = 'testPassword' + count+5;
+      await userRepository.save(newUser);
+    }
 
-    // const studentRepository = connection.getCustomRepository(StudentController);
-    // var intCount = 0;
-    // for (var studentNumber in nameIter) {
-    //   intCount = intCount + 1;
-    //   const studentName = nameIter[studentNumber] + "Student";
-    //   const newStudent = new Student();
-    //   newStudent.id = intCount;
-    //   newStudent.firstName = studentName + "FirstName";
-    //   newStudent.middleName = studentName + "MiddleName";
-    //   newStudent.lastName = studentName + "LastName";
-    //   //TODO: throw in some links to routes, schools, and parents for test students
+    const studentRepository = connection.getCustomRepository(StudentController);
+    var intCount = 0;
+    for (var studentNumber in nameIter) {
+      intCount = intCount + 1;
+      const studentName = nameIter[studentNumber] + "Student";
+      const newStudent = new Student();
+      newStudent.id = intCount;
+      newStudent.firstName = studentName + "FirstName";
+      newStudent.middleName = studentName + "MiddleName";
+      newStudent.lastName = studentName + "LastName";
+      //TODO: throw in some links to routes, schools, and parents for test students
 
-    //   await studentRepository.save(newStudent);
-    // }
+      await studentRepository.save(newStudent);
+    }
 
-    // const schoolRepository = connection.getCustomRepository(SchoolController);
-    // var intCount = 0;
-    // for (var schoolNumber in nameIter) {
-    //   intCount = intCount + 1;
-    //   const schoolName = nameIter[schoolNumber] + "School";
-    //   const newSchool = new School();
-    //   newSchool.name = schoolName + " Name";
-    //   newSchool.address = intCount + " Lane, Durham, NC";
-    //   newSchool.latitude = intCount + 1;
-    //   newSchool.longitude = intCount + 2;
-    //   //TODO: Throw in some associated students / routes depending on what testing needs
-    //   await schoolRepository.save(newSchool);
-    // }
+    const schoolRepository = connection.getCustomRepository(SchoolController);
+    var intCount = 0;
+    for (var schoolNumber in nameIter) {
+      intCount = intCount + 1;
+      const schoolName = nameIter[schoolNumber] + "School";
+      const newSchool = new School();
+      newSchool.name = schoolName + " Name";
+      newSchool.address = intCount + " Lane, Durham, NC";
+      newSchool.latitude = intCount + 1;
+      newSchool.longitude = intCount + 2;
+      //TODO: Throw in some associated students / routes depending on what testing needs
+      await schoolRepository.save(newSchool);
+    }
 
-    // const routeRepository = connection.getCustomRepository(RouteController);
-    // var intCount = 0;
-    // for (var routeNumber in nameIter) {
-    //   intCount = intCount + 1;
-    //   const routeName = nameIter[routeNumber] + "Route";
-    //   const newRoute = new Route();
-    //   newRoute.name = routeName + " Name";
-    //   newRoute.desciption = routeName + " Description";
-    //   //TODO: Throw in some associated students / routes depending on what testing needs
-    //   await routeRepository.save(newRoute);
-    // }
+    const routeRepository = connection.getCustomRepository(RouteController);
+    var intCount = 0;
+    for (var routeNumber in nameIter) {
+      intCount = intCount + 1;
+      const routeName = nameIter[routeNumber] + "Route";
+      const newRoute = new Route();
+      newRoute.name = routeName + " Name";
+      newRoute.desciption = routeName + " Description";
+      //TODO: Throw in some associated students / routes depending on what testing needs
+      await routeRepository.save(newRoute);
+    }
 
-    // // // insert new users for test
-    // // await connection.manager.save(
-    // //   connection.manager.create(User, {
-    // //     email: "jdm109@duke.edu",
-    // //     firstName: "Jackson",
-    // //     lastName: "McNabb",
-    // //     address: "102 Example Lane",
-    // //     longitude: 32.5,
-    // //     latitude: 432.54,
-    // //     isAdmin: false,
-    // //   })
-    // // );
+    // // insert new users for test
+    // await connection.manager.save(
+    //   connection.manager.create(User, {
+    //     email: "jdm109@duke.edu",
+    //     firstName: "Jackson",
+    //     lastName: "McNabb",
+    //     address: "102 Example Lane",
+    //     longitude: 32.5,
+    //     latitude: 432.54,
+    //     isAdmin: false,
+    //   })
+    // );
 
     console.log(
-      "Express server has started on port 3000. Open http://localhost:3000/users or: /students /routes /schools to see results"
+      "Express server has started on port 3000. Open http://localhost:3000/api/users or: /students /routes /schools to see results"
     );
   })
   .catch((error) => console.log(error));
