@@ -16,17 +16,17 @@ import { School } from "./entity/School";
 import { SchoolController } from "./controller/SchoolController";
 
 // Test
-// const https_port = 3000;
-// const http_port = 2999;
-// const privateKeyAddr = __dirname + "/../../../cert/server.key";
-// const certificateAddr = __dirname + "/../../../cert/server.cert";
+const https_port = 3000;
+const http_port = 2999;
+const privateKeyAddr = __dirname + "/../../../cert/server.key";
+const certificateAddr = __dirname + "/../../../cert/server.cert";
 
 // Prod
-const https_port = 443;
-const http_port = 80;
-const privateKeyAddr =
-  "/etc/letsencrypt/live/potato.colab.duke.edu/privkey.pem";
-const certificateAddr = "/etc/letsencrypt/live/potato.colab.duke.edu/cert.pem";
+// const https_port = 443;
+// const http_port = 80;
+// const privateKeyAddr =
+//   "/etc/letsencrypt/live/potato.colab.duke.edu/privkey.pem";
+// const certificateAddr = "/etc/letsencrypt/live/potato.colab.duke.edu/cert.pem";
 
 var fs = require("fs");
 var privateKey = fs.readFileSync(privateKeyAddr, "utf8");
@@ -38,8 +38,8 @@ createConnection()
     // create express app
     const app = express();
     app.use(bodyParser.json());
-    var cors = require("cors");
-    app.use(cors());
+    // var cors = require("cors"); //neeeded?
+    // app.use(cors()); //etc ^
     // register all express routes from defined application routes
     Routes.forEach((route) => {
       (app as any)[route.method](
@@ -79,7 +79,7 @@ createConnection()
       console.log(`Example app listening at https://localhost:${https_port}`);
     });
 
-        // Redirect from http port 80 to https
+    // Redirect from http port 80 to https
     var http = require("http");
     http
       .createServer(function (req, res) {
