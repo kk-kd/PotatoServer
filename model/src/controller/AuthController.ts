@@ -24,7 +24,7 @@ schema
 
 class AuthController {
   static register = async (request: Request, response: Response) => {
-    let { email, password, isAdmin } = request.body;
+    let { email, firstName, middleName, lastName, address, longitude, latitude, password, isAdmin } = request.body;
     if (!(email && password && isAdmin)) {
       response
         .status(401)
