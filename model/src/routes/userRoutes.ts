@@ -1,9 +1,9 @@
-import { UserController } from "./controller/UserController";
-import { StudentController } from "./controller/StudentController";
-import { RouteController } from "./controller/RouteController";
-import { SchoolController } from "./controller/SchoolController";
+import { UserController } from "../controller/UserController";
+import { StudentController } from "../controller/StudentController";
+import { RouteController } from "../controller/RouteController";
+import { SchoolController } from "../controller/SchoolController";
 
-export const Routes = [
+export const userRoutes = [
   {
     method: "get",
     route: "/api/users",
