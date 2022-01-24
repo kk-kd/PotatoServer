@@ -2,10 +2,11 @@
 let chai = require("chai");
 let chaiHttp = require("chai-http");
 let should = chai.should();
-let server = require("../src/index.ts");
+let server = require("../build/index.js");
 
 chai.use(chaiHttp);
-describe("User Registraion", () => {
+
+describe("User Registration", () => {
   it("It should register a user with email-abc123@gmail.com, password-12345678Cc", (done) => {
     const newUser = {
       email: "abc123@gmail.com",
@@ -21,8 +22,11 @@ describe("User Registraion", () => {
       .set("Accept", "application/json")
       .send(newUser)
       .end((err, res) => {
-        expect(res.status).to.equal(201);
-        expect(res.body.data).to.include;
+        res.should.have.status(201);
+        res.body.should.have
+          .property("message")
+          .equal("User Register: User created");
+        done();
       });
   });
 });
