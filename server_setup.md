@@ -114,3 +114,5 @@ Forward local port 5432 to the database
 
 - Change port to 443
 - Change certificate path
+- Check that f**\*\*** ormconfig file is in .js
+- delete and restart pm2 process if necessary
