@@ -127,7 +127,7 @@ createConnection()
       count = count + 1;
       const userName = nameIter[userNumber] + "User";
       const newUser = new User();
-      newUser.email = userName + "Email@email.com";
+      newUser.email = userName + newUser.uid + "Email@email.com";
       newUser.firstName = userName + "FirstName";
       newUser.middleName = userName + "MiddleName";
       newUser.lastName = userName + "LastName";
