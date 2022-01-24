@@ -25,7 +25,7 @@ schema
 class AuthController {
   static register = async (request: Request, response: Response) => {
     let { email, firstName, middleName, lastName, address, longitude, latitude, password, isAdmin } = request.body;
-    if (!(email && password && isAdmin)) {
+    if (!(email && password && isAdmin != null)) {
       response
         .status(401)
         .send("User Register: email/password/isAdmin is not provided.");
@@ -51,6 +51,7 @@ class AuthController {
       await userRepository.save(user);
     } catch (error) {
       response.status(401).send("User Register: " + error);
+      return;
     }
 
     response.status(201).send("User Register: User created");
@@ -80,6 +81,7 @@ class AuthController {
       user = await userRepository.findOneOrFail({ where: { email } });
     } catch (error) {
       response.status(401).send("User Login: User not registered");
+      return;
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
