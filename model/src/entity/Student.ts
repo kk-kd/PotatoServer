@@ -32,13 +32,11 @@ export class Student {
   @Column()
   lastName: string;
 
-  // @JoinColumn()
-  // @OneToOne((type) => School)
-  // school: School;
+  @ManyToOne(() => School, school => school.students, {nullable: true,})
+  school: School;
 
-  // @JoinColumn()
-  // @OneToOne((type) => Route)
-  // route: Route;
+  @ManyToOne(() => Route, route => route.students, {nullable: true,})
+  route: Route;
 
   @ManyToOne(() => User, user => user.students, {nullable: true,})
   parentUser: User;
