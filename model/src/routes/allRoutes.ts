@@ -3,7 +3,7 @@ import { StudentController } from "../controller/StudentController";
 import { RouteController } from "../controller/RouteController";
 import { SchoolController } from "../controller/SchoolController";
 
-export const userRoutes = [
+export const allRoutes = [
   {
     method: "get",
     route: "/api/users",

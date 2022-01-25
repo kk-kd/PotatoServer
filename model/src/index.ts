@@ -3,7 +3,7 @@ import { Connection, createConnection, getConnection } from "typeorm";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
-import { userRoutes } from "./routes/userRoutes";
+import { allRoutes } from "./routes/allRoutes";
 import authRoutes from "./routes/authRoutes";
 
 import { User } from "./entity/User";
@@ -36,6 +36,17 @@ var certificate = fs.readFileSync(certificateAddr, "utf8");
 // var credentials = { key: privateKey, ca: chain, cert: certificate };
 var credentials = { key: privateKey, cert: certificate };
 
+function makeid(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+    result += characters.charAt(Math.floor(Math.random() * 
+charactersLength));
+ }
+ return result;
+}
+
 createConnection()
   .then(async (connection) => {
     // create express app
@@ -47,7 +58,7 @@ createConnection()
     // var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
     // app.use(cors()); //etc ^
     // register all express routes from defined application routes
-    userRoutes.forEach((route) => {
+    allRoutes.forEach((route) => {
       (app as any)[route.method](
         route.route,
         (req: Request, res: Response, next: Function) => {
@@ -127,7 +138,7 @@ createConnection()
       count = count + 1;
       const userName = nameIter[userNumber] + "User";
       const newUser = new User();
-      newUser.email = userName + newUser.uid + "Email@email.com";
+      newUser.email = makeid(20) +"@email.com";
       newUser.firstName = userName + "FirstName";
       newUser.middleName = userName + "MiddleName";
       newUser.lastName = userName + "LastName";

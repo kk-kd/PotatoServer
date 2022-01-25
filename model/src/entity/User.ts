@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, Unique, ManyToMany, OneToMany } from "typeorm";
+import { Student } from "./Student";
 
 @Entity({ name: "users" })
 @Unique(["email"])
@@ -42,4 +43,7 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Student, student => student.parentUser, {nullable: true,})
+  students: Student[];
 }
