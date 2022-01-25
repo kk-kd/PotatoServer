@@ -118,7 +118,7 @@ createConnection()
     // }
 
     const userRepository = connection.getCustomRepository(UserController);
-
+    userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`)
     let nameIter: string[] = [
       "first",
       "second",
@@ -151,6 +151,8 @@ createConnection()
     }
 
     const studentRepository = connection.getCustomRepository(StudentController);
+    studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`)
+
     var intCount = 0;
     for (var studentNumber in nameIter) {
       intCount = intCount + 1;
@@ -166,6 +168,8 @@ createConnection()
     }
 
     const schoolRepository = connection.getCustomRepository(SchoolController);
+    schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
+
     var intCount = 0;
     for (var schoolNumber in nameIter) {
       intCount = intCount + 1;
@@ -180,6 +184,8 @@ createConnection()
     }
 
     const routeRepository = connection.getCustomRepository(RouteController);
+    routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`)
+
     var intCount = 0;
     for (var routeNumber in nameIter) {
       intCount = intCount + 1;
@@ -205,7 +211,7 @@ createConnection()
     // );
 
     console.log(
-      "Express server has started on port 3000. Open http://localhost:3000/api/users or: /students /routes /schools to see results"
+      "Express server has started on port 3000. Open https://localhost:3000/api/users or: /students /routes /schools to see results"
     );
   })
   .catch((error) => console.log(error));
