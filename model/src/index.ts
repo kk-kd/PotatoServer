@@ -15,6 +15,7 @@ import { RouteController } from "./controller/RouteController";
 
 import { School } from "./entity/School";
 import { SchoolController } from "./controller/SchoolController";
+import { checkJwt } from "./middlewares/checkJwt";
 
 // Test
 // const https_port = 3000;
@@ -49,7 +50,7 @@ createConnection()
     // register all express routes from defined application routes
     userRoutes.forEach((route) => {
       (app as any)[route.method](
-        route.route,
+        route.route, [checkJwt],
         (req: Request, res: Response, next: Function) => {
           const result = new (route.controller as any)()[route.action](
             req,
