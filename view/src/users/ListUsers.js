@@ -10,7 +10,11 @@ export const ListUsers = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedData = await axios.get("http://localhost:3000/api/users");
+        const fetchedData = await axios.get("/api/users", {
+          headers: {
+            "auth": sessionStorage.getItem("token")
+          }
+        });
         setData(fetchedData.data);
       } catch (error) {
         console.log(error);
