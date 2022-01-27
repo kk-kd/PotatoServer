@@ -1,0 +1,23 @@
+#noRouteMarker {
+  width: 30px;
+  height: 30px;
+  background-color: red;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+#currentRouteMarker {
+  width: 30px;
+  height: 30px;
+  background-color: lightcoral;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+#selectableRouteMarker {
+  width: 20px;
+  height: 20px;
+  background-color: lightcoral;
+  cursor: pointer;
+  border-radius: 50%;
+}
