@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
 import "./login.css";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import loginUser from "../api/login_api";
 
-export default function Login({ setToken }) {
-  const [username, setUserName] = useState();
-  const [password, setPassword] = useState();
+export default function Login({ setLoggedIn }) {
+  const [ username, setUserName ] = useState();
+  const [ password, setPassword ] = useState();
 
   async function handleLoginSubmit(e) {
     e.preventDefault(); // prevents page reload on submission
-    console.log(
-      "Form Submitted with username " + username + " and password " + password
-    );
+    if (!(username && password)) {
+      throw alert("Please input a username and password");
+    }
     try {
       let login_response = await loginUser({
         username: username,
@@ -23,10 +23,9 @@ export default function Login({ setToken }) {
       let status = login_response.status;
 
       if (status === 200) {
-        setToken(token);
         sessionStorage.setItem("token", token);
-      }
-      if (status === 404) {
+        setLoggedIn(true);
+      } else if (status === 404) {
         throw alert("Login Failed Because the Server was Not Reached.");
       } else if (status === 401) {
         throw alert(
@@ -48,7 +47,7 @@ export default function Login({ setToken }) {
         </label>
         <label className="input">
           <p> Password: </p>
-          <input type="text" onChange={(e) => setPassword(e.target.value)} />
+          <input type="password" onChange={(e) => setPassword(e.target.value)} />
         </label>
         <div>
           <button className="submitbutton" type="submit">

@@ -6,7 +6,7 @@ export const TableLinks = ( { hash } ) => {
   const selected = location.pathname.includes(hash);
 
   return (
-    <Link to={hash}>
+    <Link to={`${hash}/list`}>
       <button id={selected ? "selected" : "selectable"}>{hash}</button>
     </Link>
   );
