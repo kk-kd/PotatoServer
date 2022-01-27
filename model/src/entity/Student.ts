@@ -38,6 +38,6 @@ export class Student {
   @ManyToOne(() => Route, route => route.students, { nullable: true, })
   route: Route;
 
-  @ManyToOne(() => User, user => user.students, { nullable: true, })
+  @ManyToOne(() => User, user => user.students,)
   parentUser: User;
 }

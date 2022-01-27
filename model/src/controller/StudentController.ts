@@ -125,7 +125,7 @@ export class StudentController extends Repository<Student> {
   }
   findByStudentID(uid: number) {
     return this.createQueryBuilder("students")
-      .where("students.studentId = :studentId", { uid })
+      .where("students.uid = :uid", { uid })
       .getOne();
   }
   findByStudentName(firstName: string) {
@@ -145,4 +145,6 @@ export class StudentController extends Repository<Student> {
       .where("students.uid = :uid", { studentId })
       .execute();
   }
+
+
 }

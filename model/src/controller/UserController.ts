@@ -152,4 +152,10 @@ export class UserController extends Repository<User> {
       .where("users.uid = :uid", { uid })
       .execute();
   }
+  getAssociatedStudents() {
+    return this.createQueryBuilder('users')
+      .leftJoinAndSelect("users.students", "students")
+      .where("students.firstName = :firstName", { firstName: "firstStudentFirstName" })
+      .getMany();
+  }
 }
