@@ -14,8 +14,9 @@ export class RouteController extends Repository<Route> {
   async allRoutes(request: Request, response: Response, next: NextFunction) {
     try {
 
-      const skipNum: number = +request.params.page;
+      const pageNum: number = +request.params.page;
       const takeNum: number = +request.params.size;
+      var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
       if (request.params.sort == 'none') {
@@ -41,8 +42,9 @@ export class RouteController extends Repository<Route> {
   }
   async filterAllRoutes(request: Request, response: Response, next: NextFunction) {
     try {
-      const skipNum: number = +request.params.page;
+      const pageNum: number = +request.params.page;
       const takeNum: number = +request.params.size;
+      var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
       if (request.params.sort == 'none') {

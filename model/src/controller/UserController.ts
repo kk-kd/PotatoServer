@@ -12,8 +12,9 @@ export class UserController extends Repository<User> {
       // const users = this.userRepository.find();
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
-      const skipNum: number = +request.params.page;
+      const pageNum: number = +request.params.page;
       const takeNum: number = +request.params.size;
+      var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
       if (request.params.sort == 'none') {
@@ -43,8 +44,10 @@ export class UserController extends Repository<User> {
       // const users = this.userRepository.find();
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
-      const skipNum: number = +request.params.page;
+      const pageNum: number = +request.params.page;
       const takeNum: number = +request.params.size;
+      var skipNum = pageNum * takeNum;
+
       var sortSpecification;
       var sortDirSpec;
       if (request.params.sort == 'none') {

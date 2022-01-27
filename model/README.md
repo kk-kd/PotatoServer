@@ -34,3 +34,6 @@ Backend Options; can add additional calls to smooth out operations if needed:
 - CONTAINS instead of HAVING/WITH calls on query builder for filter
 - front end view/api wrapper for getting front end
 - relational info easy calls for view/api
+- jira task doc update
+- check again the page number offset
+- for sending metadata for pagination, use findandCount
