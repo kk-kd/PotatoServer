@@ -32,7 +32,6 @@ if (process.env.NODE_ENV == "development") {
     "utf8"
   );
   credentials = { key: privateKey, cert: certificate };
-  console.log(certificate);
 } else if (process.env.NODE_ENV == "production") {
   privateKey = fs.readFileSync(process.env.CERTIFICATE_KEY_PATH, "utf8");
   certificate = fs.readFileSync(process.env.CERTIFICATE_SERVER_PATH, "utf8");
