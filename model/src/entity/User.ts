@@ -44,6 +44,8 @@ export class User {
   @Column()
   password: string;
 
-  @OneToMany(() => Student, student => student.parentUser, {nullable: true,})
+  @OneToMany(() => Student, student => student.parentUser, {
+    nullable: true, cascade: true,
+  })
   students: Student[];
 }

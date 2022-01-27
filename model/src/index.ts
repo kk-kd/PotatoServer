@@ -5,7 +5,6 @@ import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
 import { allRoutes } from "./routes/allRoutes";
 import authRoutes from "./routes/authRoutes";
-
 import { User } from "./entity/User";
 import { UserController } from "./controller/UserController";
 import { Student } from "./entity/Student";
@@ -37,14 +36,14 @@ var certificate = fs.readFileSync(certificateAddr, "utf8");
 var credentials = { key: privateKey, cert: certificate };
 
 function makeid(length) {
-  var result           = '';
-  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var result = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   var charactersLength = characters.length;
-  for ( var i = 0; i < length; i++ ) {
-    result += characters.charAt(Math.floor(Math.random() * 
-charactersLength));
- }
- return result;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() *
+      charactersLength));
+  }
+  return result;
 }
 
 createConnection()
@@ -55,8 +54,8 @@ createConnection()
 
     app.use("/api", authRoutes);
 
-    // var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
-    // app.use(cors()); //etc ^
+    var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
+    app.use(cors()); //etc ^
     // register all express routes from defined application routes
     allRoutes.forEach((route) => {
       (app as any)[route.method](
@@ -118,7 +117,18 @@ createConnection()
     // }
 
     const userRepository = connection.getCustomRepository(UserController);
-    userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`)
+    userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`);
+
+    const studentRepository = connection.getCustomRepository(StudentController);
+    studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`);
+
+    const schoolRepository = connection.getCustomRepository(SchoolController);
+    schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
+
+    const routeRepository = connection.getCustomRepository(RouteController);
+    routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
+
+
     let nameIter: string[] = [
       "first",
       "second",
@@ -138,7 +148,7 @@ createConnection()
       count = count + 1;
       const userName = nameIter[userNumber] + "User";
       const newUser = new User();
-      newUser.email = makeid(20) +"@email.com";
+      newUser.email = makeid(20) + "@email.com";
       newUser.firstName = userName + "FirstName";
       newUser.middleName = userName + "MiddleName";
       newUser.lastName = userName + "LastName";
@@ -146,29 +156,27 @@ createConnection()
       newUser.longitude = count;
       newUser.latitude = count - 1;
       newUser.isAdmin = AdminBoolean;
-      newUser.password = 'testPassword' + count+5;
+      newUser.password = 'testPassword' + count + 5;
       await userRepository.save(newUser);
     }
 
-    const studentRepository = connection.getCustomRepository(StudentController);
-    studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`)
 
     var intCount = 0;
-    for (var studentNumber in nameIter) {
-      intCount = intCount + 1;
-      const studentName = nameIter[studentNumber] + "Student";
-      const newStudent = new Student();
-      newStudent.id = intCount;
-      newStudent.firstName = studentName + "FirstName";
-      newStudent.middleName = studentName + "MiddleName";
-      newStudent.lastName = studentName + "LastName";
-      //TODO: throw in some links to routes, schools, and parents for test students
+    intCount = intCount + 1;
 
-      await studentRepository.save(newStudent);
+    for (var studentNumber in nameIter) {
+      const studentName = nameIter[studentNumber] + "Student";
+      await connection.manager.save(
+        connection.manager.create(Student, {
+          id: intCount,
+          firstName: studentName + "FirstName",
+          lastName: studentName + "LastName",
+          middleName: studentName + "MiddleName",
+        })
+      );
+      //TODO: throw in some links to routes, schools, and parents for test students
     }
 
-    const schoolRepository = connection.getCustomRepository(SchoolController);
-    schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
 
     var intCount = 0;
     for (var schoolNumber in nameIter) {
@@ -183,8 +191,6 @@ createConnection()
       await schoolRepository.save(newSchool);
     }
 
-    const routeRepository = connection.getCustomRepository(RouteController);
-    routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`)
 
     var intCount = 0;
     for (var routeNumber in nameIter) {
@@ -197,21 +203,10 @@ createConnection()
       await routeRepository.save(newRoute);
     }
 
-    // // insert new users for test
-    // await connection.manager.save(
-    //   connection.manager.create(User, {
-    //     email: "jdm109@duke.edu",
-    //     firstName: "Jackson",
-    //     lastName: "McNabb",
-    //     address: "102 Example Lane",
-    //     longitude: 32.5,
-    //     latitude: 432.54,
-    //     isAdmin: false,
-    //   })
-    // );
+
 
     console.log(
-      "Express server has started on port 3000. Open https://localhost:3000/api/users or: /students /routes /schools to see results"
+      "Express server has started on port 3000. Open https://localhost:3000/api/users/all/page=0&size=0&sort=none&sortDir=none or: /students /routes /schools to see results"
     );
   })
   .catch((error) => console.log(error));
