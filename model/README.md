@@ -26,3 +26,11 @@ Updating an existing User: (note you need the UID)
 Backend Options; can add additional calls to smooth out operations if needed:
 
 - Can add soft delete / restore
+
+### TODOS
+
+(add onenote todos)
+
+- CONTAINS instead of HAVING/WITH calls on query builder for filter
+- front end view/api wrapper for getting front end
+- relational info easy calls for view/api
