@@ -51,12 +51,9 @@ createConnection()
     // create express app
     const app = express();
     app.use(bodyParser.json());
-
     app.use("/api", authRoutes);
 
-    var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
-    app.use(cors()); //etc ^
-    // register all express routes from defined application routes
+    // // register all express routes from defined application routes
     allRoutes.forEach((route) => {
       (app as any)[route.method](
         route.route,
