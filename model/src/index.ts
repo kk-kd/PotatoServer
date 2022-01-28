@@ -3,9 +3,8 @@ import { Connection, createConnection, getConnection } from "typeorm";
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { Request, Response } from "express";
-import { userRoutes } from "./routes/userRoutes";
+import { allRoutes } from "./routes/allRoutes";
 import authRoutes from "./routes/authRoutes";
-
 import { User } from "./entity/User";
 import { UserController } from "./controller/UserController";
 import { Student } from "./entity/Student";
@@ -56,13 +55,10 @@ createConnection()
     // create express app
     const app = express();
     app.use(bodyParser.json());
-
     app.use("/api", authRoutes);
 
-    // var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
-    // app.use(cors()); //etc ^
-    // register all express routes from defined application routes
-    userRoutes.forEach((route) => {
+    // // register all express routes from defined application routes
+    allRoutes.forEach((route) => {
       (app as any)[route.method](
         route.route,
         (req: Request, res: Response, next: Function) => {
@@ -124,6 +120,17 @@ createConnection()
     // }
 
     const userRepository = connection.getCustomRepository(UserController);
+    userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`);
+
+    const studentRepository = connection.getCustomRepository(StudentController);
+    studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`);
+
+    const schoolRepository = connection.getCustomRepository(SchoolController);
+    schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
+
+    const routeRepository = connection.getCustomRepository(RouteController);
+    routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
+
 
     let nameIter: string[] = [
       "first",
@@ -139,9 +146,13 @@ createConnection()
     ];
     var count = 0.1;
     var AdminBoolean = false;
+    var intCount = 0;
+
+    // Construct User Entity
     for (var userNumber in nameIter) {
       AdminBoolean = !AdminBoolean;
       count = count + 1;
+      intCount = intCount + 1;
       const userName = nameIter[userNumber] + "User";
       const newUser = new User();
       newUser.email = makeid(20) + "@email.com";
@@ -152,66 +163,94 @@ createConnection()
       newUser.longitude = count;
       newUser.latitude = count - 1;
       newUser.isAdmin = AdminBoolean;
-      newUser.password = "testPassword" + count + 5;
-      await userRepository.save(newUser);
-    }
-
-    const studentRepository = connection.getCustomRepository(StudentController);
-    var intCount = 0;
-    for (var studentNumber in nameIter) {
-      intCount = intCount + 1;
-      const studentName = nameIter[studentNumber] + "Student";
+      newUser.password = 'testPassword' + count + 5;
+      // Construct Student Entity
+      const studentName = nameIter[userNumber] + "Student";
       const newStudent = new Student();
       newStudent.id = intCount;
       newStudent.firstName = studentName + "FirstName";
-      newStudent.middleName = studentName + "MiddleName";
-      newStudent.lastName = studentName + "LastName";
-      //TODO: throw in some links to routes, schools, and parents for test students
+      newStudent.middleName = studentName + "middleName";
+      newStudent.lastName = studentName + "lastName";
+      newUser.students = [newStudent];
 
-      await studentRepository.save(newStudent);
-    }
-
-    const schoolRepository = connection.getCustomRepository(SchoolController);
-    var intCount = 0;
-    for (var schoolNumber in nameIter) {
-      intCount = intCount + 1;
-      const schoolName = nameIter[schoolNumber] + "School";
+      // Construct Route Entity:
+      const routeName = nameIter[userNumber] + "Route";
+      const newRoute = new Route();
+      newRoute.name = routeName + " Name";
+      newRoute.desciption = routeName + " Description";
+      newRoute.students = [newStudent];
+      // Construct School Entity
+      const schoolName = nameIter[userNumber] + "School";
       const newSchool = new School();
       newSchool.name = schoolName + " Name";
       newSchool.address = intCount + " Lane, Durham, NC";
       newSchool.latitude = intCount + 1;
       newSchool.longitude = intCount + 2;
-      //TODO: Throw in some associated students / routes depending on what testing needs
-      await schoolRepository.save(newSchool);
+      // newSchool.routes = [newRoute];
+      newSchool.students = [newStudent];
+
+      // Save the entries to the Databse
+      await connection.manager.save(newUser);
+      await connection.manager.save(newRoute);
+      await connection.manager.save(newSchool);
+
+      // await userRepository.save(newUser);
+      // await studentRepository.save(newStudent);
+
+
+
     }
 
-    const routeRepository = connection.getCustomRepository(RouteController);
-    var intCount = 0;
-    for (var routeNumber in nameIter) {
-      intCount = intCount + 1;
-      const routeName = nameIter[routeNumber] + "Route";
-      const newRoute = new Route();
-      newRoute.name = routeName + " Name";
-      newRoute.desciption = routeName + " Description";
-      //TODO: Throw in some associated students / routes depending on what testing needs
-      await routeRepository.save(newRoute);
-    }
+    // connection.manager.createQueryBuilder()
+    // .leftJoinAndSelect("t.customer", "customer")
+    // .leftJoinAndSelect(/* other joins */)
+    // .where(/* custom where */)
+    // .getOne();
 
-    // // insert new users for test
-    // await connection.manager.save(
-    //   connection.manager.create(User, {
-    //     email: "jdm109@duke.edu",
-    //     firstName: "Jackson",
-    //     lastName: "McNabb",
-    //     address: "102 Example Lane",
-    //     longitude: 32.5,
-    //     latitude: 432.54,
-    //     isAdmin: false,
-    //   })
-    // );
+
+    // var intCount = 0;
+    // intCount = intCount + 1;
+
+    // for (var studentNumber in nameIter) {
+    //   const studentName = nameIter[studentNumber] + "Student";
+    //   await connection.manager.save(
+    //     connection.manager.create(Student, {
+    //       id: intCount,
+    //       firstName: studentName + "FirstName",
+    //       lastName: studentName + "LastName",
+    //       middleName: studentName + "MiddleName",
+    //     })
+    //   );
+    //   //TODO: throw in some links to routes, schools, and parents for test students
+    // }
+
+    // var intCount = 0;
+    // for (var schoolNumber in nameIter) {
+    //   intCount = intCount + 1;
+    //   const schoolName = nameIter[schoolNumber] + "School";
+    //   const newSchool = new School();
+    //   newSchool.name = schoolName + " Name";
+    //   newSchool.address = intCount + " Lane, Durham, NC";
+    //   newSchool.latitude = intCount + 1;
+    //   newSchool.longitude = intCount + 2;
+    //   //TODO: Throw in some associated students / routes depending on what testing needs
+    //   await schoolRepository.save(newSchool);
+    // }
+
+
+    // var intCount = 0;
+    // for (var routeNumber in nameIter) {
+    //   intCount = intCount + 1;
+    //   const routeName = nameIter[routeNumber] + "Route";
+    //   const newRoute = new Route();
+    //   newRoute.name = routeName + " Name";
+    //   newRoute.desciption = routeName + " Description";
+    //   //TODO: Throw in some associated students / routes depending on what testing needs
+    //   await routeRepository.save(newRoute);
+    // }
 
     console.log(
-      "Express server has started on port 3000. Open http://localhost:3000/api/users or: /students /routes /schools to see results"
+      "Express server has started on port 3000. Open https://localhost:3000/api/users/all/page=0&size=0&sort=none&sortDir=none or: /students /routes /schools to see results"
     );
   })
   .catch((error) => console.log(error));

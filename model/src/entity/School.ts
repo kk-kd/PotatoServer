@@ -4,8 +4,10 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from "typeorm";
 import { Route } from "./Route";
+import { Student } from "./Student";
 
 @Entity({ name: "schools" })
 export class School {
@@ -24,6 +26,9 @@ export class School {
   @Column("decimal")
   latitude: number;
 
-  // @Column()
-  // students: string;
+  @OneToMany(() => Student, student => student.school, { nullable: true, cascade: true })
+  students: Student[];
+
+  @OneToMany(() => Route, route => route.school, { nullable: true, cascade: true })
+  routes: Route[];
 }
