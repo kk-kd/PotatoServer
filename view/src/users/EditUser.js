@@ -2,7 +2,7 @@ import "./UserForm.css";
 import GoogleMapReact from "google-map-react";
 import { useState, useMemo, useEffect} from "react";
 import { Marker } from "../map/Marker";
-import {registerUser} from "../api/axios_wrapper";
+import {updateUser} from "../api/axios_wrapper";
 import { useNavigate } from "react-router-dom";
 
 export const EditUser = () => {
@@ -95,7 +95,7 @@ export const EditUser = () => {
     console.log("Modifying User with entries:")
     console.log(form_results)
     try {
-      let create_user_response = await registerUser(form_results).catch ((error) => {})
+      let create_user_response = await updateUser(form_results).catch ((error) => {})
       let user_id = create_user_response.id
       let status = create_user_response.status
       
