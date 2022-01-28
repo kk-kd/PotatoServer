@@ -4,8 +4,11 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  OneToMany,
+  ManyToOne,
 } from "typeorm";
 import { School } from "./School";
+import { Student } from "./Student";
 
 @Entity({ name: "routes" })
 export class Route {
@@ -18,7 +21,9 @@ export class Route {
   @Column()
   desciption: string;
 
-  // @JoinColumn()
-  // @OneToOne((type) => School)
-  // school: School;
+  @OneToMany(() => Student, student => student.route, { nullable: true, })
+  students: Student[];
+
+  @ManyToOne(() => School, school => school.routes, { nullable: true, })
+  school: School;
 }

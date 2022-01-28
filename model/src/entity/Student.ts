@@ -4,6 +4,7 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from "typeorm";
 import { Route } from "./Route";
 import { School } from "./School";
@@ -31,15 +32,12 @@ export class Student {
   @Column()
   lastName: string;
 
-  // @JoinColumn()
-  // @OneToOne((type) => School)
-  // school: School;
+  @ManyToOne(() => School, school => school.students, { nullable: true, })
+  school: School;
 
-  // @JoinColumn()
-  // @OneToOne((type) => Route)
-  // route: Route;
+  @ManyToOne(() => Route, route => route.students, { nullable: true, })
+  route: Route;
 
-  // @JoinColumn()
-  // @OneToOne((type) => User)
-  // parent: User;
+  @ManyToOne(() => User, user => user.students,)
+  parentUser: User;
 }
