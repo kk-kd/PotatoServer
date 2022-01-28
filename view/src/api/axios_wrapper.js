@@ -1,6 +1,30 @@
 import axios from "axios";
 
 /*
+Welcome to the Axios Wrapper.
+
+To extract data that you need or error codes, call `.data` on the output of these calls.
+
+The example from ListUsers is below (as a hook):
+
+export const ListUsers = () => {
+  const [data] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        getAllUsers({ page: 0, size: 0, sort: "none", sortDir: "none" });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+/*
+
+
+/*
 GetAll from table (students, users, schools, routes) gives you every entry in the table.
 INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
     page: number, denotes the number page requested; starts at 0
@@ -14,22 +38,22 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
       - "DESC"
 */
 export async function getAllUsers(specifications) {
-  await axios.get(
+  return await axios.get(
     `https://localhost:3000/api/users/all/${convertMapToURL(specifications)}`
   );
 }
 export async function getAllStudents(specifications) {
-  await axios.get(
+  return await axios.get(
     `https://localhost:3000/api/students/all/${convertMapToURL(specifications)}`
   );
 }
 export async function getAllSchools(specifications) {
-  await axios.get(
+  return await axios.get(
     `https://localhost:3000/api/schools/all/${convertMapToURL(specifications)}`
   );
 }
 export async function getAllRoutes(specifications) {
-  await axios.get(
+  return await axios.get(
     `https://localhost:3000/api/routes/all/${convertMapToURL(specifications)}`
   );
 }
@@ -53,26 +77,26 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
 
 */
 export async function filterAllUsers(specifications) {
-  await axios.get(
+  return await axios.get(
     `https://localhost:3000/api/users/filter/${convertMapToURL(specifications)}`
   );
 }
 export async function filterAllStudents(specifications) {
-  await axios.get(
+  return await axios.get(
     `https://localhost:3000/api/students/filter/${convertMapToURL(
       specifications
     )}`
   );
 }
 export async function filtertAllSchools(specifications) {
-  await axios.get(
+  return await axios.get(
     `https://localhost:3000/api/schools/filter/${convertMapToURL(
       specifications
     )}`
   );
 }
 export async function filterAllRoutes(specifications) {
-  await axios.get(
+  return await axios.get(
     `https://localhost:3000/api/routes/filter/${convertMapToURL(
       specifications
     )}`
@@ -82,31 +106,31 @@ export async function filterAllRoutes(specifications) {
    Returns one entry from a table (students, users, schools, routes) by UID.
 */
 export async function getOneUser(uid) {
-  await axios.get("https://localhost:3000/api/users/" + uid);
+  return await axios.get("https://localhost:3000/api/users/" + uid);
 }
 export async function getOneStudent(uid) {
-  await axios.get("https://localhost:3000/api/students/" + uid);
+  return await axios.get("https://localhost:3000/api/students/" + uid);
 }
 export async function getOneSchool(uid) {
-  await axios.get("https://localhost:3000/api/schools/" + uid);
+  return await axios.get("https://localhost:3000/api/schools/" + uid);
 }
 export async function getOneRoute(uid) {
-  await axios.get("https://localhost:3000/api/routes/" + uid);
+  return await axios.get("https://localhost:3000/api/routes/" + uid);
 }
 /*
    Deletes one entry from a table (students, users, schools, routes) by UID.
 */
 export async function deleteUser(uid) {
-  await axios.delete("https://localhost:3000/api/users/" + uid);
+  return await axios.delete("https://localhost:3000/api/users/" + uid);
 }
 export async function deleteStudent(uid) {
-  await axios.delete("https://localhost:3000/api/students/" + uid);
+  return await axios.delete("https://localhost:3000/api/students/" + uid);
 }
 export async function deleteSchool(uid) {
-  await axios.delete("https://localhost:3000/api/schools/" + uid);
+  return await axios.delete("https://localhost:3000/api/schools/" + uid);
 }
 export async function deleteRoute(uid) {
-  await axios.delete("https://localhost:3000/api/routes/" + uid);
+  return await axios.delete("https://localhost:3000/api/routes/" + uid);
 }
 
 /*
@@ -146,20 +170,20 @@ export async function deleteRoute(uid) {
 
 */
 export async function saveUser(specifications) {
-  await axios.post("https://localhost:3000/api/users/", specifications);
+  return await axios.post("https://localhost:3000/api/users/", specifications);
 }
 export async function saveStudent(specifications) {
-  await axios.post(
+  return await axios.post(
     `https://localhost:3000/api/students/${convertMapToURL(specifications)}`
   );
 }
 export async function saveSchool(specifications) {
-  await axios.post(
+  return await axios.post(
     `https://localhost:3000/api/schools/${convertMapToURL(specifications)}`
   );
 }
 export async function saveRoute(specifications) {
-  await axios.post(
+  return await axios.post(
     `https://localhost:3000/api/routes/${convertMapToURL(specifications)}`
   );
 }
@@ -167,16 +191,16 @@ export async function saveRoute(specifications) {
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
 export async function updateUser(uid) {
-  await axios.put("https://localhost:3000/api/users/" + uid);
+  return await axios.put("https://localhost:3000/api/users/" + uid);
 }
 export async function updateStudent(uid) {
-  await axios.put("https://localhost:3000/api/students/" + uid);
+  return await axios.put("https://localhost:3000/api/students/" + uid);
 }
 export async function updateSchool(uid) {
-  await axios.put("https://localhost:3000/api/schools/" + uid);
+  return await axios.put("https://localhost:3000/api/schools/" + uid);
 }
 export async function updateRoute(uid) {
-  await axios.put("https://localhost:3000/api/routes/" + uid);
+  return await axios.put("https://localhost:3000/api/routes/" + uid);
 }
 // Helpers
 function convertMapToURL(map) {
