@@ -29,7 +29,4 @@ Backend Options; can add additional calls to smooth out operations if needed:
 
 (add onenote todos)
 
-- CONTAINS instead of HAVING/WITH calls on query builder for filter
-- relational info easy calls for view/api
-- page size default
-- for sending metadata for pagination, use findandCount
+- Do with Cady, given the JWT token return the current User
