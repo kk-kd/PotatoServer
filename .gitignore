@@ -8,6 +8,8 @@ bin-release/
 /node_modules
 .settings/
 
+# VSCode Setting Files
+.prettierrc
 # Executables
 *.swf
 *.air

@@ -4,6 +4,7 @@ import axios from "axios";
 Welcome to the Axios Wrapper.
 To extract data that you need or error codes, call `.data` on the output of these calls.
 The example from ListUsers is below (as a hook):
+
 export const ListUsers = () => {
   const [data] = useState([]);
   useEffect(() => {
@@ -139,11 +140,10 @@ Register a User for the first time to add them to the database.
             }
 */
 export async function registerUser(specifications) {
-    return {id: "7", "status": 200}
-//   return await axios.post(
-//     "https://localhost:3000/api/register",
-//     specifications
-//   );
+  return await axios.post(
+    "https://localhost:3000/api/register",
+    specifications
+  );
 }
 
 /*
