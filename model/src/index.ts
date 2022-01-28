@@ -15,25 +15,25 @@ import { RouteController } from "./controller/RouteController";
 import { School } from "./entity/School";
 import { SchoolController } from "./controller/SchoolController";
 
-// Test
-const https_port = 3000;
-const http_port = 2999;
-const privateKeyAddr = __dirname + "/../../../cert/server.key";
-const certificateAddr = __dirname + "/../../../cert/server.cert";
+// // Test
+// const https_port = 3000;
+// const http_port = 2999;
+// const privateKeyAddr = __dirname + "/../../../cert/server.key";
+// const certificateAddr = __dirname + "/../../../cert/server.cert";
 
-// const https_port = 443;
-// const http_port = 80;
-// const privateKeyAddr =
-//   "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/privkey.pem";
-// const certificateAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/cert.pem";
-// const chainAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/chain.pem";
+const https_port = 443;
+const http_port = 80;
+const privateKeyAddr =
+  "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/privkey.pem";
+const certificateAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/cert.pem";
+const chainAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/chain.pem";
 
 var fs = require("fs");
 var privateKey = fs.readFileSync(privateKeyAddr, "utf8");
 var certificate = fs.readFileSync(certificateAddr, "utf8");
-// var chain = fs.readFileSync(chainAddr, "utf8");
-// var credentials = { key: privateKey, ca: chain, cert: certificate };
-var credentials = { key: privateKey, cert: certificate };
+var chain = fs.readFileSync(chainAddr, "utf8");
+var credentials = { key: privateKey, ca: chain, cert: certificate };
+// var credentials = { key: privateKey, cert: certificate };
 
 function makeid(length) {
   var result = '';
