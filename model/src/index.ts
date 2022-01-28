@@ -37,6 +37,7 @@ if (process.env.NODE_ENV == "development") {
   var chain = fs.readFileSync(process.env.CERTIFICATE_CHAIN_PATH, "utf8");
   credentials = { key: privateKey, ca: chain, cert: certificate };
 }
+console.log('we made it 1');
 
 function makeid(length) {
   var result = "";
