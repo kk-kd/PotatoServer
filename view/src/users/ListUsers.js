@@ -6,10 +6,9 @@ import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 
 export const ListUsers = () => {
   function generateUserDetailLink(userid) {
-    let base = "/Users/info"
-    console.log(userid)
-    return base + "/" + String(userid)
+    return "/Users/info/" + userid; 
   }
+
   const data = useMemo(
       () => [
         {
@@ -69,7 +68,8 @@ export const ListUsers = () => {
           disableFilters: true,
           accessor: 'userid',
           Cell: ({value}) => { 
-            return <Link to = {generateUserDetailLink(value)}> {"View User Detail"} </Link> 
+            return <Link to = {generateUserDetailLink(value)}> {"View User Detail"} </Link>  
+            
         },
         }
       ],

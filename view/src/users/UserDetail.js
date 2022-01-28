@@ -2,7 +2,11 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {useTable } from "react-table";
 
-export const ShowUserDetail = () => {
+export const UserDetail = () => {
+  function generateStudentDetailLink(id) {
+    return "/Students/info/" + id; 
+  }
+
   const data = useMemo(
       () => [
         {
@@ -40,7 +44,8 @@ export const ShowUserDetail = () => {
             accessor: 'students',
             Cell: ({value}) => { 
                 function a (n) {
-                    return  (<li>{n}</li>);
+                  
+                    return  (<li>{<Link to = {generateStudentDetailLink(n)}> {n} </Link>  }</li>);
                 } 
                 return <ul> {value.map(a)} </ul> 
          }},
