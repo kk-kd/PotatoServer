@@ -42,30 +42,43 @@ export class SchoolController extends Repository<School> {
   }
   async filterAllSchools(request: Request, response: Response, next: NextFunction) {
     try {
-      const pageNum: number = +request.params.page;
-      const takeNum: number = +request.params.size;
+      const pageNum: number = +request.query.page;
+      const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
+
       var sortSpecification;
       var sortDirSpec;
-      if (request.params.sort == 'none') {
+      if (request.query.sort == 'none') {
         sortSpecification = "schools.uid";
       }
       else { //should error check instead of else
-        sortSpecification = "schools." + request.params.sort;
+        sortSpecification = "schools." + request.query.sort;
       }
-      if ((request.params.sortDir == 'none') || (request.params.sortDir == 'ASC')) {
+      if (request.query.sortDir == 'ASC') {
         sortDirSpec = "ASC";
       }
-      else { //error check instead of else
+      else if (request.query.sortDir == 'DESC') { //error check instead of else
         sortDirSpec = "DESC";
+      } else {
+        sortDirSpec = "ASC";
+        sortSpecification = "schools.uid";
       }
       var filterSpecification;
-      filterSpecification = "schools." + request.params.sort;
-      const queryFilterType = request.params.filterType;
-      const queryFilterData = request.params.filterData;
-      const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").skip(skipNum).take(takeNum).orderBy(sortSpecification, sortDirSpec).having("schools." + queryFilterType + " = :spec", { spec: queryFilterData }).groupBy("schools.uid").getMany();
+      filterSpecification = "schools." + request.query.sort;
+      const queryFilterType = request.query.filterType;
+      const queryFilterData = request.query.filterData;
+      const [schoolsQueryResult, total] = await this.schoolRepository
+          .createQueryBuilder("schools")
+          .skip(skipNum)
+          .take(takeNum)
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
+          .getManyAndCount();
       response.status(200);
-      return usersQueryResult;
+      return {
+        schools: schoolsQueryResult,
+        total: total
+      };
     }
     catch (e) {
       response.status(401).send("Users were not found with error: " + e);

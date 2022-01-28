@@ -81,9 +81,10 @@ export async function filterAllStudents(specifications) {
     `/api/students/filter/${convertMapToURL(specifications)}`
   );
 }
-export async function filtertAllSchools(specifications) {
+export async function filterAllSchools(specifications) {
   return await axios.get(
-    `/api/schools/filter/${convertMapToURL(specifications)}`
+    `/api/schools/filter`,
+      { params: specifications }
   );
 }
 export async function filterAllRoutes(specifications) {
