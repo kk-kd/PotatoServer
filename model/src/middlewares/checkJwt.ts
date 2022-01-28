@@ -16,6 +16,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
   try {
     jwtPayload = <any>jwt.verify(token, publicKey);
     res.locals.jwtPayload = jwtPayload;
+    console.log(jwtPayload);
   } catch (error) {
     console.log(res);
     res.status(401).send("checkJwt: token invalid");

@@ -64,6 +64,12 @@ export const allRoutes = [
     action: "oneUser",
   },
   {
+    method: "get",
+    route: "/api/user",
+    controller: UserController,
+    action: "currentUserJWT",
+  },
+  {
     method: "post",
     route: "/api/users/",
     controller: UserController,

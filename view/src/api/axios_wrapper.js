@@ -71,10 +71,7 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
 
 */
 export async function filterAllUsers(specifications) {
-  return await axios.get(
-    `/api/users/filter`,
-      { params: specifications }
-  );
+  return await axios.get(`/api/users/filter`, { params: specifications });
 }
 export async function filterAllStudents(specifications) {
   return await axios.get(
@@ -94,6 +91,13 @@ export async function filterAllRoutes(specifications) {
 /*
    Returns one entry from a table (students, users, schools, routes) by UID.
 */
+export async function returnUserInfoFromJWT() {
+  const token = sessionStorage.getItem("token");
+  console.log(sessionStorage.getItem("token"));
+  return await axios.get("/api/user", {
+    headers: { auth: token },
+  });
+}
 export async function getOneUser(uid) {
   return await axios.get("/api/users/" + uid);
 }

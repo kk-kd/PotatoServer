@@ -38,7 +38,6 @@ if (process.env.NODE_ENV == "development") {
   var chain = fs.readFileSync(process.env.CERTIFICATE_CHAIN_PATH, "utf8");
   credentials = { key: privateKey, ca: chain, cert: certificate };
 }
-console.log('we made it 1');
 
 function makeid(length) {
   var result = "";
@@ -62,7 +61,8 @@ createConnection()
     // // register all express routes from defined application routes
     allRoutes.forEach((route) => {
       (app as any)[route.method](
-        route.route, //TODO: jwt here
+        route.route,
+        [checkJwt],
         (req: Request, res: Response, next: Function) => {
           const result = new (route.controller as any)()[route.action](
             req,
@@ -133,7 +133,6 @@ createConnection()
     // const routeRepository = connection.getCustomRepository(RouteController);
     // routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
 
-
     let nameIter: string[] = [
       "first",
       "second",
@@ -165,7 +164,7 @@ createConnection()
       newUser.longitude = count;
       newUser.latitude = count - 1;
       newUser.isAdmin = AdminBoolean;
-      newUser.password = 'testPassword' + count + 5;
+      newUser.password = "testPassword" + count + 5;
       // Construct Student Entity
       const studentName = nameIter[userNumber] + "Student";
       const newStudent = new Student();
@@ -196,12 +195,8 @@ createConnection()
       await connection.manager.save(newRoute);
       await connection.manager.save(newSchool);
 
-
       // await userRepository.save(newUser);
       // await studentRepository.save(newStudent);
-
-
-
     }
 
     // connection.manager.createQueryBuilder()
@@ -209,7 +204,6 @@ createConnection()
     // .leftJoinAndSelect(/* other joins */)
     // .where(/* custom where */)
     // .getOne();
-
 
     // var intCount = 0;
     // intCount = intCount + 1;
@@ -239,7 +233,6 @@ createConnection()
     //   //TODO: Throw in some associated students / routes depending on what testing needs
     //   await schoolRepository.save(newSchool);
     // }
-
 
     // var intCount = 0;
     // for (var routeNumber in nameIter) {
