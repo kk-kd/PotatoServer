@@ -10,12 +10,13 @@ export const ListUsers = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedData = getAllUsers({
+        const fetchedData = await getAllUsers({
           page: 0,
           size: 0,
           sort: "none",
           sortDir: "none",
         });
+        console.log(fetchedData.data);
         setData(fetchedData.data);
       } catch (error) {
         console.log(error);
@@ -49,11 +50,11 @@ export const ListUsers = () => {
           return <label>{props.value.toString()}</label>;
         },
       },
-      {
-        Header: "Students",
-        disableFilters: true,
-        accessor: "students",
-      },
+      // {
+      //   Header: "Students",
+      //   disableFilters: true,
+      //   accessor: "students",
+      // },
     ],
     []
   );

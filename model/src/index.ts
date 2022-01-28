@@ -62,7 +62,7 @@ createConnection()
     // // register all express routes from defined application routes
     allRoutes.forEach((route) => {
       (app as any)[route.method](
-        route.route, [checkJwt],
+        route.route, //TODO: jwt here
         (req: Request, res: Response, next: Function) => {
           const result = new (route.controller as any)()[route.action](
             req,
