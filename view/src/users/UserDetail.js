@@ -1,37 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams} from "react-router-dom";
 import {useTable } from "react-table";
 
 export const UserDetail = () => {
-  const {user_id} = useParams()
+  const { id } = useParams();
+
+  // TODO - API call with user id 
   
-  // useEffect(() => {
-  //   console.log(useParams)
-  //   let user_id = useParams().user_id
-  //   SetUserId(user_id)
-  // }, []);
-
-
-  // API Call 
-  // export const UserInfo = () => {
-  //   const [data, setData] = useState([]);
-  //   useEffect(() => {
-  //     const fetchData = async () => {
-  //       try {
-  //         const fetchedData = await axios.get("/api/users", {
-  //           headers: {
-  //             "auth": sessionStorage.getItem("token")
-  //           }
-  //         });
-  //         setData(fetchedData.data);
-  //       } catch (error) {
-  //         console.log(error);
-  //       }
-  //     };
-  //     fetchData();
-  //   }, []);
-  
-
   const data = useMemo(
       () => [
         {
@@ -40,7 +15,6 @@ export const UserDetail = () => {
           address: 'example address',
           administrator: "false", 
           students: [{name: "Student 1", id:'1'}, {name: "Student 2", id:"2"}], 
-          student_ids: ["1", "0"]
         },
       ]
   );
@@ -88,6 +62,7 @@ export const UserDetail = () => {
   return (
       <div id="userListing">
         <h1>User Detail</h1>
+        <h2>{`ID: ${id}`}</h2>
         <Link to="/Users/edit">
           <button>Edit User Details</button>
         </Link>

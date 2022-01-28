@@ -68,8 +68,7 @@ export const ListUsers = () => {
           disableFilters: true,
           accessor: 'userid',
           Cell: ({value}) => { 
-            return <Link to = {generateUserDetailLink(value)}> {"View User Detail"} </Link>  
-            
+            return <Link to = {generateUserDetailLink(value)}> {"View User Detail"} </Link>   
         },
         }
       ],
