@@ -1,9 +1,9 @@
-#userListing {
+#userListing, #header {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
   flex-wrap: wrap;
-  width: 70%;
+  width: 90%;
 }
 
 #userListing > * {

@@ -50,7 +50,7 @@ export const allRoutes = [
   */
   {
     method: "get",
-    route: "/api/users/filter/page=:page&size=:size&sort=:sort&sortDir=:sortDir&filterType=:filterType&filterData=:filterData",
+    route: "/api/users/filter",
     controller: UserController,
     action: "filterAllUsers",
   },

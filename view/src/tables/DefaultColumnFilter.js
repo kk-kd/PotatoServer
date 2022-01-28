@@ -1,11 +1,11 @@
 export const DefaultColumnFilter = ({
-  column: { filterValue, setFilter }
+  setFilter
 }) => {
   return (
       <input
-          value={filterValue || ''}
+          type="text"
           onChange={e => {
-            setFilter(e.target.value || undefined)
+            setFilter(e.target.value || "")
           }}
       />
   )
