@@ -78,7 +78,8 @@ export async function filterAllUsers(specifications) {
 }
 export async function filterAllStudents(specifications) {
   return await axios.get(
-    `/api/students/filter/${convertMapToURL(specifications)}`
+    `/api/students/filter`,
+      { params: specifications }
   );
 }
 export async function filterAllSchools(specifications) {
