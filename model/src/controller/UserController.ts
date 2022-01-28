@@ -19,6 +19,11 @@ export class UserController extends Repository<User> {
       // const users = this.userRepository.find();
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       const pageNum: number = +request.params.page;
       const takeNum: number = +request.params.size;
       var skipNum = pageNum * takeNum;
@@ -59,6 +64,11 @@ export class UserController extends Repository<User> {
       // const users = this.userRepository.find();
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       const pageNum: number = +request.query.page;
       const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
@@ -115,12 +125,10 @@ export class UserController extends Repository<User> {
   ) {
     try {
       const uidNumber = response.locals.jwtPayload.uid;
-      console.log("User Controller: " + uidNumber);
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
         .getOneOrFail();
-      console.log("Hi");
       response.status(200);
       return usersQueryResult;
     } catch (e) {
@@ -128,8 +136,8 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-            request.params.uid +
-            " was not found adn could not be deleted."
+          request.params.uid +
+          " was not found adn could not be deleted."
         );
     }
   }
@@ -167,6 +175,11 @@ export class UserController extends Repository<User> {
 
   async updateUser(request: Request, response: Response, next: NextFunction) {
     try {
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       const uidNumber = request.params.uid;
       await getConnection()
         .createQueryBuilder()
@@ -180,11 +193,11 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User with UID " +
-            request.params.uid +
-            " and details(" +
-            request.body +
-            ") couldn't be updated with error " +
-            e
+          request.params.uid +
+          " and details(" +
+          request.body +
+          ") couldn't be updated with error " +
+          e
         );
       return;
     }
@@ -192,6 +205,11 @@ export class UserController extends Repository<User> {
 
   async deleteUser(request: Request, response: Response, next: NextFunction) {
     try {
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const userQuereyResult = await this.userRepository
         .createQueryBuilder("users")
@@ -204,8 +222,8 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-            request.params.uid +
-            " was not found adn could not be deleted."
+          request.params.uid +
+          " was not found adn could not be deleted."
         );
     }
   }
@@ -239,5 +257,13 @@ export class UserController extends Repository<User> {
         firstName: "firstStudentFirstName",
       })
       .getMany();
+  }
+}
+
+function checkIfAdminForPrivileges(response) {
+  const isAdmin = response.locals.jwtPayload.isAdmin;
+  if (!isAdmin) {
+    response.status(409).send("User is not an admin.")
+    return;
   }
 }

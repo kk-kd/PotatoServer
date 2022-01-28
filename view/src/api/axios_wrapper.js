@@ -38,18 +38,28 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
       - "DESC"
 */
 export async function getAllUsers(specifications) {
-  return await axios.get(`/api/users/all/${convertMapToURL(specifications)}`);
+  return await axios.get(
+    `/api/users/all/${convertMapToURL(specifications)}`,
+    getHeaderWithAuthToken()
+  );
 }
 export async function getAllStudents(specifications) {
   return await axios.get(
-    `/api/students/all/${convertMapToURL(specifications)}`
+    `/api/students/all/${convertMapToURL(specifications)}`,
+    getHeaderWithAuthToken()
   );
 }
 export async function getAllSchools(specifications) {
-  return await axios.get(`/api/schools/all/${convertMapToURL(specifications)}`);
+  return await axios.get(
+    `/api/schools/all/${convertMapToURL(specifications)}`,
+    getHeaderWithAuthToken()
+  );
 }
 export async function getAllRoutes(specifications) {
-  return await axios.get(`/api/routes/all/${convertMapToURL(specifications)}`);
+  return await axios.get(
+    `/api/routes/all/${convertMapToURL(specifications)}`,
+    getHeaderWithAuthToken()
+  );
 }
 
 /*
@@ -71,60 +81,64 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
 
 */
 export async function filterAllUsers(specifications) {
-  return await axios.get(`/api/users/filter`, { params: specifications });
+  return await axios.get(
+    `/api/users/filter`,
+    { params: specifications },
+    getHeaderWithAuthToken()
+  );
 }
 export async function filterAllStudents(specifications) {
   return await axios.get(
-    `/api/students/filter/${convertMapToURL(specifications)}`
+    `/api/students/filter/${convertMapToURL(specifications)}`,
+    getHeaderWithAuthToken()
   );
 }
 export async function filterAllSchools(specifications) {
   return await axios.get(
     `/api/schools/filter`,
-      { params: specifications }
+    { params: specifications },
+    getHeaderWithAuthToken()
   );
 }
 export async function filterAllRoutes(specifications) {
   return await axios.get(
-    `/api/routes/filter/${convertMapToURL(specifications)}`
+    `/api/routes/filter/${convertMapToURL(specifications)}`,
+    getHeaderWithAuthToken()
   );
 }
 /*
    Returns one entry from a table (students, users, schools, routes) by UID.
 */
 export async function returnUserInfoFromJWT() {
-  const token = sessionStorage.getItem("token");
-  console.log(sessionStorage.getItem("token"));
-  return await axios.get("/api/user", {
-    headers: { auth: token },
-  });
+  return await axios.get("/api/user", getHeaderWithAuthToken());
 }
+
 export async function getOneUser(uid) {
-  return await axios.get("/api/users/" + uid);
+  return await axios.get("/api/users/" + uid, getHeaderWithAuthToken());
 }
 export async function getOneStudent(uid) {
-  return await axios.get("/api/students/" + uid);
+  return await axios.get("/api/students/" + uid, getHeaderWithAuthToken());
 }
 export async function getOneSchool(uid) {
-  return await axios.get("/api/schools/" + uid);
+  return await axios.get("/api/schools/" + uid, getHeaderWithAuthToken());
 }
 export async function getOneRoute(uid) {
-  return await axios.get("/api/routes/" + uid);
+  return await axios.get("/api/routes/" + uid, getHeaderWithAuthToken());
 }
 /*
    Deletes one entry from a table (students, users, schools, routes) by UID.
 */
 export async function deleteUser(uid) {
-  return await axios.delete("/api/users/" + uid);
+  return await axios.delete("/api/users/" + uid, getHeaderWithAuthToken());
 }
 export async function deleteStudent(uid) {
-  return await axios.delete("/api/students/" + uid);
+  return await axios.delete("/api/students/" + uid, getHeaderWithAuthToken());
 }
 export async function deleteSchool(uid) {
-  return await axios.delete("/api/schools/" + uid);
+  return await axios.delete("/api/schools/" + uid, getHeaderWithAuthToken());
 }
 export async function deleteRoute(uid) {
-  return await axios.delete("/api/routes/" + uid);
+  return await axios.delete("/api/routes/" + uid, getHeaderWithAuthToken());
 }
 
 /*
@@ -197,33 +211,67 @@ export async function loginUser(specifications) {
 */
 
 export async function saveStudent(specifications) {
-  return await axios.post("/api/students/", specifications);
+  return await axios.post(
+    "/api/students/",
+    specifications,
+    getHeaderWithAuthToken()
+  );
 }
 
 export async function saveSchool(specifications) {
-  return await axios.post("/api/schools/", specifications);
+  return await axios.post(
+    "/api/schools/",
+    specifications,
+    getHeaderWithAuthToken()
+  );
 }
 export async function saveRoute(specifications) {
-  return await axios.post("/api/routes/", specifications);
+  return await axios.post(
+    "/api/routes/",
+    specifications,
+    getHeaderWithAuthToken()
+  );
 }
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
 export async function updateUser(uid, specifications) {
-  return await axios.put("/api/users/" + uid, specifications);
+  return await axios.put(
+    "/api/users/" + uid,
+    specifications,
+    getHeaderWithAuthToken()
+  );
 }
 export async function updateStudent(uid, specifications) {
-  return await axios.put("/api/students/" + uid, specifications);
+  return await axios.put(
+    "/api/students/" + uid,
+    specifications,
+    getHeaderWithAuthToken()
+  );
 }
 export async function updateSchool(uid, specifications) {
-  return await axios.put("/api/schools/" + uid, specifications);
+  return await axios.put(
+    "/api/schools/" + uid,
+    specifications,
+    getHeaderWithAuthToken()
+  );
 }
 export async function updateRoute(uid, specifications) {
-  return await axios.put("/api/routes/" + uid, specifications);
+  return await axios.put(
+    "/api/routes/" + uid,
+    specifications,
+    getHeaderWithAuthToken()
+  );
 }
 // Helpers
 function convertMapToURL(map) {
   return Object.keys(map)
     .map((key) => `${key}=${map[key]}`)
     .join("&");
+}
+
+function getHeaderWithAuthToken() {
+  const token = sessionStorage.getItem("token");
+  const header = { headers: { auth: token } };
+  return header;
 }
