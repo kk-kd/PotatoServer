@@ -56,7 +56,8 @@ createConnection()
     const app = express();
     app.use(bodyParser.json());
     app.use("/api", authRoutes);
-
+    var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
+    app.use(cors()); //etc ^
     // // register all express routes from defined application routes
     allRoutes.forEach((route) => {
       (app as any)[route.method](
@@ -193,6 +194,7 @@ createConnection()
       await connection.manager.save(newUser);
       await connection.manager.save(newRoute);
       await connection.manager.save(newSchool);
+
 
       // await userRepository.save(newUser);
       // await studentRepository.save(newStudent);
