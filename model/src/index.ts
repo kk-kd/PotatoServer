@@ -38,7 +38,7 @@ if (process.env.NODE_ENV == "development") {
   var chain = fs.readFileSync(process.env.CERTIFICATE_CHAIN_PATH, "utf8");
   credentials = { key: privateKey, ca: chain, cert: certificate };
 }
-console.log('we made it 1');
+console.log("we made it 1");
 
 function makeid(length) {
   var result = "";
@@ -51,14 +51,14 @@ function makeid(length) {
   return result;
 }
 
+const app = express();
+app.use(bodyParser.json());
+app.use("/api", authRoutes);
+
 createConnection()
   .then(async (connection) => {
     // create express app
-    const app = express();
-    app.use(bodyParser.json());
-    app.use("/api", authRoutes);
-    var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
-    app.use(cors()); //etc ^
+
     // // register all express routes from defined application routes
     allRoutes.forEach((route) => {
       (app as any)[route.method](
@@ -133,7 +133,6 @@ createConnection()
     // const routeRepository = connection.getCustomRepository(RouteController);
     // routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
 
-
     let nameIter: string[] = [
       "first",
       "second",
@@ -165,7 +164,7 @@ createConnection()
       newUser.longitude = count;
       newUser.latitude = count - 1;
       newUser.isAdmin = AdminBoolean;
-      newUser.password = 'testPassword' + count + 5;
+      newUser.password = "testPassword" + count + 5;
       // Construct Student Entity
       const studentName = nameIter[userNumber] + "Student";
       const newStudent = new Student();
@@ -196,12 +195,8 @@ createConnection()
       await connection.manager.save(newRoute);
       await connection.manager.save(newSchool);
 
-
       // await userRepository.save(newUser);
       // await studentRepository.save(newStudent);
-
-
-
     }
 
     // connection.manager.createQueryBuilder()
@@ -209,7 +204,6 @@ createConnection()
     // .leftJoinAndSelect(/* other joins */)
     // .where(/* custom where */)
     // .getOne();
-
 
     // var intCount = 0;
     // intCount = intCount + 1;
@@ -239,7 +233,6 @@ createConnection()
     //   //TODO: Throw in some associated students / routes depending on what testing needs
     //   await schoolRepository.save(newSchool);
     // }
-
 
     // var intCount = 0;
     // for (var routeNumber in nameIter) {
