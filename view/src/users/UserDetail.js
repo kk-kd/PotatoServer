@@ -2,60 +2,45 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams} from "react-router-dom";
 import {useTable } from "react-table";
 import { getOneUser } from "../api/axios_wrapper";
+import useBatchedState from 'react-use-batched-state';
 
 export const UserDetail = () => {
   const { id } = useParams();
+  const [data, setData] = useBatchedState({});
+  const [students, setStudents] = useBatchedState([]);
 
-  const [data, setData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedData = await getOneUser(id);
-        console.log(fetchedData.data);
-        setData([fetchedData.data]);
+        const fetchedData = await getOneUser(id).catch((e) => {});
+        setData(fetchedData.data);
+        setStudents([fetchedData.data][0].students);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
+    console.log(data)
   }, []);
  
   const columns = useMemo(
       () => [
         {
-            Header: 'First Name',
-            accessor: 'firstName'
+            Header: 'Student First Name',
+            accessor: 'firstName',
         },
         {
-          Header: 'Last Name',
-          accessor: 'lastName'
-      },
-        {
-          Header: 'Email Address',
-          accessor: 'email'
+          Header: 'Student Last Name',
+          accessor: 'lastName',
         },
-
-        {
-          Header: 'Address',
-          accessor: 'address'
-        },
-        {
-          Header: 'Administrator',
-          accessor: 'isAdmin', 
+         {
+          Header: 'Missing Route',
+          disableFilters : true,
+          accessor: 'route',
           Cell: ({value}) => { 
-            return <p> {value ? 'Yes' : 'No' } </p>
-        }
-        },
-        {
-            Header: 'Students',
-            disableFilters : true,
-            accessor: 'students',
-            Cell: ({value}) => { 
-                function makeLink(n) {
-                    return  <Link key = {n.uid} to = {"/Students/info/" + n.uid}> {n.firstName +' '+ n.lastName} </Link> ;
-                } 
-                return <ul> {value.map(makeLink)} </ul> 
-         }},
+              return <ul> {value ? 'No' : 'Yes' } </ul> 
+          }
+      },
       ],
       []
   );
@@ -66,14 +51,27 @@ export const UserDetail = () => {
     headerGroups,
     rows,
     prepareRow
-  } = useTable({ columns, data });
+  } = useTable({columns, data: students});
+
+
   return (
       <div id="userListing">
-        <h1>User Detail</h1>
-        <h2>{`ID: ${id}`}</h2>
-        <Link to={'/Users/edit/' + id}>
-          <button>Edit User Details</button>
-        </Link>
+        <h1>User Detail (<Link to={'/Users/edit/' + id}>
+          Edit
+        </Link>) </h1>
+        <h3>User Characteristics </h3>
+   
+        <div> 
+          <p>First Name : {data.firstName}</p>
+          <p>Middle Name : {data.firstName}</p>
+          <p>Last Name : {data.lastName}</p>
+          <p>Email : {data.email}</p>
+          <p>Address : {data.address}</p>
+          <p>Password : {data.password}</p>
+          <p>Admin : {data.isAdmin ? "Yes" : "No"}</p>
+        </div>     
+
+        <h3>Students Associated With This User </h3>
         <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
           {headerGroups.map(headerGroup => (
@@ -123,7 +121,7 @@ export const UserDetail = () => {
             )
           })}
           </tbody>
-        </table>
+        </table> 
       </div>
   );
 }

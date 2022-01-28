@@ -21,7 +21,7 @@ export const ListUsers = () => {
           sort: "none",
           sortDir: "none",
         });
-        console.log(fetchedData.data);
+        //console.log(fetchedData.data);
         setData(fetchedData.data);
 
       } catch (error) {
