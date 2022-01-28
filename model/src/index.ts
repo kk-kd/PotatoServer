@@ -19,9 +19,9 @@ require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 let privateKey;
 let certificate;
 let credentials;
+var fs = require("fs");
 
 if (process.env.NODE_ENV == "development") {
-  var fs = require("fs");
   privateKey = fs.readFileSync(
     __dirname + process.env.CERTIFICATE_KEY_PATH,
     "utf8"
