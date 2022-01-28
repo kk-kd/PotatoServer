@@ -7,7 +7,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
   let jwtPayload;
 
   var fs = require("fs");
-  var privateKey = fs.readFileSync("../secrets/jwt_private.key");
+  var privateKey = fs.readFileSync("/../../secrets/jwt_private.key");
 
   //Try to validate the token and get data
   try {
