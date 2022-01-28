@@ -1,11 +1,36 @@
-import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import {useTable } from "react-table";
 
 export const UserDetail = () => {
-  function generateStudentDetailLink(id) {
-    return "/Students/info/" + id; 
-  }
+  const {user_id} = useParams()
+  
+  // useEffect(() => {
+  //   console.log(useParams)
+  //   let user_id = useParams().user_id
+  //   SetUserId(user_id)
+  // }, []);
+
+
+  // API Call 
+  // export const UserInfo = () => {
+  //   const [data, setData] = useState([]);
+  //   useEffect(() => {
+  //     const fetchData = async () => {
+  //       try {
+  //         const fetchedData = await axios.get("/api/users", {
+  //           headers: {
+  //             "auth": sessionStorage.getItem("token")
+  //           }
+  //         });
+  //         setData(fetchedData.data);
+  //       } catch (error) {
+  //         console.log(error);
+  //       }
+  //     };
+  //     fetchData();
+  //   }, []);
+  
 
   const data = useMemo(
       () => [
@@ -14,7 +39,8 @@ export const UserDetail = () => {
           name: "Amy Bac Cant",
           address: 'example address',
           administrator: "false", 
-          students: ['Student 1','Student 2'], 
+          students: [{name: "Student 1", id:'1'}, {name: "Student 2", id:"2"}], 
+          student_ids: ["1", "0"]
         },
       ]
   );
@@ -43,11 +69,10 @@ export const UserDetail = () => {
             disableFilters : true,
             accessor: 'students',
             Cell: ({value}) => { 
-                function a (n) {
-                  
-                    return  (<li>{<Link to = {generateStudentDetailLink(n)}> {n} </Link>  }</li>);
+                function makeLink(n) {
+                    return  <Link key = {n.ids} to = {"/Students/info/" + n.id}> {n.name} </Link> ;
                 } 
-                return <ul> {value.map(a)} </ul> 
+                return <ul> {value.map(makeLink)} </ul> 
          }},
       ],
       []
