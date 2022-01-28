@@ -1,38 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams} from "react-router-dom";
 import {useTable } from "react-table";
+import { getOneUser } from "../api/axios_wrapper";
 
 export const UserDetail = () => {
   const { id } = useParams();
 
-  // TODO - API call integration 
-  // const [data, setData] = useState([]);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const fetchedData = await getOneUser(id);
-  //       console.log(fetchedData.data);
-  //       setData(fetchedData.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
-  
-  const data = useMemo(
-      () => [
-        {
-          email: "Example email",
-          firstName: "Amy",
-          lastName: "Calle",
-          address: 'example address',
-          isAdmin: "false", 
-          students: [{name: "Student 1", id:'1'}, {name: "Student 2", id:"2"}], 
-        },
-      ]
-  )
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedData = await getOneUser(id);
+        console.log(fetchedData.data);
+        setData([fetchedData.data]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
  
   const columns = useMemo(
       () => [
@@ -55,7 +41,10 @@ export const UserDetail = () => {
         },
         {
           Header: 'Administrator',
-          accessor: 'isAdmin'
+          accessor: 'isAdmin', 
+          Cell: ({value}) => { 
+            return <p> {value ? 'Yes' : 'No' } </p>
+        }
         },
         {
             Header: 'Students',
@@ -63,7 +52,7 @@ export const UserDetail = () => {
             accessor: 'students',
             Cell: ({value}) => { 
                 function makeLink(n) {
-                    return  <Link key = {n.ids} to = {"/Students/info/" + n.id}> {n.name} </Link> ;
+                    return  <Link key = {n.uid} to = {"/Students/info/" + n.uid}> {n.firstName +' '+ n.lastName} </Link> ;
                 } 
                 return <ul> {value.map(makeLink)} </ul> 
          }},
@@ -106,7 +95,6 @@ export const UserDetail = () => {
                         }}
                     >
                       {column.render('Header')}
-                      <div>{column.canFilter && column.render('Filter')}</div>
                     </th>
                 ))}
               </tr>

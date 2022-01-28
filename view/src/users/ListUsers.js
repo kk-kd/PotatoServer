@@ -7,8 +7,8 @@ import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { getAllUsers } from "../api/axios_wrapper";
 export const ListUsers = () => {
   
-  function generateUserDetailLink(userid) {
-    return "/Users/info/" + userid; 
+  function generateUserDetailLink(uid) {
+    return "/Users/info/" + uid; 
   }
 
   const [data, setData] = useState([]);
@@ -23,6 +23,7 @@ export const ListUsers = () => {
         });
         console.log(fetchedData.data);
         setData(fetchedData.data);
+
       } catch (error) {
         console.log(error);
       }
@@ -63,7 +64,7 @@ export const ListUsers = () => {
         {
           Header: ' ',
           disableFilters: true,
-          accessor: 'userid',
+          accessor: 'uid',
           Cell: ({value}) => { 
             return <Link to = {generateUserDetailLink(value)}> {"View User Detail"} </Link>   
         },
