@@ -161,10 +161,11 @@ Change a User Password
                 newPassword: "NewPassword321",
             }
 */
-export async function changeUserPassword(specifications) {
+export async function changeUserPassword(specifications, headers) {
   return await axios.post(
     "https://localhost:3000/api/change-password",
-    specifications
+    specifications,
+    headers
   );
 }
 
