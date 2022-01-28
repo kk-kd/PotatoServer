@@ -1,11 +1,11 @@
 import "./UserForm.css";
 import GoogleMapReact from "google-map-react";
-import { useState } from "react";
-import { Marker } from "./../map/Marker";
+import { useState, useMemo, useEffect} from "react";
+import { Marker } from "../map/Marker";
 import {registerUser} from "../api/axios_wrapper";
 import { useNavigate } from "react-router-dom";
 
-export const CreateUser = () => {
+export const EditUser = () => {
   let navigate = useNavigate();
 
   // user
@@ -35,7 +35,52 @@ export const CreateUser = () => {
     zoom: 13
   };
 
-  async function handleCreateUser (e) {
+  
+  // TODO - API call integration 
+  // const [data, setData] = useState([]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const fetchedData = await getOneUser(id);
+  //       console.log(fetchedData.data);
+  //       setData(fetchedData.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
+  
+  const data = useMemo(
+    () => [
+      {
+        firstName: "Amy",
+        middleName: "may", 
+        lastName: "Calle",
+        username: "username", 
+        password: "password",
+        email: "email", 
+        address: 'example address',
+        isAdmin: true, 
+        students: [{name: "Student 1", id:'1'}, {name: "Student 2", id:"2"}], 
+      }
+    ]
+  )
+  useEffect (() => {
+    setFirstName(data[0].firstName)
+    setMiddleName(data[0].middleName)
+    setLastName(data[0].lastName)
+    setUserName(data[0].username)
+    setPassword(data[0].password)
+    setEmail(data[0].email)
+    setAddress(data[0].address)
+    setisAdmin(data[0].isAdmin)
+    setStudents(data[0].students)
+  }, [])
+
+
+  async function handleModifyUser (e) {
     e.preventDefault(); // prevents page reload on submission
     let form_results = {
       email: email,
@@ -47,7 +92,7 @@ export const CreateUser = () => {
       username: userName,
       password: password,
     }
-    console.log("Creating User with entries:")
+    console.log("Modifying User with entries:")
     console.log(form_results)
     try {
       let create_user_response = await registerUser(form_results).catch ((error) => {})
@@ -56,11 +101,10 @@ export const CreateUser = () => {
       
       if (status === 200) {
         navigate("/Users/info/" + user_id, { replace: true });
-        throw alert ("User Successfully Created.")
+        throw alert ("User Successfully Modified.")
         // move to their user detail
       }
       if (status === 404) {
-        navigate("/Users/info:" + user_id, { replace: true });
         throw alert ("Login Failed Because the Server was Not Reached.")
       } 
       else if (status === 401) {
@@ -104,9 +148,9 @@ export const CreateUser = () => {
 
   return (
     <div>
-        <h1>Create User</h1>
+        <h1>Edit User</h1>
         <div id = "user_create_form">
-          <form onSubmit={handleCreateUser}>
+          <form onSubmit={handleModifyUser}>
           
           <label className="input">
             <p>First Name:</p>

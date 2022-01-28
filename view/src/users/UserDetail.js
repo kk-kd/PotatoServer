@@ -82,7 +82,7 @@ export const UserDetail = () => {
       <div id="userListing">
         <h1>User Detail</h1>
         <h2>{`ID: ${id}`}</h2>
-        <Link to="/Users/edit">
+        <Link to={'/Users/edit/' + id}>
           <button>Edit User Details</button>
         </Link>
         <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
