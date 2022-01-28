@@ -53,7 +53,7 @@ class AuthController {
       user.address = address;
       user.longitude = longitude;
       user.latitude = latitude;
-      user.isAdmin = isAdmin;
+      user.isAdmin = false;
       await userRepository.save(user);
     } catch (error) {
       response.status(401).send("User Register: " + error);

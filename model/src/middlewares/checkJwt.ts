@@ -7,23 +7,22 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
   let jwtPayload;
 
   var fs = require("fs");
-  var privateKey = fs.readFileSync("/../../secrets/jwt_private.key");
+  var privateKey = fs.readFileSync(
+    __dirname + "/../../secrets/jwt_private.key"
+  );
+  var publicKey = fs.readFileSync(__dirname + "/../../secrets/jwt_public.key");
 
   //Try to validate the token and get data
   try {
-    jwtPayload = <any>jwt.verify(token, privateKey);
+    jwtPayload = <any>jwt.verify(token, publicKey);
     res.locals.jwtPayload = jwtPayload;
   } catch (error) {
-    //If token is not valid, respond with 401 (unauthorized)
-    res.status(401).send("checkJwt: token invalide");
+    console.log(res);
+    res.status(401).send("checkJwt: token invalid");
     return;
   }
 
   var signOptions = {
-    issuer: "Potato",
-    subject: jwtPayload.email,
-    audience: "potato.colab.duke.edu",
-    expiresIn: "2h",
     algorithm: "RS256",
   };
 

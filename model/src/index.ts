@@ -14,6 +14,7 @@ import { RouteController } from "./controller/RouteController";
 
 import { School } from "./entity/School";
 import { SchoolController } from "./controller/SchoolController";
+import { checkJwt } from "./middlewares/checkJwt";
 
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 let privateKey;
@@ -37,6 +38,7 @@ if (process.env.NODE_ENV == "development") {
   var chain = fs.readFileSync(process.env.CERTIFICATE_CHAIN_PATH, "utf8");
   credentials = { key: privateKey, ca: chain, cert: certificate };
 }
+console.log('we made it 1');
 
 function makeid(length) {
   var result = "";
@@ -55,11 +57,12 @@ createConnection()
     const app = express();
     app.use(bodyParser.json());
     app.use("/api", authRoutes);
-
+    var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
+    app.use(cors()); //etc ^
     // // register all express routes from defined application routes
     allRoutes.forEach((route) => {
       (app as any)[route.method](
-        route.route,
+        route.route, //TODO: jwt here
         (req: Request, res: Response, next: Function) => {
           const result = new (route.controller as any)()[route.action](
             req,
@@ -118,17 +121,17 @@ createConnection()
     //     .execute();
     // }
 
-    const userRepository = connection.getCustomRepository(UserController);
-    userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`);
+    // const userRepository = connection.getCustomRepository(UserController);
+    // userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`);
 
-    const studentRepository = connection.getCustomRepository(StudentController);
-    studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`);
+    // const studentRepository = connection.getCustomRepository(StudentController);
+    // studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`);
 
-    const schoolRepository = connection.getCustomRepository(SchoolController);
-    schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
+    // const schoolRepository = connection.getCustomRepository(SchoolController);
+    // schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
 
-    const routeRepository = connection.getCustomRepository(RouteController);
-    routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
+    // const routeRepository = connection.getCustomRepository(RouteController);
+    // routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
 
 
     let nameIter: string[] = [
@@ -192,6 +195,7 @@ createConnection()
       await connection.manager.save(newUser);
       await connection.manager.save(newRoute);
       await connection.manager.save(newSchool);
+
 
       // await userRepository.save(newUser);
       // await studentRepository.save(newStudent);

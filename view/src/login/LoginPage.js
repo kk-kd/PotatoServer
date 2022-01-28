@@ -1,11 +1,11 @@
 import "./login.css";
 import { useState } from "react";
 import PropTypes from "prop-types";
-import loginUser from "../api/login_api";
+import loginUserValidator from "../api/login_api";
 
 export default function Login({ setLoggedIn }) {
-  const [ username, setUserName ] = useState();
-  const [ password, setPassword ] = useState();
+  const [username, setUserName] = useState();
+  const [password, setPassword] = useState();
 
   async function handleLoginSubmit(e) {
     e.preventDefault(); // prevents page reload on submission
@@ -13,8 +13,8 @@ export default function Login({ setLoggedIn }) {
       throw alert("Please input a username and password");
     }
     try {
-      let login_response = await loginUser({
-        username: username,
+      let login_response = await loginUserValidator({
+        email: username,
         password: password,
       }).catch((error) => {
         //avoids warning
@@ -47,7 +47,10 @@ export default function Login({ setLoggedIn }) {
         </label>
         <label className="input">
           <p> Password: </p>
-          <input type="password" onChange={(e) => setPassword(e.target.value)} />
+          <input
+            type="password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </label>
         <div>
           <button className="submitbutton" type="submit">
