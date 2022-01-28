@@ -211,33 +211,46 @@ export async function loginUser(specifications) {
 
 export async function saveStudent(specifications) {
   return await axios.post(
-    `https://localhost:3000/api/students/${convertMapToURL(specifications)}`
+    "https://localhost:3000/api/students/",
+    specifications
   );
 }
+
 export async function saveSchool(specifications) {
   return await axios.post(
-    `https://localhost:3000/api/schools/${convertMapToURL(specifications)}`
+    "https://localhost:3000/api/schools/",
+    specifications
   );
 }
 export async function saveRoute(specifications) {
-  return await axios.post(
-    `https://localhost:3000/api/routes/${convertMapToURL(specifications)}`
-  );
+  return await axios.post("https://localhost:3000/api/routes/", specifications);
 }
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
-export async function updateUser(uid) {
-  return await axios.put("https://localhost:3000/api/users/" + uid);
+export async function updateUser(uid, specifications) {
+  return await axios.put(
+    "https://localhost:3000/api/users/" + uid,
+    specifications
+  );
 }
-export async function updateStudent(uid) {
-  return await axios.put("https://localhost:3000/api/students/" + uid);
+export async function updateStudent(uid, specifications) {
+  return await axios.put(
+    "https://localhost:3000/api/students/" + uid,
+    specifications
+  );
 }
-export async function updateSchool(uid) {
-  return await axios.put("https://localhost:3000/api/schools/" + uid);
+export async function updateSchool(uid, specifications) {
+  return await axios.put(
+    "https://localhost:3000/api/schools/" + uid,
+    specifications
+  );
 }
-export async function updateRoute(uid) {
-  return await axios.put("https://localhost:3000/api/routes/" + uid);
+export async function updateRoute(uid, specifications) {
+  return await axios.put(
+    "https://localhost:3000/api/routes/" + uid,
+    specifications
+  );
 }
 // Helpers
 function convertMapToURL(map) {
