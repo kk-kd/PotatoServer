@@ -121,17 +121,17 @@ createConnection()
     //     .execute();
     // }
 
-    const userRepository = connection.getCustomRepository(UserController);
-    userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`);
+    // const userRepository = connection.getCustomRepository(UserController);
+    // userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`);
 
-    const studentRepository = connection.getCustomRepository(StudentController);
-    studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`);
+    // const studentRepository = connection.getCustomRepository(StudentController);
+    // studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`);
 
-    const schoolRepository = connection.getCustomRepository(SchoolController);
-    schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
+    // const schoolRepository = connection.getCustomRepository(SchoolController);
+    // schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
 
-    const routeRepository = connection.getCustomRepository(RouteController);
-    routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
+    // const routeRepository = connection.getCustomRepository(RouteController);
+    // routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
 
 
     let nameIter: string[] = [
