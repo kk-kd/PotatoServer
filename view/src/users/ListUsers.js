@@ -4,16 +4,17 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
-
+import { getAllUsers } from "../api/axios_wrapper";
 export const ListUsers = () => {
   const [data, setData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedData = await axios.get("/api/users", {
-          headers: {
-            "auth": sessionStorage.getItem("token")
-          }
+        const fetchedData = getAllUsers({
+          page: 0,
+          size: 0,
+          sort: "none",
+          sortDir: "none",
         });
         setData(fetchedData.data);
       } catch (error) {
