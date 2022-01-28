@@ -5,29 +5,48 @@ import {useTable } from "react-table";
 export const UserDetail = () => {
   const { id } = useParams();
 
-  // TODO - API call with user id 
+  // TODO - API call integration 
+  // const [data, setData] = useState([]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const fetchedData = await getOneUser(id);
+  //       console.log(fetchedData.data);
+  //       setData(fetchedData.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+
   
   const data = useMemo(
       () => [
         {
-          email_address: "Example email",
-          name: "Amy Bac Cant",
+          email: "Example email",
+          firstName: "Amy",
+          lastName: "Calle",
           address: 'example address',
-          administrator: "false", 
+          isAdmin: "false", 
           students: [{name: "Student 1", id:'1'}, {name: "Student 2", id:"2"}], 
         },
       ]
-  );
+  )
  
   const columns = useMemo(
       () => [
         {
-            Header: 'Full Name',
-            accessor: 'name'
+            Header: 'First Name',
+            accessor: 'firstName'
         },
         {
+          Header: 'Last Name',
+          accessor: 'lastName'
+      },
+        {
           Header: 'Email Address',
-          accessor: 'email_address'
+          accessor: 'email'
         },
 
         {
@@ -36,7 +55,7 @@ export const UserDetail = () => {
         },
         {
           Header: 'Administrator',
-          accessor: 'administrator'
+          accessor: 'isAdmin'
         },
         {
             Header: 'Students',
