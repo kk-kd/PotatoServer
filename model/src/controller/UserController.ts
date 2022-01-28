@@ -44,31 +44,45 @@ export class UserController extends Repository<User> {
       // const users = this.userRepository.find();
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
-      const pageNum: number = +request.params.page;
-      const takeNum: number = +request.params.size;
+      const pageNum: number = +request.query.page;
+      const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
 
       var sortSpecification;
       var sortDirSpec;
-      if (request.params.sort == 'none') {
+      if (request.query.sort == 'none') {
         sortSpecification = "users.uid";
       }
       else { //should error check instead of else
-        sortSpecification = "users." + request.params.sort;
+        sortSpecification = "users." + request.query.sort;
       }
-      if ((request.params.sortDir == 'none') || (request.params.sortDir == 'ASC')) {
+      if (request.query.sortDir == 'ASC') {
         sortDirSpec = "ASC";
       }
-      else { //error check instead of else
+      else if (request.query.sortDir == 'DESC') { //error check instead of else
         sortDirSpec = "DESC";
+      } else {
+        sortDirSpec = "ASC";
+        sortSpecification = "users.uid";
       }
       var filterSpecification;
-      filterSpecification = "users." + request.params.sort;
-      const queryFilterType = request.params.filterType;
-      const queryFilterData = request.params.filterData;
-      const usersQueryResult = await this.userRepository.createQueryBuilder("users").skip(skipNum).take(takeNum).orderBy(sortSpecification, sortDirSpec).having("users." + queryFilterType + " = :spec", { spec: queryFilterData }).groupBy("users.uid").getMany();
+      filterSpecification = "users." + request.query.sort;
+      const queryFilterType = request.query.filterType;
+      const queryFilterData = request.query.filterData;
+      const [usersQueryResult, total] = await this.userRepository
+          .createQueryBuilder("users")
+          .skip(skipNum)
+          .take(takeNum)
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("users.email ilike '%' || :email || '%'", { email: queryFilterData })
+          .andWhere("users.lastName ilike '%' || :lastName || '%'", { lastName: queryFilterType})
+          .leftJoinAndSelect("users.students", "student")
+          .getManyAndCount();
       response.status(200);
-      return usersQueryResult;
+      return {
+        users: usersQueryResult,
+        total: total
+      };
     }
     catch (e) {
       response.status(401).send("Users were not found with error: " + e);

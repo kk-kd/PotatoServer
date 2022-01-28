@@ -78,7 +78,8 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
 */
 export async function filterAllUsers(specifications) {
   return await axios.get(
-    `https://localhost:3000/api/users/filter/${convertMapToURL(specifications)}`
+    `/api/users/filter`,
+      { params: specifications }
   );
 }
 export async function filterAllStudents(specifications) {
