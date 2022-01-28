@@ -15,33 +15,36 @@ import { RouteController } from "./controller/RouteController";
 import { School } from "./entity/School";
 import { SchoolController } from "./controller/SchoolController";
 
-// // Test
-// const https_port = 3000;
-// const http_port = 2999;
-// const privateKeyAddr = __dirname + "/../../../cert/server.key";
-// const certificateAddr = __dirname + "/../../../cert/server.cert";
-
-const https_port = 443;
-const http_port = 80;
-const privateKeyAddr =
-  "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/privkey.pem";
-const certificateAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/cert.pem";
-const chainAddr = "/etc/letsencrypt/live/vcm-23920.vm.duke.edu/chain.pem";
-
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
+let privateKey;
+let certificate;
+let credentials;
 var fs = require("fs");
-var privateKey = fs.readFileSync(privateKeyAddr, "utf8");
-var certificate = fs.readFileSync(certificateAddr, "utf8");
-var chain = fs.readFileSync(chainAddr, "utf8");
-var credentials = { key: privateKey, ca: chain, cert: certificate };
-// var credentials = { key: privateKey, cert: certificate };
+
+if (process.env.NODE_ENV == "development") {
+  privateKey = fs.readFileSync(
+    __dirname + process.env.CERTIFICATE_KEY_PATH,
+    "utf8"
+  );
+  certificate = fs.readFileSync(
+    __dirname + process.env.CERTIFICATE_SERVER_PATH,
+    "utf8"
+  );
+  credentials = { key: privateKey, cert: certificate };
+} else if (process.env.NODE_ENV == "production") {
+  privateKey = fs.readFileSync(process.env.CERTIFICATE_KEY_PATH, "utf8");
+  certificate = fs.readFileSync(process.env.CERTIFICATE_SERVER_PATH, "utf8");
+  var chain = fs.readFileSync(process.env.CERTIFICATE_CHAIN_PATH, "utf8");
+  credentials = { key: privateKey, ca: chain, cert: certificate };
+}
 
 function makeid(length) {
-  var result = '';
-  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   var charactersLength = characters.length;
   for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() *
-      charactersLength));
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
 }
@@ -88,8 +91,10 @@ createConnection()
     // start express server
     var https = require("https");
     var httpsServer = https.createServer(credentials, app);
-    httpsServer.listen(https_port, () => {
-      console.log(`Example app listening at https://localhost:${https_port}`);
+    httpsServer.listen(process.env.HTTPS_PORT, () => {
+      console.log(
+        `Example app listening at https://localhost:${process.env.HTTPS_PORT}`
+      );
     });
 
     // Redirect from http port 80 to https
@@ -101,7 +106,7 @@ createConnection()
         });
         res.end();
       })
-      .listen(http_port);
+      .listen(process.env.HTTP_PORT);
 
     // Clean the tables:
     // let tableNames: string[] = ["users", "students", "schools", "routes"]; //TODO: Clean other tables by adding strings here if needed
