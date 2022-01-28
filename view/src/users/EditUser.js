@@ -2,17 +2,17 @@ import "./UserForm.css";
 import GoogleMapReact from "google-map-react";
 import { useState, useMemo, useEffect} from "react";
 import { Marker } from "../map/Marker";
-import {updateUser} from "../api/axios_wrapper";
-import { useNavigate } from "react-router-dom";
+import {updateUser, getOneUser} from "../api/axios_wrapper";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const EditUser = () => {
+  const { id } = useParams();
   let navigate = useNavigate();
 
   // user
   const [ firstName, setFirstName ] = useState("");
   const [ middleName, setMiddleName ] = useState("");
   const [ lastName, setLastName ] = useState("");
-  const [ userName, setUserName] = useState("");
   const [ password, setPassword] = useState("");
   const [ email, setEmail ] = useState("");
   const [ address, setAddress ] = useState("");
@@ -35,49 +35,31 @@ export const EditUser = () => {
     zoom: 13
   };
 
-  
   // TODO - API call integration 
-  // const [data, setData] = useState([]);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const fetchedData = await getOneUser(id);
-  //       console.log(fetchedData.data);
-  //       setData(fetchedData.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-
-  
-  const data = useMemo(
-    () => [
-      {
-        firstName: "Amy",
-        middleName: "may", 
-        lastName: "Calle",
-        username: "username", 
-        password: "password",
-        email: "email", 
-        address: 'example address',
-        isAdmin: true, 
-        students: [{name: "Student 1", id:'1'}, {name: "Student 2", id:"2"}], 
+  const [data, setData] = useState({});
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedData = await getOneUser(id);
+        console.log(fetchedData.data);
+        setData(fetchedData.data);
+      } catch (error) {
+        console.log(error);
       }
-    ]
-  )
+    };
+    fetchData();
+  }, []);
+
   useEffect (() => {
-    setFirstName(data[0].firstName)
-    setMiddleName(data[0].middleName)
-    setLastName(data[0].lastName)
-    setUserName(data[0].username)
-    setPassword(data[0].password)
-    setEmail(data[0].email)
-    setAddress(data[0].address)
-    setisAdmin(data[0].isAdmin)
-    setStudents(data[0].students)
-  }, [])
+    setFirstName(data.firstName)
+    setMiddleName(data.middleName)
+    setLastName(data.lastName)
+    setPassword(data.password)
+    setEmail(data.email)
+    setAddress(data.address)
+    setisAdmin(data.isAdmin)
+    setStudents(data.students)
+  }, [data])
 
 
   async function handleModifyUser (e) {
@@ -89,7 +71,6 @@ export const EditUser = () => {
       lastName: lastName,
       address: address,
       isAdmin: isAdmin,
-      username: userName,
       password: password,
     }
     console.log("Modifying User with entries:")
@@ -184,15 +165,6 @@ export const EditUser = () => {
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-              />
-          </label>
-
-          <label className="input">
-            <p>Username:</p>
-              <input
-                  type="text"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
               />
           </label>
 
