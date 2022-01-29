@@ -91,6 +91,7 @@ export async function filterAllStudents(specifications) {
     params: specifications,
     headers: getHeaderWithAuthToken(),
   });
+
 }
 export async function filterAllSchools(specifications) {
   return await axios.get(`/api/schools/filter`, {
