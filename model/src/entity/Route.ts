@@ -6,6 +6,7 @@ import {
   JoinColumn,
   OneToMany,
   ManyToOne,
+  AfterUpdate,
 } from "typeorm";
 import { School } from "./School";
 import { Student } from "./Student";
@@ -26,6 +27,4 @@ export class Route {
 
   @ManyToOne(() => School, (school) => school.routes, { nullable: true })
   school: School;
-
-  studentCount: number;
 }

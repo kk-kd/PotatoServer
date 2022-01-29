@@ -303,7 +303,7 @@ export const allRoutes = [
 
   {
     method: "get",
-    route: "api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    route: "/api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
     controller: RouteController,
     action: "sortAllRoutes",
   },

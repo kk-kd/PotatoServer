@@ -6,6 +6,7 @@ import {
 } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { Route } from "../entity/Route";
+import { Student } from "../entity/Student";
 
 @EntityRepository(Route)
 export class RouteController extends Repository<Route> {
@@ -99,9 +100,9 @@ export class RouteController extends Repository<Route> {
       var sortSpecification;
       var sortDirSpec;
       if (request.params.sort == "none") {
-        sortSpecification = "route.uid";
+        sortSpecification = "routes.uid";
       } else {
-        sortSpecification = "route." + request.params.sort;
+        sortSpecification = "routes." + request.params.sort;
       }
 
       if (
@@ -117,26 +118,44 @@ export class RouteController extends Repository<Route> {
         const routesByStudentsCount = await this.getSortedRoutesByUserCount(
           skipNum,
           takeNum,
-          sortSpecification,
           sortDirSpec
         );
         response.status(200);
         return routesByStudentsCount;
+      } else {
+        const routeQueryResult = await this.routeRepository
+          .createQueryBuilder("routes")
+          .skip(skipNum)
+          .take(takeNum)
+          .orderBy(sortSpecification, sortDirSpec)
+          .groupBy("routes.uid")
+          .getMany();
+        response.status(200);
+        return routeQueryResult;
       }
-
-      const routeQueryResult = await this.routeRepository
-        .createQueryBuilder("route")
-        .skip(skipNum)
-        .take(takeNum)
-        .orderBy(sortSpecification, sortDirSpec)
-        .groupBy("route.uid")
-        .getMany();
-      response.status(200);
-      return routeQueryResult;
     } catch (e) {
       response.status(401).send("Routes were not found with error: " + e);
       return;
     }
+  }
+
+  private async getSortedRoutesByUserCount(
+    skipNum: number,
+    takeNum: number,
+    sortDirSpec
+  ) {
+    return await this.routeRepository
+      .createQueryBuilder("routes")
+      .skip(skipNum)
+      .take(takeNum)
+      .addSelect((subQuery) => {
+        return subQuery
+          .select("COUNT(students.uid)", "studentCount")
+          .from(Student, "students")
+          .where("students.route.uid = routes.uid");
+      }, "studentCount")
+      .orderBy('"studentCount"', sortDirSpec)
+      .getMany();
   }
 
   async oneRoute(request: Request, response: Response, next: NextFunction) {
@@ -217,20 +236,5 @@ export class RouteController extends Repository<Route> {
     return this.createQueryBuilder("routes")
       .where("routes.uid = :uid", { uid })
       .getOne();
-  }
-
-  private async getSortedRoutesByUserCount(
-    skipNum: number,
-    takeNum: number,
-    sortSpecification,
-    sortDirSpec
-  ) {
-    return await this.routeRepository
-      .createQueryBuilder("routes")
-      .loadRelationCountAndMap("routes.studentCount", "routes.students")
-      .skip(skipNum)
-      .take(takeNum)
-      .orderBy(sortSpecification, sortDirSpec)
-      .getMany();
   }
 }
