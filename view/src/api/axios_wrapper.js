@@ -38,13 +38,13 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
       - "DESC"
 */
 export async function getAllUsers(specifications) {
-  return await axios.get(`/api/users/all/`, {
+  return await axios.get(`/api/users/all`, {
     params: specifications,
     headers: getHeaderWithAuthToken(),
   });
 }
 export async function getAllStudents(specifications) {
-  return await axios.get(`/api/students/all/`, {
+  return await axios.get(`/api/students/all`, {
     params: specifications,
     headers: getHeaderWithAuthToken(),
   });
@@ -56,7 +56,7 @@ export async function getAllSchools(specifications) {
   });
 }
 export async function getAllRoutes(specifications) {
-  return await axios.get(`/api/routes/all/`, {
+  return await axios.get(`/api/routes/all`, {
     params: specifications,
     headers: getHeaderWithAuthToken(),
   });
@@ -87,7 +87,7 @@ export async function filterAllUsers(specifications) {
   });
 }
 export async function filterAllStudents(specifications) {
-  return await axios.get(`/api/students/filter/`, {
+  return await axios.get(`/api/students/filter`, {
     params: specifications,
     headers: getHeaderWithAuthToken(),
   });
@@ -99,7 +99,7 @@ export async function filterAllSchools(specifications) {
   });
 }
 export async function filterAllRoutes(specifications) {
-  return await axios.get(`/api/routes/filter/`, {
+  return await axios.get(`/api/routes/filter`, {
     params: specifications,
     headers: getHeaderWithAuthToken(),
   });
@@ -225,21 +225,21 @@ export async function loginUser(specifications) {
 */
 
 export async function saveStudent(specifications) {
-  return await axios.post("/api/students/", {
-    specifications,
+  return await axios.post("/api/students", {
+    params: specifications,
     header: getHeaderWithAuthToken(),
   });
 }
 
 export async function saveSchool(specifications) {
-  return await axios.post("/api/schools/", {
-    specifications,
+  return await axios.post("/api/schools", {
+    params: specifications,
     header: getHeaderWithAuthToken(),
   });
 }
 export async function saveRoute(specifications) {
-  return await axios.post("/api/routes/", {
-    specifications,
+  return await axios.post("/api/routes", {
+    params: specifications,
     header: getHeaderWithAuthToken(),
   });
 }
@@ -248,25 +248,25 @@ export async function saveRoute(specifications) {
 */
 export async function updateUser(uid, specifications) {
   return await axios.put("/api/users/" + uid, {
-    specifications,
+    params: specifications,
     header: getHeaderWithAuthToken(),
   });
 }
 export async function updateStudent(uid, specifications) {
   return await axios.put("/api/students/" + uid, {
-    specifications,
+    params: specifications,
     header: getHeaderWithAuthToken(),
   });
 }
 export async function updateSchool(uid, specifications) {
   return await axios.put("/api/schools/" + uid, {
-    specifications,
+    params: specifications,
     header: getHeaderWithAuthToken(),
   });
 }
 export async function updateRoute(uid, specifications) {
   return await axios.put("/api/routes/" + uid, {
-    specifications,
+    params: specifications,
     header: getHeaderWithAuthToken(),
   });
 }
