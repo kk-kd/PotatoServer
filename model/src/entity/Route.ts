@@ -27,4 +27,6 @@ export class Route {
 
   @ManyToOne(() => School, (school) => school.routes, { nullable: true })
   school: School;
+
+  studentCount: number;
 }

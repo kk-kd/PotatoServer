@@ -146,16 +146,17 @@ export class RouteController extends Repository<Route> {
   ) {
     return await this.routeRepository
       .createQueryBuilder("routes")
-      .skip(skipNum)
-      .take(takeNum)
       .addSelect((subQuery) => {
         return subQuery
-          .select("COUNT(students.uid)", "studentCount")
+          .select("COUNT(students.uid)", "count")
           .from(Student, "students")
           .where("students.route.uid = routes.uid");
-      }, "studentCount")
-      .orderBy('"studentCount"', sortDirSpec)
-      .getMany();
+      }, "count")
+      .orderBy('"count"', "DESC")
+      .loadRelationCountAndMap("routes.studentCount", "routes.students")
+      .skip(skipNum)
+      .take(takeNum)
+      .getRawMany();
   }
 
   async oneRoute(request: Request, response: Response, next: NextFunction) {
