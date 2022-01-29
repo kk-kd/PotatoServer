@@ -111,14 +111,16 @@ export class UserController extends Repository<User> {
   async updateUser(request: Request, response: Response, next: NextFunction) {
     try {
       const uidNumber = request.params.uid;
+      
       await getConnection().createQueryBuilder().update(User).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
+      return;
     }
 
     catch (e) {
       response
         .status(401)
-        .send("User with UID " + request.params.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
+        .send("User with UID " + request.params.uid + " and details(" + request.body + ") couldn't be updated with error ");
       return;
     }
   }

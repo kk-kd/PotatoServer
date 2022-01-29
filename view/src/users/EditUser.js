@@ -17,7 +17,7 @@ export const EditUser = () => {
   const [ email, setEmail ] = useState("");
   const [ address, setAddress ] = useState("");
   const [ isAdmin, setisAdmin ] = useState(false);
-  const [students, setStudents ] = useState([]);
+  //const [students, setStudents ] = useState([]);
 
   // maps
   const [ showMap, setShowMap ] = useState(false);
@@ -58,7 +58,7 @@ export const EditUser = () => {
     setEmail(data.email)
     setAddress(data.address)
     setisAdmin(data.isAdmin)
-    setStudents(data.students)
+    //setStudents(data.students)
   }, [data])
 
 
@@ -76,7 +76,7 @@ export const EditUser = () => {
     console.log("Modifying User with entries:")
     console.log(form_results)
     try {
-      let create_user_response = await updateUser(form_results).catch ((error) => {})
+      let create_user_response = await updateUser( id,form_results).catch ((error) => {})
       let user_id = create_user_response.id
       let status = create_user_response.status
       
@@ -129,7 +129,7 @@ export const EditUser = () => {
 
   return (
     <div>
-        <h1>Edit User</h1>
+        <h1>Edit User NEW</h1>
         <div id = "user_create_form">
           <form onSubmit={handleModifyUser}>
           
@@ -196,14 +196,14 @@ export const EditUser = () => {
               />
           </label>
             
-          <label className="input">
+          {/* <label className="input">
             <p>Students:</p>
               <input
                   type="text"
                   value={students}
                   onChange={(e) => setStudents(e.target.value)}
               />
-          </label>
+          </label> */}
             <div>
               <button className = "submitbutton" type="submit">Submit</button>
             </div>

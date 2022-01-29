@@ -218,8 +218,8 @@ export async function saveRoute(specifications) {
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
-export async function updateUser(uid) {
-  return await axios.put("https://localhost:3000/api/users/" + uid);
+export async function updateUser(uid, specifications) {
+  return await axios.put("https://localhost:3000/api/users/" + uid,specifications);
 }
 export async function updateStudent(uid) {
   return await axios.put("https://localhost:3000/api/students/" + uid);
