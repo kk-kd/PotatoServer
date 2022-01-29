@@ -179,8 +179,7 @@ export const allRoutes = [
   */
   {
     method: "get",
-    route:
-      "/api/students/filter/page=:page&size=:size&sort=:sort&sortDir=:sortDir&filterType=:filterType&filterData=:filterData",
+    route: "/api/students/filter",
     controller: StudentController,
     action: "filterAllStudents",
   },
