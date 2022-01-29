@@ -38,28 +38,28 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
       - "DESC"
 */
 export async function getAllUsers(specifications) {
-  return await axios.get(
-    `/api/users/all/${convertMapToURL(specifications)}`,
-    getHeaderWithAuthToken()
-  );
+  return await axios.get(`/api/users/all/`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getAllStudents(specifications) {
-  return await axios.get(
-    `/api/students/all/${convertMapToURL(specifications)}`,
-    getHeaderWithAuthToken()
-  );
+  return await axios.get(`/api/students/all/`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getAllSchools(specifications) {
-  return await axios.get(
-    `/api/schools/all/${convertMapToURL(specifications)}`,
-    getHeaderWithAuthToken()
-  );
+  return await axios.get(`/api/schools/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getAllRoutes(specifications) {
-  return await axios.get(
-    `/api/routes/all/${convertMapToURL(specifications)}`,
-    getHeaderWithAuthToken()
-  );
+  return await axios.get(`/api/routes/all/`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 
 /*
@@ -81,64 +81,78 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
 
 */
 export async function filterAllUsers(specifications) {
-  return await axios.get(
-    `/api/users/filter`,
-    { params: specifications },
-    getHeaderWithAuthToken()
-  );
+  return await axios.get(`/api/users/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function filterAllStudents(specifications) {
-  return await axios.get(
-    `/api/students/filter/${convertMapToURL(specifications)}`,
-    getHeaderWithAuthToken()
-  );
+  return await axios.get(`/api/students/filter/`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function filterAllSchools(specifications) {
-  return await axios.get(
-    `/api/schools/filter`,
-    { params: specifications },
-    getHeaderWithAuthToken()
-  );
+  return await axios.get(`/api/schools/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function filterAllRoutes(specifications) {
-  return await axios.get(
-    `/api/routes/filter/${convertMapToURL(specifications)}`,
-    getHeaderWithAuthToken()
-  );
+  return await axios.get(`/api/routes/filter/`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 /*
    Returns one entry from a table (students, users, schools, routes) by UID.
 */
 export async function returnUserInfoFromJWT() {
-  return await axios.get("/api/user", getHeaderWithAuthToken());
+  return await axios.get("/api/user", { headers: getHeaderWithAuthToken() });
 }
 
 export async function getOneUser(uid) {
-  return await axios.get("/api/users/" + uid, getHeaderWithAuthToken());
+  return await axios.get("/api/users/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getOneStudent(uid) {
-  return await axios.get("/api/students/" + uid, getHeaderWithAuthToken());
+  return await axios.get("/api/students/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getOneSchool(uid) {
-  return await axios.get("/api/schools/" + uid, getHeaderWithAuthToken());
+  return await axios.get("/api/schools/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getOneRoute(uid) {
-  return await axios.get("/api/routes/" + uid, getHeaderWithAuthToken());
+  return await axios.get("/api/routes/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 /*
    Deletes one entry from a table (students, users, schools, routes) by UID.
 */
 export async function deleteUser(uid) {
-  return await axios.delete("/api/users/" + uid, getHeaderWithAuthToken());
+  return await axios.delete("/api/users/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function deleteStudent(uid) {
-  return await axios.delete("/api/students/" + uid, getHeaderWithAuthToken());
+  return await axios.delete("/api/students/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function deleteSchool(uid) {
-  return await axios.delete("/api/schools/" + uid, getHeaderWithAuthToken());
+  return await axios.delete("/api/schools/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function deleteRoute(uid) {
-  return await axios.delete("/api/routes/" + uid, getHeaderWithAuthToken());
+  return await axios.delete("/api/routes/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 
 /*
@@ -211,57 +225,50 @@ export async function loginUser(specifications) {
 */
 
 export async function saveStudent(specifications) {
-  return await axios.post(
-    "/api/students/",
+  return await axios.post("/api/students/", {
     specifications,
-    getHeaderWithAuthToken()
-  );
+    header: getHeaderWithAuthToken(),
+  });
 }
 
 export async function saveSchool(specifications) {
-  return await axios.post(
-    "/api/schools/",
+  return await axios.post("/api/schools/", {
     specifications,
-    getHeaderWithAuthToken()
-  );
+    header: getHeaderWithAuthToken(),
+  });
 }
 export async function saveRoute(specifications) {
-  return await axios.post(
-    "/api/routes/",
+  return await axios.post("/api/routes/", {
     specifications,
-    getHeaderWithAuthToken()
-  );
+    header: getHeaderWithAuthToken(),
+  });
 }
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
 export async function updateUser(uid, specifications) {
-  return await axios.put(
-    "/api/users/" + uid,
+  return await axios.put("/api/users/" + uid, {
     specifications,
-    getHeaderWithAuthToken()
-  );
+    header: getHeaderWithAuthToken(),
+  });
 }
 export async function updateStudent(uid, specifications) {
-  return await axios.put(
-    "/api/students/" + uid,
+  return await axios.put("/api/students/" + uid, {
     specifications,
-    getHeaderWithAuthToken()
-  );
+    header: getHeaderWithAuthToken(),
+  });
 }
 export async function updateSchool(uid, specifications) {
-  return await axios.put(
-    "/api/schools/" + uid,
+  return await axios.put("/api/schools/" + uid, {
     specifications,
-    getHeaderWithAuthToken()
-  );
+    header: getHeaderWithAuthToken(),
+  });
 }
 export async function updateRoute(uid, specifications) {
-  return await axios.put(
-    "/api/routes/" + uid,
+  return await axios.put("/api/routes/" + uid, {
     specifications,
-    getHeaderWithAuthToken()
-  );
+    header: getHeaderWithAuthToken(),
+  });
 }
 // Helpers
 function convertMapToURL(map) {
@@ -272,6 +279,6 @@ function convertMapToURL(map) {
 
 function getHeaderWithAuthToken() {
   const token = sessionStorage.getItem("token");
-  const header = { headers: { auth: token } };
+  const header = { auth: token };
   return header;
 }
