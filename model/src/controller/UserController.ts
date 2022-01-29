@@ -80,7 +80,11 @@ export class UserController extends Repository<User> {
     let { uid } = request.body;
     try {
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const usersQueryResult = await this.userRepository.createQueryBuilder("users").where("users.uid = :uid", { uid: uidNumber }).getOneOrFail();
+      const usersQueryResult = await this.userRepository
+      .createQueryBuilder("users")
+      .where("users.uid = :uid", { uid: uidNumber })
+      .leftJoinAndSelect("users.students", "student")
+      .getOneOrFail();
       //const user = this.userRepository.findOne(request.params.id); same call example
       response.status(200);
       return usersQueryResult;
