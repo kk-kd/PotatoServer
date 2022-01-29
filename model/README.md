@@ -14,14 +14,12 @@ Making a backend API call?
 - Although status codes are returned; the wrapper should handle all the errors for you
 
 **Examples**
-Posting a New User:
-` await axios.post("https://localhost:3000/api/users", { email: "NewUniqueEmail@email.net", firstName: "NewFirstName", middleName: "newMiddleName", lastName: "newLastName", address: "new Address", isAdmin: false, password: "testnewpass", });`
 
 Posting a New School:
-` await axios.put("https://localhost:3000/api/schools/2", { name: "newnewnew@email.net", address: "NewFirstName", longitude: 1, latitude: 2, });`
+`await saveSchool({ name: "newnewnew@email.net", address: "NewFirstName", longitude: 1, latitude: 2, })`
 
 Updating an existing User: (note you need the UID)
-`await axios.put("https://localhost:3000/api/users/2", { email: "newnewnew@email.net", firstName: "NewFirstName", middleName: "newMiddleName", lastName: "newLastName", address: "new Address", isAdmin: false, password: "testnewpassUpdated", });`
+`await updateUser(2, { email: "newnewnew@email.net", firstName: "NewFirstName", middleName: "newMiddleName", lastName: "newLastName", address: "new Address", isAdmin: false, password: "testnewpassUpdated"});`
 
 Backend Options; can add additional calls to smooth out operations if needed:
 
@@ -31,9 +29,4 @@ Backend Options; can add additional calls to smooth out operations if needed:
 
 (add onenote todos)
 
-- CONTAINS instead of HAVING/WITH calls on query builder for filter
-- front end view/api wrapper for getting front end
-- relational info easy calls for view/api
-- jira task doc update
-- check again the page number offset
-- for sending metadata for pagination, use findandCount
+- Do with Cady, given the JWT token return the current User

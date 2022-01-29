@@ -50,7 +50,7 @@ export const allRoutes = [
   */
   {
     method: "get",
-    route: "/api/users/filter/page=:page&size=:size&sort=:sort&sortDir=:sortDir&filterType=:filterType&filterData=:filterData",
+    route: "/api/users/filter",
     controller: UserController,
     action: "filterAllUsers",
   },
@@ -62,6 +62,12 @@ export const allRoutes = [
     route: "/api/users/:uid",
     controller: UserController,
     action: "oneUser",
+  },
+  {
+    method: "get",
+    route: "/api/user",
+    controller: UserController,
+    action: "currentUserJWT",
   },
   {
     method: "post",
@@ -172,7 +178,7 @@ export const allRoutes = [
   */
   {
     method: "get",
-    route: "/api/students/filter/page=:page&size=:size&sort=:sort&sortDir=:sortDir&filterType=:filterType&filterData=:filterData",
+    route: "/api/students/filter",
     controller: StudentController,
     action: "filterAllStudents",
   },
@@ -228,7 +234,7 @@ export const allRoutes = [
   */
   {
     method: "get",
-    route: "/api/schools/filter/page=:page&size=:size&sort=:sort&sortDir=:sortDir&filterType=:filterType&filterData=:filterData",
+    route: "/api/schools/filter",
     controller: SchoolController,
     action: "filterAllSchools",
   },
