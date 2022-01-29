@@ -64,11 +64,12 @@ export class UserController extends Repository<User> {
       // const users = this.userRepository.find();
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
+
       const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
-        return;
-      }
+      // if (!isAdmin) {
+      //   response.status(409).send("User is not an admin.")
+      //   return;
+      // }
       const pageNum: number = +request.query.page;
       const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
