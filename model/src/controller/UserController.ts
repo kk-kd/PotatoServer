@@ -19,11 +19,11 @@ export class UserController extends Repository<User> {
       // const users = this.userRepository.find();
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
-        return;
-      }
+      // const isAdmin = response.locals.jwtPayload.isAdmin;
+      // if (!isAdmin) {
+      //   response.status(409).send("User is not an admin.")
+      //   return;
+      // }
       const pageNum: number = +request.params.page;
       const takeNum: number = +request.params.size;
       var skipNum = pageNum * takeNum;
@@ -65,7 +65,7 @@ export class UserController extends Repository<User> {
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
 
-      const isAdmin = response.locals.jwtPayload.isAdmin;
+      // const isAdmin = response.locals.jwtPayload.isAdmin;
       // if (!isAdmin) {
       //   response.status(409).send("User is not an admin.")
       //   return;
@@ -176,11 +176,11 @@ export class UserController extends Repository<User> {
 
   async updateUser(request: Request, response: Response, next: NextFunction) {
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
-        return;
-      }
+      // const isAdmin = response.locals.jwtPayload.isAdmin;
+      // if (!isAdmin) {
+      //   response.status(409).send("User is not an admin.")
+      //   return;
+      // }
       const uidNumber = request.params.uid;
       await getConnection()
         .createQueryBuilder()
@@ -206,11 +206,11 @@ export class UserController extends Repository<User> {
 
   async deleteUser(request: Request, response: Response, next: NextFunction) {
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
-        return;
-      }
+      // const isAdmin = response.locals.jwtPayload.isAdmin;
+      // if (!isAdmin) {
+      //   response.status(409).send("User is not an admin.")
+      //   return;
+      // }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const userQuereyResult = await this.userRepository
         .createQueryBuilder("users")
