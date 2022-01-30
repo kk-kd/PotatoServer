@@ -1,13 +1,17 @@
 import "./UserForm.css";
 import GoogleMapReact from "google-map-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Marker } from "./../map/Marker";
 import {registerUser} from "../api/axios_wrapper";
 import { useNavigate } from "react-router-dom";
 import { Users } from "./Users";
+import { filterAllUsers } from "../api/axios_wrapper";
 
 export const CreateUser = () => {
   let navigate = useNavigate();
+
+  const [filteredData, setFilteredData] = useState([]);
+  const [filterValue, setFilterValue] = useState("");
 
   // user
   const [newUserClicked, setNewUserClicked] = useState(false); 
@@ -60,6 +64,52 @@ export const CreateUser = () => {
     navigate('/Users/list');
     
   }
+  
+  const fetchFilteredData = async (value) => {
+    try {
+      const fetchedData = await filterAllUsers({
+        page: 0,
+        size: 10,
+        sort: 'email',
+        sortDir: "ASC",
+        filterType: '',
+        filterData: value
+      });
+      setFilteredData(fetchedData.data.users);
+      console.log(filteredData);
+    } catch (error) {
+      alert(error.response.data);
+    }
+  };
+  
+  useEffect(() => {
+    const fetchFilteredData = async () => {
+      try {
+        const fetchedData = await filterAllUsers({
+          page: 0,
+          size: 10,
+          sort: 'email',
+          sortDir: "ASC",
+          filterType: '',
+          filterData: filterValue
+        });
+        setFilteredData(fetchedData.data.users);
+        console.log(filteredData);
+      } catch (error) {
+        alert(error.response.data);
+      }
+    }
+    if (filterValue) {
+      fetchFilteredData();
+    }
+  
+  }, [filterValue])
+  const handleSearch = (event) => {
+    console.log(event.target.value)
+    let value = event.target.value;
+    setUserSearchTerm(value);
+    fetchFilteredData(value);
+    }
 
   const searchLocation = () => {
     geocoder.geocode( { 'address': address }, (results, status) => {
@@ -99,16 +149,30 @@ export const CreateUser = () => {
         <h1>Create User</h1>
          <label className="input">
                 <p>Create a New User:</p>
-        
-        <input
-                  type="checkbox"
-                  key={Math.random()}
-                  value={newUserClicked}
-                  onChange={(e) => setNewUserClicked(e.target.checked)}
-                  defaultChecked={newUserClicked}
-        /> 
+            <input
+                      type="checkbox"
+                      key={Math.random()}
+                      value={newUserClicked}
+                      onChange={(e) => setNewUserClicked(e.target.checked)}
+                      defaultChecked={newUserClicked}
+            /> 
         </label>
-        
+
+        <input
+                  type="text"
+                  value={filterValue}
+                  onInput={(e) => setFilterValue(e.target.value)}
+                  
+        />
+        <div className="user-list">
+        {filteredData && filteredData.length > 0 ? (
+          filteredData.map((user) => (
+            <li key={user.uid} className="user">
+              <span className="user-id">{user.email} </span>
+            </li>
+          ))
+        ) : (<div> </div>)}
+      </div>
         
         <div id = "user_create_form">
         {newUserClicked && 

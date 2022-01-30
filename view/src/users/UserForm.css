@@ -32,3 +32,32 @@
   border-radius: 4px;
   align-items: center;
 }
+
+
+.user-list {
+  margin-top: 30px;
+  align-items: center;
+}
+
+.user {
+  list-style: none;
+  margin: 10px 0;
+  padding: 10px;
+  background: #eee;
+  width: 50%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-id {
+  color: red;
+  margin-right: 20px;
+}
+
+.user-name {
+  color: blue;
+}
+
+.user-age {
+  margin-left: auto;
+}
