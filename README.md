@@ -1,47 +1,17 @@
 # PotatoServer
 
-## Quick Start Guide
-
-### Front-End
-
-`cd ./view`  
-`npm install`  
-`npm start`
-
-### Back-End
-
-`cd ./model`  
-`npm install`  
-`npm start`
-
 ## Server Links
-- **Submission**: production!
-- - sh zz160@vcm-23793.vm.duke.edu  
-  [link](https://potato.colab.duke.edu/0)
-  
+
+- **Submission**: production!  
+  ssh zz160@vcm-23793.vm.duke.edu  
+   [website](https://potato.colab.duke.edu)
 - **Beta** = production-light  
-- - ssh zz160@vcm-23919.vm.duke.edu  
-  [link](https://vcm-23919.vm.duke.edu:3000)
-- **Gamma** = integration
--  - sh zz160@vcm-23920.vm.duke.edu  
-  [backend](https://vcm-23920.vm.duke.edu:3000) [frontend](https://vcm-23920.vm.duke.edu:3001)
+  ssh zz160@vcm-23919.vm.duke.edu  
+   [website](https://potato-dev.colab.duke.edu)
+- **Gamma** = integration  
+  ssh zz160@vcm-23920.vm.duke.edu
 
-- **Devs** = personal testing  
-- - Nolan: 
-- - Megan: 
-- - Jackson:
-- - Cady:  
-  
-## Server Start-up 
-- pm2 status : check status 
-- cd PotatoServer
-- sh run_production.sh 
+# Connect to Remote Database for Local Testing
 
-## Dependencies
-
-- NodeJS 16.13.2 LTS downloaded from [here](https://nodejs.org/en/)
-- Starting node from npm init -y
-- Express from npm express
-- react-router-dom for routing
-- react-hot-loader on babel
-- nodemon
+Forward local port 5432 to the database  
+`ssh -L 5432:127.0.0.1:5432 vcm-23919.vm.duke.edu -l zz160`
