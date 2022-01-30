@@ -24,6 +24,6 @@ export class Route {
   @OneToMany(() => Student, student => student.route, { nullable: true, })
   students: Student[];
 
-  @ManyToOne(() => School, school => school.routes, { nullable: true, })
+  @ManyToOne(() => School, school => school.routes, { nullable: true, onDelete: "CASCADE" })
   school: School;
 }
