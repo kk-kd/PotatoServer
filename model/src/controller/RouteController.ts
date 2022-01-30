@@ -89,12 +89,13 @@ export class RouteController extends Repository<Route> {
   }
 
   async saveNewRoute(request: Request, response: Response, next: NextFunction) {
-    const isAdmin = response.locals.jwtPayload.isAdmin;
-    if (!isAdmin) {
-      response.status(409).send("User is not an admin.")
-      return;
-    }
+
     try {
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       return this.routeRepository.save(request.body);
     }
     catch (e) {
@@ -106,12 +107,13 @@ export class RouteController extends Repository<Route> {
   }
 
   async updateRoute(request: Request, response: Response, next: NextFunction) {
-    const isAdmin = response.locals.jwtPayload.isAdmin;
-    if (!isAdmin) {
-      response.status(409).send("User is not an admin.")
-      return;
-    }
+
     try {
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       const uidNumber = request.query.uid;
       await getConnection().createQueryBuilder().update(Route).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
@@ -128,17 +130,17 @@ export class RouteController extends Repository<Route> {
   }
 
   async deleteRoute(request: Request, response: Response, next: NextFunction) {
-    const isAdmin = response.locals.jwtPayload.isAdmin;
-    if (!isAdmin) {
-      response.status(409).send("User is not an admin.")
-      return;
-    }
-    try {
 
+    try {
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       const uidNumber = request.query.uid; //needed for the await call / can't nest them
       const routeQueryResult = await this.routeRepository.createQueryBuilder("routes").delete().where("routes.uid = :uid", { uid: uidNumber }).execute();
       response.status(200);
-
+      return routeQueryResult;
     }
     catch (e) {
       response.status(401).send("Route UID: " + request.query.uid + " was not found adn could not be deleted.")
