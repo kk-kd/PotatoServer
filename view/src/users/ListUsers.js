@@ -1,5 +1,4 @@
 import "./ListUsers.css";
-import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTable } from "react-table";
@@ -26,18 +25,17 @@ export const ListUsers = () => {
           filterType: lastNameFilter,
           filterData: emailFilter
         });
-        console.log(fetchedData);
         setData(fetchedData.data.users);
         setTotal(fetchedData.data.total);
       } catch (error) {
-        console.log(error);
+        alert(error.response.data);
       }
     };
     fetchData();
   }, [page, size, sortDirec, emailFilter, lastNameFilter]);
 
   const nextSort = (id) => {
-    if (sortBy != id) {
+    if (sortBy !== id) {
       setSortBy(id);
       if (sortDirec === "none" || sortDirec === "DESC") {
         setSortDirec("ASC");
@@ -86,7 +84,7 @@ export const ListUsers = () => {
         Header: "Students",
         accessor: "students",
         Cell: (props) => {
-          return <div>{props.value.map((student) => student.firstName).toString()}</div>
+          return <div>{props.value.map((student) => <div>{student.firstName}</div>)}</div>
         }
       },
       {

@@ -285,8 +285,7 @@ export const allRoutes = [
   */
   {
     method: "get",
-    route:
-      "/api/routes/filter/page=:page&size=:size&sort=:sort&sortDir=:sortDir&filterType=:filterType&filterData=:filterData",
+    route: "/api/routes/filter",
     controller: RouteController,
     action: "filterAllRoutes",
   },

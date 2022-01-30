@@ -44,7 +44,7 @@ export class RouteController extends Repository<Route> {
       return;
     }
   }
-  async filterAllRoutes(
+  async sortAllRoutes(
     request: Request,
     response: Response,
     next: NextFunction
@@ -88,50 +88,61 @@ export class RouteController extends Repository<Route> {
     }
   }
 
-  async sortAllRoutes(
+  async filterAllRoutes(
     request: Request,
     response: Response,
     next: NextFunction
   ) {
     try {
-      const pageNum: number = +request.params.page;
-      const takeNum: number = +request.params.size;
+      const pageNum: number = +request.query.page || 0;
+      const takeNum: number = +request.query.size || 10;
       var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
-      if (request.params.sort == "none") {
+      if (!request.query.sort || request.query.sort === "none") {
         sortSpecification = "routes.uid";
+      } else if (request.query.sort === "name") {
+        sortSpecification = "routes.name";
       } else {
-        sortSpecification = "routes." + request.params.sort;
+        sortSpecification = "school.name";
       }
 
-      if (
-        request.params.sortDir == "none" ||
-        request.params.sortDir == "DESC"
-      ) {
-        sortDirSpec = "DESC";
-      } else {
+      if (!request.query.sortDir || request.query.sortDir === "none") {
         sortDirSpec = "ASC";
+        sortSpecification = "routes.uid";
+      } else if (request.query.sortDir === "ASC") {
+        sortDirSpec = "ASC";
+      } else {
+        sortDirSpec = "DESC";
       }
+      const nameFilter = request.query.nameFilter || "";
 
-      if (request.params.sort == "studentCount") {
+      if (request.query.sort == "students") {
         const routesByStudentsCount = await this.getSortedRoutesByUserCount(
-          skipNum,
-          takeNum,
+          nameFilter,
           sortDirSpec
         );
         response.status(200);
-        return routesByStudentsCount;
+        return {
+          routes: routesByStudentsCount.splice(skipNum, skipNum+takeNum),
+          total: routesByStudentsCount.length,
+          special: true
+        };
       } else {
-        const routeQueryResult = await this.routeRepository
+        const [routeQueryResult, total] = await this.routeRepository
           .createQueryBuilder("routes")
           .skip(skipNum)
           .take(takeNum)
+          .leftJoinAndSelect("routes.school", "school")
+          .leftJoinAndSelect("routes.students", "students")
           .orderBy(sortSpecification, sortDirSpec)
-          .groupBy("routes.uid")
-          .getMany();
+          .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
+          .getManyAndCount();
         response.status(200);
-        return routeQueryResult;
+        return {
+          routes: routeQueryResult,
+          total: total
+        };
       }
     } catch (e) {
       response.status(401).send("Routes were not found with error: " + e);
@@ -140,22 +151,21 @@ export class RouteController extends Repository<Route> {
   }
 
   private async getSortedRoutesByUserCount(
-    skipNum: number,
-    takeNum: number,
+    nameFilter,
     sortDirSpec
   ) {
     return await this.routeRepository
       .createQueryBuilder("routes")
+      .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
+      .leftJoinAndSelect("routes.school", "school")
       .addSelect((subQuery) => {
         return subQuery
           .select("COUNT(students.uid)", "count")
           .from(Student, "students")
           .where("students.route.uid = routes.uid");
       }, "count")
-      .orderBy('"count"', "DESC")
+      .orderBy('"count"', sortDirSpec)
       .loadRelationCountAndMap("routes.studentCount", "routes.students")
-      .skip(skipNum)
-      .take(takeNum)
       .getRawMany();
   }
 

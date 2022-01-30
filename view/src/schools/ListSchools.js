@@ -23,11 +23,10 @@ export const ListSchools = () => {
           filterType: "name",
           filterData: nameFilter
         });
-        console.log(fetchedData);
         setData(fetchedData.data.schools);
         setTotal(fetchedData.data.total);
       } catch (error) {
-        console.log(error);
+        alert(error.response.data);
       }
     };
     fetchData();
