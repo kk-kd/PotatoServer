@@ -12,9 +12,11 @@ export const CreateUser = () => {
 
   const [filteredData, setFilteredData] = useState([]);
   const [filterValue, setFilterValue] = useState("");
+  const [selectedUser, setSelectedUser] = useState();
 
   // user
-  const [newUserClicked, setNewUserClicked] = useState(false); 
+  const [newUserSelected, setNewUserSelected] = useState(false); 
+  
   const [ firstName, setFirstName ] = useState("");
   const [ middleName, setMiddleName ] = useState("");
   const [ lastName, setLastName ] = useState("");
@@ -104,12 +106,6 @@ export const CreateUser = () => {
     }
   
   }, [filterValue])
-  const handleSearch = (event) => {
-    console.log(event.target.value)
-    let value = event.target.value;
-    setUserSearchTerm(value);
-    fetchFilteredData(value);
-    }
 
   const searchLocation = () => {
     geocoder.geocode( { 'address': address }, (results, status) => {
@@ -144,38 +140,65 @@ export const CreateUser = () => {
     }
   }
 
+  async function handleUserSelection (e, user) {
+    e.preventDefault(); // prevents page reload on submission
+    setSelectedUser(user)
+    
+    // update state 
+    setFirstName(user.firstName)
+    setMiddleName(user.middleName)
+    setLastName(user.lastName)
+    setPassword(user.password)
+    setEmail(user.email)
+    setAddress(user.address)
+    setisAdmin(user.isAdmin)
+    setFilterValue(user.email)
+    console.log(user)
+    
+    
+  }
+
   return (
     <div>
         <h1>Create User</h1>
+         <h3> Selected User Email: {selectedUser ?  selectedUser.email : 'None Selected'} </h3>
+ 
          <label className="input">
                 <p>Create a New User:</p>
             <input
                       type="checkbox"
                       key={Math.random()}
-                      value={newUserClicked}
-                      onChange={(e) => setNewUserClicked(e.target.checked)}
-                      defaultChecked={newUserClicked}
+                      value={newUserSelected}
+                      onChange={(e) => setNewUserSelected(e.target.checked)}
+                      defaultChecked={newUserSelected}
             /> 
         </label>
-
+        {!newUserSelected && 
+        <div>
+           <label className="input">
+             <p> Select an Existing User: </p>
         <input
                   type="text"
                   value={filterValue}
                   onInput={(e) => setFilterValue(e.target.value)}
-                  
-        />
-        <div className="user-list">
+                
+        /></label>
+
+        {!selectedUser && <div className="user-list">
         {filteredData && filteredData.length > 0 ? (
           filteredData.map((user) => (
-            <li key={user.uid} className="user">
-              <span className="user-id">{user.email} </span>
-            </li>
+            <button key={user.uid} className="user" onClick = {(e) => {handleUserSelection (e, user)}} >
+              <span className="user-id" >{user.email}   </span>
+              
+            </button>
           ))
         ) : (<div> </div>)}
-      </div>
-        
+          </div>}
+        </div>
+      }
         <div id = "user_create_form">
-        {newUserClicked && 
+      
+        {newUserSelected && 
           <form onSubmit={handleCreateUser}>
           
           <label className="input">
@@ -247,6 +270,20 @@ export const CreateUser = () => {
           </form>
           }
           </div>
+        {!address && 
+          <div classname = "Input an Address">
+           <p> The selected User does not have a valid address. Please Input an address. </p>
+          <label className="input">
+            <p>Address:</p>
+              <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}  // TODO update address call. 
+              />
+            <p> {error}</p>
+          </label>
+          </div>
+        }
         <div id="user_create_map">
           <h3> Map </h3>
           {error && (<div>{error}</div>)}
