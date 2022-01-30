@@ -76,7 +76,7 @@ export class RouteController extends Repository<Route> {
   async oneRoute(request: Request, response: Response, next: NextFunction) {
     try {
       const uidNumber = request.query.uid; //needed for the await call / can't nest them
-      const routeQueryResult = await this.routeRepository.createQueryBuilder("routes").where("routes.uid = :uid", { uid: uidNumber }).getOneOrFail();
+      const routeQueryResult = await this.routeRepository.createQueryBuilder("routes").where("routes.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("routes.students", "student").getOneOrFail();
       response.status(200);
       return routeQueryResult;
     }
