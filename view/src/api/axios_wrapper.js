@@ -125,7 +125,9 @@ export async function getOneRoute(uid) {
   });
 }
 export async function getOneRoutePlanner(uid) {
-  return await axios.get("/api/routes/planner/" + uid);
+  return await axios.get("/api/routes/planner/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 /*
    Deletes one entry from a table (students, users, schools, routes) by UID.
