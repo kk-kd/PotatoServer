@@ -46,7 +46,7 @@ class AuthController {
     const userRepository = getRepository(User);
     try {
       user.password = await bcrypt.hash(password, 10);
-      user.email = email;
+      user.email = email.toLowerCase();
       user.firstName = firstName;
       user.middleName = middleName;
       user.lastName = lastName;
