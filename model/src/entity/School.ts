@@ -26,9 +26,9 @@ export class School {
   @Column("decimal")
   latitude: number;
 
-  @OneToMany(() => Student, student => student.school, { nullable: true, cascade: true })
+  @OneToMany(() => Student, student => student.school, { nullable: true, cascade: true, eager: true })
   students: Student[];
 
-  @OneToMany(() => Route, route => route.school, { nullable: true, cascade: true })
+  @OneToMany(() => Route, route => route.school, { nullable: true, cascade: true, eager: true })
   routes: Route[];
 }
