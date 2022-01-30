@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams} from "react-router-dom";
+import { Link, useParams, useNavigate} from "react-router-dom";
 import {useTable } from "react-table";
-import { getOneUser } from "../api/axios_wrapper";
+import { deleteUser, getOneUser } from "../api/axios_wrapper";
 import useBatchedState from 'react-use-batched-state';
 
 export const UserDetail = () => {
   const { id } = useParams();
   const [data, setData] = useBatchedState({});
   const [students, setStudents] = useBatchedState([]);
+  let navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,11 +19,28 @@ export const UserDetail = () => {
           throw alert (message);
         });
         setData(fetchedData.data);
+        console.log(fetchedData.data)
         setStudents([fetchedData.data][0].students);
+        
       } catch (error) {}
     };
     fetchData();
   }, []);
+
+  async function handleDeleteUser (user_id, e) {
+    e.preventDefault(); 
+   
+    console.log("Deleting User with uid = " + user_id)
+    try {
+      let delete_user_response = await deleteUser(parseInt(user_id));      
+      
+    } catch (error)  {
+
+      console.log(error)
+      let message = error.response.data;
+      throw alert (message);
+    }
+  }
  
   const columns = useMemo(
       () => [
@@ -65,14 +83,15 @@ export const UserDetail = () => {
 
   return (
       <div id="userListing">
-        <h1>User Detail (<Link to={'/Users/edit/' + id}>
-          Edit
-        </Link>) </h1>
+        <h1>User Detail (
+          <Link to={'/Users/edit/' + id}> Edit</Link>, 
+          <Link to={'/Users/list'} onClick = {(e) => {handleDeleteUser(id, e)} }> Delete </Link>
+          )  </h1>
         <h3>User Characteristics </h3>
    
         <div> 
           <p>First Name : {data.firstName}</p>
-          <p>Middle Name : {data.firstName}</p>
+          <p>Middle Name : {data.middleName}</p>
           <p>Last Name : {data.lastName}</p>
           <p>Email : {data.email}</p>
           <p>Address : {data.address}</p>

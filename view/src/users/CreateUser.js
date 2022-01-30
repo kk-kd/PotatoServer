@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Marker } from "./../map/Marker";
 import {registerUser} from "../api/axios_wrapper";
 import { useNavigate } from "react-router-dom";
+import { Users } from "./Users";
 
 export const CreateUser = () => {
   let navigate = useNavigate();
@@ -49,11 +50,14 @@ export const CreateUser = () => {
     console.log("Creating User with entries:")
     console.log(form_results)
     try {
-      let create_user_response = await registerUser(form_results).catch ((error) => {
+      let create_user_response = await registerUser(form_results); 
+    } catch (error) {
         let message = error.response.data;
         throw alert (message);
-      });
-    } catch {}
+    }
+    alert("User Successfully Created");
+    navigate('/Users/list');
+    
   }
 
   const searchLocation = () => {

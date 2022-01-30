@@ -110,16 +110,17 @@ export const EditUser = () => {
       isAdmin: isAdmin,
       password: password,
     }
-    console.log("Modifying User with entries:")
-    console.log(form_results)
+    console.log("Modifying User with entries:");
+    console.log(form_results);
    
-    let update_user_response = await updateUser(id,form_results).catch((error) => {
+    try {
+      let update_user_response = await updateUser(id,form_results); 
+    } catch (error) {
         let message = error.response.data;
         throw alert (message);
-    });
-
-    console.log("Success");
-  
+    }
+    alert("User Successfully Updated");
+    navigate('/Users/info/' + id);
   }
 
   const searchLocation = () => {

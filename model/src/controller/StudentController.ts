@@ -41,30 +41,47 @@ export class StudentController extends Repository<Student> {
   }
   async filterAllStudents(request: Request, response: Response, next: NextFunction) {
     try {
-      const pageNum: number = +request.params.page;
-      const takeNum: number = +request.params.size;
+      const pageNum: number = +request.query.page;
+      const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
+
       var sortSpecification;
       var sortDirSpec;
-      if (request.params.sort == 'none') {
+      if (request.query.sort == 'none') {
         sortSpecification = "students.uid";
+      } else if (request.query.sort == 'school.name') {
+        sortSpecification = "school.name";
+      } else { //should error check instead of else
+        sortSpecification = "students." + request.query.sort;
       }
-      else { //should error check instead of else
-        sortSpecification = "students." + request.params.sort;
-      }
-      if ((request.params.sortDir == 'none') || (request.params.sortDir == 'ASC')) {
+      if (request.query.sortDir == 'ASC') {
         sortDirSpec = "ASC";
       }
-      else { //error check instead of else
+      else if (request.query.sortDir == 'DESC') { //error check instead of else
         sortDirSpec = "DESC";
+      } else {
+        sortDirSpec = "ASC";
+        sortSpecification = "students.uid";
       }
       var filterSpecification;
-      filterSpecification = "students." + request.params.sort;
-      const queryFilterType = request.params.filterType;
-      const queryFilterData = request.params.filterData;
-      const usersQueryResult = await this.studentRepository.createQueryBuilder("students").skip(skipNum).take(takeNum).orderBy(sortSpecification, sortDirSpec).having("students." + queryFilterType + " = :spec", { spec: queryFilterData }).groupBy("students.uid").getMany();
+      filterSpecification = "students." + request.query.sort;
+      const queryIdFilter = request.query.idFilter;
+      const queryLastNameFilter = request.query.lastNameFilter;
+      const [studentsQueryResult, total] = await this.studentRepository
+          .createQueryBuilder("students")
+          .skip(skipNum)
+          .take(takeNum)
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
+          .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter})
+          .leftJoinAndSelect("students.route", "route")
+          .leftJoinAndSelect("students.school", "school")
+          .getManyAndCount();
       response.status(200);
-      return usersQueryResult;
+      return {
+        students: studentsQueryResult,
+        total: total
+      };
     }
     catch (e) {
       response.status(401).send("Students were not found with error: " + e);

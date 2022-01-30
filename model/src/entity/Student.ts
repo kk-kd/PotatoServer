@@ -16,10 +16,9 @@ export class Student {
   uid: number;
 
   @Column({
-    type: "int",
     nullable: true,
   })
-  id: number;
+  id: string;
 
   @Column()
   firstName: string;
