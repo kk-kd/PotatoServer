@@ -37,16 +37,16 @@ class AuthController {
         .status(401)
         .send("Make Admin: The new admin's email address is not valid.");
     }
-    const newAdmin = await getRepository(User).findOneOrFail({
-      email: newAdminEmail,
-    });
 
-    if (!newAdmin) {
+    try {
+      await getRepository(User).findOneOrFail({ email: newAdminEmail });
+    } catch (error) {
       response
         .status(401)
         .send(
           "Make Admin: The intended new admin is not in the database. Register first."
         );
+      return;
     }
 
     await getRepository(User).update(
@@ -98,7 +98,7 @@ class AuthController {
       user.address = address;
       user.longitude = longitude;
       user.latitude = latitude;
-      user.isAdmin = false;
+      user.isAdmin = isAdmin;
       await userRepository.save(user);
     } catch (error) {
       response.status(401).send("User Register: " + error);
