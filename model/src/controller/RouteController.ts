@@ -14,18 +14,19 @@ export class RouteController extends Repository<Route> {
 
   async allRoutes(request: Request, response: Response, next: NextFunction) {
     try {
-      const pageNum: number = +request.params.page;
-      const takeNum: number = +request.params.size;
+
+      const pageNum: number = +request.query.page;
+      const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
-      if (request.params.sort == "none") {
+      if (request.query.sort == 'none') {
         sortSpecification = "routes.uid";
-      } else {
-        //should error check instead of else
-        sortSpecification = "routes." + request.params.sort;
       }
-      if (request.params.sortDir == "none" || request.params.sortDir == "ASC") {
+      else { //should error check instead of else
+        sortSpecification = "routes." + request.query.sort;
+      }
+      if ((request.query.sortDir == 'none') || (request.query.sortDir == 'ASC')) {
         sortDirSpec = "ASC";
       } else {
         //error check instead of else
@@ -50,36 +51,28 @@ export class RouteController extends Repository<Route> {
     next: NextFunction
   ) {
     try {
-      const pageNum: number = +request.params.page;
-      const takeNum: number = +request.params.size;
+      const pageNum: number = +request.query.page;
+      const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
-      if (request.params.sort == "none") {
+      if (request.query.sort == 'none') {
         sortSpecification = "route.uid";
-      } else {
-        //should error check instead of else
-        sortSpecification = "route." + request.params.sort;
       }
-      if (request.params.sortDir == "none" || request.params.sortDir == "ASC") {
+      else { //should error check instead of else
+        sortSpecification = "route." + request.query.sort;
+      }
+      if ((request.query.sortDir == 'none') || (request.query.sortDir == 'ASC')) {
         sortDirSpec = "ASC";
       } else {
         //error check instead of else
         sortDirSpec = "DESC";
       }
-
-      const queryFilterType = request.params.filterType;
-      const queryFilterData = request.params.filterData;
-      const routeQueryResult = await this.routeRepository
-        .createQueryBuilder("route")
-        .skip(skipNum)
-        .take(takeNum)
-        .orderBy(sortSpecification, sortDirSpec)
-        .having("route." + queryFilterType + " = :spec", {
-          spec: queryFilterData,
-        })
-        .groupBy("route.uid")
-        .getMany();
+      var filterSpecification;
+      filterSpecification = "route." + request.query.sort;
+      const queryFilterType = request.query.filterType;
+      const queryFilterData = request.query.filterData;
+      const routeQueryResult = await this.routeRepository.createQueryBuilder("route").skip(skipNum).take(takeNum).orderBy(sortSpecification, sortDirSpec).having("route." + queryFilterType + " = :spec", { spec: queryFilterData }).groupBy("route.uid").getMany();
       response.status(200);
       return routeQueryResult;
     } catch (e) {
@@ -124,7 +117,7 @@ export class RouteController extends Repository<Route> {
         );
         response.status(200);
         return {
-          routes: routesByStudentsCount.splice(skipNum, skipNum+takeNum),
+          routes: routesByStudentsCount.splice(skipNum, skipNum + takeNum),
           total: routesByStudentsCount.length,
           special: true
         };
@@ -171,23 +164,26 @@ export class RouteController extends Repository<Route> {
 
   async oneRoute(request: Request, response: Response, next: NextFunction) {
     try {
-      const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const routeQueryResult = await this.routeRepository
-        .createQueryBuilder("routes")
-        .where("routes.uid = :uid", { uid: uidNumber })
-        .getOneOrFail();
+      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const routeQueryResult = await this.routeRepository.createQueryBuilder("routes").where("routes.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("routes.students", "student").getOneOrFail();
       response.status(200);
       return routeQueryResult;
     } catch (e) {
       response
         .status(401)
-        .send("Route with UID: " + request.params.uid + " was not found.");
+        .send("Route with UID: " + request.query.uid + " was not found.");
       return;
     }
   }
 
   async saveNewRoute(request: Request, response: Response, next: NextFunction) {
+
     try {
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       return this.routeRepository.save(request.body);
     } catch (e) {
       response
@@ -200,47 +196,43 @@ export class RouteController extends Repository<Route> {
   }
 
   async updateRoute(request: Request, response: Response, next: NextFunction) {
+
     try {
-      const uidNumber = request.params.uid;
-      await getConnection()
-        .createQueryBuilder()
-        .update(Route)
-        .where("uid = :uid", { uid: uidNumber })
-        .set(request.body)
-        .execute();
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
+      const uidNumber = request.query.uid;
+      await getConnection().createQueryBuilder().update(Route).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
-    } catch (e) {
+      return;
+
+    }
+
+    catch (e) {
       response
         .status(401)
-        .send(
-          "Route with UID " +
-            request.params.uid +
-            " and details(" +
-            request.body +
-            ") couldn't be updated with error " +
-            e
-        );
+        .send("Route with UID " + request.query.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
       return;
     }
   }
 
   async deleteRoute(request: Request, response: Response, next: NextFunction) {
+
     try {
-      const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const routeQueryResult = await this.routeRepository
-        .createQueryBuilder("routes")
-        .delete()
-        .where("routes.uid = :uid", { uid: uidNumber })
-        .execute();
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
+      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const routeQueryResult = await this.routeRepository.createQueryBuilder("routes").delete().where("routes.uid = :uid", { uid: uidNumber }).execute();
       response.status(200);
-    } catch (e) {
-      response
-        .status(401)
-        .send(
-          "Route UID: " +
-            request.params.uid +
-            " was not found adn could not be deleted."
-        );
+      return routeQueryResult;
+    }
+    catch (e) {
+      response.status(401).send("Route UID: " + request.query.uid + " was not found adn could not be deleted.")
     }
   }
   findByRouteID(uid: number) {
