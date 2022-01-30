@@ -67,16 +67,34 @@ export class StudentController extends Repository<Student> {
       filterSpecification = "students." + request.query.sort;
       const queryIdFilter = request.query.idFilter;
       const queryLastNameFilter = request.query.lastNameFilter;
-      const [studentsQueryResult, total] = await this.studentRepository
-        .createQueryBuilder("students")
-        .skip(skipNum)
-        .take(takeNum)
-        .orderBy(sortSpecification, sortDirSpec)
-        .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
-        .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
-        .leftJoinAndSelect("students.route", "route")
-        .leftJoinAndSelect("students.school", "school")
-        .getManyAndCount();
+      var studentsQueryResult;
+      var total;
+      if (queryIdFilter) {
+        const result = await this.studentRepository
+          .createQueryBuilder("students")
+          .skip(skipNum)
+          .take(takeNum)
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
+          .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
+          .leftJoinAndSelect("students.route", "route")
+          .leftJoinAndSelect("students.school", "school")
+          .getManyAndCount();
+        studentsQueryResult = result[0];
+        total = result[1];
+      } else {
+        const result = await this.studentRepository
+          .createQueryBuilder("students")
+          .skip(skipNum)
+          .take(takeNum)
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
+          .leftJoinAndSelect("students.route", "route")
+          .leftJoinAndSelect("students.school", "school")
+          .getManyAndCount();
+        studentsQueryResult = result[0];
+        total = result[1];
+      }
       response.status(200);
       return {
         students: studentsQueryResult,

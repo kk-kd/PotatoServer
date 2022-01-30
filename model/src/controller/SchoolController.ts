@@ -117,6 +117,27 @@ export class SchoolController extends Repository<School> {
     }
   }
 
+  async oneRoutePlanner(request: Request, response: Response, next: NextFunction) {
+    try {
+      const uidNumber = request.params.uid;
+      const usersQueryResult = await this.schoolRepository
+        .createQueryBuilder("schools")
+        .where("schools.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("schools.routes", "routes")
+        .leftJoinAndSelect("schools.students", "students")
+        .leftJoinAndSelect("students.route", "route")
+        .leftJoinAndSelect("students.parentUser", "parent")
+        .getOneOrFail();
+      response.status(200);
+      return usersQueryResult;
+    } catch (e) {
+      response
+        .status(401)
+        .send("School with UID: " + request.params.uid + " was not found.");
+      return;
+    }
+  }
+
   async saveNewSchool(request: Request, response: Response, next: NextFunction) {
     try {
       const isAdmin = response.locals.jwtPayload.isAdmin;
@@ -142,10 +163,8 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      const uidNumber = request.query.uid;
-      await getConnection().createQueryBuilder().update(School).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
-      return;
+      return await this.schoolRepository.save(request.body);
 
     }
 

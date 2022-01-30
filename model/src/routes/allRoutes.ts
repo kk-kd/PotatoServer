@@ -197,6 +197,12 @@ export const allRoutes = [
     controller: RouteController,
     action: "all",
   },
+  {
+    method: "get",
+    route: "/api/routes/planner/:uid",
+    controller: SchoolController,
+    action: "oneRoutePlanner"
+  },
   /*
     Gets all Schools.
     page: number, denotes the number page requested; starts at 0
@@ -296,5 +302,12 @@ export const allRoutes = [
     route: "/api/routes/:uid",
     controller: RouteController,
     action: "oneRoute",
+  },
+
+  {
+    method: "get",
+    route: "/api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    controller: RouteController,
+    action: "sortAllRoutes",
   },
 ];

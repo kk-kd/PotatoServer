@@ -239,6 +239,7 @@ export class UserController extends Repository<User> {
       response.status(200);
       return userQuereyResult;
     } catch (e) {
+
       response
         .status(401)
         .send(
@@ -246,12 +247,14 @@ export class UserController extends Repository<User> {
           request.query.uid +
           " was not found adn could not be deleted."
         );
+      return;
     }
   }
 
   findByUserID(uid: number) {
     return this.createQueryBuilder("users")
       .where("users.uid = :uid", { uid })
+      .leftJoinAndSelect("users.students", "student")
       .getOne();
   }
   findByUserName(firstName: string) {
