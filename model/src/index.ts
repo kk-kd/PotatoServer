@@ -111,7 +111,7 @@ createConnection()
       })
       .listen(process.env.HTTP_PORT);
 
-    // Clean the tables:
+    // // Clean the tables:
     // let tableNames: string[] = ["users", "students", "schools", "routes"]; //TODO: Clean other tables by adding strings here if needed
     // for (var tableName of tableNames) {
     //   await getConnection()
@@ -199,51 +199,55 @@ createConnection()
     //   // await studentRepository.save(newStudent);
     // }
 
-    // connection.manager.createQueryBuilder()
-    // .leftJoinAndSelect("t.customer", "customer")
-    // .leftJoinAndSelect(/* other joins */)
-    // .where(/* custom where */)
-    // .getOne();
-
-    // var intCount = 0;
-    // intCount = intCount + 1;
-
-    // for (var studentNumber in nameIter) {
-    //   const studentName = nameIter[studentNumber] + "Student";
-    //   await connection.manager.save(
-    //     connection.manager.create(Student, {
-    //       id: intCount,
-    //       firstName: studentName + "FirstName",
-    //       lastName: studentName + "LastName",
-    //       middleName: studentName + "MiddleName",
-    //     })
-    //   );
-    //   //TODO: throw in some links to routes, schools, and parents for test students
+    //   // await userRepository.save(newUser);
+    //   // await studentRepository.save(newStudent);
     // }
 
-    // var intCount = 0;
-    // for (var schoolNumber in nameIter) {
-    //   intCount = intCount + 1;
-    //   const schoolName = nameIter[schoolNumber] + "School";
-    //   const newSchool = new School();
-    //   newSchool.name = schoolName + " Name";
-    //   newSchool.address = intCount + " Lane, Durham, NC";
-    //   newSchool.latitude = intCount + 1;
-    //   newSchool.longitude = intCount + 2;
-    //   //TODO: Throw in some associated students / routes depending on what testing needs
-    //   await schoolRepository.save(newSchool);
-    // }
+    // // connection.manager.createQueryBuilder()
+    // // .leftJoinAndSelect("t.customer", "customer")
+    // // .leftJoinAndSelect(/* other joins */)
+    // // .where(/* custom where */)
+    // // .getOne();
 
-    // var intCount = 0;
-    // for (var routeNumber in nameIter) {
-    //   intCount = intCount + 1;
-    //   const routeName = nameIter[routeNumber] + "Route";
-    //   const newRoute = new Route();
-    //   newRoute.name = routeName + " Name";
-    //   newRoute.desciption = routeName + " Description";
-    //   //TODO: Throw in some associated students / routes depending on what testing needs
-    //   await routeRepository.save(newRoute);
-    // }
+    // // var intCount = 0;
+    // // intCount = intCount + 1;
+
+    // // for (var studentNumber in nameIter) {
+    // //   const studentName = nameIter[studentNumber] + "Student";
+    // //   await connection.manager.save(
+    // //     connection.manager.create(Student, {
+    // //       id: intCount,
+    // //       firstName: studentName + "FirstName",
+    // //       lastName: studentName + "LastName",
+    // //       middleName: studentName + "MiddleName",
+    // //     })
+    // //   );
+    // //   //TODO: throw in some links to routes, schools, and parents for test students
+    // // }
+
+    // // var intCount = 0;
+    // // for (var schoolNumber in nameIter) {
+    // //   intCount = intCount + 1;
+    // //   const schoolName = nameIter[schoolNumber] + "School";
+    // //   const newSchool = new School();
+    // //   newSchool.name = schoolName + " Name";
+    // //   newSchool.address = intCount + " Lane, Durham, NC";
+    // //   newSchool.latitude = intCount + 1;
+    // //   newSchool.longitude = intCount + 2;
+    // //   //TODO: Throw in some associated students / routes depending on what testing needs
+    // //   await schoolRepository.save(newSchool);
+    // // }
+
+    // // var intCount = 0;
+    // // for (var routeNumber in nameIter) {
+    // //   intCount = intCount + 1;
+    // //   const routeName = nameIter[routeNumber] + "Route";
+    // //   const newRoute = new Route();
+    // //   newRoute.name = routeName + " Name";
+    // //   newRoute.desciption = routeName + " Description";
+    // //   //TODO: Throw in some associated students / routes depending on what testing needs
+    // //   await routeRepository.save(newRoute);
+    // // }
 
     console.log(
       "Express server has started on port 3000. Open https://localhost:3000/api/users/all/page=0&size=0&sort=none&sortDir=none or: /students /routes /schools to see results"

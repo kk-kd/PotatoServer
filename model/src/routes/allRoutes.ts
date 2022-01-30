@@ -156,7 +156,8 @@ export const allRoutes = [
 
   {
     method: "get",
-    route: "/api/students/all/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    route:
+      "/api/students/all/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
     controller: StudentController,
     action: "allStudents",
   },
@@ -284,7 +285,8 @@ export const allRoutes = [
   */
   {
     method: "get",
-    route: "/api/routes/filter/page=:page&size=:size&sort=:sort&sortDir=:sortDir&filterType=:filterType&filterData=:filterData",
+    route:
+      "/api/routes/filter/page=:page&size=:size&sort=:sort&sortDir=:sortDir&filterType=:filterType&filterData=:filterData",
     controller: RouteController,
     action: "filterAllRoutes",
   },
@@ -296,5 +298,12 @@ export const allRoutes = [
     route: "/api/routes/:uid",
     controller: RouteController,
     action: "oneRoute",
+  },
+
+  {
+    method: "get",
+    route: "/api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    controller: RouteController,
+    action: "sortAllRoutes",
   },
 ];
