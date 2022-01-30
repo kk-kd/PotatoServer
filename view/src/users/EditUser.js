@@ -3,11 +3,18 @@ import GoogleMapReact from "google-map-react";
 import { useState, useMemo, useEffect} from "react";
 import { Marker } from "../map/Marker";
 import {updateUser, getOneUser} from "../api/axios_wrapper";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import {useTable } from "react-table";
+import useBatchedState from 'react-use-batched-state';
 
 export const EditUser = () => {
+  // general 
   const { id } = useParams();
   let navigate = useNavigate();
+
+  // data 
+  const [data, setData] = useBatchedState({});
+  const [students, setStudents] = useBatchedState([]);
 
   // user
   const [ firstName, setFirstName ] = useState("");
@@ -17,7 +24,7 @@ export const EditUser = () => {
   const [ email, setEmail ] = useState("");
   const [ address, setAddress ] = useState("");
   const [ isAdmin, setisAdmin ] = useState(false);
-  //const [students, setStudents ] = useState([]);
+
 
   // maps
   const [ showMap, setShowMap ] = useState(false);
@@ -35,14 +42,14 @@ export const EditUser = () => {
     zoom: 13
   };
 
-  // TODO - API call integration 
-  const [data, setData] = useState({});
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const fetchedData = await getOneUser(id);
         console.log(fetchedData.data);
         setData(fetchedData.data);
+        setStudents([fetchedData.data][0].students);
       } catch (error) {
         console.log(error);
       }
@@ -58,9 +65,36 @@ export const EditUser = () => {
     setEmail(data.email)
     setAddress(data.address)
     setisAdmin(data.isAdmin)
-    //setStudents(data.students)
   }, [data])
 
+  const columns = useMemo(
+    () => [
+      {
+          Header: 'Student First Name',
+          accessor: 'firstName',
+      },
+      {
+        Header: 'Student Last Name',
+        accessor: 'lastName',
+      },
+      {
+        Header: ' ',
+        disableFilters: true,
+        accessor: 'uid',
+        Cell: ({value}) => { 
+          return <Link to = {"/Students/info/" + value}> {"View Student Detail"} </Link>   
+      },
+    }
+    ],
+    []
+);
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow
+  } = useTable({columns, data: students});
 
   async function handleModifyUser (e) {
     e.preventDefault(); // prevents page reload on submission
@@ -75,6 +109,7 @@ export const EditUser = () => {
     }
     console.log("Modifying User with entries:")
     console.log(form_results)
+    console.log(students)
     try {
       let create_user_response = await updateUser( id,form_results).catch ((error) => {})
       let user_id = create_user_response.id
@@ -129,7 +164,7 @@ export const EditUser = () => {
 
   return (
     <div>
-        <h1>Edit User NEW</h1>
+        <h1>Edit User</h1>
         <div id = "user_create_form">
           <form onSubmit={handleModifyUser}>
           
@@ -195,20 +230,62 @@ export const EditUser = () => {
                   onChange={(e) => setisAdmin(e.target.value)}
               />
           </label>
-            
-          {/* <label className="input">
-            <p>Students:</p>
-              <input
-                  type="text"
-                  value={students}
-                  onChange={(e) => setStudents(e.target.value)}
-              />
-          </label> */}
-            <div>
-              <button className = "submitbutton" type="submit">Submit</button>
-            </div>
-          </form>
-          </div>
+          <h3>Students Associated With This User </h3>
+        <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+          <thead>
+          {headerGroups.map(headerGroup => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => (
+                    <th
+                        {...column.getHeaderProps((column.id === "name" || column.id === "email_address"))}
+                        style={column.id === "name" || column.id === "email_address" ? {
+                          borderBottom: 'solid 3px red',
+                          background: 'aliceblue',
+                          color: 'black',
+                          fontWeight: 'bold',
+                          cursor: 'pointer'
+                        } : {
+                          borderBottom: 'solid 3px red',
+                          background: 'aliceblue',
+                          color: 'black',
+                          fontWeight: 'bold',
+                        }}
+                    >
+                      {column.render('Header')}
+                    </th>
+                ))}
+              </tr>
+          ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+          {rows.map(row => {
+            prepareRow(row)
+            return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map(cell => {
+                    return (
+                        <td
+                            {...cell.getCellProps()}
+                            style={{
+                              padding: '10px',
+                              border: 'solid 1px gray',
+                              background: 'papayawhip',
+                            }}
+                        >
+                            {cell.render('Cell')}
+                        </td>
+                    )
+                  })}
+                </tr>
+            )
+          })}
+          </tbody>
+        </table> 
+        <div>
+            <button className = "submitbutton" type="submit">Submit</button>
+        </div>
+        </form>
+        </div>
         <div id="user_create_map">
           <h3> Map </h3>
           {error && (<div>{error}</div>)}

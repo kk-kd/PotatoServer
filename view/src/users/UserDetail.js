@@ -41,6 +41,14 @@ export const UserDetail = () => {
               return <ul> {value ? 'No' : 'Yes' } </ul> 
           }
       },
+      {
+        Header: ' ',
+        disableFilters: true,
+        accessor: 'uid',
+        Cell: ({value}) => { 
+          return <Link to = {"/Students/info/" + value}> {"View Student Detail"} </Link>   
+      },
+    }
       ],
       []
   );

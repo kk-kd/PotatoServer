@@ -140,10 +140,8 @@ Register a User for the first time to add them to the database.
             }
 */
 export async function registerUser(specifications) {
-  return await axios.post(
-    "https://localhost:3000/api/register",
-    specifications
-  );
+  return await axios.post( 
+    "https://localhost:3000/api/register",specifications);
 }
 
 /*
@@ -171,6 +169,7 @@ Login Validation for a User
             }
 */
 export async function loginUser(specifications) {
+  
   return await axios.post("https://localhost:3000/api/login", specifications);
 }
 

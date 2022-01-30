@@ -12,12 +12,10 @@ export const CreateUser = () => {
   const [ firstName, setFirstName ] = useState("");
   const [ middleName, setMiddleName ] = useState("");
   const [ lastName, setLastName ] = useState("");
-  const [ userName, setUserName] = useState("");
   const [ password, setPassword] = useState("");
   const [ email, setEmail ] = useState("");
   const [ address, setAddress ] = useState("");
   const [ isAdmin, setisAdmin ] = useState(false);
-  const [students, setStudents ] = useState([]);
 
   // maps
   const [ showMap, setShowMap ] = useState(false);
@@ -37,6 +35,8 @@ export const CreateUser = () => {
 
   async function handleCreateUser (e) {
     e.preventDefault(); // prevents page reload on submission
+    //checkMap(address)
+   
     let form_results = {
       email: email,
       firstName: firstName,
@@ -44,7 +44,6 @@ export const CreateUser = () => {
       lastName: lastName,
       address: address,
       isAdmin: isAdmin,
-      username: userName,
       password: password,
     }
     console.log("Creating User with entries:")
@@ -81,8 +80,10 @@ export const CreateUser = () => {
         setAddress(address);
       } else if (status === "ZERO_RESULTS") {
         setError("No results for that address");
+        console.log(status)
       } else {
         setError("Server Error. Try again later");
+        console.log(status)
       }
     });
   }
@@ -144,15 +145,6 @@ export const CreateUser = () => {
           </label>
 
           <label className="input">
-            <p>Username:</p>
-              <input
-                  type="text"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-              />
-          </label>
-
-          <label className="input">
             <p>Password:</p>
               <input
                   type="text"
@@ -166,7 +158,7 @@ export const CreateUser = () => {
               <input
                   type="text"
                   value={address}
-                  onChange={(e) => checkMap(e.target.value)} 
+                  onChange={(e) => setAddress(e.target.value)} 
               />
             <p> {error}</p>
           </label>
@@ -179,15 +171,7 @@ export const CreateUser = () => {
                   onChange={(e) => setisAdmin(e.target.value)}
               />
           </label>
-            
-          <label className="input">
-            <p>Students:</p>
-              <input
-                  type="text"
-                  value={students}
-                  onChange={(e) => setStudents(e.target.value)}
-              />
-          </label>
+      
             <div>
               <button className = "submitbutton" type="submit">Submit</button>
             </div>
