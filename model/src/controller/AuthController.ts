@@ -95,8 +95,9 @@ class AuthController {
 
     const userRepository = getRepository(User);
     let user: User;
+    const emailLower = email.toLowerCase();
     try {
-      user = await userRepository.findOneOrFail({ where: { email } });
+      user = await userRepository.findOneOrFail({ where: { email: emailLower } });
     } catch (error) {
       response.status(401).send("User Login: User not registered");
       return;
