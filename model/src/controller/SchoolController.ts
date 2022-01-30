@@ -104,7 +104,7 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").where("schools.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("schools.routes", "route").getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -112,7 +112,7 @@ export class SchoolController extends Repository<School> {
     catch (e) {
       response
         .status(401)
-        .send("School with UID: " + request.query.uid + " was not found.");
+        .send("School with UID: " + request.params.uid + " was not found.");
       return;
     }
   }
@@ -158,20 +158,25 @@ export class SchoolController extends Repository<School> {
   async updateSchool(request: Request, response: Response, next: NextFunction) {
 
     try {
+      const uidNumber = request.params.uid;
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
         response.status(409).send("User is not an admin.")
         return;
       }
+      await getConnection()
+        .createQueryBuilder()
+        .update(School)
+        .where("uid = :uid", { uid: uidNumber })
+        .set(request.body)
+        .execute();
       response.status(200);
-      return await this.schoolRepository.save(request.body);
-
+      return;
     }
-
     catch (e) {
       response
         .status(401)
-        .send("School with UID " + request.query.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
+        .send("School with UID " + request.params.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
       return;
     }
   }
@@ -184,13 +189,13 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const schoolQueryResult = await this.schoolRepository.createQueryBuilder("schools").delete().where("schools.uid = :uid", { uid: uidNumber }).execute();
       response.status(200);
       return schoolQueryResult;
     }
     catch (e) {
-      response.status(401).send("Schools UID: " + request.query.uid + " was not found adn could not be deleted.")
+      response.status(401).send("Schools UID: " + request.params.uid + " was not found adn could not be deleted.")
     }
   }
   findBySchoolID(uid: number) {

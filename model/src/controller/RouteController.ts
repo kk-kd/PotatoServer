@@ -164,14 +164,14 @@ export class RouteController extends Repository<Route> {
 
   async oneRoute(request: Request, response: Response, next: NextFunction) {
     try {
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const routeQueryResult = await this.routeRepository.createQueryBuilder("routes").where("routes.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("routes.students", "student").getOneOrFail();
       response.status(200);
       return routeQueryResult;
     } catch (e) {
       response
         .status(401)
-        .send("Route with UID: " + request.query.uid + " was not found.");
+        .send("Route with UID: " + request.params.uid + " was not found.");
       return;
     }
   }
@@ -203,7 +203,7 @@ export class RouteController extends Repository<Route> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      const uidNumber = request.query.uid;
+      const uidNumber = request.params.uid;
       await getConnection().createQueryBuilder().update(Route).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
       return;
@@ -213,7 +213,7 @@ export class RouteController extends Repository<Route> {
     catch (e) {
       response
         .status(401)
-        .send("Route with UID " + request.query.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
+        .send("Route with UID " + request.params.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
       return;
     }
   }
@@ -226,13 +226,13 @@ export class RouteController extends Repository<Route> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const routeQueryResult = await this.routeRepository.createQueryBuilder("routes").delete().where("routes.uid = :uid", { uid: uidNumber }).execute();
       response.status(200);
       return routeQueryResult;
     }
     catch (e) {
-      response.status(401).send("Route UID: " + request.query.uid + " was not found adn could not be deleted.")
+      response.status(401).send("Route UID: " + request.params.uid + " was not found adn could not be deleted.")
     }
   }
   findByRouteID(uid: number) {

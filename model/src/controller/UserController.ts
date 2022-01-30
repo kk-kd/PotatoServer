@@ -146,7 +146,7 @@ export class UserController extends Repository<User> {
   async oneUser(request: Request, response: Response, next: NextFunction) {
 
     try {
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
         response.status(409).send("User is not an admin.")
@@ -162,7 +162,7 @@ export class UserController extends Repository<User> {
     } catch (e) {
       response
         .status(401)
-        .send("User ID: " + request.query.uid + " was not found.");
+        .send("User ID: " + request.params.uid + " was not found.");
       return;
     }
   }
@@ -188,7 +188,7 @@ export class UserController extends Repository<User> {
   async updateUser(request: Request, response: Response, next: NextFunction) {
 
     try {
-      const uidNumber = request.query.uid;
+      const uidNumber = request.params.uid;
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
         response.status(409).send("User is not an admin.")
@@ -207,7 +207,7 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User with UID " +
-          request.query.uid +
+          request.params.uid +
           " and details(" +
           request.body +
           ") couldn't be updated with error " +
@@ -225,7 +225,7 @@ export class UserController extends Repository<User> {
       //   response.status(409).send("User is not an admin.")
       //   return;
       // }
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
         response.status(409).send("User is not an admin.")
@@ -244,7 +244,7 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-          request.query.uid +
+          request.params.uid +
           " was not found adn could not be deleted."
         );
       return;
