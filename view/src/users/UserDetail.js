@@ -13,18 +13,16 @@ export const UserDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedData = await getOneUser(id)
-        .catch ((error) => {
+        const fetchedData = await getOneUser(id); 
+        setData(fetchedData.data);
+        console.log(fetchedData.data);
+        setStudents([fetchedData.data][0].students);
+      } catch (error) {
           let message = error.response.data;
           throw alert (message);
-        });
-        setData(fetchedData.data);
-        console.log(fetchedData.data)
-        setStudents([fetchedData.data][0].students);
-        
-      } catch (error) {}
-    };
+      }};
     fetchData();
+  
   }, []);
 
   async function handleDeleteUser (user_id, e) {
@@ -32,14 +30,14 @@ export const UserDetail = () => {
    
     console.log("Deleting User with uid = " + user_id)
     try {
-      let delete_user_response = await deleteUser(parseInt(user_id));      
-      
+      let delete_user_response = await deleteUser(parseInt(user_id)); 
     } catch (error)  {
-
       console.log(error)
       let message = error.response.data;
       throw alert (message);
     }
+    
+    navigate('/Users/list');
   }
  
   const columns = useMemo(

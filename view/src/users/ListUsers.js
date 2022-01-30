@@ -1,6 +1,6 @@
 import "./ListUsers.css";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { getAllUsers, deleteUser} from "../api/axios_wrapper";
@@ -8,26 +8,10 @@ import { filterAllUsers } from "../api/axios_wrapper";
 
 export const ListUsers = () => {
   
-
+  let navigate = useNavigate();
   function generateUserDetailLink(uid) {
     return "/Users/info/" + uid; 
   }
-
-  // const [data, setData] = useState([]);
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const fetchedData = await getAllUsers({
-  //         page: 0,
-  //         size: 0,
-  //         sort: "none",
-  //         sortDir: "none",
-  //       }).catch ((error) => {
-  //         let message = error.response.data;
-  //         throw alert (message);
-  //       });
-  //       setData(fetchedData.data);
-  //     } catch (e) {
 
   const [ data, setData ] = useState([]);
   const [ page, setPage ] = useState(0);
@@ -63,14 +47,15 @@ export const ListUsers = () => {
    
     console.log("Deleting User with uid = " + user_id)
     try {
-      let delete_user_response = await deleteUser(user_id)
-      .catch ((error) => {
-        let message = error.response.data;
-        throw alert (message);
-      })
-    } catch {
-      // avoids warning
+      let delete_user_response = await deleteUser(parseInt(user_id));      
+      
+    } catch (error)  {
+
+      console.log(error)
+      let message = error.response.data;
+      throw alert (message);
     }
+    navigate('/Users/info/' + user_id);
   }
 
   const nextSort = (id) => {
