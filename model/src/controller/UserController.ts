@@ -128,8 +128,8 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-            request.params.uid +
-            " was not found adn could not be deleted."
+          request.params.uid +
+          " was not found adn could not be deleted."
         );
     }
   }
@@ -141,6 +141,7 @@ export class UserController extends Repository<User> {
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("users.students", "student")
         .getOneOrFail();
       //const user = this.userRepository.findOne(request.params.id); same call example
       response.status(200);
@@ -180,11 +181,11 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User with UID " +
-            request.params.uid +
-            " and details(" +
-            request.body +
-            ") couldn't be updated with error " +
-            e
+          request.params.uid +
+          " and details(" +
+          request.body +
+          ") couldn't be updated with error " +
+          e
         );
       return;
     }
@@ -199,20 +200,24 @@ export class UserController extends Repository<User> {
         .where("users.uid = :uid", { uid: uidNumber })
         .execute();
       response.status(200);
+      return userQuereyResult;
     } catch (e) {
+
       response
         .status(401)
         .send(
           "User UID: " +
-            request.params.uid +
-            " was not found adn could not be deleted."
+          request.params.uid +
+          " was not found and could not be deleted."
         );
+      return;
     }
   }
 
   findByUserID(uid: number) {
     return this.createQueryBuilder("users")
       .where("users.uid = :uid", { uid })
+      .leftJoinAndSelect("users.students", "student")
       .getOne();
   }
   findByUserName(firstName: string) {
