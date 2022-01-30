@@ -2,9 +2,7 @@ import axios from "axios";
 
 /*
 Welcome to the Axios Wrapper.
-
 To extract data that you need or error codes, call `.data` on the output of these calls.
-
 The example from ListUsers is below (as a hook):
 
 export const ListUsers = () => {
@@ -17,13 +15,9 @@ export const ListUsers = () => {
         console.log(error);
       }
     };
-
     fetchData();
   }, []);
-
 /*
-
-
 /*
 GetAll from table (students, users, schools, routes) gives you every entry in the table.
 INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
@@ -68,7 +62,6 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
       - "none"
       - any User entity column (firstName, middleName, lastName, etc.)
         Check out model/entities/User.ts for all options.
-
 */
 export async function filterAllUsers(specifications) {
   return await axios.get(`/api/users/filter`, { params: specifications });
@@ -172,7 +165,6 @@ export async function loginUser(specifications) {
     The INPUT is a json map of each entity property;
         These are examples below. If you need to see the specific property names, check out 
         model/src/entities/*.ts to see all properties
-
         For a Student,
             {
                 id: 123456,
@@ -192,7 +184,6 @@ export async function loginUser(specifications) {
                 longitude: 1,
                 lattitude: 2,
             }
-
 */
 
 export async function saveStudent(specifications) {

@@ -1,13 +1,20 @@
 import "./UserForm.css";
 import GoogleMapReact from "google-map-react";
-import { useState } from "react";
-import { Marker } from "./../map/Marker";
-import {registerUser} from "../api/axios_wrapper";
-import { useNavigate } from "react-router-dom";
-import { Users } from "./Users";
+import { useState, useMemo, useEffect} from "react";
+import { Marker } from "../map/Marker";
+import {updateUser, getOneUser} from "../api/axios_wrapper";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import {useTable } from "react-table";
+import useBatchedState from 'react-use-batched-state';
 
-export const CreateUser = () => {
+export const EditUser = () => {
+  // general 
+  const { id } = useParams();
   let navigate = useNavigate();
+
+  // data 
+  const [data, setData] = useBatchedState({});
+  const [students, setStudents] = useBatchedState([]);
 
   // user
   const [ firstName, setFirstName ] = useState("");
@@ -17,6 +24,7 @@ export const CreateUser = () => {
   const [ email, setEmail ] = useState("");
   const [ address, setAddress ] = useState("");
   const [ isAdmin, setisAdmin ] = useState(false);
+
 
   // maps
   const [ showMap, setShowMap ] = useState(false);
@@ -34,10 +42,65 @@ export const CreateUser = () => {
     zoom: 13
   };
 
-  async function handleCreateUser (e) {
+ 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedData = await getOneUser(id).catch ((error) => {
+          let message = error.response.data;
+          throw alert (message);
+        });
+        console.log(fetchedData.data);
+        setData(fetchedData.data);
+        setStudents([fetchedData.data][0].students);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect (() => {
+    setFirstName(data.firstName)
+    setMiddleName(data.middleName)
+    setLastName(data.lastName)
+    setPassword(data.password)
+    setEmail(data.email)
+    setAddress(data.address)
+    setisAdmin(data.isAdmin)
+  }, [data])
+
+  const columns = useMemo(
+    () => [
+      {
+          Header: 'Student First Name',
+          accessor: 'firstName',
+      },
+      {
+        Header: 'Student Last Name',
+        accessor: 'lastName',
+      },
+      {
+        Header: ' ',
+        disableFilters: true,
+        accessor: 'uid',
+        Cell: ({value}) => { 
+          return <Link to = {"/Students/info/" + value}> {"View Student Detail"} </Link>   
+      },
+    }
+    ],
+    []
+);
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow
+  } = useTable({columns, data: students});
+
+  async function handleModifyUser (e) {
     e.preventDefault(); // prevents page reload on submission
-    //checkMap(address)
-   
     let form_results = {
       email: email,
       firstName: firstName,
@@ -47,17 +110,17 @@ export const CreateUser = () => {
       isAdmin: isAdmin,
       password: password,
     }
-    console.log("Creating User with entries:")
-    console.log(form_results)
+    console.log("Modifying User with entries:");
+    console.log(form_results);
+   
     try {
-      let create_user_response = await registerUser(form_results); 
+      let update_user_response = await updateUser(id,form_results); 
     } catch (error) {
         let message = error.response.data;
         throw alert (message);
     }
-    alert("User Successfully Created");
-    navigate('/Users/list');
-    
+    alert("User Successfully Updated");
+    navigate('/Users/info/' + id);
   }
 
   const searchLocation = () => {
@@ -70,10 +133,8 @@ export const CreateUser = () => {
         setAddress(address);
       } else if (status === "ZERO_RESULTS") {
         setError("No results for that address");
-        console.log(status)
       } else {
         setError("Server Error. Try again later");
-        console.log(status)
       }
     });
   }
@@ -95,9 +156,9 @@ export const CreateUser = () => {
 
   return (
     <div>
-        <h1>Create User</h1>
+        <h1>Edit User</h1>
         <div id = "user_create_form">
-          <form onSubmit={handleCreateUser}>
+          <form onSubmit={handleModifyUser}>
           
           <label className="input">
             <p>First Name:</p>
@@ -148,7 +209,7 @@ export const CreateUser = () => {
               <input
                   type="text"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)} 
+                  onChange={(e) => checkMap(e.target.value)} 
               />
             <p> {error}</p>
           </label>
@@ -161,12 +222,62 @@ export const CreateUser = () => {
                   onChange={(e) => setisAdmin(e.target.value)}
               />
           </label>
-      
-            <div>
-              <button className = "submitbutton" type="submit">Submit</button>
-            </div>
-          </form>
-          </div>
+          <h3>Students Associated With This User </h3>
+        <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+          <thead>
+          {headerGroups.map(headerGroup => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => (
+                    <th
+                        {...column.getHeaderProps((column.id === "name" || column.id === "email_address"))}
+                        style={column.id === "name" || column.id === "email_address" ? {
+                          borderBottom: 'solid 3px red',
+                          background: 'aliceblue',
+                          color: 'black',
+                          fontWeight: 'bold',
+                          cursor: 'pointer'
+                        } : {
+                          borderBottom: 'solid 3px red',
+                          background: 'aliceblue',
+                          color: 'black',
+                          fontWeight: 'bold',
+                        }}
+                    >
+                      {column.render('Header')}
+                    </th>
+                ))}
+              </tr>
+          ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+          {rows.map(row => {
+            prepareRow(row)
+            return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map(cell => {
+                    return (
+                        <td
+                            {...cell.getCellProps()}
+                            style={{
+                              padding: '10px',
+                              border: 'solid 1px gray',
+                              background: 'papayawhip',
+                            }}
+                        >
+                            {cell.render('Cell')}
+                        </td>
+                    )
+                  })}
+                </tr>
+            )
+          })}
+          </tbody>
+        </table> 
+        <div>
+            <button className = "submitbutton" type="submit">Submit</button>
+        </div>
+        </form>
+        </div>
         <div id="user_create_map">
           <h3> Map </h3>
           {error && (<div>{error}</div>)}

@@ -1,11 +1,18 @@
 import "./ListUsers.css";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
+import { getAllUsers, deleteUser} from "../api/axios_wrapper";
 import { filterAllUsers } from "../api/axios_wrapper";
 
 export const ListUsers = () => {
+  
+  let navigate = useNavigate();
+  function generateUserDetailLink(uid) {
+    return "/Users/info/" + uid; 
+  }
+
   const [ data, setData ] = useState([]);
   const [ page, setPage ] = useState(0);
   const [ total, setTotal ] = useState(1);
@@ -14,6 +21,7 @@ export const ListUsers = () => {
   const [ sortDirec, setSortDirec ] = useState("none");
   const [ emailFilter, setEmailFilter ] = useState("");
   const [ lastNameFilter, setLastNameFilter ] = useState("");
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,6 +41,22 @@ export const ListUsers = () => {
     };
     fetchData();
   }, [page, size, sortDirec, emailFilter, lastNameFilter]);
+
+  async function handleDeleteUser (user_id, e) {
+    e.preventDefault(); 
+   
+    console.log("Deleting User with uid = " + user_id)
+    try {
+      let delete_user_response = await deleteUser(parseInt(user_id));      
+      
+    } catch (error)  {
+
+      console.log(error)
+      let message = error.response.data;
+      throw alert (message);
+    }
+    navigate('/Users/info/' + user_id);
+  }
 
   const nextSort = (id) => {
     if (sortBy !== id) {
@@ -78,7 +102,7 @@ export const ListUsers = () => {
         accessor: "isAdmin",
         Cell: (props) => {
           return <label>{props.value.toString()}</label>;
-        },
+        }
       },
       {
         Header: "Students",
@@ -87,17 +111,21 @@ export const ListUsers = () => {
           return <div>{props.value.map((student) => <div>{student.firstName}</div>)}</div>
         }
       },
-      {
-        Header: "Detail Page",
-        accessor: "uid",
-        Cell: (props) => {
-          return <Link to={`/Users/${props.value}`}>view</Link>
-        }
-      }
-    ],
-    []
+        {
+          Header: ' ',
+          disableFilters: true,
+          accessor: 'uid',
+          Cell: ({value}) => { 
+            return <div> 
+              <Link to = {generateUserDetailLink(value)}> {"View User Detail"} </Link> 
+              <button onClick = {(e) => {handleDeleteUser(value, e)}}> Delete User </button>
+              </div> } 
+        },
+      ],
+      []
   );
 
+ 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
   return (
