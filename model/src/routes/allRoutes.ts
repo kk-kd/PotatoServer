@@ -198,6 +198,12 @@ export const allRoutes = [
     controller: RouteController,
     action: "all",
   },
+  {
+    method: "get",
+    route: "/api/routes/planner/:uid",
+    controller: SchoolController,
+    action: "oneRoutePlanner"
+  },
   /*
     Gets all Schools.
     page: number, denotes the number page requested; starts at 0

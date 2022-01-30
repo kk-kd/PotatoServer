@@ -9,7 +9,7 @@
 #currentRouteMarker {
   width: 30px;
   height: 30px;
-  background-color: lightcoral;
+  background-color: green;
   cursor: pointer;
   border-radius: 50%;
 }
@@ -17,7 +17,7 @@
 #selectableRouteMarker {
   width: 20px;
   height: 20px;
-  background-color: lightcoral;
+  background-color: blue;
   cursor: pointer;
   border-radius: 50%;
 }

@@ -103,6 +103,9 @@ export async function getOneSchool(uid) {
 export async function getOneRoute(uid) {
   return await axios.get("/api/routes/" + uid);
 }
+export async function getOneRoutePlanner(uid) {
+  return await axios.get("/api/routes/planner/" + uid);
+}
 /*
    Deletes one entry from a table (students, users, schools, routes) by UID.
 */
