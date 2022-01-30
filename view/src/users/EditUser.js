@@ -17,6 +17,7 @@ export const EditUser = () => {
   const [students, setStudents] = useBatchedState([]);
 
   // user
+  
   const [ firstName, setFirstName ] = useState("");
   const [ middleName, setMiddleName ] = useState("");
   const [ lastName, setLastName ] = useState("");
@@ -156,128 +157,133 @@ export const EditUser = () => {
 
   return (
     <div>
-        <h1>Edit User</h1>
-        <div id = "user_create_form">
-          <form onSubmit={handleModifyUser}>
+        <h1> Edit User </h1>
+        
+        <form onSubmit={handleModifyUser} newUserClicked = {false}>
+          <div id = "user_create_form">
+              <label className="input">
+                <p>First Name:</p>
+                  <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                  />
+              </label>
+                
+              <label className="input">
+                <p>Middle Name:</p>
+                  <input
+                      type="text"
+                      value={middleName}
+                      onChange={(e) => setMiddleName(e.target.value)}
+                  />
+              </label>
+                
+              <label className="input">
+                <p>Last Name:</p>
+                  <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                  />
+              </label>
+              <label className="input">
+                <p>Email:</p>
+                  <input
+                      type="text"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                  />
+              </label>
+
+              <label className="input">
+                <p>Password:</p>
+                  <input
+                      type="text"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                  />
+              </label>
+                
+              <label className="input">
+                <p>Address:</p>
+                  <input
+                      type="text"
+                      value={address}
+                      onChange={(e) => checkMap(e.target.value)} 
+                  />
+                <p> {error}</p>
+              </label>
+
+              <label className="input">
+                <p>Admin:</p>
+                  <input
+                      type="checkbox"
+                      value={isAdmin}
+                      onChange={(e) => setisAdmin(e.target.value)}
+                  />
+              </label>
+          </div> 
           
-          <label className="input">
-            <p>First Name:</p>
-              <input
-                  type="text"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-              />
-          </label>
-            
-          <label className="input">
-            <p>Middle Name:</p>
-              <input
-                  type="text"
-                  value={middleName}
-                  onChange={(e) => setMiddleName(e.target.value)}
-              />
-          </label>
-            
-          <label className="input">
-            <p>Last Name:</p>
-              <input
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-              />
-          </label>
-          <label className="input">
-            <p>Email:</p>
-              <input
-                  type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-              />
-          </label>
-
-          <label className="input">
-            <p>Password:</p>
-              <input
-                  type="text"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-              />
-          </label>
-            
-          <label className="input">
-            <p>Address:</p>
-              <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => checkMap(e.target.value)} 
-              />
-            <p> {error}</p>
-          </label>
-
-          <label className="input">
-            <p>Admin:</p>
-              <input
-                  type="checkbox"
-                  value={isAdmin}
-                  onChange={(e) => setisAdmin(e.target.value)}
-              />
-          </label>
-          <h3>Students Associated With This User </h3>
-        <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
-          <thead>
-          {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column => (
-                    <th
-                        {...column.getHeaderProps((column.id === "name" || column.id === "email_address"))}
-                        style={column.id === "name" || column.id === "email_address" ? {
-                          borderBottom: 'solid 3px red',
-                          background: 'aliceblue',
-                          color: 'black',
-                          fontWeight: 'bold',
-                          cursor: 'pointer'
-                        } : {
-                          borderBottom: 'solid 3px red',
-                          background: 'aliceblue',
-                          color: 'black',
-                          fontWeight: 'bold',
-                        }}
-                    >
-                      {column.render('Header')}
-                    </th>
-                ))}
-              </tr>
-          ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-          {rows.map(row => {
-            prepareRow(row)
-            return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map(cell => {
-                    return (
-                        <td
-                            {...cell.getCellProps()}
-                            style={{
-                              padding: '10px',
-                              border: 'solid 1px gray',
-                              background: 'papayawhip',
-                            }}
-                        >
-                            {cell.render('Cell')}
-                        </td>
-                    )
-                  })}
+        
+            <h3>Students Associated With This User </h3>
+          <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+            <thead>
+            {headerGroups.map(headerGroup => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map(column => (
+                      <th
+                          {...column.getHeaderProps((column.id === "name" || column.id === "email_address"))}
+                          style={column.id === "name" || column.id === "email_address" ? {
+                            borderBottom: 'solid 3px red',
+                            background: 'aliceblue',
+                            color: 'black',
+                            fontWeight: 'bold',
+                            cursor: 'pointer'
+                          } : {
+                            borderBottom: 'solid 3px red',
+                            background: 'aliceblue',
+                            color: 'black',
+                            fontWeight: 'bold',
+                          }}
+                      >
+                        {column.render('Header')}
+                      </th>
+                  ))}
                 </tr>
-            )
-          })}
-          </tbody>
-        </table> 
-        <div>
-            <button className = "submitbutton" type="submit">Submit</button>
-        </div>
-        </form>
-        </div>
+            ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+            {rows.map(row => {
+              prepareRow(row)
+              return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map(cell => {
+                      return (
+                          <td
+                              {...cell.getCellProps()}
+                              style={{
+                                padding: '10px',
+                                border: 'solid 1px gray',
+                                background: 'papayawhip',
+                              }}
+                          >
+                              {cell.render('Cell')}
+                          </td>
+                      )
+                    })}
+                  </tr>
+              )
+            })
+            }
+            </tbody>
+          </table> 
+            <div>
+
+                <button className = "submitbutton" type="submit">Submit</button>
+            </div>
+          </form>
+        
         <div id="user_create_map">
           <h3> Map </h3>
           {error && (<div>{error}</div>)}

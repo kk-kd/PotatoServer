@@ -10,6 +10,7 @@ export const CreateUser = () => {
   let navigate = useNavigate();
 
   // user
+  const [newUserClicked, setNewUserClicked] = useState(false); 
   const [ firstName, setFirstName ] = useState("");
   const [ middleName, setMiddleName ] = useState("");
   const [ lastName, setLastName ] = useState("");
@@ -96,7 +97,21 @@ export const CreateUser = () => {
   return (
     <div>
         <h1>Create User</h1>
+         <label className="input">
+                <p>Create a New User:</p>
+        
+        <input
+                  type="checkbox"
+                  key={Math.random()}
+                  value={newUserClicked}
+                  onChange={(e) => setNewUserClicked(e.target.checked)}
+                  defaultChecked={newUserClicked}
+        /> 
+        </label>
+        
+        
         <div id = "user_create_form">
+        {newUserClicked && 
           <form onSubmit={handleCreateUser}>
           
           <label className="input">
@@ -166,6 +181,7 @@ export const CreateUser = () => {
               <button className = "submitbutton" type="submit">Submit</button>
             </div>
           </form>
+          }
           </div>
         <div id="user_create_map">
           <h3> Map </h3>
