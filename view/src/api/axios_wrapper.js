@@ -74,10 +74,16 @@ export async function filterAllUsers(specifications) {
   return await axios.get(`/api/users/filter`, { params: specifications });
 }
 export async function filterAllStudents(specifications) {
-  return await axios.get(`/api/students/filter`, { params: specifications });
+  return await axios.get(
+    `/api/students/filter`,
+      { params: specifications }
+  );
 }
 export async function filterAllSchools(specifications) {
-  return await axios.get(`/api/schools/filter`, { params: specifications });
+  return await axios.get(
+    `/api/schools/filter`,
+      { params: specifications }
+  );
 }
 export async function filterAllRoutes(specifications) {
   return await axios.get(
@@ -161,17 +167,6 @@ Login Validation for a User
 */
 export async function loginUser(specifications) {
   return await axios.post("/api/login", specifications);
-}
-
-/*
-Grant admin power to an non-admin user 
-        You need to specify the old and new password:
-            {
-                newAdminEmail: "example@email.net",
-            }
-*/
-export async function makeAdmin(specifications) {
-  return await axios.post("/api/make-admin", specifications);
 }
 
 /*
