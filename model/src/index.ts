@@ -39,20 +39,22 @@ if (process.env.NODE_ENV == "development") {
   credentials = { key: privateKey, ca: chain, cert: certificate };
 }
 
-function makeid(length) {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
+// function makeid(length) {
+//   var result = "";
+//   var characters =
+//     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//   var charactersLength = characters.length;
+//   for (var i = 0; i < length; i++) {
+//     result += characters.charAt(Math.floor(Math.random() * charactersLength));
+//   }
+//   return result;
+// }
+
+const app = express();
+
 createConnection()
   .then(async (connection) => {
     // create express app
-    const app = express();
     app.use(bodyParser.json());
     app.use("/api", authRoutes);
     // var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
@@ -132,73 +134,6 @@ createConnection()
     // const routeRepository = connection.getCustomRepository(RouteController);
     // routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
 
-<<<<<<< HEAD
-    let nameIter: string[] = [
-      "first",
-      "second",
-      "third",
-      "fourth",
-      "fifth",
-      "sixth",
-      "seventh",
-      "eighth",
-      "ninth",
-      "tenth",
-    ];
-    var count = 0.1;
-    var AdminBoolean = false;
-    var intCount = 0;
-
-    // Construct User Entity
-    for (var userNumber in nameIter) {
-      AdminBoolean = !AdminBoolean;
-      count = count + 1;
-      intCount = intCount + 1;
-      const userName = nameIter[userNumber] + "User";
-      const newUser = new User();
-      newUser.email = makeid(20) + "@email.com";
-      newUser.firstName = userName + "FirstName";
-      newUser.middleName = userName + "MiddleName";
-      newUser.lastName = userName + "LastName";
-      newUser.address = userName + " address Road";
-      newUser.longitude = count;
-      newUser.latitude = count - 1;
-      newUser.isAdmin = AdminBoolean;
-      newUser.password = "testPassword" + count + 5;
-      // Construct Student Entity
-      const studentName = nameIter[userNumber] + "Student";
-      const newStudent = new Student();
-      newStudent.id = intCount;
-      newStudent.firstName = studentName + "FirstName";
-      newStudent.middleName = studentName + "middleName";
-      newStudent.lastName = studentName + "lastName";
-      newUser.students = [newStudent];
-
-      // Construct Route Entity:
-      const routeName = nameIter[userNumber] + "Route";
-      const newRoute = new Route();
-      newRoute.name = routeName + " Name";
-      newRoute.desciption = routeName + " Description";
-      newRoute.students = [newStudent];
-      // Construct School Entity
-      const schoolName = nameIter[userNumber] + "School";
-      const newSchool = new School();
-      newSchool.name = schoolName + " Name";
-      newSchool.address = intCount + " Lane, Durham, NC";
-      newSchool.latitude = intCount + 1;
-      newSchool.longitude = intCount + 2;
-      // newSchool.routes = [newRoute];
-      newSchool.students = [newStudent];
-
-      // Save the entries to the Databse
-      await connection.manager.save(newUser);
-      await connection.manager.save(newRoute);
-      await connection.manager.save(newSchool);
-
-      // await userRepository.save(newUser);
-      // await studentRepository.save(newStudent);
-    }
-=======
     // let nameIter: string[] = [
     //   "first",
     //   "second",
@@ -264,7 +199,6 @@ createConnection()
     //   // await userRepository.save(newUser);
     //   // await studentRepository.save(newStudent);
     // }
->>>>>>> dev
 
     // connection.manager.createQueryBuilder()
     // .leftJoinAndSelect("t.customer", "customer")
@@ -317,3 +251,5 @@ createConnection()
     );
   })
   .catch((error) => console.log(error));
+
+export default app;
