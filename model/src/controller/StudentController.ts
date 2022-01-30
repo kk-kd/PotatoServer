@@ -44,27 +44,44 @@ export class StudentController extends Repository<Student> {
       const pageNum: number = +request.query.page;
       const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
+
       var sortSpecification;
       var sortDirSpec;
       if (request.query.sort == 'none') {
         sortSpecification = "students.uid";
-      }
-      else { //should error check instead of else
+      } else if (request.query.sort == 'school.name') {
+        sortSpecification = "school.name";
+      } else { //should error check instead of else
         sortSpecification = "students." + request.query.sort;
       }
-      if ((request.query.sortDir == 'none') || (request.query.sortDir == 'ASC')) {
+      if (request.query.sortDir == 'ASC') {
         sortDirSpec = "ASC";
       }
-      else { //error check instead of else
+      else if (request.query.sortDir == 'DESC') { //error check instead of else
         sortDirSpec = "DESC";
+      } else {
+        sortDirSpec = "ASC";
+        sortSpecification = "students.uid";
       }
       var filterSpecification;
       filterSpecification = "students." + request.query.sort;
-      const queryFilterType = request.query.filterType;
-      const queryFilterData = request.query.filterData;
-      const usersQueryResult = await this.studentRepository.createQueryBuilder("students").skip(skipNum).take(takeNum).orderBy(sortSpecification, sortDirSpec).having("students." + queryFilterType + " = :spec", { spec: queryFilterData }).groupBy("students.uid").getMany();
+      const queryIdFilter = request.query.idFilter;
+      const queryLastNameFilter = request.query.lastNameFilter;
+      const [studentsQueryResult, total] = await this.studentRepository
+        .createQueryBuilder("students")
+        .skip(skipNum)
+        .take(takeNum)
+        .orderBy(sortSpecification, sortDirSpec)
+        .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
+        .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
+        .leftJoinAndSelect("students.route", "route")
+        .leftJoinAndSelect("students.school", "school")
+        .getManyAndCount();
       response.status(200);
-      return usersQueryResult;
+      return {
+        students: studentsQueryResult,
+        total: total
+      };
     }
     catch (e) {
       response.status(401).send("Students were not found with error: " + e);

@@ -168,7 +168,7 @@ createConnection()
     //   // Construct Student Entity
     //   const studentName = nameIter[userNumber] + "Student";
     //   const newStudent = new Student();
-    //   newStudent.id = intCount;
+    //   newStudent.id = "" + intCount;
     //   newStudent.firstName = studentName + "FirstName";
     //   newStudent.middleName = studentName + "middleName";
     //   newStudent.lastName = studentName + "lastName";
@@ -195,7 +195,8 @@ createConnection()
     //   await connection.manager.save(newRoute);
     //   await connection.manager.save(newSchool);
 
-
+    //   // await userRepository.save(newUser);
+    //   // await studentRepository.save(newStudent);
     // }
 
     // connection.manager.createQueryBuilder()
