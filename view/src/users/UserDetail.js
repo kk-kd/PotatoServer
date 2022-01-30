@@ -47,7 +47,7 @@ export const UserDetail = () => {
         accessor: 'uid',
         Cell: ({value}) => { 
           return <Link to = {"/Students/info/" + value}> {"View Student Detail"} </Link>   
-      },
+        }
     }
       ],
       []

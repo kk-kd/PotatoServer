@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
-import { getAllUsers } from "../api/axios_wrapper";
+import { getAllUsers, deleteUser} from "../api/axios_wrapper";
+
 export const ListUsers = () => {
   
   function generateUserDetailLink(uid) {
@@ -25,7 +26,7 @@ export const ListUsers = () => {
         setData(fetchedData.data);
 
       } catch (error) {
-        console.log(error);
+        console.log(error.response);
       }
     };
     fetchData();
@@ -66,18 +67,44 @@ export const ListUsers = () => {
           disableFilters: true,
           accessor: 'uid',
           Cell: ({value}) => { 
-            return <Link to = {generateUserDetailLink(value)}> {"View User Detail"} </Link>   
+            return <div> 
+              <Link to = {generateUserDetailLink(value)}> {"View User Detail"} </Link> 
+              <button onClick = {(e) => {handleDeleteUser(value, e)}}> Delete User </button>
+              </div> } 
         },
-        }
       ],
       []
   );
+
+  async function handleDeleteUser (user_id, e) {
+    e.preventDefault(); 
+   
+    console.log("Deleting User with uid = " + user_id)
+    try {
+      let delete_user_response = await deleteUser(user_id).catch ((error) => {})
+      let status = delete_user_response.status
+      
+      if (status === 200) {
+    
+        throw alert ("User Successfully Deleted.")
+        // move to their user detail
+      }
+      if (status === 404) {
+        throw alert ("Login Failed Because the Server was Not Reached.")
+      } 
+      else if (status === 401) {
+        throw alert ("Login Failed Because User Already Exists")
+    }
+  } catch {
+    // avoids warning
+   }
+  }
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data }, useFilters, useSortBy);
   return (
     <div id="userListing">
-      <h1>List Schools</h1>
+      <h1>List Users</h1>
       <Link to="/Users/create">
         <button>Create User</button>
       </Link>
