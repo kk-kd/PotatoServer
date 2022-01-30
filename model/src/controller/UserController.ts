@@ -151,6 +151,7 @@ export class UserController extends Repository<User> {
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("users.students", "student")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
