@@ -80,9 +80,7 @@ export async function filterAllSchools(specifications) {
   return await axios.get(`/api/schools/filter`, { params: specifications });
 }
 export async function filterAllRoutes(specifications) {
-  return await axios.get(
-    `/api/routes/filter/${convertMapToURL(specifications)}`
-  );
+  return await axios.get(`/api/routes/filter`, { params: specifications });
 }
 /*
    Returns one entry from a table (students, users, schools, routes) by UID.
