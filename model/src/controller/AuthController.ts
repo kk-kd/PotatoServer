@@ -1,5 +1,5 @@
-import { EntityRepository, Repository, getRepository } from "typeorm";
-import { NextFunction, Request, Response } from "express";
+import { Connection, getConnection, getRepository } from "typeorm";
+import { Request, Response } from "express";
 import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
@@ -23,6 +23,39 @@ schema
   .spaces(); // Should not have spaces
 
 class AuthController {
+  static makeAdmin = async (request: Request, response: Response) => {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+
+    if (!isAdmin) {
+      response.status(401).send("Make Admin: The requester is not an admin.");
+      return;
+    }
+
+    let { newAdminEmail } = request.body;
+    if (!EmailValidator.validate(newAdminEmail)) {
+      response
+        .status(401)
+        .send("Make Admin: The new admin's email address is not valid.");
+    }
+    const newAdmin = await getRepository(User).findOneOrFail({
+      email: newAdminEmail,
+    });
+
+    if (!newAdmin) {
+      response
+        .status(401)
+        .send(
+          "Make Admin: The intended new admin is not in the database. Register first."
+        );
+    }
+
+    await getRepository(User).update(
+      { email: newAdminEmail },
+      { isAdmin: true }
+    );
+    response.status(201).send("Make Admin: Update Success");
+  };
+
   static register = async (request: Request, response: Response) => {
     let {
       email,
@@ -65,7 +98,7 @@ class AuthController {
       user.address = address;
       user.longitude = longitude;
       user.latitude = latitude;
-      user.isAdmin = isAdmin;
+      user.isAdmin = false;
       await userRepository.save(user);
     } catch (error) {
       response.status(401).send("User Register: " + error);
