@@ -105,6 +105,8 @@ export class RouteController extends Repository<Route> {
       const uidNumber = request.query.uid;
       await getConnection().createQueryBuilder().update(Route).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
+      return;
+
     }
 
     catch (e) {

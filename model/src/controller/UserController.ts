@@ -191,6 +191,7 @@ export class UserController extends Repository<User> {
         .set(request.body)
         .execute();
       response.status(200);
+      return;
     } catch (e) {
       response
         .status(401)

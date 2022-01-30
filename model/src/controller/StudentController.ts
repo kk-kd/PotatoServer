@@ -121,6 +121,8 @@ export class StudentController extends Repository<Student> {
       const uidNumber = request.query.uid;
       await getConnection().createQueryBuilder().update(Student).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
+      return;
+
     }
 
     catch (e) {

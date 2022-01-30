@@ -118,6 +118,8 @@ export class SchoolController extends Repository<School> {
       const uidNumber = request.query.uid;
       await getConnection().createQueryBuilder().update(School).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
+      return;
+
     }
 
     catch (e) {
