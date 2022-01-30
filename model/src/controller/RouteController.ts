@@ -89,6 +89,11 @@ export class RouteController extends Repository<Route> {
   }
 
   async saveNewRoute(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       return this.routeRepository.save(request.body);
     }
@@ -101,6 +106,11 @@ export class RouteController extends Repository<Route> {
   }
 
   async updateRoute(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       const uidNumber = request.query.uid;
       await getConnection().createQueryBuilder().update(Route).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
@@ -118,6 +128,11 @@ export class RouteController extends Repository<Route> {
   }
 
   async deleteRoute(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
 
       const uidNumber = request.query.uid; //needed for the await call / can't nest them

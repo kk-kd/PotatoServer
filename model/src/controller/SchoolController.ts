@@ -12,6 +12,11 @@ export class SchoolController extends Repository<School> {
   private schoolRepository = getRepository(School);
 
   async allSchools(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
 
       const pageNum: number = +request.query.page;
@@ -41,6 +46,11 @@ export class SchoolController extends Repository<School> {
     }
   }
   async filterAllSchools(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       const pageNum: number = +request.query.page;
       const takeNum: number = +request.query.size;
@@ -87,6 +97,11 @@ export class SchoolController extends Repository<School> {
   }
 
   async oneSchool(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       const uidNumber = request.query.uid; //needed for the await call / can't nest them
       const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").where("schools.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("schools.routes", "route").getOneOrFail();
@@ -102,6 +117,11 @@ export class SchoolController extends Repository<School> {
   }
 
   async saveNewSchool(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       return this.schoolRepository.save(request.body);
     }
@@ -114,6 +134,11 @@ export class SchoolController extends Repository<School> {
   }
 
   async updateSchool(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       const uidNumber = request.query.uid;
       await getConnection().createQueryBuilder().update(School).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
@@ -131,6 +156,11 @@ export class SchoolController extends Repository<School> {
   }
 
   async deleteSchool(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
 
       const uidNumber = request.query.uid; //needed for the await call / can't nest them

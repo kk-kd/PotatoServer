@@ -19,11 +19,11 @@ export class UserController extends Repository<User> {
       // const users = this.userRepository.find();
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
-      // const isAdmin = response.locals.jwtPayload.isAdmin;
-      // if (!isAdmin) {
-      //   response.status(409).send("User is not an admin.")
-      //   return;
-      // }
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       const pageNum: number = +request.query.page;
       const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
@@ -65,11 +65,11 @@ export class UserController extends Repository<User> {
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
 
-      // const isAdmin = response.locals.jwtPayload.isAdmin;
-      // if (!isAdmin) {
-      //   response.status(409).send("User is not an admin.")
-      //   return;
-      // }
+      const isAdmin = response.locals.jwtPayload.isAdmin;
+      if (!isAdmin) {
+        response.status(409).send("User is not an admin.")
+        return;
+      }
       const pageNum: number = +request.query.page;
       const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
@@ -147,6 +147,11 @@ export class UserController extends Repository<User> {
 
   async oneUser(request: Request, response: Response, next: NextFunction) {
     const uidNumber = request.query.uid; //needed for the await call / can't nest them
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
@@ -163,6 +168,11 @@ export class UserController extends Repository<User> {
     }
   }
   async saveNewUser(request: Request, response: Response, next: NextFunction) {
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       return this.userRepository.save(request.body);
     } catch (e) {
@@ -177,7 +187,11 @@ export class UserController extends Repository<User> {
 
   async updateUser(request: Request, response: Response, next: NextFunction) {
     const uidNumber = request.query.uid;
-
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       // const isAdmin = response.locals.jwtPayload.isAdmin;
       // if (!isAdmin) {
@@ -209,7 +223,11 @@ export class UserController extends Repository<User> {
 
   async deleteUser(request: Request, response: Response, next: NextFunction) {
     const uidNumber = request.query.uid; //needed for the await call / can't nest them
-
+    const isAdmin = response.locals.jwtPayload.isAdmin;
+    if (!isAdmin) {
+      response.status(409).send("User is not an admin.")
+      return;
+    }
     try {
       // const isAdmin = response.locals.jwtPayload.isAdmin;
       // if (!isAdmin) {
@@ -245,13 +263,11 @@ export class UserController extends Repository<User> {
   }
   updateUserName(
     uid: number,
-    firstName: string,
-    middleName: string,
-    lastName: string
+    isAdmin: boolean,
   ) {
     return this.createQueryBuilder("users")
       .update()
-      .set({ firstName: firstName, middleName: middleName, lastName: lastName })
+      .set({ isAdmin: isAdmin })
       .where("users.uid = :uid", { uid })
       .execute();
   }
