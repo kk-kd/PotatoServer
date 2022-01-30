@@ -14,18 +14,18 @@ export class SchoolController extends Repository<School> {
   async allSchools(request: Request, response: Response, next: NextFunction) {
     try {
 
-      const pageNum: number = +request.params.page;
-      const takeNum: number = +request.params.size;
+      const pageNum: number = +request.query.page;
+      const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
-      if (request.params.sort == 'none') {
+      if (request.query.sort == 'none') {
         sortSpecification = "schools.uid";
       }
       else { //should error check instead of else
-        sortSpecification = "schools." + request.params.sort;
+        sortSpecification = "schools." + request.query.sort;
       }
-      if ((request.params.sortDir == 'none') || (request.params.sortDir == 'ASC')) {
+      if ((request.query.sortDir == 'none') || (request.query.sortDir == 'ASC')) {
         sortDirSpec = "ASC";
       }
       else { //error check instead of else
@@ -68,12 +68,12 @@ export class SchoolController extends Repository<School> {
       const queryFilterType = request.query.filterType;
       const queryFilterData = request.query.filterData;
       const [schoolsQueryResult, total] = await this.schoolRepository
-          .createQueryBuilder("schools")
-          .skip(skipNum)
-          .take(takeNum)
-          .orderBy(sortSpecification, sortDirSpec)
-          .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
-          .getManyAndCount();
+        .createQueryBuilder("schools")
+        .skip(skipNum)
+        .take(takeNum)
+        .orderBy(sortSpecification, sortDirSpec)
+        .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
+        .getManyAndCount();
       response.status(200);
       return {
         schools: schoolsQueryResult,
@@ -88,7 +88,7 @@ export class SchoolController extends Repository<School> {
 
   async oneSchool(request: Request, response: Response, next: NextFunction) {
     try {
-      const uidNumber = request.params.uid; //needed for the await call / can't nest them
+      const uidNumber = request.query.uid; //needed for the await call / can't nest them
       const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").where("schools.uid = :uid", { uid: uidNumber }).getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -96,7 +96,7 @@ export class SchoolController extends Repository<School> {
     catch (e) {
       response
         .status(401)
-        .send("School with UID: " + request.params.uid + " was not found.");
+        .send("School with UID: " + request.query.uid + " was not found.");
       return;
     }
   }
@@ -115,7 +115,7 @@ export class SchoolController extends Repository<School> {
 
   async updateSchool(request: Request, response: Response, next: NextFunction) {
     try {
-      const uidNumber = request.params.uid;
+      const uidNumber = request.query.uid;
       await getConnection().createQueryBuilder().update(School).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
     }
@@ -123,7 +123,7 @@ export class SchoolController extends Repository<School> {
     catch (e) {
       response
         .status(401)
-        .send("School with UID " + request.params.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
+        .send("School with UID " + request.query.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
       return;
     }
   }
@@ -131,12 +131,12 @@ export class SchoolController extends Repository<School> {
   async deleteSchool(request: Request, response: Response, next: NextFunction) {
     try {
 
-      const uidNumber = request.params.uid; //needed for the await call / can't nest them
+      const uidNumber = request.query.uid; //needed for the await call / can't nest them
       const schoolQueryResult = await this.schoolRepository.createQueryBuilder("schools").delete().where("schools.uid = :uid", { uid: uidNumber }).execute();
       response.status(200);
     }
     catch (e) {
-      response.status(401).send("Schools UID: " + request.params.uid + " was not found adn could not be deleted.")
+      response.status(401).send("Schools UID: " + request.query.uid + " was not found adn could not be deleted.")
     }
   }
   findBySchoolID(uid: number) {

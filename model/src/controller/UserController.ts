@@ -24,18 +24,18 @@ export class UserController extends Repository<User> {
       //   response.status(409).send("User is not an admin.")
       //   return;
       // }
-      const pageNum: number = +request.params.page;
-      const takeNum: number = +request.params.size;
+      const pageNum: number = +request.query.page;
+      const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
-      if (request.params.sort == "none") {
+      if (request.query.sort == "none") {
         sortSpecification = "users.uid";
       } else {
         //should error check instead of else
-        sortSpecification = "users." + request.params.sort;
+        sortSpecification = "users." + request.query.sort;
       }
-      if (request.params.sortDir == "none" || request.params.sortDir == "ASC") {
+      if (request.query.sortDir == "none" || request.query.sortDir == "ASC") {
         sortDirSpec = "ASC";
       } else {
         //error check instead of else
@@ -124,6 +124,8 @@ export class UserController extends Repository<User> {
     response: Response,
     next: NextFunction
   ) {
+    const uidNumber = response.locals.jwtPayload.uid;
+
     try {
       const uidNumber = response.locals.jwtPayload.uid;
       const usersQueryResult = await this.userRepository
@@ -137,27 +139,25 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-          request.params.uid +
+          uidNumber +
           " was not found adn could not be deleted."
         );
     }
   }
 
   async oneUser(request: Request, response: Response, next: NextFunction) {
-    let { uid } = request.body;
+    const uidNumber = request.query.uid; //needed for the await call / can't nest them
     try {
-      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
         .getOneOrFail();
-      //const user = this.userRepository.findOne(request.params.id); same call example
       response.status(200);
       return usersQueryResult;
     } catch (e) {
       response
         .status(401)
-        .send("User ID: " + request.params.uid + " was not found.");
+        .send("User ID: " + uidNumber + " was not found.");
       return;
     }
   }
@@ -175,13 +175,14 @@ export class UserController extends Repository<User> {
   }
 
   async updateUser(request: Request, response: Response, next: NextFunction) {
+    const uidNumber = request.query.uid;
+
     try {
       // const isAdmin = response.locals.jwtPayload.isAdmin;
       // if (!isAdmin) {
       //   response.status(409).send("User is not an admin.")
       //   return;
       // }
-      const uidNumber = request.params.uid;
       await getConnection()
         .createQueryBuilder()
         .update(User)
@@ -194,7 +195,7 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User with UID " +
-          request.params.uid +
+          uidNumber +
           " and details(" +
           request.body +
           ") couldn't be updated with error " +
@@ -205,13 +206,14 @@ export class UserController extends Repository<User> {
   }
 
   async deleteUser(request: Request, response: Response, next: NextFunction) {
+    const uidNumber = request.query.uid; //needed for the await call / can't nest them
+
     try {
       // const isAdmin = response.locals.jwtPayload.isAdmin;
       // if (!isAdmin) {
       //   response.status(409).send("User is not an admin.")
       //   return;
       // }
-      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const userQuereyResult = await this.userRepository
         .createQueryBuilder("users")
         .delete()
@@ -223,7 +225,7 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-          request.params.uid +
+          uidNumber +
           " was not found adn could not be deleted."
         );
     }
