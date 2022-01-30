@@ -12,15 +12,16 @@ export const UserDetail = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedData = await getOneUser(id).catch((e) => {});
+        const fetchedData = await getOneUser(id)
+        .catch ((error) => {
+          let message = error.response.data;
+          throw alert (message);
+        });
         setData(fetchedData.data);
         setStudents([fetchedData.data][0].students);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     };
     fetchData();
-    console.log(data)
   }, []);
  
   const columns = useMemo(

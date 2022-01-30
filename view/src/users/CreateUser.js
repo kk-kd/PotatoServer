@@ -49,25 +49,11 @@ export const CreateUser = () => {
     console.log("Creating User with entries:")
     console.log(form_results)
     try {
-      let create_user_response = await registerUser(form_results).catch ((error) => {})
-      let user_id = create_user_response.id
-      let status = create_user_response.status
-      
-      if (status === 200) {
-        navigate("/Users/info/" + user_id, { replace: true });
-        throw alert ("User Successfully Created.")
-        // move to their user detail
-      }
-      if (status === 404) {
-        navigate("/Users/info:" + user_id, { replace: true });
-        throw alert ("Login Failed Because the Server was Not Reached.")
-      } 
-      else if (status === 401) {
-        throw alert ("Login Failed Because User Already Exists")
-    }
-  } catch {
-    // avoids warning
-   }
+      let create_user_response = await registerUser(form_results).catch ((error) => {
+        let message = error.response.data;
+        throw alert (message);
+      });
+    } catch {}
   }
 
   const searchLocation = () => {

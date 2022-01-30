@@ -46,7 +46,10 @@ export const EditUser = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedData = await getOneUser(id);
+        const fetchedData = await getOneUser(id).catch ((error) => {
+          let message = error.response.data;
+          throw alert (message);
+        });
         console.log(fetchedData.data);
         setData(fetchedData.data);
         setStudents([fetchedData.data][0].students);
@@ -109,26 +112,14 @@ export const EditUser = () => {
     }
     console.log("Modifying User with entries:")
     console.log(form_results)
-    console.log(students)
-    try {
-      let create_user_response = await updateUser( id,form_results).catch ((error) => {})
-      let user_id = create_user_response.id
-      let status = create_user_response.status
-      
-      if (status === 200) {
-        navigate("/Users/info/" + user_id, { replace: true });
-        throw alert ("User Successfully Modified.")
-        // move to their user detail
-      }
-      if (status === 404) {
-        throw alert ("Login Failed Because the Server was Not Reached.")
-      } 
-      else if (status === 401) {
-        throw alert ("Login Failed Because User Already Exists")
-    }
-  } catch {
-    // avoids warning
-   }
+   
+    let update_user_response = await updateUser(id,form_results).catch((error) => {
+        let message = error.response.data;
+        throw alert (message);
+    });
+
+    console.log("Success");
+  
   }
 
   const searchLocation = () => {

@@ -21,12 +21,12 @@ export const ListUsers = () => {
           size: 0,
           sort: "none",
           sortDir: "none",
+        }).catch ((error) => {
+          let message = error.response.data;
+          throw alert (message);
         });
-        //console.log(fetchedData.data);
         setData(fetchedData.data);
-
-      } catch (error) {
-        console.log(error.response);
+      } catch (e) {
       }
     };
     fetchData();
@@ -81,23 +81,14 @@ export const ListUsers = () => {
    
     console.log("Deleting User with uid = " + user_id)
     try {
-      let delete_user_response = await deleteUser(user_id).catch ((error) => {})
-      let status = delete_user_response.status
-      
-      if (status === 200) {
-    
-        throw alert ("User Successfully Deleted.")
-        // move to their user detail
-      }
-      if (status === 404) {
-        throw alert ("Login Failed Because the Server was Not Reached.")
-      } 
-      else if (status === 401) {
-        throw alert ("Login Failed Because User Already Exists")
+      let delete_user_response = await deleteUser(user_id)
+      .catch ((error) => {
+        let message = error.response.data;
+        throw alert (message);
+      })
+    } catch {
+      // avoids warning
     }
-  } catch {
-    // avoids warning
-   }
   }
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
