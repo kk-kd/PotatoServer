@@ -99,7 +99,8 @@ export const CreateUser = () => {
         let message = error.response.data;
         throw alert (message);
     }
-    alert("Successfully Created Student");
+
+    //alert("Successfully Created Student");
     //navigate('/Users/list');
   }
   
@@ -218,17 +219,23 @@ export const CreateUser = () => {
       school: school,
     }
     if ({makeStudentForUser}) {
-      handleCreateStudent(newStudent)
-      setStudents(arr => [...arr, newStudent]);
-      setFirstNameStudent(""); 
-      setMiddleNameStudent(""); 
-      setLastNameStudent(""); 
-      setStudentId(""); 
-      setSchool({});
-      //alert("Successfully o create a student independently, select 'Create New Student'")
+      if (!firstNameStudent || !lastNameStudent || !studentid || !school) {
+        alert("First Name, Last Name, StudentID, and School is Required.")
+      }
+      else{
+        setStudents(arr => [...arr, newStudent]);
+        setFirstNameStudent(""); 
+        setMiddleNameStudent(""); 
+        setLastNameStudent(""); 
+        setStudentId(""); 
+        setSchool({});
+        alert("Successfully Added Student Info to User. Note: Students are created only when the user form is submitted. To create a student independently, select Create New Student")
+      }
     } 
     else {
       // make new student
+      setStudents(arr => [...arr, newStudent]);
+
       handleCreateStudent(newStudent)
     }
   }
@@ -260,7 +267,6 @@ export const CreateUser = () => {
     setisAdmin(user.isAdmin)
     setStudents(students)
     setFilterValue(user.email)
-    console.log(user)
     
   }
 
