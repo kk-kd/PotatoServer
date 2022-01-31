@@ -1,0 +1,38 @@
+#exampleCurrentRouteMarker {
+  width: 30px;
+  height: 30px;
+  background-color: green;
+  cursor: pointer;
+  border-radius: 50%;
+  margin: auto;
+  position: relative;
+}
+
+#exampleNoRouteMarker {
+  width: 30px;
+  height: 30px;
+  background-color: red;
+  cursor: pointer;
+  border-radius: 50%;
+  margin: auto;
+  position: relative;
+}
+
+#routeChooser {
+  display: flex;
+  alight-items: center;
+}
+
+#routes {
+  flex: 50%;
+  display: inline-block;
+}
+
+#routeData {
+  flex: 50%;
+}
+
+#routeMarkerTutorial {
+  flex: 50%;
+  display: inline-block;
+}

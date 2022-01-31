@@ -4,21 +4,21 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from "typeorm";
 import { Route } from "./Route";
 import { School } from "./School";
 import { User } from "./User";
 
-@Entity()
+@Entity({ name: "students" })
 export class Student {
   @PrimaryGeneratedColumn()
-  studentId: number;
+  uid: number;
 
   @Column({
-    type: "int",
     nullable: true,
   })
-  assignedId: number;
+  id: string;
 
   @Column()
   firstName: string;
@@ -31,15 +31,12 @@ export class Student {
   @Column()
   lastName: string;
 
-  @JoinColumn()
-  @OneToOne((type) => School)
+  @ManyToOne(() => School, school => school.students, { nullable: true, onDelete: "CASCADE" })
   school: School;
 
-  @JoinColumn()
-  @OneToOne((type) => Route)
+  @ManyToOne(() => Route, route => route.students, { nullable: true, })
   route: Route;
 
-  @JoinColumn()
-  @OneToOne((type) => User)
-  parent: User;
+  @ManyToOne(() => User, user => user.students, { onDelete: 'CASCADE' })
+  parentUser: User;
 }
