@@ -23,13 +23,13 @@
 
 
 .input {
-  width: 50%;
+  width: 80%;
   padding: 12px 20px;
   margin: 8px 20px;
   display: flex;
   border-radius: 4px;
   box-sizing: border-box;
-  align-items: center;
+  align-items: left;
 }
 
 .submitbutton {
