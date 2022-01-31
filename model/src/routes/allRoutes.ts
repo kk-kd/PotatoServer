@@ -26,7 +26,7 @@ export const allRoutes = [
   */
   {
     method: "get",
-    route: "/api/users/all/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    route: "/api/users/all",
     controller: UserController,
     action: "allUsers",
   },
@@ -83,7 +83,7 @@ export const allRoutes = [
   },
   {
     method: "post",
-    route: "/api/schools/",
+    route: "/api/schools",
     controller: SchoolController,
     action: "saveNewSchool",
   },
@@ -95,7 +95,7 @@ export const allRoutes = [
   },
   {
     method: "post",
-    route: "/api/routes/",
+    route: "/api/routes",
     controller: RouteController,
     action: "saveNewRoute",
   },
@@ -107,7 +107,7 @@ export const allRoutes = [
   },
   {
     method: "post",
-    route: "/api/students/",
+    route: "/api/students",
     controller: StudentController,
     action: "saveNewStudent",
   },
@@ -156,7 +156,7 @@ export const allRoutes = [
 
   {
     method: "get",
-    route: "/api/students/all/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    route: "/api/students/all",
     controller: StudentController,
     action: "allStudents",
   },
@@ -197,6 +197,12 @@ export const allRoutes = [
     controller: RouteController,
     action: "all",
   },
+  {
+    method: "get",
+    route: "/api/routes/planner/:uid",
+    controller: SchoolController,
+    action: "oneRoutePlanner"
+  },
   /*
     Gets all Schools.
     page: number, denotes the number page requested; starts at 0
@@ -212,7 +218,7 @@ export const allRoutes = [
 
   {
     method: "get",
-    route: "/api/schools/all/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    route: "/api/schools/all",
     controller: SchoolController,
     action: "allSchools",
   },
@@ -262,7 +268,7 @@ export const allRoutes = [
 
   {
     method: "get",
-    route: "/api/routes/all/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    route: "/api/routes/all",
     controller: RouteController,
     action: "allRoutes",
   },
@@ -284,7 +290,7 @@ export const allRoutes = [
   */
   {
     method: "get",
-    route: "/api/routes/filter/page=:page&size=:size&sort=:sort&sortDir=:sortDir&filterType=:filterType&filterData=:filterData",
+    route: "/api/routes/filter",
     controller: RouteController,
     action: "filterAllRoutes",
   },
@@ -296,5 +302,12 @@ export const allRoutes = [
     route: "/api/routes/:uid",
     controller: RouteController,
     action: "oneRoute",
+  },
+
+  {
+    method: "get",
+    route: "/api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    controller: RouteController,
+    action: "sortAllRoutes",
   },
 ];

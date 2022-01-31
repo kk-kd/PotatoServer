@@ -2,9 +2,7 @@ import axios from "axios";
 
 /*
 Welcome to the Axios Wrapper.
-
 To extract data that you need or error codes, call `.data` on the output of these calls.
-
 The example from ListUsers is below (as a hook):
 
 export const ListUsers = () => {
@@ -17,13 +15,9 @@ export const ListUsers = () => {
         console.log(error);
       }
     };
-
     fetchData();
   }, []);
-
 /*
-
-
 /*
 GetAll from table (students, users, schools, routes) gives you every entry in the table.
 INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
@@ -38,18 +32,28 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
       - "DESC"
 */
 export async function getAllUsers(specifications) {
-  return await axios.get(`/api/users/all/${convertMapToURL(specifications)}`);
+  return await axios.get(`/api/users/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getAllStudents(specifications) {
-  return await axios.get(
-    `/api/students/all/${convertMapToURL(specifications)}`
-  );
+  return await axios.get(`/api/students/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getAllSchools(specifications) {
-  return await axios.get(`/api/schools/all/${convertMapToURL(specifications)}`);
+  return await axios.get(`/api/schools/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getAllRoutes(specifications) {
-  return await axios.get(`/api/routes/all/${convertMapToURL(specifications)}`);
+  return await axios.get(`/api/routes/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 
 /*
@@ -68,64 +72,85 @@ INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
       - "none"
       - any User entity column (firstName, middleName, lastName, etc.)
         Check out model/entities/User.ts for all options.
-
 */
 export async function filterAllUsers(specifications) {
-  return await axios.get(`/api/users/filter`, { params: specifications });
+  return await axios.get(`/api/users/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function filterAllStudents(specifications) {
-  return await axios.get(
-    `/api/students/filter`,
-      { params: specifications }
-  );
+  return await axios.get(`/api/students/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function filterAllSchools(specifications) {
-  return await axios.get(
-    `/api/schools/filter`,
-      { params: specifications }
-  );
+  return await axios.get(`/api/schools/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function filterAllRoutes(specifications) {
-  return await axios.get(
-    `/api/routes/filter/${convertMapToURL(specifications)}`
-  );
+  return await axios.get(`/api/routes/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
 }
 /*
    Returns one entry from a table (students, users, schools, routes) by UID.
 */
 export async function returnUserInfoFromJWT() {
-  const token = sessionStorage.getItem("token");
-  console.log(sessionStorage.getItem("token"));
-  return await axios.get("/api/user", {
-    headers: { auth: token },
+  return await axios.get("/api/user", { headers: getHeaderWithAuthToken() });
+}
+
+export async function getOneUser(uid) {
+  return await axios.get("/api/users/" + uid, {
+    headers: getHeaderWithAuthToken(),
   });
 }
-export async function getOneUser(uid) {
-  return await axios.get("/api/users/" + uid);
-}
 export async function getOneStudent(uid) {
-  return await axios.get("/api/students/" + uid);
+  return await axios.get("/api/students/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getOneSchool(uid) {
-  return await axios.get("/api/schools/" + uid);
+  return await axios.get("/api/schools/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function getOneRoute(uid) {
-  return await axios.get("/api/routes/" + uid);
+  return await axios.get("/api/routes/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getOneRoutePlanner(uid) {
+  return await axios.get("/api/routes/planner/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 /*
    Deletes one entry from a table (students, users, schools, routes) by UID.
 */
 export async function deleteUser(uid) {
-  return await axios.delete("/api/users/" + uid);
+  return await axios.delete("/api/users/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function deleteStudent(uid) {
-  return await axios.delete("/api/students/" + uid);
+  return await axios.delete("/api/students/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function deleteSchool(uid) {
-  return await axios.delete("/api/schools/" + uid);
+  return await axios.delete("/api/schools/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 export async function deleteRoute(uid) {
-  return await axios.delete("/api/routes/" + uid);
+  return await axios.delete("/api/routes/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 
 /*
@@ -174,7 +199,6 @@ export async function loginUser(specifications) {
     The INPUT is a json map of each entity property;
         These are examples below. If you need to see the specific property names, check out 
         model/src/entities/*.ts to see all properties
-
         For a Student,
             {
                 id: 123456,
@@ -194,37 +218,63 @@ export async function loginUser(specifications) {
                 longitude: 1,
                 lattitude: 2,
             }
-
 */
 
 export async function saveStudent(specifications) {
-  return await axios.post("/api/students/", specifications);
+  return await axios.post("/api/students", {
+    params: specifications,
+    header: getHeaderWithAuthToken(),
+  });
 }
 
 export async function saveSchool(specifications) {
-  return await axios.post("/api/schools/", specifications);
+  return await axios.post("/api/schools", {
+    params: specifications,
+    header: getHeaderWithAuthToken(),
+  });
 }
 export async function saveRoute(specifications) {
-  return await axios.post("/api/routes/", specifications);
+  return await axios.post("/api/routes", {
+    params: specifications,
+    header: getHeaderWithAuthToken(),
+  });
 }
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
 export async function updateUser(uid, specifications) {
-  return await axios.put("/api/users/" + uid, specifications);
+  return await axios.put("/api/users/" + uid, {
+    params: specifications,
+    header: getHeaderWithAuthToken(),
+  });
 }
 export async function updateStudent(uid, specifications) {
-  return await axios.put("/api/students/" + uid, specifications);
+  return await axios.put("/api/students/" + uid, {
+    params: specifications,
+    header: getHeaderWithAuthToken(),
+  });
 }
 export async function updateSchool(uid, specifications) {
-  return await axios.put("/api/schools/" + uid, specifications);
+  return await axios.put("/api/schools/" + uid, {
+    params: specifications,
+    header: getHeaderWithAuthToken(),
+  });
 }
 export async function updateRoute(uid, specifications) {
-  return await axios.put("/api/routes/" + uid, specifications);
+  return await axios.put("/api/routes/" + uid, {
+    params: specifications,
+    header: getHeaderWithAuthToken(),
+  });
 }
 // Helpers
 function convertMapToURL(map) {
   return Object.keys(map)
     .map((key) => `${key}=${map[key]}`)
     .join("&");
+}
+
+function getHeaderWithAuthToken() {
+  const token = sessionStorage.getItem("token");
+  const header = { auth: token };
+  return header;
 }

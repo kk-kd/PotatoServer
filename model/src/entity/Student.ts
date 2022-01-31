@@ -31,12 +31,12 @@ export class Student {
   @Column()
   lastName: string;
 
-  @ManyToOne(() => School, school => school.students, { nullable: true, })
+  @ManyToOne(() => School, school => school.students, { nullable: true, onDelete: "CASCADE" })
   school: School;
 
   @ManyToOne(() => Route, route => route.students, { nullable: true, })
   route: Route;
 
-  @ManyToOne(() => User, user => user.students,)
+  @ManyToOne(() => User, user => user.students, { onDelete: 'CASCADE' })
   parentUser: User;
 }

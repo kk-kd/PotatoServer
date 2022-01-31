@@ -24,18 +24,17 @@ export const ListStudents = () => {
           lastNameFilter: lastNameFilter,
           idFilter: idFilter
         });
-        console.log(fetchedData);
         setData(fetchedData.data.students);
         setTotal(fetchedData.data.total);
       } catch (error) {
-        console.log(error);
+        alert(error.response.data);
       }
     };
     fetchData();
   }, [page, size, sortDirec, idFilter, lastNameFilter]);
 
   const nextSort = (id) => {
-    if (sortBy != id) {
+    if (sortBy !== id) {
       setSortBy(id);
       if (sortDirec === "none" || sortDirec === "DESC") {
         setSortDirec("ASC");
@@ -92,9 +91,9 @@ export const ListStudents = () => {
       useTable({ columns, data });
   return (
       <div id="userListing">
-        <h1>List Users</h1>
+        <h1>List Students</h1>
         <Link to="/Users/create">
-          <button>Create User</button>
+          <button>Create Student</button>
         </Link>
         <table {...getTableProps()} style={{ border: "solid 1px blue" }}>
           <thead>
@@ -181,7 +180,7 @@ export const ListStudents = () => {
                 setSize(Number(e.target.value))
               }}
           >
-            {[1, 2, 10, 20, 30, 40, 50].map(size => (
+            {[10, 20, 30, 40, 50].map(size => (
                 <option key={size} value={size}>
                   Show {size} out of {total}
                 </option>
