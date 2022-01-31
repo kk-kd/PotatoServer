@@ -17,7 +17,7 @@ export const CreateUser = () => {
   const [makeStudentForUser, setMakeStudentForUser] = useState(false); 
   const [makeUserForStudent, setMakeUserForStudent] = useState(false); 
 
-  // user  
+
   const [ firstNameStudent, setFirstNameStudent ] = useState("");
   const [ middleNameStudent, setMiddleNameStudent ] = useState("");
   const [ lastNameStudent, setLastNameStudent ] = useState("");
@@ -41,6 +41,7 @@ export const CreateUser = () => {
 
   // maps
   const [ showMap, setShowMap ] = useState(false);
+  const [ addressValid, setAddressValid] = useState(false);
   const [ lat, setLat ] = useState();
   const [ lng, setLng ] = useState();
   const [ map, setMap ] = useState();
@@ -100,7 +101,7 @@ export const CreateUser = () => {
         throw alert (message);
     }
 
-    //alert("Successfully Created Student");
+    alert("Successfully Created Student");
     //navigate('/Users/list');
   }
   
@@ -218,11 +219,12 @@ export const CreateUser = () => {
       studentid: studentid, 
       school: school,
     }
-    if ({makeStudentForUser}) {
-      if (!firstNameStudent || !lastNameStudent || !studentid || !school) {
-        alert("First Name, Last Name, StudentID, and School is Required.")
-      }
-      else{
+    if (!firstNameStudent || !selectedUser || !school || !lastNameStudent) {
+      alert("First Name, Last Name, StudentID, User, and School are Required.")
+    }
+    else {
+      if (makeStudentForUser) {
+        console.log("2")
         setStudents(arr => [...arr, newStudent]);
         setFirstNameStudent(""); 
         setMiddleNameStudent(""); 
@@ -230,17 +232,22 @@ export const CreateUser = () => {
         setStudentId(""); 
         setSchool({});
         alert("Successfully Added Student Info to User. Note: Students are created only when the user form is submitted. To create a student independently, select Create New Student")
-      }
-    } 
-    else {
+      } 
+      else {
+      console.log("3")
       // make new student
       setStudents(arr => [...arr, newStudent]);
 
-      handleCreateStudent(newStudent)
-    }
+      await handleCreateStudent(newStudent);
+      }
   }
+}
 
   async function handleUserCreateFormButton (e) {
+    if (!addressValid) {
+      alert("Please Validate Address.")
+    }
+    else{
     if ({makeUserForStudent}) {
       setSelectedUser(true) 
       alert("Successfully Added User Info to Student! Note: Users are created only when this form is submitted. To create a user independently, select 'Create New User'")
@@ -248,6 +255,7 @@ export const CreateUser = () => {
     else {
       // make new user
       handleCreateUser(e)
+    }
     }
   }
 
@@ -458,7 +466,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Password:</p>
                   <input
-                      type="text"
+                      type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                   />
@@ -471,7 +479,7 @@ export const CreateUser = () => {
                       value={address}
                       onChange={(e) => setAddress(e.target.value)} 
                   />
-                <p> {error}</p>
+                <button onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate" }  </button>
               </label>
 
               <label className="input">
