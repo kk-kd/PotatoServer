@@ -105,11 +105,6 @@ Start pm2
 `pm2 start build/index.js`  
 Use `example_redirect.js` to replace `index.js` for testing purpose
 
-# Connect to Remote Database for Local Testing
-
-Forward local port 5432 to the database  
-`ssh -L 5432:127.0.0.1:5432 vcm-23920.vm.duke.edu -l zz160`
-
 # Deployment Checklist
 
 - Change port to 443
