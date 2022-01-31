@@ -22,7 +22,7 @@ export class Route {
   @Column()
   desciption: string;
 
-  @OneToMany(() => Student, (student) => student.route, { nullable: true })
+  @OneToMany(() => Student, (student) => student.route, { cascade: true, nullable: true })
   students: Student[];
 
   @ManyToOne(() => School, school => school.routes, { nullable: true, onDelete: "CASCADE" })
