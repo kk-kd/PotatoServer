@@ -113,16 +113,21 @@ export class StudentController extends Repository<Student> {
   }
   async oneStudent(request: Request, response: Response, next: NextFunction) {
     try {
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
-      const usersQueryResult = await this.studentRepository.createQueryBuilder("students").where("students.uid = :uid", { uid: uidNumber }).getOneOrFail();
-      //const user = this.userRepository.findOne(request.query.id); same call example
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
+      const usersQueryResult = await this.studentRepository
+        .createQueryBuilder("students")
+        .where("students.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("students.route", "route")
+        .getOneOrFail();
       response.status(200);
       return usersQueryResult;
+
+
     }
     catch (e) {
       response
         .status(401)
-        .send("Student with UID: " + request.query.uid + " was not found.");
+        .send("Student with UID: " + request.params.uid + " was not found.");
       return;
     }
   }
@@ -141,7 +146,7 @@ export class StudentController extends Repository<Student> {
 
   async updateStudent(request: Request, response: Response, next: NextFunction) {
     try {
-      const uidNumber = request.query.uid;
+      const uidNumber = request.params.uid;
       await getConnection().createQueryBuilder().update(Student).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
       return;
@@ -151,7 +156,7 @@ export class StudentController extends Repository<Student> {
     catch (e) {
       response
         .status(401)
-        .send("Student with UID " + request.query.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
+        .send("Student with UID " + request.params.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
       return;
     }
   }
@@ -159,12 +164,12 @@ export class StudentController extends Repository<Student> {
   async deleteStudent(request: Request, response: Response, next: NextFunction) {
     try {
 
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const studentQueryResult = await this.studentRepository.createQueryBuilder("students").delete().where("students.uid = :uid", { uid: uidNumber }).execute();
       response.status(200);
     }
     catch (e) {
-      response.status(401).send("Student UID: " + request.query.uid + " was not found adn could not be deleted.")
+      response.status(401).send("Student UID: " + request.params.uid + " was not found adn could not be deleted.")
     }
   }
   findByStudentID(uid: number) {
