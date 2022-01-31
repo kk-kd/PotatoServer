@@ -11,6 +11,14 @@
   width: 50%;
   align-items: center;
   float: left;
+  background-color: #39CCCC;
+}
+
+#student_create_form {
+  width: 50%;
+  align-items: center;
+  float: right;
+  background-color: #3D9970;
 }
 
 
@@ -25,7 +33,7 @@
 }
 
 .submitbutton {
-  width: 100%;
+  width: 50%;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
@@ -60,4 +68,10 @@
 
 .user-age {
   margin-left: auto;
+}
+
+input[type=radio] {
+  border: 0px;
+  width: 4em;
+  height: 2em;
 }
