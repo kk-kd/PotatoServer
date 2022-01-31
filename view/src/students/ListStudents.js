@@ -5,14 +5,15 @@ import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllStudents } from "../api/axios_wrapper";
 
 export const ListStudents = () => {
-  const [ data, setData ] = useState([]);
-  const [ page, setPage ] = useState(0);
-  const [ total, setTotal ] = useState(1);
-  const [ size, setSize ] = useState(10);
-  const [ sortBy, setSortBy ] = useState("none");
-  const [ sortDirec, setSortDirec ] = useState("none");
-  const [ idFilter, setIdFilter ] = useState("");
-  const [ lastNameFilter, setLastNameFilter ] = useState("");
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(1);
+  const [size, setSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
+  const [sortBy, setSortBy] = useState("none");
+  const [sortDirec, setSortDirec] = useState("none");
+  const [idFilter, setIdFilter] = useState("");
+  const [lastNameFilter, setLastNameFilter] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -22,7 +23,8 @@ export const ListStudents = () => {
           sort: sortBy,
           sortDir: sortDirec,
           lastNameFilter: lastNameFilter,
-          idFilter: idFilter
+          idFilter: idFilter,
+          showAll: showAll
         });
         setData(fetchedData.data.students);
         setTotal(fetchedData.data.total);
@@ -31,7 +33,7 @@ export const ListStudents = () => {
       }
     };
     fetchData();
-  }, [page, size, sortDirec, idFilter, lastNameFilter]);
+  }, [page, size, sortDirec, idFilter, lastNameFilter, showAll]);
 
   const nextSort = (id) => {
     if (sortBy !== id) {
@@ -144,16 +146,16 @@ export const ListStudents = () => {
           </tbody>
         </table>
         <div className="pagination">
-          <button onClick={() => setPage(0)} disabled={page === 0}>
+          <button onClick={() => setPage(0)} disabled={page === 0 || showAll}>
             {'<<'}
           </button>{' '}
-          <button onClick={() => setPage(page - 1)} disabled={page === 0}>
+          <button onClick={() => setPage(page - 1)} disabled={page === 0 || showAll}>
             {'<'}
           </button>{' '}
-          <button onClick={() => setPage(page + 1)} disabled={page >= total/size - 1}>
+          <button onClick={() => setPage(page + 1)} disabled={page >= total/size - 1 || showAll}>
             {'>'}
           </button>{' '}
-          <button onClick={() => setPage(Math.ceil(total/size) - 1)} disabled={page >= total/size - 1}>
+          <button onClick={() => setPage(Math.ceil(total/size) - 1)} disabled={page >= total/size - 1 || showAll}>
             {'>>'}
           </button>{' '}
           <span>
@@ -186,6 +188,9 @@ export const ListStudents = () => {
                 </option>
             ))}
           </select>
+          <label>Show All
+            <input type="checkbox" value={showAll} onChange={e => setShowAll(!showAll)} />
+          </label>
         </div>
       </div>
   );

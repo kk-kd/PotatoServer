@@ -13,14 +13,15 @@ export const ListUsers = () => {
     return "/Users/info/" + uid; 
   }
 
-  const [ data, setData ] = useState([]);
-  const [ page, setPage ] = useState(0);
-  const [ total, setTotal ] = useState(1);
-  const [ size, setSize ] = useState(10);
-  const [ sortBy, setSortBy ] = useState("none");
-  const [ sortDirec, setSortDirec ] = useState("none");
-  const [ emailFilter, setEmailFilter ] = useState("");
-  const [ lastNameFilter, setLastNameFilter ] = useState("");
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(1);
+  const [size, setSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
+  const [sortBy, setSortBy] = useState("none");
+  const [sortDirec, setSortDirec] = useState("none");
+  const [emailFilter, setEmailFilter] = useState("");
+  const [lastNameFilter, setLastNameFilter] = useState("");
   
   useEffect(() => {
     const fetchData = async () => {
@@ -31,7 +32,8 @@ export const ListUsers = () => {
           sort: sortBy,
           sortDir: sortDirec,
           filterType: lastNameFilter,
-          filterData: emailFilter
+          filterData: emailFilter,
+          showAll: showAll
         });
         setData(fetchedData.data.users);
         setTotal(fetchedData.data.total);
@@ -40,7 +42,7 @@ export const ListUsers = () => {
       }
     };
     fetchData();
-  }, [page, size, sortDirec, emailFilter, lastNameFilter]);
+  }, [page, size, sortDirec, emailFilter, lastNameFilter, showAll]);
 
   async function handleDeleteUser (user_id, e) {
     e.preventDefault(); 
@@ -183,16 +185,16 @@ export const ListUsers = () => {
         </tbody>
       </table>
       <div className="pagination">
-        <button onClick={() => setPage(0)} disabled={page === 0}>
+        <button onClick={() => setPage(0)} disabled={page === 0 || showAll}>
           {'<<'}
         </button>{' '}
-        <button onClick={() => setPage(page - 1)} disabled={page === 0}>
+        <button onClick={() => setPage(page - 1)} disabled={page === 0 || showAll}>
           {'<'}
         </button>{' '}
-        <button onClick={() => setPage(page + 1)} disabled={page >= total/size - 1}>
+        <button onClick={() => setPage(page + 1)} disabled={page >= total/size - 1 || showAll}>
           {'>'}
         </button>{' '}
-        <button onClick={() => setPage(Math.ceil(total/size) - 1)} disabled={page >= total/size - 1}>
+        <button onClick={() => setPage(Math.ceil(total/size) - 1)} disabled={page >= total/size - 1 || showAll}>
           {'>>'}
         </button>{' '}
         <span>
@@ -219,12 +221,15 @@ export const ListUsers = () => {
               setSize(Number(e.target.value))
             }}
         >
-          {[1, 2, 10, 20, 30, 40, 50].map(size => (
+          {[10, 20, 30, 40, 50].map(size => (
               <option key={size} value={size}>
                 Show {size} out of {total}
               </option>
           ))}
         </select>
+        <label>Show All
+          <input type="checkbox" value={showAll} onChange={e => setShowAll(!showAll)} />
+        </label>
       </div>
     </div>
   );

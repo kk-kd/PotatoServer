@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 
-export const SchoolStudents = ({ data }) => {
+export const SchoolStudents = ({ data, routes }) => {
+  console.log(data);
   const columns = useMemo(
       () => [
         {
@@ -17,13 +18,13 @@ export const SchoolStudents = ({ data }) => {
         },
         {
           Header: 'ID',
-          accessor: 'od'
+          accessor: 'id'
         },
         {
           Header: 'Has Route',
           accessor: 'route',
           Cell: (props) => {
-            return <label>{`${props.data != null}`}</label>
+            return <label>{`${props.value != null}`}</label>
           }
         },
         {
