@@ -4,10 +4,10 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
-    "test": "export NODE_ENV=test; jest",
+    "test": "export NODE_ENV=test; npm install; jest",
     "start": "nodemon",
     "type-start": "export NODE_ENV=development; ts-node src/index.ts",
-    "build": "rm -rf ./build; tsc"
+    "build": "export NODE_ENV=production; rm -rf ./build; tsc"
   },
   "keywords": [],
   "author": "",

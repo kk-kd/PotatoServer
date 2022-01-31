@@ -1,25 +1,27 @@
 import { createConnection, getConnection, getRepository } from "typeorm";
 import axios from "axios";
-import app from "../src/index";
+import app from "../src/app";
 import { User } from "../src/entity/User";
 
-let chai = require("chai");
-let chaiHttp = require("chai-http");
-let should = chai.should();
-chai.use(chaiHttp);
-var expect = chai.expect;
+let request = require("supertest");
+
+// let chai = require("chai");
+// let chaiHttp = require("chai-http");
+// let should = chai.should();
+// chai.use(chaiHttp);
+// var expect = chai.expect;
 // require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
-// beforeAll(async () => {
-//   if (process.env.NODE_ENV != "test") {
-//     console.log("NODE_ENV not test.");
-//     expect(true).toBe(false);
-//     return;
-//   }
+beforeAll(async () => {
+  if (process.env.NODE_ENV != "test") {
+    console.log("NODE_ENV not test.");
+    expect(true).toBe(false);
+    return;
+  }
 
-//   // await createConnection();
-//   // getRepository(User).createQueryBuilder().softDelete();
-//   });
+  await createConnection();
+  getRepository(User).createQueryBuilder().softDelete();
+});
 
 //   // var fs = require("fs");
 //   // const privateKey = fs.readFileSync(
@@ -40,10 +42,10 @@ var expect = chai.expect;
 //   //   );
 //   // });
 
-// afterAll(async () => {
-//   // getRepository(User).createQueryBuilder().restore();
-//   // await getConnection().close();
-// });
+afterAll(async () => {
+  getRepository(User).createQueryBuilder().restore();
+  await getConnection().close();
+});
 
 // describe("Test AuthController", () => {
 //   it("Register an admin", async () => {
@@ -59,23 +61,43 @@ var expect = chai.expect;
 //   });
 // });
 
+// describe("AuthController API calls", () => {
+//   it("Cannot register a user whose email is already present", async () => {
+//     let userInfo = {
+//       email: "admin1@example.com",
+//       firstName: "Admin",
+//       lastName: "Example",
+//       isAdmin: "true",
+//       password: "Admin123",
+//     };
+
+//     chai
+//       .request("https://potato-beta.colab.duke.edu")
+//       .post("/api/register")
+//       .set("content-type", "application/json")
+//       .send(userInfo)
+//       .end((err, res) => {
+//         expect(res).to.have.status(401);
+//         res.body.should.
+//       });
+//   });
+// });
+
 describe("AuthController API calls", () => {
   it("Cannot register a user whose email is already present", async () => {
-    let userInfo = {
-      email: "admin1@example.com",
-      firstName: "Admin",
-      lastName: "Example",
-      isAdmin: "true",
-      password: "Admin123",
-    };
-
-    chai
-      .request("https://potato-beta.colab.duke.edu")
+    const result = await request(app)
       .post("/api/register")
       .set("content-type", "application/json")
-      .send(userInfo)
-      .end((err, res) => {
-        expect(res).to.have.status(401);
+      .set("Accept", "application/json")
+      .send({
+        email: "admin1@example.com",
+        firstName: "Admin",
+        lastName: "Example",
+        isAdmin: "true",
+        password: "Admin123",
       });
+
+    console.log(result);
+    expect(result.status).toEqual(201);
   });
 });
