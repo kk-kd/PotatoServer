@@ -145,7 +145,7 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      return this.schoolRepository.save(request.body);
+      return await this.schoolRepository.save(request.body);
     }
     catch (e) {
       response
@@ -164,14 +164,7 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      await getConnection()
-        .createQueryBuilder()
-        .update(School)
-        .where("uid = :uid", { uid: uidNumber })
-        .set(request.body)
-        .execute();
-      response.status(200);
-      return;
+      return await this.schoolRepository.save(request.body);
     }
     catch (e) {
       response

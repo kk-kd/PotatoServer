@@ -15,7 +15,6 @@ export const BusRoutePlanner = () => {
     const fetchData = async () => {
       try {
         const fetchedData = await getOneRoutePlanner(schoolId);
-        console.log(fetchedData);
         setSchool(fetchedData.data);
         setLoading(false);
       } catch (error) {
@@ -29,7 +28,7 @@ export const BusRoutePlanner = () => {
       const saved = await updateSchool(schoolId, school);
       setSchool(saved.data);
     } catch (error) {
-      alert(error.request.data);
+      alert(error.response.data);
     }
   }
   const createRoute = async () => {
@@ -73,7 +72,7 @@ export const BusRoutePlanner = () => {
                             student.uid === id ? {...student, route: selectedRoute} : student
                           )});
                         }}
-                        routeId={student.route.uid}
+                        routeId={student.route ? student.route.uid : null}
                         lat={parseFloat(student.parentUser.latitude)}
                         lng={parseFloat(student.parentUser.longitude)}
                     />

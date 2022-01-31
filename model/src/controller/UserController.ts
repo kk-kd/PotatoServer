@@ -129,6 +129,9 @@ export class UserController extends Repository<User> {
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("users.students", "students")
+        .leftJoinAndSelect("students.school", "school")
+        .leftJoinAndSelect("students.route", "route")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -155,7 +158,7 @@ export class UserController extends Repository<User> {
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
-        .leftJoinAndSelect("users.students", "student")
+        .leftJoinAndSelect("users.students", "students")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
