@@ -160,7 +160,8 @@ export const CreateUser = () => {
 
   return (
     <div>
-        <h1>Create User</h1>
+        <h1>Student / User Create</h1>
+        
          <h3> Selected User Email: {selectedUser ?  selectedUser.email : 'None Selected'} </h3>
  
          <label className="input">
