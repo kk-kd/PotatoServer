@@ -117,7 +117,7 @@ export const ListUsers = () => {
     <div id="userListing">
       <h1>List Users</h1>
       <Link to="/Users/create">
-        <button>Create User</button>
+        <button>Create User/Student</button>
       </Link>
       <table {...getTableProps()} style={{ border: "solid 1px blue" }}>
         <thead>

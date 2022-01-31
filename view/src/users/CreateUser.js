@@ -532,7 +532,6 @@ export const CreateUser = () => {
         }
         
         <div id="user_create_map">
-          <h3> Map </h3>
           {error && (<div>{error}</div>)}
           {showMap && (<div style={{ height: '50vh', width: '50%', display: "inline-block" }}>
             <GoogleMapReact
