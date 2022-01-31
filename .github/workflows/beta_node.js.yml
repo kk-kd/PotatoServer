@@ -1,13 +1,13 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI for beta branch
+name: Beta -> potato-beta.colab.duke.edu
 
 on:
   push:
-    branches: [beta]
+    branches: [dev]
   pull_request:
-    branches: [beta]
+    branches: [dev]
 
 jobs:
   build:
@@ -33,14 +33,14 @@ jobs:
           npm ci
           npm run build --if-present
           npm test
-  
+
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy NodeJS app
         uses: appleboy/ssh-action@v0.1.2
         with:
-          host: ${{secrets.SSH_HOST_BETA}}
+          host: ${{ secrets.SSH_HOST_BETA }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
