@@ -15,17 +15,38 @@ export const StudentDetail = () => {
   const { id } = useParams();
   const [data, setData] = useBatchedState({});
   const [route, setRoute] = useBatchedState([]);
-  // const [students, setStudents] = useBatchedState([]); (will be routes)
+  const [school, setSchool] = useBatchedState([]);
 
   let navigate = useNavigate();
+  useEffect(() => {
+    const fetchSchoolData = async () => {
+      try {
+        const fetchedData = await getOneStudent(id);
+        // setData(fetchedData.data);
+        let myDict = [fetchedData.data][0].school;
+
+        delete Object.assign(myDict, { ["schoolName"]: myDict["name"] })[
+          "name"
+        ];
+        delete Object.assign(myDict, { ["schoolUid"]: myDict["uid"] })["uid"];
+        setSchool(myDict);
+      } catch (error) {
+        let message = error.response.data;
+        throw alert(message);
+      }
+    };
+    fetchSchoolData();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const fetchedData = await getOneStudent(id);
-        setData(fetchedData.data);
-        console.log(fetchedData.data);
-        setRoute([[fetchedData.data][0].route]);
+        let myRouteDict = [fetchedData.data][0].route;
+        delete Object.assign(myRouteDict, { ["routeUid"]: myRouteDict["uid"] })[
+          "uid"
+        ];
+        setRoute(myRouteDict);
       } catch (error) {
         let message = error.response.data;
         throw alert(message);
@@ -52,6 +73,14 @@ export const StudentDetail = () => {
   const columns = useMemo(
     () => [
       {
+        Header: "School Name",
+        accessor: "schoolName",
+      },
+      {
+        Header: "School Address",
+        accessor: "address",
+      },
+      {
         Header: "Route Name",
         accessor: "name",
       },
@@ -62,7 +91,17 @@ export const StudentDetail = () => {
       {
         Header: " ",
         disableFilters: true,
-        accessor: "uid",
+        accessor: "schoolUid",
+        Cell: ({ value }) => {
+          return (
+            <Link to={"/Schools/info/" + value}> {"View School Detail"} </Link>
+          );
+        },
+      },
+      {
+        Header: " ",
+        disableFilters: true,
+        accessor: "routeUid",
         Cell: ({ value }) => {
           return (
             <Link to={"/Routes/info/" + value}> {"View Route Detail"} </Link>
@@ -72,9 +111,10 @@ export const StudentDetail = () => {
     ],
     []
   );
-  console.log(route);
+
+  let myData = [Object.assign({}, route, school)];
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: route });
+    useTable({ columns, data: myData });
 
   return (
     <div id="studentListing">

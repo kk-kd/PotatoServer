@@ -118,6 +118,8 @@ export class StudentController extends Repository<Student> {
         .createQueryBuilder("students")
         .where("students.uid = :uid", { uid: uidNumber })
         .leftJoinAndSelect("students.route", "route")
+        .leftJoinAndSelect("students.school", "school")
+        .leftJoinAndSelect("students.parentUser", "user")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
