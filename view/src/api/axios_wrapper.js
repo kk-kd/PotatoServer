@@ -228,16 +228,16 @@ export async function saveStudent(specifications) {
 }
 
 export async function saveSchool(specifications) {
-  return await axios.post("/api/schools", {
-    params: specifications,
-    header: getHeaderWithAuthToken(),
-  });
+  return await axios.post("/api/schools",
+    specifications,
+      { headers: getHeaderWithAuthToken() }
+  );
 }
 export async function saveRoute(specifications) {
-  return await axios.post("/api/routes", {
-    params: specifications,
-    header: getHeaderWithAuthToken(),
-  });
+  return await axios.post("/api/routes",
+    specifications,
+      { headers: getHeaderWithAuthToken() },
+  );
 }
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
@@ -255,10 +255,10 @@ export async function updateStudent(uid, specifications) {
   });
 }
 export async function updateSchool(uid, specifications) {
-  return await axios.put("/api/schools/" + uid, {
-    params: specifications,
-    header: getHeaderWithAuthToken(),
-  });
+  return await axios.put("/api/schools/" + uid,
+    specifications,
+      {headers: getHeaderWithAuthToken()},
+  );
 }
 export async function updateRoute(uid, specifications) {
   return await axios.put("/api/routes/" + uid, {

@@ -105,7 +105,7 @@ export class SchoolController extends Repository<School> {
         return;
       }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").where("schools.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("schools.routes", "route").getOneOrFail();
+      const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").where("schools.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("schools.routes", "route").leftJoinAndSelect("schools.students", "students").getOneOrFail();
       response.status(200);
       return usersQueryResult;
     }
@@ -145,7 +145,7 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      return this.schoolRepository.save(request.body);
+      return await this.schoolRepository.save(request.body);
     }
     catch (e) {
       response
@@ -164,12 +164,7 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      await getConnection()
-        .createQueryBuilder()
-        .update(School)
-        .where("uid = :uid", { uid: uidNumber })
-        .set(request.body)
-        .execute();
+      return await this.schoolRepository.save(request.body);
       response.status(200);
       return;
     }
