@@ -55,7 +55,7 @@ describe("AuthController API calls", () => {
         password: "Admin123",
       });
 
-    if (process.env.NODE_ENV != "test") {
+    if (process.env.NODE_ENV == "test") {
       expect(result.status).toEqual(201);
     } else {
       expect(result.status).toEqual(401);
