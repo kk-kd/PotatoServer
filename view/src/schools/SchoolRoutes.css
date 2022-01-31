@@ -1,0 +1,11 @@
+#schoolRouteListing {
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: 90%;
+}
+
+#schoolRouteListing > * {
+  margin: 10px;
+}
