@@ -105,7 +105,7 @@ export class SchoolController extends Repository<School> {
         return;
       }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").where("schools.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("schools.routes", "route").getOneOrFail();
+      const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").where("schools.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("schools.routes", "route").leftJoinAndSelect("schools.students", "students").getOneOrFail();
       response.status(200);
       return usersQueryResult;
     }

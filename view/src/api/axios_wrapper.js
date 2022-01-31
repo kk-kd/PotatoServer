@@ -230,7 +230,7 @@ export async function saveStudent(specifications) {
 export async function saveSchool(specifications) {
   return await axios.post("/api/schools",
     specifications,
-      { headers: getHeaderWithAuthToken() },
+      { headers: getHeaderWithAuthToken() }
   );
 }
 export async function saveRoute(specifications) {

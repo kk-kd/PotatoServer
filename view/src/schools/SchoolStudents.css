@@ -1,0 +1,11 @@
+#schoolStudentListing {
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: 90%;
+}
+
+#schoolStudentListing > * {
+  margin: 10px;
+}

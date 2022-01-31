@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import app from "./app";
 import { Connection, createConnection, getConnection } from "typeorm";
 import * as express from "express";
 import * as bodyParser from "body-parser";
@@ -17,6 +18,7 @@ import { SchoolController } from "./controller/SchoolController";
 import { checkJwt } from "./middlewares/checkJwt";
 
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
+
 let privateKey;
 let certificate;
 let credentials;
@@ -39,58 +41,19 @@ if (process.env.NODE_ENV == "development") {
   credentials = { key: privateKey, ca: chain, cert: certificate };
 }
 
-function makeid(length) {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
+// function makeid(length) {
+//   var result = "";
+//   var characters =
+//     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+//   var charactersLength = characters.length;
+//   for (var i = 0; i < length; i++) {
+//     result += characters.charAt(Math.floor(Math.random() * charactersLength));
+//   }
+//   return result;
+// }
 
 createConnection()
   .then(async (connection) => {
-    // create express app
-    const app = express();
-    app.use(bodyParser.json());
-    app.use("/api", authRoutes);
-    // var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
-    // app.use(cors()); //etc ^
-    // // register all express routes from defined application routes
-    allRoutes.forEach((route) => {
-      (app as any)[route.method](
-        route.route,
-        [checkJwt],
-        (req: Request, res: Response, next: Function) => {
-          const result = new (route.controller as any)()[route.action](
-            req,
-            res,
-            next
-          );
-          if (result instanceof Promise) {
-            result.then((result) =>
-              result !== null && result !== undefined
-                ? res.send(result)
-                : undefined
-            );
-          } else if (result !== null && result !== undefined) {
-            res.json(result);
-          }
-        }
-      );
-    });
-
-    // setup express app here
-    const path = require("path");
-    app.use(express.static(path.join(__dirname, "..", "..", "view", "build")));
-    app.get("/*", function (req, res) {
-      res.sendFile(
-        path.join(__dirname, "..", "..", "view", "build", "index.html")
-      );
-    });
-
     // start express server
     var https = require("https");
     var httpsServer = https.createServer(credentials, app);
