@@ -2,7 +2,7 @@ import "./UserForm.css";
 import GoogleMapReact from "google-map-react";
 import { useEffect, useState } from "react";
 import { Marker } from "./../map/Marker";
-import {registerUser} from "../api/axios_wrapper";
+import {registerUser, saveStudent} from "../api/axios_wrapper";
 import { Link, useNavigate } from "react-router-dom";
 import { Users } from "./Users";
 import { filterAllUsers, filterAllSchools } from "../api/axios_wrapper";
@@ -36,7 +36,7 @@ export const CreateUser = () => {
   const [ email, setEmail ] = useState("");
   const [ address, setAddress ] = useState("");
   const [ isAdmin, setisAdmin ] = useState(false);
-  const [students, setStudents] = useState([{firstName: "firstName", studentid: "1"}, {firstName: "firstName2", studentid: "2"}]);
+  const [students, setStudents] = useState([]);
 
 
   // maps
@@ -93,14 +93,14 @@ export const CreateUser = () => {
     }
     console.log("Creating Student with entries:")
     console.log(form_results)
-    // try {
-    //   let create_user_response = await registerStudent(form_results); 
-    // } catch (error) {
-    //     let message = error.response.data;
-    //     throw alert (message);
-    // }
-    // alert("User Successfully Created");
-    // navigate('/Users/list');
+    try {
+      let create_user_response = await saveStudent(form_results); 
+    } catch (error) {
+        let message = error.response.data;
+        throw alert (message);
+    }
+    alert("Successfully Created Student");
+    //navigate('/Users/list');
   }
   
   useEffect(() => {
@@ -149,6 +149,33 @@ export const CreateUser = () => {
   
   }, [filterValueSchool])
 
+  useEffect(() => {
+    //user
+    setFirstNameUser("")
+    setMiddleNameUser("")
+    setLastNameUser("")
+    setPassword("")
+    setEmail("")
+    setAddress("")
+    setisAdmin("")
+    setStudents([])
+    setFilterValue("")
+    setSelectedUser(false)
+    setFilteredData([])
+
+    //student
+    setFirstNameStudent("")
+    setMiddleNameStudent("")
+    setLastNameStudent("")
+    setStudentId("")
+
+    //school
+    setFilterValueSchool("")
+    setSchool({})
+    setSelectedSchool(false)
+  
+  }, [actionType])
+
   const searchLocation = () => {
     geocoder.geocode( { 'address': address }, (results, status) => {
       if (status === "OK") {
@@ -191,13 +218,14 @@ export const CreateUser = () => {
       school: school,
     }
     if ({makeStudentForUser}) {
+      handleCreateStudent(newStudent)
       setStudents(arr => [...arr, newStudent]);
       setFirstNameStudent(""); 
       setMiddleNameStudent(""); 
       setLastNameStudent(""); 
       setStudentId(""); 
       setSchool({});
-      alert("Successfully Added Student Info to User! Note: Students are created only when this form is submitted. To create a student independently, select 'Create New Student'")
+      //alert("Successfully o create a student independently, select 'Create New Student'")
     } 
     else {
       // make new student
@@ -220,7 +248,7 @@ export const CreateUser = () => {
 
   async function handleUserSelection (e, user) {
     e.preventDefault(); // prevents page reload on submission
-    setSelectedUser(user)
+    setSelectedUser(true)
     
     // update state 
     setFirstNameUser(user.firstName)
@@ -297,7 +325,7 @@ export const CreateUser = () => {
                   {filteredDataSchool && filteredDataSchool.length > 0 ? (
                     filteredDataSchool.map((school) => (
                       <li >
-                    <button key={school.uid} className="user" onClick = {(e) => {setSelectedSchool(true); setFilterValueSchool(school.name)}} >
+                    <button key={school.uid} className="user" onClick = {(e) => {setSelectedSchool(true); setFilterValueSchool(school.name); setSchool(school)}} >
                       {school.name}   
                     </button>
                     </li>
@@ -314,9 +342,11 @@ export const CreateUser = () => {
                 />
             </label>
 
-            <label className="input">
-              <p> Associated User: {selectedUser ? "" + email : "None" }</p>
-            </label>
+            {!makeStudentForUser &&
+              <label className="input">
+                <p> Associated User: {selectedUser ? "" + email : "None" }</p>
+              </label>
+            }
   
             {!makeStudentForUser && <label className="input">
               <p>Make New User Associated With this Student:</p>
