@@ -26,6 +26,7 @@ export const BusRoutePlanner = () => {
   const saveData = async () => {
     try {
       const saved = await updateSchool(schoolId, school);
+      alert("Routes updated!")
       setSchool(saved.data);
     } catch (error) {
       alert(error.response.data);
@@ -38,7 +39,9 @@ export const BusRoutePlanner = () => {
         desciption: "Default Description",
         school: school
       });
+      alert("Route Created.  Now you can add students and update route name and description.")
       setSchool({...school, routes: [...school.routes, newRoute.data]});
+      setSelectedRoute(newRoute.data);
     } catch (error) {
       alert(error.request.data);
     }
@@ -73,6 +76,7 @@ export const BusRoutePlanner = () => {
                           )});
                         }}
                         routeId={student.route ? student.route.uid : null}
+                        text={`${student.firstName} ${student.lastName}`}
                         lat={parseFloat(student.parentUser.latitude)}
                         lng={parseFloat(student.parentUser.longitude)}
                     />
@@ -113,7 +117,7 @@ export const BusRoutePlanner = () => {
                           })}}
                   />}
                   <h5>Route Description</h5>
-                  {selectedRoute && <textarea rows="5" cols="40" maxLength="100"
+                  {selectedRoute && <textarea rows="5" cols="40" maxLength="500"
                             value={selectedRoute.desciption}
                             onInput={e => {
                               setSelectedRoute({...selectedRoute, desciption: e.target.value});
