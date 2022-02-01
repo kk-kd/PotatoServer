@@ -166,8 +166,6 @@ export class SchoolController extends Repository<School> {
         return;
       }
       return await this.schoolRepository.save(request.body);
-      response.status(200);
-      return;
     }
     catch (e) {
       response

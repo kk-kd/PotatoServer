@@ -223,7 +223,7 @@ export async function loginUser(specifications) {
 export async function saveStudent(specifications) {
   return await axios.post("/api/students",
     specifications,
-      {headers: getHeaderWithAuthToken()},
+      { headers: getHeaderWithAuthToken() },
   );
 }
 
@@ -236,35 +236,35 @@ export async function saveSchool(specifications) {
 export async function saveRoute(specifications) {
   return await axios.post("/api/routes",
     specifications,
-      { headers: getHeaderWithAuthToken() },
+      { headers: getHeaderWithAuthToken() }
   );
 }
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
 export async function updateUser(uid, specifications) {
-  return await axios.put("/api/users/" + uid, {
-    params: specifications,
-    header: getHeaderWithAuthToken(),
-  });
+  return await axios.put("/api/users/" + uid,
+    specifications,
+      { headers: getHeaderWithAuthToken() }
+  );
 }
 export async function updateStudent(uid, specifications) {
-  return await axios.put("/api/students/" + uid, {
-    params: specifications,
-    header: getHeaderWithAuthToken(),
-  });
+  return await axios.put("/api/students/" + uid,
+    specifications,
+      { headers: getHeaderWithAuthToken() }
+  );
 }
 export async function updateSchool(uid, specifications) {
   return await axios.put("/api/schools/" + uid,
     specifications,
-      {headers: getHeaderWithAuthToken()},
+      { headers: getHeaderWithAuthToken() }
   );
 }
 export async function updateRoute(uid, specifications) {
-  return await axios.put("/api/routes/" + uid, {
-    params: specifications,
-    header: getHeaderWithAuthToken(),
-  });
+  return await axios.put("/api/routes/" + uid,
+    specifications,
+      { headers: getHeaderWithAuthToken() }
+  );
 }
 // Helpers
 function convertMapToURL(map) {
