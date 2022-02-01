@@ -1,3 +1,4 @@
+import "./StudentDetail.css";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
@@ -15,14 +16,15 @@ export const StudentDetail = () => {
   const { id } = useParams();
   const [data, setData] = useBatchedState({});
   const [route, setRoute] = useBatchedState([]);
-  const [school, setSchool] = useBatchedState([]);
+  const [school, setSchool] = useBatchedState({});
 
   let navigate = useNavigate();
   useEffect(() => {
-    const fetchSchoolData = async () => {
+    const fetchStudentData = async () => {
       try {
         const fetchedData = await getOneStudent(id);
-        // setData(fetchedData.data);
+        setData(fetchedData.data);
+       
         let myDict = [fetchedData.data][0].school;
 
         delete Object.assign(myDict, { ["schoolName"]: myDict["name"] })[
@@ -30,29 +32,14 @@ export const StudentDetail = () => {
         ];
         delete Object.assign(myDict, { ["schoolUid"]: myDict["uid"] })["uid"];
         setSchool(myDict);
+        console.log(myDict)
+       
       } catch (error) {
         let message = error.response.data;
         throw alert(message);
       }
     };
-    fetchSchoolData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const fetchedData = await getOneStudent(id);
-        let myRouteDict = [fetchedData.data][0].route;
-        delete Object.assign(myRouteDict, { ["routeUid"]: myRouteDict["uid"] })[
-          "uid"
-        ];
-        setRoute(myRouteDict);
-      } catch (error) {
-        let message = error.response.data;
-        throw alert(message);
-      }
-    };
-    fetchData();
+    fetchStudentData();
   }, []);
 
   async function handleDeleteStudent(student_id, e) {
@@ -89,23 +76,29 @@ export const StudentDetail = () => {
         accessor: "desciption",
       },
       {
-        Header: " ",
+        Header: "School Detail",
         disableFilters: true,
         accessor: "schoolUid",
         Cell: ({ value }) => {
-          return (
-            <Link to={"/Schools/info/" + value}> {"View School Detail"} </Link>
-          );
-        },
+          if (value) {
+            return <Link to={"/Schools/info/" + value}> {"View"} </Link>
+          }
+          else {
+            return <p> None </p>
+          }
+        }
       },
       {
-        Header: " ",
+        Header: "Route Detail",
         disableFilters: true,
         accessor: "routeUid",
         Cell: ({ value }) => {
-          return (
-            <Link to={"/Routes/info/" + value}> {"View Route Detail"} </Link>
-          );
+          if (value) {
+            return <Link to={"/Routes/info/" + value}> {"View"} </Link>
+          }
+          else {
+            return <p> None </p>
+          }
         },
       },
     ],
@@ -117,7 +110,7 @@ export const StudentDetail = () => {
     useTable({ columns, data: myData });
 
   return (
-    <div id="studentListing">
+    <div id="student-listing">
       <h1>
         Student Detail (<Link to={"/Students/edit/" + id}> Edit</Link>,
         <Link
@@ -136,8 +129,8 @@ export const StudentDetail = () => {
         <p>First Name : {data.firstName}</p>
         <p>Middle Name : {data.middleName}</p>
         <p>Last Name : {data.lastName}</p>
-        {/* <p>Address : {data.address}</p> */}
-        <p>ID : {data.id}</p>
+       <p>School: {school.schoolName} </p>
+        <p>ID : {id}</p>
       </div>
       <h3>Routes Associated With This Student </h3>
       <table {...getTableProps()} style={{ border: "solid 1px blue" }}>
