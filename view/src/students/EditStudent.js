@@ -1,56 +1,49 @@
-import "./UserForm.css";
+
 import { useState, useMemo, useEffect} from "react";
 import { Marker } from "../map/Marker";
-import {updateUser, getOneUser} from "../api/axios_wrapper";
+import {updateStudent, getOneStudent, filterAllSchools} from "../api/axios_wrapper";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import {useTable } from "react-table";
 import useBatchedState from 'react-use-batched-state';
+
 
 export const EditStudent = () => {
   // general 
   const { id } = useParams();
   let navigate = useNavigate();
 
-  // data 
-  const [data, setData] = useBatchedState({});
-
   // user
   const [ firstName, setFirstName ] = useState("");
   const [ middleName, setMiddleName ] = useState("");
   const [ lastName, setLastName ] = useState("");
-  const [ password, setPassword] = useState("");
-  const [ email, setEmail ] = useState("");
-  const [ address, setAddress ] = useState("");
-  const [ isAdmin, setisAdmin ] = useState(false);
+  const [school, setSchool] = useState(); 
+  const [user, setUser] = useState(); 
 
+  const [filteredDataSchool, setFilteredDataSchool] = useState([]);
+  const [selectedSchool, setSelectedSchool] = useState();
+  const [filterValueSchool, setFilterValueSchool] = useState("");
 
-  // maps
-  const [ showMap, setShowMap ] = useState(false);
-  const [ lat, setLat ] = useState();
-  const [ lng, setLng ] = useState();
-  const [ map, setMap ] = useState();
-  const [ apiLoaded, setApiLoaded ] = useState(false);
-  const [ geocoder, setGeocoder ] = useState();
-  const [ error, setError ] = useState(null);
-  const defaultProps = {
-    center: {
-      lat: 10.99835602,
-      lng: 77.01502627
-    },
-    zoom: 13
-  };
+  const [routeFilter, setRouteFilter] = useState("");
+  const [selectedRoute, setSelectedRoute] = useState(false);
+  const [route, setRoute] = useState();
 
  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedData = await getOneUser(id).catch ((error) => {
+        const fetchedData = await getOneStudent(id).catch ((error) => {
           let message = error.response.data;
           throw alert (message);
         });
-        console.log(fetchedData.data);
-        setData(fetchedData.data);
-        setStudents([fetchedData.data][0].students);
+        console.log(fetchedData.data)
+        setFirstName(fetchedData.data.firstName);
+        setMiddleName(fetchedData.data.middleName);
+        setLastName(fetchedData.data.lastName);
+
+        setRoute(fetchedData.data.route);
+        setRouteFilter(fetchedData.data.route.name)
+        setSchool(fetchedData.data.school);
+              
       } catch (error) {
         console.log(error);
       }
@@ -58,105 +51,57 @@ export const EditStudent = () => {
     fetchData();
   }, []);
 
-  useEffect (() => {
-    setFirstName(data.firstName)
-    setMiddleName(data.middleName)
-    setLastName(data.lastName)
-    setPassword(data.password)
-    setEmail(data.email)
-    setAddress(data.address)
-    setisAdmin(data.isAdmin)
-  }, [data])
-
-  const columns = useMemo(
-    () => [
-      {
-          Header: 'Student First Name',
-          accessor: 'firstName',
-      },
-      {
-        Header: 'Student Last Name',
-        accessor: 'lastName',
-      },
-      {
-        Header: ' ',
-        disableFilters: true,
-        accessor: 'uid',
-        Cell: ({value}) => { 
-          return <Link to = {"/Students/info/" + value}> {"View Student Detail"} </Link>   
-      },
+  useEffect(() => {
+    const fetchFilteredDataSchool = async () => {
+      try {
+        const fetchedDataSchool = await filterAllSchools({
+          page: 0,
+          size: 10,
+          sort: 'name',
+          sortDir: "ASC",
+          filterType: '',
+          filterData: filterValueSchool
+        });
+        setFilteredDataSchool(fetchedDataSchool.data.schools);
+        console.log(fetchedDataSchool);
+      } catch (error) {
+        alert(error.response.data);
+      }
     }
-    ],
-    []
-);
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow
-  } = useTable({columns, data: students});
+    if (filterValueSchool) {
+      fetchFilteredDataSchool();
+    }
+  
+  }, [filterValueSchool])
 
-  async function handleModifyUser (e) {
+  async function handleModifyStudent(e) {
     e.preventDefault(); // prevents page reload on submission
     let form_results = {
-      email: email,
       firstName: firstName,
       middleName: middleName,
       lastName: lastName,
-      address: address,
-      isAdmin: isAdmin,
-      password: password,
+      route: route,
+      school: school,
+      user: user,
     }
-    console.log("Modifying User with entries:");
+    console.log("Modifying Student with entries:");
     console.log(form_results);
    
     try {
-      let update_user_response = await updateUser(id,form_results); 
+      let update_user_response = await updateStudent(id,form_results); 
     } catch (error) {
         let message = error.response.data;
         throw alert (message);
     }
-    alert("User Successfully Updated");
-    navigate('/Users/info/' + id);
-  }
-
-  const searchLocation = () => {
-    geocoder.geocode( { 'address': address }, (results, status) => {
-      if (status === "OK") {
-        map.setCenter(results[0].geometry.location);
-        setLng(results[0].geometry.location.lng());
-        setLat(results[0].geometry.location.lat());
-        setError(null);
-        setAddress(address);
-      } else if (status === "ZERO_RESULTS") {
-        setError("No results for that address");
-      } else {
-        setError("Server Error. Try again later");
-      }
-    });
-  }
-  const handleApiLoaded = (map, maps) => {
-    const geocoder = new maps.Geocoder();
-    setGeocoder(geocoder);
-    setMap(map);
-    setApiLoaded(true);
-    searchLocation();
-  }
-  const checkMap = (e) => {
-    e.preventDefault();
-    if (apiLoaded) {
-      searchLocation()
-    } else {
-      setShowMap(true);
-    }
+    alert("Student Successfully Updated");
+    navigate('/Students/info/' + id);
   }
 
   return (
     <div>
-        <h1>Edit User</h1>
+        <h1>Edit Student</h1>
         <div id = "user_create_form">
-          <form onSubmit={handleModifyUser}>
+          <form onSubmit={handleModifyStudent}>
           
           <label className="input">
             <p>First Name:</p>
@@ -184,116 +129,62 @@ export const EditStudent = () => {
                   onChange={(e) => setLastName(e.target.value)}
               />
           </label>
-          <label className="input">
-            <p>Email:</p>
-              <input
-                  type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-              />
-          </label>
 
           <label className="input">
-            <p>Password:</p>
-              <input
-                  type="text"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-              />
-          </label>
-            
-          <label className="input">
-            <p>Address:</p>
-              <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => checkMap(e.target.value)} 
-              />
-            <p> {error}</p>
+                  <p> School: </p>
+                <input
+                      type="text"
+                      value={filterValueSchool}
+                      onChange={(e) => {setFilterValueSchool(e.target.value); setSelectedSchool(false); }}
+                      defaultValue = "Search"
+                /> 
           </label>
 
-          <label className="input">
-            <p>Admin:</p>
+          {!selectedSchool && 
+                <div className="user-list">
+                  {filteredDataSchool && filteredDataSchool.length > 0 ? (
+                    filteredDataSchool.map((school) => (
+                      <li >
+                    <button key={school.uid} className="user" onClick = {(e) => {
+                            setSelectedSchool(true);
+                            setFilterValueSchool(school.name); 
+                            setSchool(school); 
+                            setSelectedRoute(false);
+                          }
+                            } >
+                      {school.name}   
+                    </button>
+                    </li>
+                    ))
+                    ) : (<div> </div>)}
+                </div>
+          }
+
+          {selectedSchool && <label className="input">
+              <p> Route: </p>
               <input
-                  type="checkbox"
-                  value={isAdmin}
-                  onChange={(e) => setisAdmin(e.target.value)}
+                  type="text"
+                  value={routeFilter}
+                  onChange={(e) => {setRouteFilter(e.target.value); setSelectedRoute(false)}}
+                  defaultValue = "Search"
               />
-          </label>
-          <h3>Students Associated With This User </h3>
-        <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
-          <thead>
-          {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column => (
-                    <th
-                        {...column.getHeaderProps((column.id === "name" || column.id === "email_address"))}
-                        style={column.id === "name" || column.id === "email_address" ? {
-                          borderBottom: 'solid 3px red',
-                          background: 'aliceblue',
-                          color: 'black',
-                          fontWeight: 'bold',
-                          cursor: 'pointer'
-                        } : {
-                          borderBottom: 'solid 3px red',
-                          background: 'aliceblue',
-                          color: 'black',
-                          fontWeight: 'bold',
-                        }}
-                    >
-                      {column.render('Header')}
-                    </th>
-                ))}
-              </tr>
-          ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-          {rows.map(row => {
-            prepareRow(row)
-            return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map(cell => {
-                    return (
-                        <td
-                            {...cell.getCellProps()}
-                            style={{
-                              padding: '10px',
-                              border: 'solid 1px gray',
-                              background: 'papayawhip',
-                            }}
-                        >
-                            {cell.render('Cell')}
-                        </td>
-                    )
-                  })}
-                </tr>
-            )
-          })}
-          </tbody>
-        </table> 
-        <div>
-            <button className = "submitbutton" type="submit">Submit</button>
-        </div>
-        </form>
-        </div>
-        <div id="user_create_map">
-          <h3> Map </h3>
-          {error && (<div>{error}</div>)}
-          {showMap && (<div style={{ height: '50vh', width: '50%', display: "inline-block" }}>
-            <GoogleMapReact
-                bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
-                defaultCenter={defaultProps.center}
-                defaultZoom={defaultProps.zoom}
-                yesIWantToUseGoogleMapApiInternals
-                onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
-            >
-              <Marker
-                  text="You're Address"
-                  lat={lat}
-                  lng={lng}
-              />
-            </GoogleMapReact>
-          </div>)}
+            </label>}
+            {((selectedSchool) && !(selectedRoute)) &&
+            <div className="route-list">
+              {school.routes.filter(route => route.name.toLowerCase().includes(routeFilter.toLowerCase())).splice(0, 10).map((route) => (
+                      <li >
+                        <button key={route.uid} className="route" onClick = {(e) => {setSelectedRoute(true); setRouteFilter(route.name); setRoute(route)}} >
+                          {route.name}
+                        </button>
+                      </li>
+                  )
+              )}
+            </div>}
+
+      
+          </form>
+
+        
         </div>
     </div>
   );
