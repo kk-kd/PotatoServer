@@ -13,65 +13,74 @@ export class StudentController extends Repository<Student> {
 
   async allStudents(request: Request, response: Response, next: NextFunction) {
     try {
-      const pageNum: number = +request.query.page;
-      const takeNum: number = +request.query.size;
+      const pageNum: number = +request.body.page;
+      const takeNum: number = +request.body.size;
       var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
-      if (request.query.sort == 'none') {
+      if (request.body.sort == "none") {
         sortSpecification = "students.uid";
+      } else {
+        //should error check instead of else
+        sortSpecification = "students." + request.body.sort;
       }
-      else { //should error check instead of else
-        sortSpecification = "students." + request.query.sort;
-      }
-      if ((request.query.sortDir == 'none') || (request.query.sortDir == 'ASC')) {
+      if (request.body.sortDir == "none" || request.body.sortDir == "ASC") {
         sortDirSpec = "ASC";
-      }
-      else { //error check instead of else
+      } else {
+        //error check instead of else
         sortDirSpec = "DESC";
       }
-      const studentsQueryResult = await this.studentRepository.createQueryBuilder("students").skip(skipNum).take(takeNum).orderBy(sortSpecification, sortDirSpec).getMany();
+      const studentsQueryResult = await this.studentRepository
+        .createQueryBuilder("students")
+        .skip(skipNum)
+        .take(takeNum)
+        .orderBy(sortSpecification, sortDirSpec)
+        .getMany();
       response.status(200);
       return studentsQueryResult;
-    }
-    catch (e) {
+    } catch (e) {
       response.status(401).send("Students were not found with error: " + e);
       return;
     }
   }
-  async filterAllStudents(request: Request, response: Response, next: NextFunction) {
+  async filterAllStudents(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
     try {
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
-      const pageNum: number = +request.query.page;
-      const takeNum: number = +request.query.size;
+      const pageNum: number = +request.body.page;
+      const takeNum: number = +request.body.size;
       var skipNum = pageNum * takeNum;
 
       var sortSpecification;
       var sortDirSpec;
-      if (request.query.sort == 'none') {
+      if (request.body.sort == "none") {
         sortSpecification = "students.uid";
-      } else if (request.query.sort == 'school.name') {
+      } else if (request.body.sort == "school.name") {
         sortSpecification = "school.name";
-      } else { //should error check instead of else
-        sortSpecification = "students." + request.query.sort;
+      } else {
+        //should error check instead of else
+        sortSpecification = "students." + request.body.sort;
       }
-      if (request.query.sortDir == 'ASC') {
+      if (request.body.sortDir == "ASC") {
         sortDirSpec = "ASC";
-      }
-      else if (request.query.sortDir == 'DESC') { //error check instead of else
+      } else if (request.body.sortDir == "DESC") {
+        //error check instead of else
         sortDirSpec = "DESC";
       } else {
         sortDirSpec = "ASC";
         sortSpecification = "students.uid";
       }
       var filterSpecification;
-      filterSpecification = "students." + request.query.sort;
-      const queryIdFilter = request.query.idFilter;
-      const queryLastNameFilter = request.query.lastNameFilter;
+      filterSpecification = "students." + request.body.sort;
+      const queryIdFilter = request.body.idFilter;
+      const queryLastNameFilter = request.body.lastNameFilter;
       var studentsQueryResult;
       var total;
       if (queryIdFilter) {
@@ -81,7 +90,9 @@ export class StudentController extends Repository<Student> {
           .take(takeNum)
           .orderBy(sortSpecification, sortDirSpec)
           .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
-          .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
+          .andWhere("students.lastName ilike '%' || :lastName || '%'", {
+            lastName: queryLastNameFilter,
+          })
           .leftJoinAndSelect("students.route", "route")
           .leftJoinAndSelect("students.school", "school")
           .getManyAndCount();
@@ -93,7 +104,9 @@ export class StudentController extends Repository<Student> {
           .skip(skipNum)
           .take(takeNum)
           .orderBy(sortSpecification, sortDirSpec)
-          .where("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
+          .where("students.lastName ilike '%' || :lastName || '%'", {
+            lastName: queryLastNameFilter,
+          })
           .leftJoinAndSelect("students.route", "route")
           .leftJoinAndSelect("students.school", "school")
           .getManyAndCount();
@@ -103,10 +116,9 @@ export class StudentController extends Repository<Student> {
       response.status(200);
       return {
         students: studentsQueryResult,
-        total: total
+        total: total,
       };
-    }
-    catch (e) {
+    } catch (e) {
       response.status(401).send("Students were not found with error: " + e);
       return;
     }
@@ -123,10 +135,7 @@ export class StudentController extends Repository<Student> {
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
-
-
-    }
-    catch (e) {
+    } catch (e) {
       response
         .status(401)
         .send("Student with UID: " + request.params.uid + " was not found.");
@@ -134,44 +143,74 @@ export class StudentController extends Repository<Student> {
     }
   }
 
-  async saveNewStudent(request: Request, response: Response, next: NextFunction) {
+  async saveNewStudent(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
     try {
       return this.studentRepository.save(request.body);
-    }
-    catch (e) {
+    } catch (e) {
       response
         .status(401)
-        .send("New Student (" + request.body + ") couldn't be saved with error " + e);
+        .send(
+          "New Student (" + request.body + ") couldn't be saved with error " + e
+        );
       return;
     }
   }
 
-  async updateStudent(request: Request, response: Response, next: NextFunction) {
+  async updateStudent(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
     try {
       const uidNumber = request.params.uid;
-      await getConnection().createQueryBuilder().update(Student).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
+      await getConnection()
+        .createQueryBuilder()
+        .update(Student)
+        .where("uid = :uid", { uid: uidNumber })
+        .set(request.body)
+        .execute();
       response.status(200);
       return;
-
-    }
-
-    catch (e) {
+    } catch (e) {
       response
         .status(401)
-        .send("Student with UID " + request.params.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
+        .send(
+          "Student with UID " +
+            request.params.uid +
+            " and details(" +
+            request.body +
+            ") couldn't be updated with error " +
+            e
+        );
       return;
     }
   }
 
-  async deleteStudent(request: Request, response: Response, next: NextFunction) {
+  async deleteStudent(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
     try {
-
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const studentQueryResult = await this.studentRepository.createQueryBuilder("students").delete().where("students.uid = :uid", { uid: uidNumber }).execute();
+      const studentQueryResult = await this.studentRepository
+        .createQueryBuilder("students")
+        .delete()
+        .where("students.uid = :uid", { uid: uidNumber })
+        .execute();
       response.status(200);
-    }
-    catch (e) {
-      response.status(401).send("Student UID: " + request.params.uid + " was not found adn could not be deleted.")
+    } catch (e) {
+      response
+        .status(401)
+        .send(
+          "Student UID: " +
+            request.params.uid +
+            " was not found adn could not be deleted."
+        );
     }
   }
   findByStudentID(uid: number) {
@@ -196,6 +235,4 @@ export class StudentController extends Repository<Student> {
       .where("students.uid = :uid", { studentId })
       .execute();
   }
-
-
 }

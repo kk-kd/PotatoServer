@@ -12,104 +12,115 @@ export class SchoolController extends Repository<School> {
   private schoolRepository = getRepository(School);
 
   async allSchools(request: Request, response: Response, next: NextFunction) {
-
     try {
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
-      const pageNum: number = +request.query.page;
-      const takeNum: number = +request.query.size;
+      const pageNum: number = +request.body.page;
+      const takeNum: number = +request.body.size;
       var skipNum = pageNum * takeNum;
       var sortSpecification;
       var sortDirSpec;
-      if (request.query.sort == 'none') {
+      if (request.body.sort == "none") {
         sortSpecification = "schools.uid";
+      } else {
+        //should error check instead of else
+        sortSpecification = "schools." + request.body.sort;
       }
-      else { //should error check instead of else
-        sortSpecification = "schools." + request.query.sort;
-      }
-      if ((request.query.sortDir == 'none') || (request.query.sortDir == 'ASC')) {
+      if (request.body.sortDir == "none" || request.body.sortDir == "ASC") {
         sortDirSpec = "ASC";
-      }
-      else { //error check instead of else
+      } else {
+        //error check instead of else
         sortDirSpec = "DESC";
       }
-      const schoolQueryResult = await this.schoolRepository.createQueryBuilder("schools").skip(skipNum).take(takeNum).orderBy(sortSpecification, sortDirSpec).getMany();
+      const schoolQueryResult = await this.schoolRepository
+        .createQueryBuilder("schools")
+        .skip(skipNum)
+        .take(takeNum)
+        .orderBy(sortSpecification, sortDirSpec)
+        .getMany();
       response.status(200);
       return schoolQueryResult;
-    }
-    catch (e) {
+    } catch (e) {
       response.status(401).send("Schools were not found with error: " + e);
       return;
     }
   }
-  async filterAllSchools(request: Request, response: Response, next: NextFunction) {
+  async filterAllSchools(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
     try {
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
-      const pageNum: number = +request.query.page;
-      const takeNum: number = +request.query.size;
+      const pageNum: number = +request.body.page;
+      const takeNum: number = +request.body.size;
       var skipNum = pageNum * takeNum;
 
       var sortSpecification;
       var sortDirSpec;
-      if (request.query.sort == 'none') {
+      if (request.body.sort == "none") {
         sortSpecification = "schools.uid";
+      } else {
+        //should error check instead of else
+        sortSpecification = "schools." + request.body.sort;
       }
-      else { //should error check instead of else
-        sortSpecification = "schools." + request.query.sort;
-      }
-      if (request.query.sortDir == 'ASC') {
+      if (request.body.sortDir == "ASC") {
         sortDirSpec = "ASC";
-      }
-      else if (request.query.sortDir == 'DESC') { //error check instead of else
+      } else if (request.body.sortDir == "DESC") {
+        //error check instead of else
         sortDirSpec = "DESC";
       } else {
         sortDirSpec = "ASC";
         sortSpecification = "schools.uid";
       }
       var filterSpecification;
-      filterSpecification = "schools." + request.query.sort;
-      const queryFilterType = request.query.filterType;
-      const queryFilterData = request.query.filterData;
+      filterSpecification = "schools." + request.body.sort;
+      const queryFilterType = request.body.filterType;
+      const queryFilterData = request.body.filterData;
       const [schoolsQueryResult, total] = await this.schoolRepository
         .createQueryBuilder("schools")
         .skip(skipNum)
         .take(takeNum)
         .orderBy(sortSpecification, sortDirSpec)
-        .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
+        .where("schools.name ilike '%' || :name || '%'", {
+          name: queryFilterData,
+        })
         .getManyAndCount();
       response.status(200);
       return {
         schools: schoolsQueryResult,
-        total: total
+        total: total,
       };
-    }
-    catch (e) {
+    } catch (e) {
       response.status(401).send("Users were not found with error: " + e);
       return;
     }
   }
 
   async oneSchool(request: Request, response: Response, next: NextFunction) {
-
     try {
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").where("schools.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("schools.routes", "route").leftJoinAndSelect("schools.students", "students").getOneOrFail();
+      const usersQueryResult = await this.schoolRepository
+        .createQueryBuilder("schools")
+        .where("schools.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("schools.routes", "route")
+        .leftJoinAndSelect("schools.students", "students")
+        .getOneOrFail();
       response.status(200);
       return usersQueryResult;
-    }
-    catch (e) {
+    } catch (e) {
       response
         .status(401)
         .send("School with UID: " + request.params.uid + " was not found.");
@@ -117,7 +128,11 @@ export class SchoolController extends Repository<School> {
     }
   }
 
-  async oneRoutePlanner(request: Request, response: Response, next: NextFunction) {
+  async oneRoutePlanner(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
     try {
       const uidNumber = request.params.uid;
       const usersQueryResult = await this.schoolRepository
@@ -138,57 +153,75 @@ export class SchoolController extends Repository<School> {
     }
   }
 
-  async saveNewSchool(request: Request, response: Response, next: NextFunction) {
+  async saveNewSchool(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ) {
     try {
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
       return await this.schoolRepository.save(request.body);
-    }
-    catch (e) {
+    } catch (e) {
       response
         .status(401)
-        .send("New School (" + request.body + ") couldn't be saved with error " + e);
+        .send(
+          "New School (" + request.body + ") couldn't be saved with error " + e
+        );
       return;
     }
   }
 
   async updateSchool(request: Request, response: Response, next: NextFunction) {
-
     try {
       const uidNumber = request.params.uid;
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
       return await this.schoolRepository.save(request.body);
-    }
-    catch (e) {
+    } catch (e) {
       response
         .status(401)
-        .send("School with UID " + request.params.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
+        .send(
+          "School with UID " +
+            request.params.uid +
+            " and details(" +
+            request.body +
+            ") couldn't be updated with error " +
+            e
+        );
       return;
     }
   }
 
   async deleteSchool(request: Request, response: Response, next: NextFunction) {
-
     try {
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const schoolQueryResult = await this.schoolRepository.createQueryBuilder("schools").delete().where("schools.uid = :uid", { uid: uidNumber }).execute();
+      const schoolQueryResult = await this.schoolRepository
+        .createQueryBuilder("schools")
+        .delete()
+        .where("schools.uid = :uid", { uid: uidNumber })
+        .execute();
       response.status(200);
       return schoolQueryResult;
-    }
-    catch (e) {
-      response.status(401).send("Schools UID: " + request.params.uid + " was not found adn could not be deleted.")
+    } catch (e) {
+      response
+        .status(401)
+        .send(
+          "Schools UID: " +
+            request.params.uid +
+            " was not found adn could not be deleted."
+        );
     }
   }
   findBySchoolID(uid: number) {
