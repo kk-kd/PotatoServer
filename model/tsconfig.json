@@ -10,10 +10,11 @@
       "experimentalDecorators": true,
       "sourceMap": true,
       "skipLibCheck": true
-   },     
+   },  
    "exclude": [
       "node_modules",
       "tests",
-      "jest.config.ts"
+      "jest.config.ts",
+      "createAdmin.ts"
   ]
 }
