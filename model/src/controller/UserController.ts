@@ -174,7 +174,9 @@ export class UserController extends Repository<User> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      return this.userRepository.save(request.body);
+      const user = await this.userRepository.save(request.body);
+      response.status(200);
+      return user;
     } catch (e) {
       response
         .status(401)

@@ -221,10 +221,10 @@ export async function loginUser(specifications) {
 */
 
 export async function saveStudent(specifications) {
-  return await axios.post("/api/students", {
-    params: specifications,
-    header: getHeaderWithAuthToken(),
-  });
+  return await axios.post("/api/students",
+    specifications,
+      {headers: getHeaderWithAuthToken()},
+  );
 }
 
 export async function saveSchool(specifications) {

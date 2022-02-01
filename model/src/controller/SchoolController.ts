@@ -83,6 +83,7 @@ export class SchoolController extends Repository<School> {
         .take(takeNum)
         .orderBy(sortSpecification, sortDirSpec)
         .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
+        .leftJoinAndSelect("schools.routes", "routes")
         .getManyAndCount();
       response.status(200);
       return {
