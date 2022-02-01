@@ -1,4 +1,4 @@
-import "./UserForm.css";
+import "./EditUser.css";
 import GoogleMapReact from "google-map-react";
 import { useState, useMemo, useEffect} from "react";
 import { Marker } from "../map/Marker";
@@ -16,6 +16,7 @@ export const EditUser = () => {
   const [data, setData] = useBatchedState({});
   const [students, setStudents] = useBatchedState([]);
 
+
   // user
   
   const [ firstName, setFirstName ] = useState("");
@@ -25,6 +26,7 @@ export const EditUser = () => {
   const [ email, setEmail ] = useState("");
   const [ address, setAddress ] = useState("");
   const [ isAdmin, setisAdmin ] = useState(false);
+  const [ addressValid, setAddressValid] = useState(false);
 
 
   // maps
@@ -131,7 +133,8 @@ export const EditUser = () => {
         setLng(results[0].geometry.location.lng());
         setLat(results[0].geometry.location.lat());
         setError(null);
-        setAddress(address);
+        setAddressValid(true); 
+        
       } else if (status === "ZERO_RESULTS") {
         setError("No results for that address");
       } else {
@@ -156,11 +159,12 @@ export const EditUser = () => {
   }
 
   return (
-    <div>
-        <h1> Edit User </h1>
-        
-        <form onSubmit={handleModifyUser} newUserClicked = {false}>
-          <div id = "user_create_form">
+    <div > 
+    <h1> Edit User </h1>
+    <div >
+         
+        <form onSubmit={handleModifyUser} newUserClicked = {false} id='form'>
+          <div>
               <label className="input">
                 <p>First Name:</p>
                   <input
@@ -210,9 +214,9 @@ export const EditUser = () => {
                   <input
                       type="text"
                       value={address}
-                      onChange={(e) => checkMap(e.target.value)} 
+                      onChange={(e) => {checkMap(e.target.value); setAddress(e.target.value)}} 
                   />
-                <p> {error}</p>
+                  <button onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate" }  </button>
               </label>
 
               <label className="input">
@@ -223,11 +227,11 @@ export const EditUser = () => {
                       onChange={(e) => setisAdmin(e.target.value)}
                   />
               </label>
-          </div> 
           
-        
+          
             <h3>Students Associated With This User </h3>
-          <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+          <div id ='table'>
+          <table {...getTableProps()} style={{ border: 'solid 1px blue' } }>
             <thead>
             {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
@@ -278,13 +282,16 @@ export const EditUser = () => {
             }
             </tbody>
           </table> 
+          </div>
             <div>
 
                 <button className = "submitbutton" type="submit">Submit</button>
             </div>
+          </div> 
           </form>
         
-        <div id="user_create_map">
+        
+       <div id="user_map">
           <h3> Map </h3>
           {error && (<div>{error}</div>)}
           {showMap && (<div style={{ height: '50vh', width: '50%', display: "inline-block" }}>
@@ -301,8 +308,9 @@ export const EditUser = () => {
                   lng={lng}
               />
             </GoogleMapReact>
-          </div>)}
-        </div>
+        </div>)}
+      </div>
+    </div>
     </div>
   );
 }
