@@ -166,9 +166,10 @@ export class StudentController extends Repository<Student> {
 
   async saveNewStudent(request: Request, response: Response, next: NextFunction) {
     try {
-      return this.studentRepository.save(request.body);
-    }
-    catch (e) {
+      const result = await this.studentRepository.save(request.body);
+      response.status(200);
+      return result;
+    } catch (e) {
       response
         .status(401)
         .send("New Student (" + request.body + ") couldn't be saved with error " + e);

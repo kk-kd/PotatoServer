@@ -148,6 +148,9 @@ export class UserController extends Repository<User> {
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("users.students", "students")
+        .leftJoinAndSelect("students.school", "school")
+        .leftJoinAndSelect("students.route", "route")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -174,7 +177,7 @@ export class UserController extends Repository<User> {
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
-        .leftJoinAndSelect("users.students", "student")
+        .leftJoinAndSelect("users.students", "students")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -193,7 +196,9 @@ export class UserController extends Repository<User> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      return this.userRepository.save(request.body);
+      const user = await this.userRepository.save(request.body);
+      response.status(200);
+      return user;
     } catch (e) {
       response
         .status(401)

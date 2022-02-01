@@ -36,8 +36,9 @@ export const UserDetail = () => {
       let message = error.response.data;
       throw alert (message);
     }
-    
     navigate('/Users/list');
+    throw alert ("User Deletion Successful");
+    
   }
  
   const columns = useMemo(
