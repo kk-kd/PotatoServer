@@ -178,8 +178,11 @@ Change a User Password
                 newPassword: "NewPassword321",
             }
 */
-export async function changeUserPassword(specifications, headers) {
-  return await axios.post("/api/change-password", specifications, headers);
+export async function changeUserPassword(specifications) {
+  return await axios.post("/api/change-password",
+      specifications,
+      { headers: getHeaderWithAuthToken() }
+  );
 }
 
 /*

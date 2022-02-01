@@ -38,14 +38,11 @@ export const MyStudents = ({ user }) => {
     return (
         <label>Loading</label>
     );
-  } else if (data.length === 0) {
-    return (
-        <h1>No Students</h1>
-    )
   } else {
     return (
         <div id="myStudentListing">
-          <h1>My Students</h1>
+        <h1>My Students</h1>
+        {data.length === 0 ? <h4>You have no children students in the database!</h4> :
           <table {...getTableProps()} style={{ border: "solid 1px blue" }}>
             <thead>
             {headerGroups.map((headerGroup) => (
@@ -89,7 +86,7 @@ export const MyStudents = ({ user }) => {
               );
             })}
             </tbody>
-          </table>
+          </table>}
         </div>
     );
   }
