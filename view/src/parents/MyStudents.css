@@ -1,0 +1,11 @@
+#myStudentListing {
+  display: flex;
+  margin: 0 auto;
+  flex-direction: column;
+  flex-wrap: wrap;
+  width: 70%;
+}
+
+#myStudentListing > * {
+  margin: 10px;
+}
