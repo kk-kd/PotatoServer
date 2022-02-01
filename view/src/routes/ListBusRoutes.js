@@ -6,13 +6,14 @@ import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllRoutes } from "./../api/axios_wrapper";
 
 export const ListBusRoutes = () => {
-  const [ data, setData ] = useState([]);
-  const [ page, setPage ] = useState(0);
-  const [ total, setTotal ] = useState(1);
-  const [ size, setSize ] = useState(10);
-  const [ sortBy, setSortBy ] = useState("none");
-  const [ sortDirec, setSortDirec ] = useState("none");
-  const [ nameFilter, setNameFilter ] = useState("");
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(1);
+  const [size, setSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
+  const [sortBy, setSortBy] = useState("none");
+  const [sortDirec, setSortDirec] = useState("none");
+  const [nameFilter, setNameFilter] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -21,7 +22,8 @@ export const ListBusRoutes = () => {
           size: size,
           sort: sortBy,
           sortDir: sortDirec,
-          nameFilter: nameFilter
+          nameFilter: nameFilter,
+          showAll: showAll
         });
         if (fetchedData.data.special) {
           setData(fetchedData.data.routes.map(route => ({
@@ -39,7 +41,7 @@ export const ListBusRoutes = () => {
       }
     };
     fetchData();
-  }, [page, size, sortDirec, nameFilter]);
+  }, [page, size, sortDirec, nameFilter, showAll]);
 
   const nextSort = (id) => {
     if (sortBy !== id) {
@@ -144,16 +146,16 @@ export const ListBusRoutes = () => {
           </tbody>
         </table>
         <div className="pagination">
-          <button onClick={() => setPage(0)} disabled={page === 0}>
+          <button onClick={() => setPage(0)} disabled={page === 0 || showAll}>
             {'<<'}
           </button>{' '}
-          <button onClick={() => setPage(page - 1)} disabled={page === 0}>
+          <button onClick={() => setPage(page - 1)} disabled={page === 0 || showAll}>
             {'<'}
           </button>{' '}
-          <button onClick={() => setPage(page + 1)} disabled={page >= total/size - 1}>
+          <button onClick={() => setPage(page + 1)} disabled={page >= total/size - 1 || showAll}>
             {'>'}
           </button>{' '}
-          <button onClick={() => setPage(Math.ceil(total/size) - 1)} disabled={page >= total/size - 1}>
+          <button onClick={() => setPage(Math.ceil(total/size) - 1)} disabled={page >= total/size - 1 || showAll}>
             {'>>'}
           </button>{' '}
           <span>
@@ -186,6 +188,9 @@ export const ListBusRoutes = () => {
                 </option>
             ))}
           </select>
+          <label>Show All
+            <input type="checkbox" value={showAll} onChange={e => setShowAll(!showAll)} />
+          </label>
         </div>
       </div>
   );

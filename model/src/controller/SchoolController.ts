@@ -77,18 +77,32 @@ export class SchoolController extends Repository<School> {
       filterSpecification = "schools." + request.query.sort;
       const queryFilterType = request.query.filterType;
       const queryFilterData = request.query.filterData;
-      const [schoolsQueryResult, total] = await this.schoolRepository
-        .createQueryBuilder("schools")
-        .skip(skipNum)
-        .take(takeNum)
-        .orderBy(sortSpecification, sortDirSpec)
-        .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
-        .getManyAndCount();
-      response.status(200);
-      return {
-        schools: schoolsQueryResult,
-        total: total
-      };
+      if (request.query.showAll && request.query.showAll === "true") {
+        const [schoolsQueryResult, total] = await this.schoolRepository
+          .createQueryBuilder("schools")
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
+          .getManyAndCount();
+        response.status(200);
+        return {
+          schools: schoolsQueryResult,
+          total: total
+        };
+      } else {
+        const [schoolsQueryResult, total] = await this.schoolRepository
+          .createQueryBuilder("schools")
+          .skip(skipNum)
+          .take(takeNum)
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
+          .leftJoinAndSelect("schools.routes", "routes")
+          .getManyAndCount();
+        response.status(200);
+        return {
+          schools: schoolsQueryResult,
+          total: total
+        };
+      }
     }
     catch (e) {
       response.status(401).send("Users were not found with error: " + e);
@@ -105,7 +119,13 @@ export class SchoolController extends Repository<School> {
         return;
       }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const usersQueryResult = await this.schoolRepository.createQueryBuilder("schools").where("schools.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("schools.routes", "route").getOneOrFail();
+      const usersQueryResult = await this.schoolRepository
+        .createQueryBuilder("schools")
+        .where("schools.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("schools.routes", "routes")
+        .leftJoinAndSelect("schools.students", "students")
+        .leftJoinAndSelect("students.route", "route")
+        .getOneOrFail();
       response.status(200);
       return usersQueryResult;
     }
@@ -145,7 +165,7 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      return this.schoolRepository.save(request.body);
+      return await this.schoolRepository.save(request.body);
     }
     catch (e) {
       response
@@ -164,14 +184,7 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      await getConnection()
-        .createQueryBuilder()
-        .update(School)
-        .where("uid = :uid", { uid: uidNumber })
-        .set(request.body)
-        .execute();
-      response.status(200);
-      return;
+      return await this.schoolRepository.save(request.body);
     }
     catch (e) {
       response

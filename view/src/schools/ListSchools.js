@@ -10,6 +10,7 @@ export const ListSchools = () => {
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(1);
   const [size, setSize] = useState(10);
+  const [showAll, setShowAll] = useState(false);
   const [sortDirec, setSortDirec] = useState("none");
   const [nameFilter, setNameFilter] = useState("");
   useEffect(() => {
@@ -21,7 +22,8 @@ export const ListSchools = () => {
           sort: "name",
           sortDir: sortDirec,
           filterType: "name",
-          filterData: nameFilter
+          filterData: nameFilter,
+          showAll: showAll
         });
         setData(fetchedData.data.schools);
         setTotal(fetchedData.data.total);
@@ -30,7 +32,7 @@ export const ListSchools = () => {
       }
     };
     fetchData();
-  }, [page, size, sortDirec, nameFilter]);
+  }, [page, size, sortDirec, nameFilter, showAll]);
 
   const nextSort = (id) => {
     if (sortDirec === "ASC") {
@@ -125,16 +127,16 @@ export const ListSchools = () => {
           </tbody>
         </table>
         <div className="pagination">
-          <button onClick={() => setPage(0)} disabled={page === 0}>
+          <button onClick={() => setPage(0)} disabled={page === 0 || showAll}>
             {'<<'}
           </button>{' '}
-          <button onClick={() => setPage(page - 1)} disabled={page === 0}>
+          <button onClick={() => setPage(page - 1)} disabled={page === 0 || showAll}>
             {'<'}
           </button>{' '}
-          <button onClick={() => setPage(page + 1)} disabled={page >= total/size - 1}>
+          <button onClick={() => setPage(page + 1)} disabled={page >= total/size - 1 || showAll}>
             {'>'}
           </button>{' '}
-          <button onClick={() => setPage(Math.ceil(total/size) - 1)} disabled={page >= total/size - 1}>
+          <button onClick={() => setPage(Math.ceil(total/size) - 1)} disabled={page >= total/size - 1 || showAll}>
             {'>>'}
           </button>{' '}
           <span>
@@ -167,6 +169,9 @@ export const ListSchools = () => {
                 </option>
             ))}
           </select>
+          <label>Show All
+            <input type="checkbox" value={showAll} onChange={e => setShowAll(!showAll)} />
+          </label>
         </div>
       </div>
   );
