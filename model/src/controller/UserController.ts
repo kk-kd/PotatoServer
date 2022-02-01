@@ -95,24 +95,43 @@ export class UserController extends Repository<User> {
       filterSpecification = "users." + request.query.sort;
       const queryFilterType = request.query.filterType;
       const queryFilterData = request.query.filterData;
-      const [usersQueryResult, total] = await this.userRepository
-        .createQueryBuilder("users")
-        .skip(skipNum)
-        .take(takeNum)
-        .orderBy(sortSpecification, sortDirSpec)
-        .where("users.email ilike '%' || :email || '%'", {
-          email: queryFilterData,
-        })
-        .andWhere("users.lastName ilike '%' || :lastName || '%'", {
-          lastName: queryFilterType,
-        })
-        .leftJoinAndSelect("users.students", "student")
-        .getManyAndCount();
-      response.status(200);
-      return {
-        users: usersQueryResult,
-        total: total,
-      };
+      if (request.query.showAll && request.query.showAll === "true") {
+        const [usersQueryResult, total] = await this.userRepository
+          .createQueryBuilder("users")
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("users.email ilike '%' || :email || '%'", {
+            email: queryFilterData,
+          })
+          .andWhere("users.lastName ilike '%' || :lastName || '%'", {
+            lastName: queryFilterType,
+          })
+          .leftJoinAndSelect("users.students", "student")
+          .getManyAndCount();
+        response.status(200);
+        return {
+          users: usersQueryResult,
+          total: total,
+        };
+      } else {
+        const [usersQueryResult, total] = await this.userRepository
+          .createQueryBuilder("users")
+          .skip(skipNum)
+          .take(takeNum)
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("users.email ilike '%' || :email || '%'", {
+            email: queryFilterData,
+          })
+          .andWhere("users.lastName ilike '%' || :lastName || '%'", {
+            lastName: queryFilterType,
+          })
+          .leftJoinAndSelect("users.students", "student")
+          .getManyAndCount();
+        response.status(200);
+        return {
+          users: usersQueryResult,
+          total: total,
+        };
+      }
     } catch (e) {
       response.status(401).send("Users were not found with error: " + e);
       return;
