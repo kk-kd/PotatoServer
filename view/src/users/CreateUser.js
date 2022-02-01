@@ -175,6 +175,9 @@ export const CreateUser = () => {
     setFilterValueSchool("")
     setSchool({})
     setSelectedSchool(false)
+
+    setMakeStudentForUser(false)
+    setMakeUserForStudent(false)
   
   }, [actionType])
 
@@ -216,11 +219,19 @@ export const CreateUser = () => {
       firstName: firstNameStudent, 
       middleName: middleNameStudent, 
       lastName: lastNameStudent,
-      studentid: studentid, 
+      id: studentid, 
       school: school,
     }
-    if (!firstNameStudent || !selectedUser || !school || !lastNameStudent) {
-      alert("First Name, Last Name, StudentID, User, and School are Required.")
+
+    if (!firstNameStudent || !lastNameStudent ) {
+      alert("First Name and Last Name are Required.")
+    }
+    else if (!selectedUser) {
+      alert("Please Select a User for this student.")
+    }
+    
+    else if (!(Number(studentid) > 0)) {
+      alert("Student ID must be a positive number")
     }
     else {
       if (makeStudentForUser) {
@@ -244,7 +255,10 @@ export const CreateUser = () => {
 }
 
   async function handleUserCreateFormButton (e) {
-    if (!addressValid) {
+    if (!firstNameUser || !lastNameUser) {
+      alert("First Name and Last Name are Required.")
+    }
+    else if (!addressValid) {
       alert("Please Validate Address.")
     }
     else{
