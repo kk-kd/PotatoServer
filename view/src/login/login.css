@@ -1,12 +1,12 @@
 .core-login-forms {
-  background-color: #dadada;
+  background: #dadada;
   margin-top: 2em;
 }
 .header-image {
   height: 10em;
 }
 .login-wrapper {
-  height: 100%;
+  /* height: 100vh; */
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -15,7 +15,6 @@
   background-color: #dadada;
   /* background-size: 100%;
   min-height: max-content; */
-  background-size: cover;
 }
 
 .input {
