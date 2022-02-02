@@ -5,3 +5,11 @@
   border-radius: 50%;
   color: black;
 }
+
+#schoolMarker {
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+  color: black;
+}

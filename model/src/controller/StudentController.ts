@@ -180,9 +180,9 @@ export class StudentController extends Repository<Student> {
   async updateStudent(request: Request, response: Response, next: NextFunction) {
     try {
       const uidNumber = request.params.uid;
-      await getConnection().createQueryBuilder().update(Student).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
+      const a = await getConnection().createQueryBuilder().update(Student).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
-      return;
+      return a;
 
     }
 
@@ -200,6 +200,7 @@ export class StudentController extends Repository<Student> {
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const studentQueryResult = await this.studentRepository.createQueryBuilder("students").delete().where("students.uid = :uid", { uid: uidNumber }).execute();
       response.status(200);
+      return studentQueryResult;
     }
     catch (e) {
       response.status(401).send("Student UID: " + request.params.uid + " was not found adn could not be deleted.")
@@ -208,6 +209,7 @@ export class StudentController extends Repository<Student> {
   findByStudentID(uid: number) {
     return this.createQueryBuilder("students")
       .where("students.uid = :uid", { uid })
+      .leftJoinAndSelect("students.route", "route")
       .getOne();
   }
   findByStudentName(firstName: string) {

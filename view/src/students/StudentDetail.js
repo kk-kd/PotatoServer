@@ -1,3 +1,4 @@
+import "./StudentDetail.css";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
@@ -15,59 +16,60 @@ export const StudentDetail = () => {
   const { id } = useParams();
   const [data, setData] = useBatchedState({});
   const [route, setRoute] = useBatchedState([]);
-  const [school, setSchool] = useBatchedState([]);
+  const [school, setSchool] = useBatchedState({});
 
   let navigate = useNavigate();
   useEffect(() => {
-    const fetchSchoolData = async () => {
+    const fetchStudentData = async () => {
       try {
         const fetchedData = await getOneStudent(id);
-        // setData(fetchedData.data);
+        setData(fetchedData.data);
+       
         let myDict = [fetchedData.data][0].school;
+        if (fetchedData.data.route) {
+          myDict['route_description'] = fetchedData.data.route.desciption;
+          myDict['route_name'] = fetchedData.data.route.name;
+          myDict['route_uid'] = fetchedData.data.route.uid;
+        }
+        else {
+          myDict['route_description'] = "";
+          myDict['route_name'] = "";
+          myDict['route_uid'] = "";
+        }
 
         delete Object.assign(myDict, { ["schoolName"]: myDict["name"] })[
           "name"
         ];
         delete Object.assign(myDict, { ["schoolUid"]: myDict["uid"] })["uid"];
+
         setSchool(myDict);
+       
       } catch (error) {
         let message = error.response.data;
         throw alert(message);
       }
     };
-    fetchSchoolData();
+    fetchStudentData();
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const fetchedData = await getOneStudent(id);
-        let myRouteDict = [fetchedData.data][0].route;
-        delete Object.assign(myRouteDict, { ["routeUid"]: myRouteDict["uid"] })[
-          "uid"
-        ];
-        setRoute(myRouteDict);
-      } catch (error) {
-        let message = error.response.data;
-        throw alert(message);
-      }
-    };
-    fetchData();
-  }, []);
-
-  async function handleDeleteStudent(student_id, e) {
+  const handleDeleteStudent = (student_id, e) => {
     e.preventDefault();
 
-    console.log("Deleting student with uid = " + student_id);
+    //console.log("Deleting student with uid = " + student_id);
+    const a = callDeleteStudentAPI(student_id);
+    
+    navigate("/Students/list");
+    alert("User Delete Successful");
+  }
+
+  const callDeleteStudentAPI = async (student_id) => {
     try {
-      let delete_student_response = await deleteStudent(parseInt(student_id));
+      const resp = await deleteStudent(student_id);
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       let message = error.response.data;
       throw alert(message);
     }
-
-    navigate("/Students/list");
   }
 
   const columns = useMemo(
@@ -82,30 +84,36 @@ export const StudentDetail = () => {
       },
       {
         Header: "Route Name",
-        accessor: "name",
+        accessor: "route_name",
       },
       {
         Header: "Route Description",
-        accessor: "desciption",
+        accessor: "route_description",
       },
       {
-        Header: " ",
+        Header: "School Detail",
         disableFilters: true,
         accessor: "schoolUid",
         Cell: ({ value }) => {
-          return (
-            <Link to={"/Schools/info/" + value}> {"View School Detail"} </Link>
-          );
-        },
+          if (value) {
+            return <Link to={"/Schools/info/" + value}> {"View"} </Link>
+          }
+          else {
+            return <p> None </p>
+          }
+        }
       },
       {
-        Header: " ",
+        Header: "Route Detail",
         disableFilters: true,
-        accessor: "routeUid",
+        accessor: "route_uid",
         Cell: ({ value }) => {
-          return (
-            <Link to={"/Routes/info/" + value}> {"View Route Detail"} </Link>
-          );
+          if (value) {
+            return <Link to={"/Routes/info/" + value}> {"View"} </Link>
+          }
+          else {
+            return <p> None </p>
+          }
         },
       },
     ],
@@ -113,13 +121,14 @@ export const StudentDetail = () => {
   );
 
   let myData = [Object.assign({}, route, school)];
+  //console.log(myData)
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data: myData });
 
   return (
-    <div id="studentListing">
+    <div id="student-listing">
       <h1>
-        Student Detail (<Link to={"/Students/edit/" + id}> Edit</Link>,
+        Student Detail (<Link to={"/Students/edit/" + id}> Edit Student</Link>,
         <Link
           to={"/Students/list"}
           onClick={(e) => {
@@ -127,17 +136,18 @@ export const StudentDetail = () => {
           }}
         >
           {" "}
-          Delete{" "}
+          Delete Student {" "}
         </Link>
         ){" "}
       </h1>
+
       <h3>Student Characteristics </h3>
       <div>
         <p>First Name : {data.firstName}</p>
         <p>Middle Name : {data.middleName}</p>
         <p>Last Name : {data.lastName}</p>
-        {/* <p>Address : {data.address}</p> */}
-        <p>ID : {data.id}</p>
+       <p>School: {school.schoolName} </p>
+        <p>ID : {id}</p>
       </div>
       <h3>Routes Associated With This Student </h3>
       <table {...getTableProps()} style={{ border: "solid 1px blue" }}>

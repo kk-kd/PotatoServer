@@ -10,6 +10,7 @@ import { Users } from "./users/Users";
 import { returnUserInfoFromJWT } from "./api/axios_wrapper";
 import { MyStudents } from "./parents/MyStudents";
 import { ParentStudent } from "./parents/ParentStudent";
+import { ChangeMyPassword } from "./parents/ChangeMyPassword";
 
 export const App = () => {
   const [loggedIn, setLoggedIn] = useState(
@@ -50,6 +51,7 @@ export const App = () => {
         <div className="App">
           <Header setLoggedIn={setLoggedIn} isAdmin={false} />
           <Routes>
+            <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
             <Route
               path="MyStudents/:id"
               element={<ParentStudent user={currentUser} />}
@@ -67,6 +69,7 @@ export const App = () => {
         <div className="App">
           <Header setLoggedIn={setLoggedIn} isAdmin={true} />
           <Routes>
+            <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
             <Route
               path="MyStudents"
               element={<MyStudents user={currentUser} />}
