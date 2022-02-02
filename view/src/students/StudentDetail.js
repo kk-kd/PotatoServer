@@ -119,7 +119,7 @@ export const StudentDetail = () => {
   return (
     <div id="studentListing">
       <h1>
-        Student Detail (<Link to={"/Students/edit/" + id}> Edit</Link>,
+        Student Detail (<Link to={"/Students/edit/" + id}> Edit School</Link>,
         <Link
           to={"/Students/list"}
           onClick={(e) => {
@@ -127,7 +127,7 @@ export const StudentDetail = () => {
           }}
         >
           {" "}
-          Delete{" "}
+          Delete School {" "}
         </Link>
         ){" "}
       </h1>
