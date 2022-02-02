@@ -239,7 +239,12 @@ export class UserController extends Repository<User> {
         response.status(401).send("User Register: Password validation failed; Please specify a password with at least 8 characters, with at least 1 uppercase letter, 1 lowercase letter, and 2 digits. No spaces.");
         return;
       }
-      request.body.password = await bcrypt.hash(request.body.password, 10);
+      if (request.query.changePassword && request.query.changePassword == 'true') {
+        console.log("Hashing Password");
+        console.log(request.body.password);
+        request.body.password = await bcrypt.hash(request.body.password, 10);
+        console.log(request.body.password);
+      } 
       await getConnection()
         .createQueryBuilder()
         .update(User)
