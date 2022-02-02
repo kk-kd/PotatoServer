@@ -124,7 +124,7 @@ export const EditStudent = () => {
   
   }, [filterValueUser])
 
-  async function handleModifyStudent(e) {
+  function handleModifyStudent(e) {
     e.preventDefault(); // prevents page reload on submission
     let form_results = {
       firstName: firstName,
@@ -134,9 +134,13 @@ export const EditStudent = () => {
       school: school,
       parentUser: user,
     }
-    //console.log("Modifying Student with entries:");
-    //console.log(form_results);
-   
+    const a = modifyStudent(form_results); 
+
+    alert("Student Successfully Updated");
+    navigate('/Students/info/' + id);
+  }
+
+  const modifyStudent = async (form_results) => {
     try {
       let update_user_response = await updateStudent(id,form_results); 
       setFirstName("");
@@ -146,13 +150,11 @@ export const EditStudent = () => {
       setSchool({});
       setUser({}); 
 
-    } catch (error) {
-        let message = error.response.data;
-        throw alert (message);
-    }
-    alert("Student Successfully Updated");
-    navigate('/Students/info/' + id);
+  } catch (error) {
+      let message = error.response.data;
+      throw alert (message);
   }
+}
 
   return (
     <div>

@@ -52,10 +52,17 @@ export const StudentDetail = () => {
     fetchStudentData();
   }, []);
 
-  async function handleDeleteStudent(student_id, e) {
+  const handleDeleteStudent = (student_id, e) => {
     e.preventDefault();
 
     //console.log("Deleting student with uid = " + student_id);
+    const a = callDeleteStudentAPI(student_id);
+    
+    navigate("/Students/list");
+    alert("User Delete Successful");
+  }
+
+  const callDeleteStudentAPI = async (student_id) => {
     try {
       const resp = await deleteStudent(student_id);
     } catch (error) {
@@ -63,10 +70,7 @@ export const StudentDetail = () => {
       let message = error.response.data;
       throw alert(message);
     }
-    navigate("/Students/list");
-    alert("User Delete Successful");
   }
-
 
   const columns = useMemo(
     () => [
