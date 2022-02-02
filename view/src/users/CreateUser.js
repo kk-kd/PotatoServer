@@ -75,16 +75,14 @@ export const CreateUser = () => {
       latitude: lat,
       longitude: lng
     }
-    console.log("Creating User with entries:")
-    console.log(form_results)
+
     try {
       const create_user_response = await registerUser(form_results);
       const madeUser = await getOneUser(create_user_response.data);
-      console.log(create_user_response);
-      console.log(madeUser);
+
       for(const student of students) {
         const name = await addStudent(student, madeUser.data);
-        console.log(name);
+
       };
       //let create_user_again = await registerUser({...create_user_response, students: form_results.students});
     } catch (error) {
@@ -99,7 +97,7 @@ export const CreateUser = () => {
       const created = await saveStudent({...student, parentUser: parent});
       return created;
     } catch (e) {
-      console.log(e.response);
+      
     }
   }
 
@@ -121,8 +119,7 @@ export const CreateUser = () => {
     if (studentid.length === 0) {
       form_results["id"] = null;
     }
-    console.log("Creating Student with entries:")
-    console.log(form_results)
+
     try {
       var madeUser;
       if (makeUserForStudent) {
@@ -154,7 +151,7 @@ export const CreateUser = () => {
           filterData: filterValue
         });
         setFilteredData(fetchedData.data.users);
-        console.log(filteredData);
+   
       } catch (error) {
         alert(error.response.data);
       }
@@ -177,7 +174,7 @@ export const CreateUser = () => {
           filterData: filterValueSchool
         });
         setFilteredDataSchool(fetchedDataSchool.data.schools);
-        console.log(fetchedDataSchool);
+     
       } catch (error) {
         alert(error.response.data);
       }
@@ -228,6 +225,10 @@ export const CreateUser = () => {
 
   const searchLocation = () => {
     mapApi.geocoder.geocode( { 'address': address }, (results, status) => {
+      if (!address || address.trim().length === 0) {
+        alert("Please Enter an Address"); 
+        return;
+      }
       if (status === "OK") {
         mapApi.map.setCenter(results[0].geometry.location);
         setLng(results[0].geometry.location.lng());
@@ -238,17 +239,20 @@ export const CreateUser = () => {
       } else if (status === "ZERO_RESULTS") {
         setAddressValid(false);
         setError("No results for that address");
-        console.log(status)
+        alert ("No results for that address");
+ 
       } else {
         setAddressValid(false);
         setError("Server Error. Try again later");
-        console.log(status)
+        alert("Server Error. Try again later");
+        
       }
     });
   }
   const handleApiLoaded = (map, maps) => {
     const geocoder = new maps.Geocoder();
     setMapApi({geocoder: geocoder, map: map});
+    setApiLoaded(true);
   }
   const checkMap = (e) => {
     e.preventDefault();
@@ -287,7 +291,7 @@ export const CreateUser = () => {
     }
     else {
       if (makeStudentForUser) {
-        console.log("2")
+       
         setStudents(arr => [...arr, newStudent]);
         setFirstNameStudent(""); 
         setMiddleNameStudent(""); 
@@ -303,7 +307,7 @@ export const CreateUser = () => {
         alert("Successfully Added Student Info to User. Note: Students are created only when the user form is submitted. To create a student independently, select Create New Student")
       } 
       else {
-        console.log("3")
+        
         // make new student
         setStudents(arr => [...arr, newStudent]);
         await handleCreateStudent(newStudent);
@@ -365,7 +369,11 @@ export const CreateUser = () => {
        <h1>Student / User Create</h1>
        <div className = "Choose-Action" > 
           <h3>
-              <input type = "radio" key={'createStudent'}  name = "action" onClick = {(e) => {setActionType("Student")}}/> 
+              <input 
+              type = "radio" 
+              key={'createStudent'} 
+               name = "action" 
+               onClick = {(e) => {setActionType("Student")}}/> 
               Create New Student 
           </h3>
       
@@ -384,6 +392,7 @@ export const CreateUser = () => {
               <p>First Name: </p>
                 <input
                     type="text"
+                    maxLength="100"
                     value={firstNameStudent}
                     onChange={(e) => setFirstNameStudent(e.target.value)}
                 />
@@ -393,6 +402,7 @@ export const CreateUser = () => {
               <p>Middle Name:</p>
                 <input
                     type="text"
+                    maxLength="100"
                     value={middleNameStudent}
                     onChange={(e) => setMiddleNameStudent(e.target.value)}
                 />
@@ -402,6 +412,7 @@ export const CreateUser = () => {
               <p>Last Name:</p>
                 <input
                     type="text"
+                    maxLength="100"
                     value={lastNameStudent}
                     onChange={(e) => setLastNameStudent(e.target.value)}
                 />
@@ -411,8 +422,9 @@ export const CreateUser = () => {
                   <p> School Search: </p>
                 <input
                       type="text"
+                      maxLength="100"
                       value={filterValueSchool}
-                      onChange={(e) => {setFilterValueSchool(e.target.value); setSelectedSchool(false); setSelectedRoute(false)}}
+                      onChange={(e) => {setFilterValueSchool(e.target.value); setSelectedSchool(false); setSelectedRoute(false); setRouteFilter("")}}
                       defaultValue = "Search"
                 /> 
             </label>
@@ -428,11 +440,14 @@ export const CreateUser = () => {
                     ))
                     ) : (<div> </div>)}
                 </div>}
-           
-            {selectedSchool && <label className="input">
+            
+            <p> {(selectedSchool && (!school.routes || school.routes.length === 0)) ? " There Are No Routes Available For The Selected School. Please Create One In the Routes Tab." : ''} </p>
+            <p> {!selectedSchool ? "You must select a school before you will be able to assign a route to this student." : ""} </p>
+            {selectedSchool && school.routes && school.routes.length > 0 && <label className="input">
               <p> Route Search: </p>
               <input
                   type="text"
+                  maxLength="100"
                   value={routeFilter}
                   onChange={(e) => {setRouteFilter(e.target.value); setSelectedRoute(false)}}
                   defaultValue = "Search"
@@ -454,6 +469,7 @@ export const CreateUser = () => {
               <p> Student ID:</p>
                 <input
                     type="text"
+                    maxLength="100"
                     value={studentid}
                     onChange={(e) => setStudentId(e.target.value)}
                 />
@@ -471,6 +487,7 @@ export const CreateUser = () => {
                   <p> User Search: </p>
                 <input
                       type="text"
+                      maxLength="100"
                       value={filterValue}
                       onChange={(e) => {setFilterValue(e.target.value); setSelectedUser(false); }}
                     
@@ -536,6 +553,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>First Name:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={firstNameUser}
                       onChange={(e) => setFirstNameUser(e.target.value)}
@@ -545,6 +563,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Middle Name:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={middleNameUser}
                       onChange={(e) => setMiddleNameUser(e.target.value)}
@@ -554,6 +573,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Last Name:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={lastNameUser}
                       onChange={(e) => setLastNameUser(e.target.value)}
@@ -563,6 +583,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Email:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -572,6 +593,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Password:</p>
                   <input
+                      maxLength="100"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -581,6 +603,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Address:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={address}
                       onChange={(e) => {setAddress(e.target.value); setAddressValid(false); }} 
@@ -603,10 +626,9 @@ export const CreateUser = () => {
               {students.map((student) => (
                   <li >{student.firstName} 
                   <button type = "button" onClick = {(e) => {
-                    console.log(students)
+              
                     let filtered = students.filter(function(el) { return el.studentid != student.studentid;});
-                    console.log(filtered)
-
+                
                     setStudents(filtered); 
                   }}> remove </button>
                   </li>
@@ -648,7 +670,7 @@ export const CreateUser = () => {
                 onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
             >
               <Marker
-                  text="You're Address"
+                  text="Your Address"
                   lat={lat}
                   lng={lng}
               />

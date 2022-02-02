@@ -94,7 +94,7 @@ export const CreateSchool = () => {
             <label id="schoolInput">School Name (max 30 chars.):
               <input
                   type="text"
-                  maxLength="30"
+                  maxLength="100"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
               />
@@ -102,7 +102,7 @@ export const CreateSchool = () => {
             <label id="schoolInput">Adress (max 30 chars.):
               <input
                   type="text"
-                  maxLength="30"
+                  maxLength="100"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
               />

@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate} from "react-router-dom";
 import {useTable } from "react-table";
 import { deleteUser, getOneUser } from "../api/axios_wrapper";
 import useBatchedState from 'react-use-batched-state';
+import e from "cors";
 
 export const UserDetail = () => {
   const { id } = useParams();
@@ -25,20 +26,30 @@ export const UserDetail = () => {
   
   }, []);
 
-  async function handleDeleteUser (user_id, e) {
-    e.preventDefault(); 
-   
-    console.log("Deleting User with uid = " + user_id)
+  const handleDeleteUser = (user_id, e) => {
+    e.preventDefault();
+    let sName = prompt("Do you want to delete?  If so, enter User email:");
+    console.log(sName);
+    console.log(data.email);
+    if (!sName) {
+      return; 
+    } else if (sName.toLowerCase().trim() !== data.email.toLowerCase().trim()) {
+      alert("Entered Email Does Not Match."); 
+      return;
+    } else {
+      deleteUserCall(user_id);
+    } 
+  }
+  const deleteUserCall = async (user_id) => {  
     try {
-      let delete_user_response = await deleteUser(parseInt(user_id)); 
-    } catch (error)  {
-      console.log(error)
-      let message = error.response.data;
-      throw alert (message);
-    }
-    navigate('/Users/list');
-    throw alert ("User Deletion Successful");
-    
+      await deleteUser(parseInt(user_id)); 
+      alert ("User Deletion Successful");
+      navigate('/Users/list');
+    } catch (e)  {
+      console.log(e);
+      let message = e.response.data;
+      alert (message);
+    }    
   }
  
   const columns = useMemo(
@@ -84,7 +95,7 @@ export const UserDetail = () => {
       <div id="userListing">
         <h1>User Detail (
           <Link to={'/Users/edit/' + id}> Edit User </Link>,
-          <Link to={'/Users/list'} onClick = {(e) => {handleDeleteUser(id, e)} }> Delete User </Link>
+          <Link to={'/Users/list'} onClick = {(e) => {handleDeleteUser(id, e);} }> Delete User </Link>
           )  </h1>
         <h3>User Characteristics </h3>
    

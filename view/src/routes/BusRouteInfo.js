@@ -84,7 +84,7 @@ export const BusRouteInfo = () => {
           <label id="schoolInput">Route Name:
             <input
                 type="text"
-                maxLength="30"
+                maxLength="100"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 readOnly={!isEdit}

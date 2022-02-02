@@ -55,11 +55,11 @@ export const EditUser = () => {
           let message = error.response.data;
           throw alert (message);
         });
-        console.log(fetchedData.data);
+  
         setData(fetchedData.data);
         setStudents([fetchedData.data][0].students);
       } catch (error) {
-        console.log(error);
+   
       }
     };
     fetchData();
@@ -97,11 +97,11 @@ export const EditUser = () => {
         setAddressValid(true);
       } else if (status === "ZERO_RESULTS") {
         setAddressValid(false);
-        console.log(status);
+
         alert ("No results for that address")
       } else {
         setAddressValid(false); 
-        console.log(status)
+       
         alert("Server Error. Try again later")
       }
     });
@@ -109,6 +109,7 @@ export const EditUser = () => {
   const handleApiLoaded = (map, maps) => {
     const geocoder = new maps.Geocoder();
     setMapApi({geocoder: geocoder, map: map});
+    setApiLoaded(true);
   }
 
   const checkMap = (e) => {
@@ -151,7 +152,7 @@ export const EditUser = () => {
   } = useTable({columns, data: students});
 
   const ModifyUserCall = async (form_results) => {
-    console.log(changePassword);
+   
     try {
       let update_user_response = await updateUser(id,form_results, changePassword); 
       return update_user_response; 
@@ -164,7 +165,7 @@ export const EditUser = () => {
   const handleModifyUser = (e)  => {
     e.preventDefault()
     //update password
-    console.log(passwordCandidate)
+
 
     if (!addressValid) {
       alert("Please Validate Address.")
@@ -193,8 +194,7 @@ export const EditUser = () => {
       longitude: lng, 
       latitude: lat,
     }
-    console.log("Modifying User with entries:");
-    console.log(form_results);
+
     const response = ModifyUserCall(form_results);
    
     alert("User Successfully Updated");
@@ -373,7 +373,7 @@ export const EditUser = () => {
                 onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
             >
               <Marker
-                  text="You're Address"
+                  text="Your Address"
                   lat={lat}
                   lng={lng}
               />

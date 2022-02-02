@@ -166,6 +166,7 @@ export const EditStudent = () => {
             <p>First Name:</p>
               <input
                   type="text"
+                  maxLength="100"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
               />
@@ -175,6 +176,7 @@ export const EditStudent = () => {
             <p>Middle Name:</p>
               <input
                   type="text"
+                  maxLength="100"
                   value={middleName}
                   onChange={(e) => setMiddleName(e.target.value)}
               />
@@ -184,6 +186,7 @@ export const EditStudent = () => {
             <p>Last Name:</p>
               <input
                   type="text"
+                  maxLength="100"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
               />
@@ -193,6 +196,7 @@ export const EditStudent = () => {
                   <p> School: </p>
                 <input
                       type="text"
+                      maxLength="100"
                       value={filterValueSchool}
                       onChange={(e) => {setFilterValueSchool(e.target.value); setSelectedSchool(false); setSelectedRoute(false); }}
                       defaultValue = "Search"
@@ -234,6 +238,7 @@ export const EditStudent = () => {
               <input
                   type="text"
                   value={routeFilter}
+                  maxLength="100"
                   onChange={(e) => {setRouteFilter(e.target.value); setSelectedRoute(false)}}
                   defaultValue = "Search"
               />}
@@ -259,6 +264,7 @@ export const EditStudent = () => {
                 <p> User: </p>
               <input
                     type="text"
+                    maxLength="100"
                     value={filterValueUser}
                     onChange={(e) => {setFilterValueUser(e.target.value); setSelectedUser(false);}}
                   

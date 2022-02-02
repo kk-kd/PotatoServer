@@ -24,6 +24,7 @@ export const StudentDetail = () => {
       try {
         const fetchedData = await getOneStudent(id);
         setData(fetchedData.data);
+        console.log(fetchedData.data)
        
         let myDict = [fetchedData.data][0].school;
         if (fetchedData.data.route) {
@@ -55,16 +56,37 @@ export const StudentDetail = () => {
   const handleDeleteStudent = (student_id, e) => {
     e.preventDefault();
 
-    //console.log("Deleting student with uid = " + student_id);
-    const a = callDeleteStudentAPI(student_id);
-    
-    navigate("/Students/list");
-    alert("User Delete Successful");
+    let sName = prompt("Do you want to delete?  If so, enter student's last name:");
+    if (!sName) {
+      return; 
+    } else if (sName.toLowerCase().trim() !== data.lastName.toLowerCase().trim()) {
+      alert("Entered Student Last Name Does Not Match."); 
+      return;
+    } else {
+      const a = callDeleteStudentAPI(student_id);
+    } 
   }
+
+  // const handleDeleteUser = (user_id, e) => {
+  //   e.preventDefault();
+  //   let sName = prompt("Do you want to delete?  If so, enter User email:");
+  //   console.log(sName);
+  //   console.log(data.email);
+  //   if (!sName) {
+  //     return; 
+  //   } else if (sName.toLowerCase().trim() !== data.email.toLowerCase().trim()) {
+  //     alert("Entered Email Does Not Match."); 
+  //     return;
+  //   } else {
+  //     deleteUserCall(user_id);
+  //   } 
+  // }
 
   const callDeleteStudentAPI = async (student_id) => {
     try {
       const resp = await deleteStudent(student_id);
+      alert("User Delete Successful");
+      navigate("/Students/list");
     } catch (error) {
       //console.log(error);
       let message = error.response.data;
