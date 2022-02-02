@@ -44,6 +44,7 @@ export const CreateUser = () => {
 
   // maps
   const [ showMap, setShowMap ] = useState(false);
+  const [ mapApi, setMapApi ] = useState();
   const [ addressValid, setAddressValid] = useState(false);
   const [ lat, setLat ] = useState();
   const [ lng, setLng ] = useState();
@@ -64,7 +65,7 @@ export const CreateUser = () => {
     //checkMap(address)
    
     let form_results = {
-      email: email,
+      email: email.toLowerCase(),
       firstName: firstNameUser,
       middleName: middleNameUser,
       lastName: lastNameUser,
@@ -220,15 +221,15 @@ export const CreateUser = () => {
   }, [actionType])
 
   useEffect(() => {
-    if (mapApi && !validated) {
+    if (mapApi && !addressValid) {
       searchLocation();
     }
   }, [mapApi]);
 
   const searchLocation = () => {
-    geocoder.geocode( { 'address': address }, (results, status) => {
+    mapApi.geocoder.geocode( { 'address': address }, (results, status) => {
       if (status === "OK") {
-        map.setCenter(results[0].geometry.location);
+        mapApi.map.setCenter(results[0].geometry.location);
         setLng(results[0].geometry.location.lng());
         setLat(results[0].geometry.location.lat());
         setError(null);
@@ -247,10 +248,7 @@ export const CreateUser = () => {
   }
   const handleApiLoaded = (map, maps) => {
     const geocoder = new maps.Geocoder();
-    setGeocoder(geocoder);
-    setMap(map);
-    setApiLoaded(true);
-    searchLocation();
+    setMapApi({geocoder: geocoder, map: map});
   }
   const checkMap = (e) => {
     e.preventDefault();
@@ -323,7 +321,7 @@ export const CreateUser = () => {
     else{
       if (makeUserForStudent) {
         setUser({
-          email: email,
+          email: email.toLowerCase(),
           firstName: firstNameUser,
           middleName: middleNameUser,
           lastName: lastNameUser,
@@ -360,7 +358,6 @@ export const CreateUser = () => {
     setStudents(students)
     setFilterValue(user.email)
     setUser(user)
-    
   }
 
   return (

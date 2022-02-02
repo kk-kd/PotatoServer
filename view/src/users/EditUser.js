@@ -28,11 +28,12 @@ export const EditUser = () => {
   const [ email, setEmail ] = useState("");
   const [ address, setAddress ] = useState("");
   const [ isAdmin, setisAdmin ] = useState(false);
-  const [ addressValid, setAddressValid] = useState(false);
+  const [ addressValid, setAddressValid] = useState(true);
 
 
   // maps
   const [ showMap, setShowMap ] = useState(false);
+  const [ mapApi, setMapApi ] = useState();
   const [ lat, setLat ] = useState();
   const [ lng, setLng ] = useState();
   const [ map, setMap ] = useState();
@@ -76,14 +77,20 @@ export const EditUser = () => {
     setOldPassword(data.password)
   }, [data])
 
+  useEffect(() => {
+    if (mapApi && !addressValid) {
+      searchLocation();
+    }
+  }, [mapApi]);
+
   const searchLocation = () => {
-    geocoder.geocode( { 'address': address }, (results, status) => {
+    mapApi.geocoder.geocode( { 'address': address }, (results, status) => {
       if (!address || address.trim().length === 0) {
         alert("Please Enter an Address"); 
         return;
       }
       else if (status === "OK") {
-        map.setCenter(results[0].geometry.location);
+        mapApi.map.setCenter(results[0].geometry.location);
         setLng(results[0].geometry.location.lng());
         setLat(results[0].geometry.location.lat());
         setAddress(address);
@@ -101,10 +108,7 @@ export const EditUser = () => {
   }
   const handleApiLoaded = (map, maps) => {
     const geocoder = new maps.Geocoder();
-    setGeocoder(geocoder);
-    setMap(map);
-    setApiLoaded(true);
-    searchLocation();
+    setMapApi({geocoder: geocoder, map: map});
   }
 
   const checkMap = (e) => {
@@ -147,8 +151,9 @@ export const EditUser = () => {
   } = useTable({columns, data: students});
 
   const ModifyUserCall = async (form_results) => {
+    console.log(changePassword);
     try {
-      let update_user_response = await updateUser(id,form_results); 
+      let update_user_response = await updateUser(id,form_results, changePassword); 
       return update_user_response; 
     } catch (error) {
         let message = error.response.data;
@@ -176,19 +181,15 @@ export const EditUser = () => {
       return;
     }
 
-    if (!changePassword || !passwordCandidate) {
-      setPasswordCandidate(oldPassword);
-    }
-
     //update user
     let form_results = {
-      email: email,
+      email: email.toLowerCase(),
       firstName: firstName,
       middleName: middleName,
       lastName: lastName,
       address: address,
       isAdmin: isAdmin,
-      password: passwordCandidate,
+      password: (!changePassword || !passwordCandidate) ? oldPassword : passwordCandidate,
       longitude: lng, 
       latitude: lat,
     }
@@ -199,8 +200,7 @@ export const EditUser = () => {
     alert("User Successfully Updated");
     navigate('/Users/info/' + id);
   }
-
-  
+ 
   return (
     <div > 
     <h1> Edit User </h1>
@@ -283,7 +283,7 @@ export const EditUser = () => {
                   <input
                       type="text"
                       value={address}
-                      onChange={(e) => {setAddress(e.target.value)}} 
+                      onChange={(e) => {setAddress(e.target.value); setAddressValid(false)}} 
                   />
                   <button onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate" }  </button>
               </label>
@@ -292,8 +292,8 @@ export const EditUser = () => {
                 <p>Admin:</p>
                   <input
                       type="checkbox"
-                      value={isAdmin}
-                      onChange={(e) => setisAdmin(e.target.value)}
+                      checked={isAdmin}
+                      onChange={(e) => setisAdmin(e.target.checked)}
                   />
               </label>
           

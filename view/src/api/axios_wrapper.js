@@ -167,7 +167,9 @@ Register a User for the first time to add them to the database.
             }
 */
 export async function registerUser(specifications) {
-  return await axios.post("/api/register", specifications);
+  return await axios.post("/api/register", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 
 /*
@@ -241,8 +243,9 @@ export async function saveRoute(specifications) {
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
-export async function updateUser(uid, specifications) {
+export async function updateUser(uid, specifications, changePassword) {
   return await axios.put("/api/users/" + uid, specifications, {
+    params: {changePassword: changePassword},
     headers: getHeaderWithAuthToken(),
   });
 }
