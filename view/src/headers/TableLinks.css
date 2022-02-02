@@ -1,19 +1,21 @@
 button {
   width: 150px;
-  height: 50px;
+  height: 60px;
   margin: 5px;
-  background-color: whitesmoke;
+  /* background-color: whitesmoke; */
 }
 
 #selected {
   cursor: not-allowed;
-  background-color: lightblue;
+  background-color: #0d6efd;
+  color: white;
+  font-weight: bold;
 }
 
 #selectable {
   cursor: pointer;
 }
 
-#selectable:hover {
+/* #selectable:hover {
   background-color: white;
-}
+} */
