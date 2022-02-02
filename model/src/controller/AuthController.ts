@@ -73,8 +73,6 @@ class AuthController {
       response.status(401).send("User Register: " + error);
       return;
     }
-
-
   };
 
   static login = async (request: Request, response: Response) => {
