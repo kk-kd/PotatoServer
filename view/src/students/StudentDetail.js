@@ -128,10 +128,17 @@ export const StudentDetail = () => {
   return (
     <div id="student-listing">
       <h1>
-        Student Detail (<Link to={"/Students/edit/" + id}> Edit</Link>,
-        <Link to={'/Students/list'}
-          onClick={(e) => {handleDeleteStudent(id, e)}}> Delete </Link>
-        )
+        Student Detail (<Link to={"/Students/edit/" + id}> Edit School</Link>,
+        <Link
+          to={"/Students/list"}
+          onClick={(e) => {
+            handleDeleteStudent(id, e);
+          }}
+        >
+          {" "}
+          Delete School {" "}
+        </Link>
+        ){" "}
       </h1>
 
       <h3>Student Characteristics </h3>

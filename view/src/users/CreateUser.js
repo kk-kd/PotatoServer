@@ -381,7 +381,7 @@ export const CreateUser = () => {
           <h1>Create Student Form </h1>
           <form >
             <label className="input">
-              <p>First Name:</p>
+              <p>First Name: </p>
                 <input
                     type="text"
                     value={firstNameStudent}
@@ -408,7 +408,7 @@ export const CreateUser = () => {
             </label>
 
             <label className="input">
-                  <p> Select an Existing School: </p>
+                  <p> School Search: </p>
                 <input
                       type="text"
                       value={filterValueSchool}
@@ -428,9 +428,9 @@ export const CreateUser = () => {
                     ))
                     ) : (<div> </div>)}
                 </div>}
-
+           
             {selectedSchool && <label className="input">
-              <p> Select an Existing Route: </p>
+              <p> Route Search: </p>
               <input
                   type="text"
                   value={routeFilter}
@@ -458,15 +458,43 @@ export const CreateUser = () => {
                     onChange={(e) => setStudentId(e.target.value)}
                 />
             </label>
-
-            {!makeStudentForUser &&
-              <label className="input">
-                <p> Associated User: {selectedUser ? "" + email : "None" }</p>
-              </label>
+          
+            {!makeStudentForUser && <div> 
+            <h4> Search for an Existing User or Create a New One.  </h4>
+            <h4> Associated User = {selectedUser ? "" + email : "None" } </h4>
+            </div>
             }
+
+            {!makeStudentForUser && !makeUserForStudent && //search for existing user 
+              <div>
+                <label className="input">
+                  <p> User Search: </p>
+                <input
+                      type="text"
+                      value={filterValue}
+                      onChange={(e) => {setFilterValue(e.target.value); setSelectedUser(false); }}
+                    
+                /></label>
+
+                {!selectedUser && 
+                  <div className="user-list">
+                    {filteredData && filteredData.length > 0 ? (
+                      filteredData.map((user) => (
+                        <li >
+                      <button key={user.uid} className="user" onClick = {(e) => {
+                        handleUserSelection (e, user);}} >
+                        {user.email}   
+                        
+                      </button>
+                      </li>
+                      ))
+                      ) : (<div> </div>)}
+                  </div>}
+              </div>
+            } 
   
             {!makeStudentForUser && <label className="input">
-              <p>Make New User Associated With this Student:</p>
+              <p>Make New User:</p>
                 <input
                     type="checkbox"
                     checked={makeUserForStudent}
@@ -480,6 +508,9 @@ export const CreateUser = () => {
                       setPassword("")
                       setAddress("")
                       setisAdmin(false)
+                      setFilterValue(""); 
+                      setSelectedUser(false);
+                      setFilteredData([]);
                     }
                     }
 
@@ -487,34 +518,6 @@ export const CreateUser = () => {
                 />
             </label>
             }
-
-          {!makeStudentForUser && !makeUserForStudent && //search for existing user 
-            <div>
-              <label className="input">
-                <p> Select an Existing User: </p>
-              <input
-                    type="text"
-                    value={filterValue}
-                    onChange={(e) => {setFilterValue(e.target.value); setSelectedUser(false);}}
-                  
-              /></label>
-
-              {!selectedUser && 
-                <div className="user-list">
-                  {filteredData && filteredData.length > 0 ? (
-                    filteredData.map((user) => (
-                      <li >
-                    <button key={user.uid} className="user" onClick = {(e) => {handleUserSelection (e, user)}} >
-                      {user.email}   
-                      
-                    </button>
-                    </li>
-                    ))
-                    ) : (<div> </div>)}
-                </div>}
-            </div>
-          } 
-
 
             <div>
               <button className = "submitbutton" type="button" onClick= {(e) => {handleStudentCreateFormButton(e)}}>
