@@ -276,7 +276,7 @@ export const CreateUser = () => {
     }
 
     if (!firstNameStudent || !lastNameStudent ) {
-      alert("First Name and Last Name are Required.")
+      alert("Student First Name and Last Name are Required.")
     }
     else if (!(selectedUser || makeStudentForUser)) {
       alert("Please Select a User for this student.")
@@ -313,10 +313,10 @@ export const CreateUser = () => {
 
   async function handleUserCreateFormButton (e) {
     if (!firstNameUser || !lastNameUser) {
-      alert("First Name and Last Name are Required.")
+      alert("User First Name and Last Name are Required.")
     }
     else if (!addressValid) {
-      alert("Please Validate Address.")
+      alert("Please Validate User Address.")
     }
     else{
       if (makeUserForStudent) {
@@ -363,7 +363,6 @@ export const CreateUser = () => {
   return (
     <div>
        <h1>Student / User Create</h1>
-      <h1>{`${makeUserForStudent}`}</h1>
        <div className = "Choose-Action" > 
           <h3>
               <input type = "radio" key={'createStudent'}  name = "action" onClick = {(e) => {setActionType("Student")}}/> 
