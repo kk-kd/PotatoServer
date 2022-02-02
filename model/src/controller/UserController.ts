@@ -8,6 +8,7 @@ import { NextFunction, Request, Response } from "express";
 import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
 import { isConstructorDeclaration } from "typescript";
+import * as bcrypt from "bcryptjs";
 
 @EntityRepository(User)
 export class UserController extends Repository<User> {
@@ -186,7 +187,6 @@ export class UserController extends Repository<User> {
   }
 
   async updateUser(request: Request, response: Response, next: NextFunction) {
-
     try {
       const uidNumber = request.params.uid;
       const isAdmin = response.locals.jwtPayload.isAdmin;
@@ -194,6 +194,28 @@ export class UserController extends Repository<User> {
         response.status(409).send("User is not an admin.")
         return;
       }
+
+      var passwordValidator = require("password-validator");
+      var schema = new passwordValidator();
+      schema
+        .is()
+        .min(8) // Minimum length 8
+        .is()
+        .max(64) // Maximum length 100
+        .has()
+        .uppercase() // Must have uppercase letters
+        .has()
+        .lowercase() // Must have lowercase letters
+        .has()
+        .digits(2) // Must have at least 2 digits
+        .has()
+        .not()
+        .spaces(); // Should not have spaces
+      if (!schema.validate(request.body.password)) {
+        response.status(401).send("User Register: Password validation failed");
+        return;
+      }
+      request.body.password = await bcrypt.hash(request.body.password, 10);
       await getConnection()
         .createQueryBuilder()
         .update(User)
