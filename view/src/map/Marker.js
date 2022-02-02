@@ -1,7 +1,7 @@
 import "./Marker.css";
 
-export const Marker = ({ text }) => {
+export const Marker = ({ text, isSchool }) => {
   return (
-      <div id="marker">{text}</div>
+      <div id={isSchool ? "schoolMarker" : "marker"}>{text}</div>
   );
 }

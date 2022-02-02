@@ -3,17 +3,19 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Header } from "./headers/Header";
 import { BusRoutes } from "./routes/BusRoutes";
 import { Schools } from "./schools/Schools";
-import { useEffect, useState } from 'react';
-import LoginPage from './login/LoginPage';
+import { useEffect, useState } from "react";
+import LoginPage from "./login/LoginPage";
 import { Students } from "./students/Students";
 import { Users } from "./users/Users";
 import { returnUserInfoFromJWT } from "./api/axios_wrapper";
 import { MyStudents } from "./parents/MyStudents";
 import { ParentStudent } from "./parents/ParentStudent";
+import { ChangeMyPassword } from "./parents/ChangeMyPassword";
 
 export const App = () => {
-
-  const [loggedIn, setLoggedIn] = useState(sessionStorage.getItem("token") != null);
+  const [loggedIn, setLoggedIn] = useState(
+    sessionStorage.getItem("token") != null
+  );
   const [currentUser, setCurrentUser] = useState();
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -23,49 +25,63 @@ export const App = () => {
       } catch (e) {
         alert(e.response.data);
       }
-    }
+    };
     if (loggedIn) {
       getCurrentUser();
     }
-  }, [loggedIn])
+  }, [loggedIn]);
 
   if (!loggedIn) {
-    return <div >
+    return (
+      <div className="App">
         <Routes>
-          <Route path="/LogIn" element={<LoginPage setLoggedIn={setLoggedIn} />} />
+          <Route
+            path="/LogIn"
+            element={<LoginPage setLoggedIn={setLoggedIn} />}
+          />
           <Route path="*" element={<Navigate to="/LogIn" />} />
         </Routes>
       </div>
+    );
   } else {
     if (!currentUser) {
-      return (
-          <h1>Loading</h1>
-      );
+      return <h1>Loading</h1>;
     } else if (!currentUser.isAdmin) {
       return (
-          <div className="App">
-            <Header setLoggedIn={setLoggedIn} isAdmin={false} />
-            <Routes>
-              <Route path="MyStudents/:id" element={<ParentStudent user={currentUser} />} />
-              <Route path="MyStudents" element={<MyStudents user={currentUser}/>} />
-              <Route path="*" element={<Navigate to="MyStudents"/>} />
-            </Routes>
-          </div>
+        <div className="App">
+          <Header setLoggedIn={setLoggedIn} isAdmin={false} />
+          <Routes>
+            <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
+            <Route
+              path="MyStudents/:id"
+              element={<ParentStudent user={currentUser} />}
+            />
+            <Route
+              path="MyStudents"
+              element={<MyStudents user={currentUser} />}
+            />
+            <Route path="*" element={<Navigate to="MyStudents" />} />
+          </Routes>
+        </div>
       );
     } else {
       return (
-          <div className="App">
-            <Header setLoggedIn={setLoggedIn} isAdmin={true} />
-            <Routes>
-              <Route path="MyStudents" element={<MyStudents user={currentUser} />} />
-              <Route path="Schools/*" element={<Schools />} />
-              <Route path="Users/*" element={<Users />} />
-              <Route path="Students/*" element={<Students />} />
-              <Route path="Routes/*" element={<BusRoutes />} />
-              <Route path="*" element={<Navigate to="MyStudents" />} />
-            </Routes>
-          </div>
+        <div className="App">
+          <Header setLoggedIn={setLoggedIn} isAdmin={true} />
+          <Routes>
+            <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
+            <Route
+              path="MyStudents"
+              element={<MyStudents user={currentUser} />}
+            />
+            <Route path="Schools/*" element={<Schools />} />
+            <Route path="Users/*" element={<Users />} />
+            <Route path="Students/*" element={<Students />} />
+            <Route path="Routes/*" element={<BusRoutes />} />
+            <Route path="*" element={<Navigate to="MyStudents" />} />
+          </Routes>
+        </div>
       );
     }
   }
-}
+};

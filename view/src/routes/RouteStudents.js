@@ -1,21 +1,29 @@
-import "./SchoolRoutes.css";
+import "./RouteStudents.css";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 
-export const SchoolRoutes = ({ data }) => {
+export const RouteStudents = ({ data, routes }) => {
   const columns = useMemo(
       () => [
         {
-          Header: 'name',
-          accessor: 'name'
+          Header: 'First Name',
+          accessor: 'firstName'
+        },
+        {
+          Header: 'Last Name',
+          accessor: 'lastName'
+        },
+        {
+          Header: 'ID',
+          accessor: 'id'
         },
         {
           Header: "Detail Page",
           accessor: "uid",
           Cell: (props) => {
-            return <Link to={`/Routes/info/${props.value}`}>view</Link>
+            return <Link to={`/Students/info/${props.value}`}>view</Link>
           }
         }
       ],
@@ -40,9 +48,9 @@ export const SchoolRoutes = ({ data }) => {
   } = useTable({ columns, data, initialState: { pageIndex: 0 } },
       usePagination);
   return (
-      <div id="schoolRouteListing">
-        <h1>Routes</h1>
-        {data.length === 0 ? <h4>There are no routes attached to this school! Create some by clicking Route Planner and selecting Create Route.</h4>
+      <div id="routeStudentListing">
+        <h1>Students</h1>
+        {data.length === 0 ? <h4>There are no students attached to this route! Add some by selecting Route Planner.</h4>
             : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
           {headerGroups.map(headerGroup => (
