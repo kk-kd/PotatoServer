@@ -2,7 +2,7 @@ import "./EditUser.css";
 import GoogleMapReact from "google-map-react";
 import { useState, useMemo, useEffect} from "react";
 import { Marker } from "../map/Marker";
-import {updateUser, getOneUser} from "../api/axios_wrapper";
+import {updateUser, getOneUser, changeUserPassword} from "../api/axios_wrapper";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import {useTable } from "react-table";
 import useBatchedState from 'react-use-batched-state';
@@ -18,11 +18,12 @@ export const EditUser = () => {
 
 
   // user
-  
   const [ firstName, setFirstName ] = useState("");
   const [ middleName, setMiddleName ] = useState("");
   const [ lastName, setLastName ] = useState("");
   const [ password, setPassword] = useState("");
+  const [ passwordCandidate, setPasswordCandidate] = useState("");
+  const [ changePassword, setChangePassword] = useState(false);
   const [ email, setEmail ] = useState("");
   const [ address, setAddress ] = useState("");
   const [ isAdmin, setisAdmin ] = useState(false);
@@ -67,7 +68,6 @@ export const EditUser = () => {
     setFirstName(data.firstName)
     setMiddleName(data.middleName)
     setLastName(data.lastName)
-    setPassword(data.password)
     setEmail(data.email)
     setAddress(data.address)
     setisAdmin(data.isAdmin)
@@ -103,6 +103,26 @@ export const EditUser = () => {
   } = useTable({columns, data: students});
 
   async function handleModifyUser (e) {
+    e.preventDefault()
+    //update password
+    console.log(passwordCandidate)
+    if (passwordCandidate && changePassword) {
+      
+      let a = {
+        oldPassword: password,
+        newPassword: passwordCandidate,
+      }
+      console.log("Updating user password to ")
+      console.log(a)
+      try {
+        let update_password_response = await changeUserPassword(a); 
+      } catch (error) {
+          let message = error.response.data;
+          throw alert (message);
+      }
+    }
+
+    //update user
     e.preventDefault(); // prevents page reload on submission
     let form_results = {
       email: email,
@@ -111,7 +131,6 @@ export const EditUser = () => {
       lastName: lastName,
       address: address,
       isAdmin: isAdmin,
-      password: password,
     }
     console.log("Modifying User with entries:");
     console.log(form_results);
@@ -163,7 +182,7 @@ export const EditUser = () => {
     <h1> Edit User </h1>
     <div >
          
-        <form onSubmit={handleModifyUser} newUserClicked = {false} id='form'>
+        <form newUserClicked = {false} id='form'>
           <div>
               <label className="input">
                 <p>First Name:</p>
@@ -201,20 +220,46 @@ export const EditUser = () => {
               </label>
 
               <label className="input">
-                <p>Password:</p>
+                <p>Change Password:</p>
                   <input
-                      type="text"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      type="checkbox"
+                      value={changePassword}
+                      onChange={(e) => setChangePassword(e.target.checked)}
                   />
               </label>
+
+            {changePassword && <div> 
+                <label className="input">
+                  <p>Old Password:</p>
+                    <input
+                        type="text"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)
+                        }
+                    />
+                </label> 
+              </div>
+              }
+
+            {changePassword && <div> 
+                <label className="input">
+                  <p>New Password:</p>
+                    <input
+                        type="text"
+                        value={passwordCandidate}
+                        onChange={(e) => setPasswordCandidate(e.target.value)
+                        }
+                    />
+                </label> 
+              </div>
+              }
                 
               <label className="input">
                 <p>Address:</p>
                   <input
                       type="text"
                       value={address}
-                      onChange={(e) => {checkMap(e.target.value); setAddress(e.target.value)}} 
+                      onChange={(e) => {setAddress(e.target.value)}} 
                   />
                   <button onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate" }  </button>
               </label>
@@ -229,7 +274,8 @@ export const EditUser = () => {
               </label>
           
           
-            <h3>Students Associated With This User </h3>
+          <h3>Students Associated With This User </h3>
+          
           <div id ='table'>
           <table {...getTableProps()} style={{ border: 'solid 1px blue' } }>
             <thead>
@@ -285,7 +331,7 @@ export const EditUser = () => {
           </div>
             <div>
 
-                <button className = "submitbutton" type="submit">Submit</button>
+                <button className = "submitbutton" onClick={handleModifyUser} >Submit</button>
             </div>
           </div> 
           </form>
