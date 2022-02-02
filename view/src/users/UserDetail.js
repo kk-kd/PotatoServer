@@ -94,7 +94,6 @@ export const UserDetail = () => {
           <p>Last Name : {data.lastName}</p>
           <p>Email : {data.email}</p>
           <p>Address : {data.address}</p>
-          <p>Password : {data.password}</p>
           <p>Admin : {data.isAdmin ? "Yes" : "No"}</p>
         </div>     
 
