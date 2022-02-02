@@ -212,6 +212,7 @@ export const EditUser = () => {
                 <p>First Name:</p>
                   <input
                       type="text"
+                      maxLength = "100"
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                   />
@@ -221,6 +222,7 @@ export const EditUser = () => {
                 <p>Middle Name:</p>
                   <input
                       type="text"
+                      maxLength = "100"
                       value={middleName}
                       onChange={(e) => setMiddleName(e.target.value)}
                   />
@@ -230,6 +232,7 @@ export const EditUser = () => {
                 <p>Last Name:</p>
                   <input
                       type="text"
+                      maxLength = "100"
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                   />
@@ -238,6 +241,7 @@ export const EditUser = () => {
                 <p>Email:</p>
                   <input
                       type="text"
+                      maxLength = "100"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                   />
@@ -257,6 +261,7 @@ export const EditUser = () => {
                   <p>New Password:</p>
                     <input
                         type="password"
+                        maxLength = "100"
                         value={passwordCandidate}
                         onChange={(e) => setPasswordCandidate(e.target.value)
                         }
@@ -270,6 +275,7 @@ export const EditUser = () => {
                   <p>Re-Enter New Password:</p>
                     <input
                         type="password"
+                        maxLength = "100"
                         value={passwordCandidateValidation}
                         onChange={(e) => setPasswordCandidateValidation(e.target.value)
                         }
@@ -282,6 +288,7 @@ export const EditUser = () => {
                 <p>Address:</p>
                   <input
                       type="text"
+                      maxLength = "100"
                       value={address}
                       onChange={(e) => {setAddress(e.target.value); setAddressValid(false)}} 
                   />
