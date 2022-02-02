@@ -72,39 +72,69 @@ export class StudentController extends Repository<Student> {
       filterSpecification = "students." + request.query.sort;
       const queryIdFilter = request.query.idFilter;
       const queryLastNameFilter = request.query.lastNameFilter;
-      var studentsQueryResult;
-      var total;
       if (queryIdFilter) {
-        const result = await this.studentRepository
-          .createQueryBuilder("students")
-          .skip(skipNum)
-          .take(takeNum)
-          .orderBy(sortSpecification, sortDirSpec)
-          .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
-          .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
-          .leftJoinAndSelect("students.route", "route")
-          .leftJoinAndSelect("students.school", "school")
-          .getManyAndCount();
-        studentsQueryResult = result[0];
-        total = result[1];
+        if (request.query.showAll && request.query.showAll === "true") {
+          const [studentsQueryResult, total] = await this.studentRepository
+            .createQueryBuilder("students")
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
+            .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
+            .leftJoinAndSelect("students.route", "route")
+            .leftJoinAndSelect("students.school", "school")
+            .getManyAndCount();
+          response.status(200);
+          return {
+            students: studentsQueryResult,
+            total: total
+          };
+        } else {
+          const [studentsQueryResult, total] = await this.studentRepository
+            .createQueryBuilder("students")
+            .skip(skipNum)
+            .take(takeNum)
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
+            .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
+            .leftJoinAndSelect("students.route", "route")
+            .leftJoinAndSelect("students.school", "school")
+            .getManyAndCount();
+          response.status(200);
+          return {
+            students: studentsQueryResult,
+            total: total
+          };
+        }
       } else {
-        const result = await this.studentRepository
-          .createQueryBuilder("students")
-          .skip(skipNum)
-          .take(takeNum)
-          .orderBy(sortSpecification, sortDirSpec)
-          .where("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
-          .leftJoinAndSelect("students.route", "route")
-          .leftJoinAndSelect("students.school", "school")
-          .getManyAndCount();
-        studentsQueryResult = result[0];
-        total = result[1];
+        if (request.query.showAll && request.query.showAll === "true") {
+          const [studentsQueryResult, total] = await this.studentRepository
+            .createQueryBuilder("students")
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
+            .leftJoinAndSelect("students.route", "route")
+            .leftJoinAndSelect("students.school", "school")
+            .getManyAndCount();
+          response.status(200);
+          return {
+            students: studentsQueryResult,
+            total: total
+          };
+        } else {
+          const [studentsQueryResult, total] = await this.studentRepository
+            .createQueryBuilder("students")
+            .skip(skipNum)
+            .take(takeNum)
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
+            .leftJoinAndSelect("students.route", "route")
+            .leftJoinAndSelect("students.school", "school")
+            .getManyAndCount();
+          response.status(200);
+          return {
+            students: studentsQueryResult,
+            total: total
+          };
+        }
       }
-      response.status(200);
-      return {
-        students: studentsQueryResult,
-        total: total
-      };
     }
     catch (e) {
       response.status(401).send("Students were not found with error: " + e);
@@ -113,25 +143,33 @@ export class StudentController extends Repository<Student> {
   }
   async oneStudent(request: Request, response: Response, next: NextFunction) {
     try {
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
-      const usersQueryResult = await this.studentRepository.createQueryBuilder("students").where("students.uid = :uid", { uid: uidNumber }).getOneOrFail();
-      //const user = this.userRepository.findOne(request.query.id); same call example
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
+      const usersQueryResult = await this.studentRepository
+        .createQueryBuilder("students")
+        .where("students.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("students.route", "route")
+        .leftJoinAndSelect("students.school", "school")
+        .leftJoinAndSelect("students.parentUser", "user")
+        .getOneOrFail();
       response.status(200);
       return usersQueryResult;
+
+
     }
     catch (e) {
       response
         .status(401)
-        .send("Student with UID: " + request.query.uid + " was not found.");
+        .send("Student with UID: " + request.params.uid + " was not found.");
       return;
     }
   }
 
   async saveNewStudent(request: Request, response: Response, next: NextFunction) {
     try {
-      return this.studentRepository.save(request.body);
-    }
-    catch (e) {
+      const result = await this.studentRepository.save(request.body);
+      response.status(200);
+      return result;
+    } catch (e) {
       response
         .status(401)
         .send("New Student (" + request.body + ") couldn't be saved with error " + e);
@@ -141,7 +179,7 @@ export class StudentController extends Repository<Student> {
 
   async updateStudent(request: Request, response: Response, next: NextFunction) {
     try {
-      const uidNumber = request.query.uid;
+      const uidNumber = request.params.uid;
       await getConnection().createQueryBuilder().update(Student).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
       return;
@@ -151,7 +189,7 @@ export class StudentController extends Repository<Student> {
     catch (e) {
       response
         .status(401)
-        .send("Student with UID " + request.query.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
+        .send("Student with UID " + request.params.uid + " and details(" + request.body + ") couldn't be updated with error " + e);
       return;
     }
   }
@@ -159,12 +197,12 @@ export class StudentController extends Repository<Student> {
   async deleteStudent(request: Request, response: Response, next: NextFunction) {
     try {
 
-      const uidNumber = request.query.uid; //needed for the await call / can't nest them
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const studentQueryResult = await this.studentRepository.createQueryBuilder("students").delete().where("students.uid = :uid", { uid: uidNumber }).execute();
       response.status(200);
     }
     catch (e) {
-      response.status(401).send("Student UID: " + request.query.uid + " was not found adn could not be deleted.")
+      response.status(401).send("Student UID: " + request.params.uid + " was not found adn could not be deleted.")
     }
   }
   findByStudentID(uid: number) {

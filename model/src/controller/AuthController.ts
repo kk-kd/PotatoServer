@@ -66,13 +66,15 @@ class AuthController {
       user.longitude = longitude;
       user.latitude = latitude;
       user.isAdmin = isAdmin;
-      await userRepository.save(user);
+      const saved = await userRepository.save(user);
+      console.log(saved);
+      response.status(201).send(`${user.uid}`);
     } catch (error) {
       response.status(401).send("User Register: " + error);
       return;
     }
 
-    response.status(201).send("User Register: User created");
+
   };
 
   static login = async (request: Request, response: Response) => {

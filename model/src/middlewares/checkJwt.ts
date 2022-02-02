@@ -19,7 +19,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     console.log(jwtPayload);
   } catch (error) {
     console.log(res);
-    res.status(401).send("checkJwt: token invalid");
+    res.status(402).send("checkJwt: token invalid");
     return;
   }
 
