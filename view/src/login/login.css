@@ -1,3 +1,10 @@
+.core-login-forms {
+  background-color: #dadada;
+  margin-top: 2em;
+}
+.header-image {
+  height: 10em;
+}
 .login-wrapper {
   height: 100%;
   width: 100%;
@@ -8,9 +15,6 @@
   background-color: #dadada;
   /* background-size: 100%;
   min-height: max-content; */
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
   background-size: cover;
 }
 
