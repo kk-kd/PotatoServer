@@ -5,7 +5,6 @@ import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 
 export const SchoolStudents = ({ data, routes }) => {
-  console.log(data);
   const columns = useMemo(
       () => [
         {

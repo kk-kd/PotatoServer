@@ -34,7 +34,7 @@ export class Student {
   @ManyToOne(() => School, school => school.students, { onDelete: "CASCADE" })
   school: School;
 
-  @ManyToOne(() => Route, route => route.students, { nullable: true, })
+  @ManyToOne(() => Route, route => route.students, { onDelete: "SET NULL", nullable: true, })
   route: Route;
 
   @ManyToOne(() => User, user => user.students, { onDelete: 'CASCADE' })
