@@ -212,7 +212,7 @@ export class UserController extends Repository<User> {
         .not()
         .spaces(); // Should not have spaces
       if (!schema.validate(request.body.password)) {
-        response.status(401).send("User Register: Password validation failed");
+        response.status(401).send("User Register: Password validation failed; Please specify a password with at least 8 characters, with at least 1 uppercase letter, 1 lowercase letter, and 2 digits. No spaces.");
         return;
       }
       request.body.password = await bcrypt.hash(request.body.password, 10);
