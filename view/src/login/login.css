@@ -1,25 +1,45 @@
 .login-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5em;
+  background-color: #dadada;
+  /* background-size: 100%;
+  min-height: max-content; */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 .input {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 20px;
-    display: flex;
-    border-radius: 4px;
-    box-sizing: border-box;
-    align-items: center;
-  }
-
-.submitbutton {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border-radius: 4px;
-    align-items: center;
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 20px;
+  display: flex;
+  border-radius: 4px;
+  box-sizing: border-box;
+  align-items: center;
 }
 
+/* .submitbutton {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 4px;
+  align-items: center;
+} */
+
+.site-title-wrapper {
+  width: 100%;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+.center {
+  text-align: center;
+}

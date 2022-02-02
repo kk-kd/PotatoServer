@@ -39,21 +39,42 @@ export default function Login({ setLoggedIn }) {
 
   return (
     <div className="login-wrapper">
-      <h1>Please Log In</h1>
+      <h2 className="site-title-wrapper">Hi, Welcome to Potato Web Service.</h2>
+      <h5 className="site-title-wrapper">
+        The Premier School Bus Logistics Platform
+      </h5>
       <form onSubmit={handleLoginSubmit}>
-        <label className="input">
-          <p>Username:</p>
-          <input type="text" onChange={(e) => setUserName(e.target.value)} />
-        </label>
-        <label className="input">
-          <p> Password: </p>
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">
+            Username
+          </label>
+
+          <input
+            type="email"
+            class="form-control"
+            id="exampleInputEmail1"
+            aria-describedby="emailHelp"
+            onChange={(e) => setUserName(e.target.value)}
+          />
+          <div id="emailHelp" class="form-text">
+            {" "}
+            First time parent user login? Get your username and password from
+            your school administrator!
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">
+            Password
+          </label>
           <input
             type="password"
+            class="form-control"
+            id="exampleInputPassword1"
             onChange={(e) => setPassword(e.target.value)}
           />
-        </label>
-        <div>
-          <button className="submitbutton" type="submit">
+        </div>
+        <div className="center">
+          <button className=" btn btn-outline-primary" type="submit">
             Submit
           </button>
         </div>
