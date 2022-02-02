@@ -243,12 +243,12 @@ export async function saveRoute(specifications) {
 */
 export async function updateUser(uid, specifications) {
   return await axios.put("/api/users/" + uid, specifications, {
-    header: getHeaderWithAuthToken(),
+    headers: getHeaderWithAuthToken(),
   });
 }
 export async function updateStudent(uid, specifications) {
   return await axios.put("/api/students/" + uid, specifications, {
-    header: getHeaderWithAuthToken(),
+    headers: getHeaderWithAuthToken(),
   });
 }
 export async function updateSchool(uid, specifications) {

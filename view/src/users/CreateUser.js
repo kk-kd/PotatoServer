@@ -181,6 +181,12 @@ export const CreateUser = () => {
   
   }, [actionType])
 
+  useEffect(() => {
+    if (mapApi && !validated) {
+      searchLocation();
+    }
+  }, [mapApi]);
+
   const searchLocation = () => {
     geocoder.geocode( { 'address': address }, (results, status) => {
       if (status === "OK") {
@@ -189,10 +195,13 @@ export const CreateUser = () => {
         setLat(results[0].geometry.location.lat());
         setError(null);
         setAddress(address);
+        setAddressValid(true);
       } else if (status === "ZERO_RESULTS") {
+        setAddressValid(false);
         setError("No results for that address");
         console.log(status)
       } else {
+        setAddressValid(false);
         setError("Server Error. Try again later");
         console.log(status)
       }
@@ -491,7 +500,7 @@ export const CreateUser = () => {
                   <input
                       type="text"
                       value={address}
-                      onChange={(e) => setAddress(e.target.value)} 
+                      onChange={(e) => {setAddress(e.target.value); setAddressValid(false); }} 
                   />
                 <button onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate" }  </button>
               </label>

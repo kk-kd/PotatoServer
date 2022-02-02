@@ -2,7 +2,7 @@ import "./EditUser.css";
 import GoogleMapReact from "google-map-react";
 import { useState, useMemo, useEffect} from "react";
 import { Marker } from "../map/Marker";
-import {updateUser, getOneUser, changeUserPassword} from "../api/axios_wrapper";
+import {updateUser, getOneUser, changeUserPassword, updateStudent} from "../api/axios_wrapper";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import {useTable } from "react-table";
 import useBatchedState from 'react-use-batched-state';
@@ -21,6 +21,7 @@ export const EditUser = () => {
   const [ firstName, setFirstName ] = useState("");
   const [ middleName, setMiddleName ] = useState("");
   const [ lastName, setLastName ] = useState("");
+  const [ oldPassword, setOldPassword] = useState("");
   const [ passwordCandidate, setPasswordCandidate] = useState("");
   const [ passwordCandidateValidation, setPasswordCandidateValidation] = useState("");
   const [ changePassword, setChangePassword] = useState(false);
@@ -72,11 +73,12 @@ export const EditUser = () => {
     setisAdmin(data.isAdmin)
     setLat(data.latitude)
     setLng(data.longitude)
+    setOldPassword(data.password)
   }, [data])
 
   const searchLocation = () => {
     geocoder.geocode( { 'address': address }, (results, status) => {
-      if (!address) {
+      if (!address || address.trim().length === 0) {
         alert("Please Enter an Address"); 
         return;
       }
@@ -135,6 +137,7 @@ export const EditUser = () => {
     ],
     []
 );
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -143,7 +146,17 @@ export const EditUser = () => {
     prepareRow
   } = useTable({columns, data: students});
 
-  async function handleModifyUser (e) {
+  const ModifyUserCall = async (form_results) => {
+    try {
+      let update_user_response = await updateUser(id,form_results); 
+      return update_user_response; 
+    } catch (error) {
+        let message = error.response.data;
+        alert (message);
+    }
+  }
+
+  const handleModifyUser = (e)  => {
     e.preventDefault()
     //update password
     console.log(passwordCandidate)
@@ -163,8 +176,11 @@ export const EditUser = () => {
       return;
     }
 
+    if (!changePassword || !passwordCandidate) {
+      setPasswordCandidate(oldPassword);
+    }
+
     //update user
-    e.preventDefault(); // prevents page reload on submission
     let form_results = {
       email: email,
       firstName: firstName,
@@ -178,13 +194,8 @@ export const EditUser = () => {
     }
     console.log("Modifying User with entries:");
     console.log(form_results);
+    const response = ModifyUserCall(form_results);
    
-    try {
-      let update_user_response = await updateUser(id,form_results); 
-    } catch (error) {
-        let message = error.response.data;
-        throw alert (message);
-    }
     alert("User Successfully Updated");
     navigate('/Users/info/' + id);
   }
