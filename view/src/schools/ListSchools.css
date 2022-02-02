@@ -9,3 +9,6 @@
 #schoolListing > * {
   margin: 10px;
 }
+.core-card-color {
+  background: #cfcfcf;
+}
