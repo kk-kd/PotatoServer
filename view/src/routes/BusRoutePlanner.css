@@ -18,21 +18,61 @@
   position: relative;
 }
 
+#exampleRouteMarker {
+  width: 30px;
+  height: 30px;
+  background-color: lightgrey;
+  cursor: pointer;
+  border-radius: 50%;
+  margin: auto;
+  position: relative;
+}
+
+#description {
+  width: 60%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  align-items: center;
+  list-style-position: inside;
+}
+
 #routeChooser {
   display: flex;
   alight-items: center;
 }
 
+#routeSelect {
+  cursor: pointer;
+  padding: 5px;
+  border: solid grey;
+  background-color: lightgrey;
+}
+
+#selectedRouteSelect {
+  padding: 5px;
+  border: solid grey;
+  background-color: lightblue;
+}
+
+#routeSelect:hover {
+  background-color: lightblue;
+}
+
 #routes {
   flex: 50%;
   display: inline-block;
+  border: solid gray;
+  margin: 5px;
+  padding: 5px;
 }
 
 #routeData {
   flex: 50%;
+  border: gray;
 }
 
 #routeMarkerTutorial {
-  flex: 50%;
+  flex: 33%;
   display: inline-block;
 }

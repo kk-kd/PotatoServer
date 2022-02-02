@@ -1,13 +1,12 @@
-#userListing,
-#header {
+#myStudentListing {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
   flex-wrap: wrap;
-  width: 90%;
+  width: 70%;
 }
 
-#userListing > * {
+#myStudentListing > * {
   margin: 10px;
 }
 .core-card-color {

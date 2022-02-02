@@ -8,6 +8,7 @@ import { NextFunction, Request, Response } from "express";
 import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
 import { isConstructorDeclaration } from "typescript";
+import * as bcrypt from "bcryptjs";
 
 @EntityRepository(User)
 export class UserController extends Repository<User> {
@@ -95,24 +96,43 @@ export class UserController extends Repository<User> {
       filterSpecification = "users." + request.query.sort;
       const queryFilterType = request.query.filterType;
       const queryFilterData = request.query.filterData;
-      const [usersQueryResult, total] = await this.userRepository
-        .createQueryBuilder("users")
-        .skip(skipNum)
-        .take(takeNum)
-        .orderBy(sortSpecification, sortDirSpec)
-        .where("users.email ilike '%' || :email || '%'", {
-          email: queryFilterData,
-        })
-        .andWhere("users.lastName ilike '%' || :lastName || '%'", {
-          lastName: queryFilterType,
-        })
-        .leftJoinAndSelect("users.students", "student")
-        .getManyAndCount();
-      response.status(200);
-      return {
-        users: usersQueryResult,
-        total: total,
-      };
+      if (request.query.showAll && request.query.showAll === "true") {
+        const [usersQueryResult, total] = await this.userRepository
+          .createQueryBuilder("users")
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("users.email ilike '%' || :email || '%'", {
+            email: queryFilterData,
+          })
+          .andWhere("users.lastName ilike '%' || :lastName || '%'", {
+            lastName: queryFilterType,
+          })
+          .leftJoinAndSelect("users.students", "student")
+          .getManyAndCount();
+        response.status(200);
+        return {
+          users: usersQueryResult,
+          total: total,
+        };
+      } else {
+        const [usersQueryResult, total] = await this.userRepository
+          .createQueryBuilder("users")
+          .skip(skipNum)
+          .take(takeNum)
+          .orderBy(sortSpecification, sortDirSpec)
+          .where("users.email ilike '%' || :email || '%'", {
+            email: queryFilterData,
+          })
+          .andWhere("users.lastName ilike '%' || :lastName || '%'", {
+            lastName: queryFilterType,
+          })
+          .leftJoinAndSelect("users.students", "student")
+          .getManyAndCount();
+        response.status(200);
+        return {
+          users: usersQueryResult,
+          total: total,
+        };
+      }
     } catch (e) {
       response.status(401).send("Users were not found with error: " + e);
       return;
@@ -129,6 +149,9 @@ export class UserController extends Repository<User> {
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("users.students", "students")
+        .leftJoinAndSelect("students.school", "school")
+        .leftJoinAndSelect("students.route", "route")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -155,7 +178,7 @@ export class UserController extends Repository<User> {
       const usersQueryResult = await this.userRepository
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
-        .leftJoinAndSelect("users.students", "student")
+        .leftJoinAndSelect("users.students", "students")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -174,7 +197,9 @@ export class UserController extends Repository<User> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      return this.userRepository.save(request.body);
+      const user = await this.userRepository.save(request.body);
+      response.status(200);
+      return user;
     } catch (e) {
       response
         .status(401)
@@ -186,7 +211,6 @@ export class UserController extends Repository<User> {
   }
 
   async updateUser(request: Request, response: Response, next: NextFunction) {
-
     try {
       const uidNumber = request.params.uid;
       const isAdmin = response.locals.jwtPayload.isAdmin;
@@ -194,6 +218,33 @@ export class UserController extends Repository<User> {
         response.status(409).send("User is not an admin.")
         return;
       }
+
+      var passwordValidator = require("password-validator");
+      var schema = new passwordValidator();
+      schema
+        .is()
+        .min(8) // Minimum length 8
+        .is()
+        .max(64) // Maximum length 100
+        .has()
+        .uppercase() // Must have uppercase letters
+        .has()
+        .lowercase() // Must have lowercase letters
+        .has()
+        .digits(2) // Must have at least 2 digits
+        .has()
+        .not()
+        .spaces(); // Should not have spaces
+      if (!schema.validate(request.body.password)) {
+        response.status(401).send("User Register: Password validation failed; Please specify a password with at least 8 characters, with at least 1 uppercase letter, 1 lowercase letter, and 2 digits. No spaces.");
+        return;
+      }
+      if (request.query.changePassword && request.query.changePassword == 'true') {
+        console.log("Hashing Password");
+        console.log(request.body.password);
+        request.body.password = await bcrypt.hash(request.body.password, 10);
+        console.log(request.body.password);
+      } 
       await getConnection()
         .createQueryBuilder()
         .update(User)

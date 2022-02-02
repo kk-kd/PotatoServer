@@ -1,38 +1,131 @@
 import "./CreateSchool.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import GoogleMapReact from "google-map-react";
+import { Marker } from "./../map/Marker";
+import { saveSchool } from "./../api/axios_wrapper";
 
 export const CreateSchool = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [adress, setAdress] = useState("");
-  const onSubmit = (e) => {
-    //Http submit
+  const [address, setAddress] = useState("");
+  const [mapApi, setMapApi] = useState();
+  const [lat, setLat] = useState();
+  const [lng, setLng] = useState();
+  const [showMap, setShowMap] = useState(false);
+  const [validated, setValidated] = useState(false);
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    if (mapApi && !validated) {
+      searchLocation();
+    }
+  }, [mapApi]);
+  useEffect(() => {
+    setValidated(false);
+  }, [address])
+  const defaultProps = {
+    center: {
+      lat: 10.99835602,
+      lng: 77.01502627
+    },
+    zoom: 13
+  };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!name || name.trim().length === 0) {
+      alert("Please input a school name.");
+    } else if (!address) {
+      alert("Please input a valid address");
+    } else if (!(validated && lat && lng)) {
+      alert("Please press the validate address button to validate the entered address");
+    } else {
+      try {
+        await saveSchool({
+          name: name,
+          address: address,
+          latitude: lat,
+          longitude: lng
+        });
+        alert("School succesfully created!");
+        navigate("/Schools/list");
+      } catch (e) {
+        alert(e.response.data);
+      }
+    }
+  }
+  const searchLocation = () => {
+    mapApi.geocoder.geocode( { 'address': address }, (results, status) => {
+      if (status === "OK") {
+        mapApi.map.setCenter(results[0].geometry.location);
+        setLng(results[0].geometry.location.lng());
+        setLat(results[0].geometry.location.lat());
+        setError(null);
+        setValidated(true);
+      } else if (status === "ZERO_RESULTS") {
+        setError("No results for that address");
+        console.log(status)
+      } else {
+        setError("Server Error. Try again later");
+        console.log(status)
+      }
+    });
+  }
+  const checkMap = () => {
+    if (mapApi) {
+      searchLocation();
+    } else {
+      setShowMap(true);
+    }
+  }
+  const handleApiLoaded = (map, maps) => {
+    const geocoder = new maps.Geocoder();
+    setMapApi({
+      map: map,
+      maps: maps,
+      geocoder: geocoder
+    });
   }
 
   //TODO: replace address field with Google Maps API
   return (
       <div>
         <h1>Create School</h1>
-        <h2>{name}</h2>
-        <h2>{adress}</h2>
-        <form onSubmit={onSubmit}>
-          <label className="input">School Name (max 30 chars.):
-            <input
-              type="text"
-              maxLength="30"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </label>
-          <label className="input">Adress (max 30 chars.):
-            <input
-                type="text"
-                maxLength="30"
-                value={adress}
-                onChange={(e) => setAdress(e.target.value)}
-            />
-          </label>
+          <form onSubmit={e => onSubmit(e)}>
+            <label id="schoolInput">School Name (max 30 chars.):
+              <input
+                  type="text"
+                  maxLength="30"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+              />
+            </label>
+            <label id="schoolInput">Adress (max 30 chars.):
+              <input
+                  type="text"
+                  maxLength="30"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+              />
+              <button type="button" onClick={e => checkMap()}>Validate Address</button>
+            </label>
           <input type="submit" value="submit" />
         </form>
+        {error && (<div>{error}</div>)}
+        {showMap && (<div style={{ height: '50vh', width: '50%', display: "inline-block" }}>
+          <GoogleMapReact
+              bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
+              defaultCenter={defaultProps.center}
+              defaultZoom={defaultProps.zoom}
+              yesIWantToUseGoogleMapApiInternals
+              onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+          >
+            <Marker
+                text="You're Address"
+                lat={lat}
+                lng={lng}
+            />
+          </GoogleMapReact>
+        </div>)}
       </div>
   );
 }

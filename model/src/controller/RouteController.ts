@@ -116,26 +116,49 @@ export class RouteController extends Repository<Route> {
           sortDirSpec
         );
         response.status(200);
-        return {
-          routes: routesByStudentsCount.splice(skipNum, skipNum + takeNum),
-          total: routesByStudentsCount.length,
-          special: true
-        };
+        if (request.query.showAll && request.query.showAll === "true") {
+          return {
+            routes: routesByStudentsCount,
+            total: routesByStudentsCount.length,
+            special: true
+          };
+        } else {
+          return {
+            routes: routesByStudentsCount.splice(skipNum, skipNum + takeNum),
+            total: routesByStudentsCount.length,
+            special: true
+          };
+        }
       } else {
-        const [routeQueryResult, total] = await this.routeRepository
-          .createQueryBuilder("routes")
-          .skip(skipNum)
-          .take(takeNum)
-          .leftJoinAndSelect("routes.school", "school")
-          .leftJoinAndSelect("routes.students", "students")
-          .orderBy(sortSpecification, sortDirSpec)
-          .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
-          .getManyAndCount();
-        response.status(200);
-        return {
-          routes: routeQueryResult,
-          total: total
-        };
+        if (request.query.showAll && request.query.showAll === "true") {
+          const [routeQueryResult, total] = await this.routeRepository
+            .createQueryBuilder("routes")
+            .leftJoinAndSelect("routes.school", "school")
+            .leftJoinAndSelect("routes.students", "students")
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
+            .getManyAndCount();
+          response.status(200);
+          return {
+            routes: routeQueryResult,
+            total: total
+          };
+        } else {
+          const [routeQueryResult, total] = await this.routeRepository
+            .createQueryBuilder("routes")
+            .skip(skipNum)
+            .take(takeNum)
+            .leftJoinAndSelect("routes.school", "school")
+            .leftJoinAndSelect("routes.students", "students")
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
+            .getManyAndCount();
+          response.status(200);
+          return {
+            routes: routeQueryResult,
+            total: total
+          };
+        }
       }
     } catch (e) {
       response.status(401).send("Routes were not found with error: " + e);
@@ -165,7 +188,13 @@ export class RouteController extends Repository<Route> {
   async oneRoute(request: Request, response: Response, next: NextFunction) {
     try {
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const routeQueryResult = await this.routeRepository.createQueryBuilder("routes").where("routes.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("routes.students", "student").getOneOrFail();
+      const routeQueryResult = await this.routeRepository
+        .createQueryBuilder("routes")
+        .where("routes.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("routes.students", "students")
+        .leftJoinAndSelect("routes.school", "school")
+        .leftJoinAndSelect("students.parentUser", "parentUser")
+        .getOneOrFail();
       response.status(200);
       return routeQueryResult;
     } catch (e) {
@@ -204,9 +233,9 @@ export class RouteController extends Repository<Route> {
         return;
       }
       const uidNumber = request.params.uid;
-      await getConnection().createQueryBuilder().update(Route).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
+      const updated = await getConnection().createQueryBuilder().update(Route).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
-      return;
+      return updated;
 
     }
 

@@ -1,5 +1,4 @@
-#userListing,
-#header {
+#routeSchoolListing {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
@@ -7,9 +6,6 @@
   width: 90%;
 }
 
-#userListing > * {
+#routeSchoolListing > * {
   margin: 10px;
-}
-.core-card-color {
-  background: #cfcfcf;
 }

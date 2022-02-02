@@ -11,24 +11,67 @@
   width: 50%;
   align-items: center;
   float: left;
+  background-color: #39CCCC;
+}
+
+#student_create_form {
+  width: 50%;
+  align-items: center;
+  float: right;
+  background-color: #3D9970;
 }
 
 
 .input {
-  width: 50%;
+  width: 80%;
   padding: 12px 20px;
   margin: 8px 20px;
   display: flex;
   border-radius: 4px;
   box-sizing: border-box;
-  align-items: center;
+  align-items: left;
 }
 
 .submitbutton {
-  width: 100%;
+  width: 50%;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
   border-radius: 4px;
   align-items: center;
+}
+
+
+.user-list {
+  margin-top: 30px;
+  align-items: center;
+}
+
+.user {
+  list-style: none;
+  margin: 10px 0;
+  padding: 10px;
+  background: #eee;
+  width: 50%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-id {
+  color: red;
+  margin-right: 20px;
+}
+
+.user-name {
+  color: blue;
+}
+
+.user-age {
+  margin-left: auto;
+}
+
+input[type=radio] {
+  border: 0px;
+  width: 4em;
+  height: 2em;
 }

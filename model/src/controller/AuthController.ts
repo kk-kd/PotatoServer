@@ -1,5 +1,5 @@
-import { EntityRepository, Repository, getRepository } from "typeorm";
-import { NextFunction, Request, Response } from "express";
+import { getRepository } from "typeorm";
+import { Request, Response } from "express";
 import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
@@ -58,7 +58,7 @@ class AuthController {
     const userRepository = getRepository(User);
     try {
       user.password = await bcrypt.hash(password, 10);
-      user.email = email;
+      user.email = email.toLowerCase();
       user.firstName = firstName;
       user.middleName = middleName;
       user.lastName = lastName;
@@ -66,13 +66,15 @@ class AuthController {
       user.longitude = longitude;
       user.latitude = latitude;
       user.isAdmin = isAdmin;
-      await userRepository.save(user);
+      const saved = await userRepository.save(user);
+      console.log(saved);
+      response.status(201).send(`${user.uid}`);
     } catch (error) {
       response.status(401).send("User Register: " + error);
       return;
     }
 
-    response.status(201).send("User Register: User created");
+
   };
 
   static login = async (request: Request, response: Response) => {
@@ -97,7 +99,9 @@ class AuthController {
     let user: User;
     const emailLower = email.toLowerCase();
     try {
-      user = await userRepository.findOneOrFail({ where: { email: emailLower } });
+      user = await userRepository.findOneOrFail({
+        where: { email: emailLower },
+      });
     } catch (error) {
       response.status(401).send("User Login: User not registered");
       return;
@@ -127,10 +131,12 @@ class AuthController {
 
     const token = jwt.sign(payload, privateKey, signOptions);
     response.send(token);
+
   };
 
   static changePassword = async (request: Request, response: Response) => {
     const id = response.locals.jwtPayload.uid;
+    console.log(id);
 
     const { oldPassword, newPassword } = request.body;
     if (!(oldPassword && newPassword)) {
@@ -171,12 +177,14 @@ class AuthController {
 
     try {
       user.password = await bcrypt.hash(newPassword, 10);
-      await userRepository.save(user);
+      const B = await userRepository.save(user);
     } catch (error) {
       response.status(401).send("User Password Change: " + error);
     }
 
     response.status(204).send("User Password Change: Success");
+    return;
+    
   };
 }
 export default AuthController;
