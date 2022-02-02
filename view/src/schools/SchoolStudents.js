@@ -57,7 +57,8 @@ export const SchoolStudents = ({ data, routes }) => {
   return (
   <div id="schoolStudentListing">
     <h1>Students</h1>
-    <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+    {data.length === 0 ? <h4>There are no students attached to this school! Create some by clicking <Link to="/Users/create">here.</Link></h4>
+        : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
       <thead>
       {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -145,6 +146,7 @@ export const SchoolStudents = ({ data, routes }) => {
           ))}
         </select>
       </div>
+        </>}
     </div>
   );
 }

@@ -50,7 +50,8 @@ export const RouteStudents = ({ data, routes }) => {
   return (
       <div id="routeStudentListing">
         <h1>Students</h1>
-        <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+        {data.length === 0 ? <h4>There are no students attached to this route! Add some by selecting Route Planner.</h4>
+            : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
           {headerGroups.map(headerGroup => (
               <tr {...headerGroup.getHeaderGroupProps()}>
@@ -138,6 +139,7 @@ export const RouteStudents = ({ data, routes }) => {
             ))}
           </select>
         </div>
+            </>}
       </div>
   );
 }

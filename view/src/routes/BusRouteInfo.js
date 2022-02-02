@@ -76,8 +76,8 @@ export const BusRouteInfo = () => {
       <div>
         <h1>Route Info</h1>
         <div>
-          <button onClick={e => setIsEdit(true)}>Edit</button>
-          <button onClick={e => setIsDelete(true)}>Delete</button>
+          <button onClick={e => setIsEdit(true)}>Edit Route</button>
+          <button onClick={e => setIsDelete(true)}>Delete Route</button>
           <button onClick={e => navigate(`/Routes/planner/${school.uid}`)}>Route Planner</button>
         </div>
         <form onSubmit={e => onSubmit(e)}>

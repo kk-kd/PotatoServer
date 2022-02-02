@@ -83,8 +83,8 @@ export const UserDetail = () => {
   return (
       <div id="userListing">
         <h1>User Detail (
-          <Link to={'/Users/edit/' + id}> Edit</Link>, 
-          <Link to={'/Users/list'} onClick = {(e) => {handleDeleteUser(id, e)} }> Delete </Link>
+          <Link to={'/Users/edit/' + id}> Edit User </Link>,
+          <Link to={'/Users/list'} onClick = {(e) => {handleDeleteUser(id, e)} }> Delete User </Link>
           )  </h1>
         <h3>User Characteristics </h3>
    
@@ -98,6 +98,8 @@ export const UserDetail = () => {
         </div>     
 
         <h3>Students Associated With This User </h3>
+        {students.length === 0 ? <h4>There are no students attached to this user! Create one by clicking <Link to="/Users/create">here.</Link></h4>
+            :
         <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
           {headerGroups.map(headerGroup => (
@@ -147,7 +149,7 @@ export const UserDetail = () => {
             )
           })}
           </tbody>
-        </table> 
+        </table> }
       </div>
   );
 }
