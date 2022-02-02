@@ -245,7 +245,7 @@ export const EditUser = () => {
                 <label className="input">
                   <p>New Password:</p>
                     <input
-                        type="text"
+                        type="password"
                         value={passwordCandidate}
                         onChange={(e) => setPasswordCandidate(e.target.value)
                         }
@@ -258,7 +258,7 @@ export const EditUser = () => {
                 <label className="input">
                   <p>Re-Enter New Password:</p>
                     <input
-                        type="text"
+                        type="password"
                         value={passwordCandidateValidation}
                         onChange={(e) => setPasswordCandidateValidation(e.target.value)
                         }
