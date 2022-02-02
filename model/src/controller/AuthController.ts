@@ -127,10 +127,12 @@ class AuthController {
 
     const token = jwt.sign(payload, privateKey, signOptions);
     response.send(token);
+
   };
 
   static changePassword = async (request: Request, response: Response) => {
     const id = response.locals.jwtPayload.uid;
+    console.log(id);
 
     const { oldPassword, newPassword } = request.body;
     if (!(oldPassword && newPassword)) {
@@ -171,12 +173,14 @@ class AuthController {
 
     try {
       user.password = await bcrypt.hash(newPassword, 10);
-      await userRepository.save(user);
+      const B = await userRepository.save(user);
     } catch (error) {
       response.status(401).send("User Password Change: " + error);
     }
 
     response.status(204).send("User Password Change: Success");
+    return;
+    
   };
 }
 export default AuthController;
