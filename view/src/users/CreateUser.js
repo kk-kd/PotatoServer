@@ -276,7 +276,7 @@ export const CreateUser = () => {
     }
 
     if (!firstNameStudent || !lastNameStudent ) {
-      alert("First Name and Last Name are Required.")
+      alert("Student First Name and Last Name are Required.")
     }
     else if (!(selectedUser || makeStudentForUser)) {
       alert("Please Select a User for this student.")
@@ -313,10 +313,10 @@ export const CreateUser = () => {
 
   async function handleUserCreateFormButton (e) {
     if (!firstNameUser || !lastNameUser) {
-      alert("First Name and Last Name are Required.")
+      alert("User First Name and Last Name are Required.")
     }
     else if (!addressValid) {
-      alert("Please Validate Address.")
+      alert("Please Validate User Address.")
     }
     else{
       if (makeUserForStudent) {
