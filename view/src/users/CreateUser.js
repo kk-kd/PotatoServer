@@ -468,7 +468,7 @@ export const CreateUser = () => {
             {!makeStudentForUser && !makeUserForStudent && //search for existing user 
               <div>
                 <label className="input">
-                  <p> Select an Existing User: </p>
+                  <p> User Search: </p>
                 <input
                       type="text"
                       value={filterValue}
