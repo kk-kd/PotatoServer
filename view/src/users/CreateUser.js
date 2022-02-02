@@ -5,7 +5,7 @@ import { Marker } from "./../map/Marker";
 import {registerUser, saveStudent} from "../api/axios_wrapper";
 import { Link, useNavigate } from "react-router-dom";
 import { Users } from "./Users";
-import { filterAllUsers, filterAllSchools } from "../api/axios_wrapper";
+import { filterAllUsers, filterAllSchools, getOneUser } from "../api/axios_wrapper";
 
 export const CreateUser = () => {
   let navigate = useNavigate();
@@ -14,10 +14,13 @@ export const CreateUser = () => {
   const [filterValue, setFilterValue] = useState("");
   const [selectedUser, setSelectedUser] = useState();
   const [actionType, setActionType] = useState("");
+  const [routeFilter, setRouteFilter] = useState("");
+  const [selectedRoute, setSelectedRoute] = useState(false);
+  const [route, setRoute] = useState();
   const [makeStudentForUser, setMakeStudentForUser] = useState(false); 
   const [makeUserForStudent, setMakeUserForStudent] = useState(false); 
 
-
+  const [user, setUser] = useState();
   const [ firstNameStudent, setFirstNameStudent ] = useState("");
   const [ middleNameStudent, setMiddleNameStudent ] = useState("");
   const [ lastNameStudent, setLastNameStudent ] = useState("");
@@ -68,41 +71,74 @@ export const CreateUser = () => {
       address: address,
       isAdmin: isAdmin,
       password: password,
-      students: students,
+      latitude: lat,
+      longitude: lng
     }
     console.log("Creating User with entries:")
     console.log(form_results)
     try {
-      let create_user_response = await registerUser(form_results); 
+      const create_user_response = await registerUser(form_results);
+      const madeUser = await getOneUser(create_user_response.data);
+      console.log(create_user_response);
+      console.log(madeUser);
+      for(const student of students) {
+        const name = await addStudent(student, madeUser.data);
+        console.log(name);
+      };
+      //let create_user_again = await registerUser({...create_user_response, students: form_results.students});
     } catch (error) {
         let message = error.response.data;
         throw alert (message);
     }
     alert("User Successfully Created");
+    navigate('/Users/list');
+  }
+  async function addStudent(student, parent) {
+    try {
+      const created = await saveStudent({...student, parentUser: parent});
+      return created;
+    } catch (e) {
+      console.log(e.response);
+    }
   }
 
   async function handleCreateStudent (e) {
     //e.preventDefault(); // prevents page reload on submission
     //checkMap(address)
-   
     let form_results = {
       firstName: firstNameStudent,
       middleName: middleNameStudent,
       lastName: lastNameStudent,
       school: school, 
-      studentid: studentid,
+      id: studentid,
+      parentUser: user,
+      route: route
+    }
+    if (!selectedRoute) {
+      form_results["route"] = null;
+    }
+    if (studentid.length === 0) {
+      form_results["id"] = null;
     }
     console.log("Creating Student with entries:")
     console.log(form_results)
     try {
-      let create_user_response = await saveStudent(form_results); 
+      var madeUser;
+      if (makeUserForStudent) {
+        const create_user_response = await registerUser(user);
+        const gotMadeUser = await getOneUser(create_user_response.data);
+        madeUser = gotMadeUser.data;
+      } else {
+        madeUser = user;
+      }
+      let create_student_response = await saveStudent({...form_results, parentUser: madeUser});
     } catch (error) {
         let message = error.response.data;
         throw alert (message);
     }
 
     alert("Successfully Created Student");
-    //navigate('/Users/list');
+    navigate('/Students/list');
   }
   
   useEffect(() => {
@@ -159,7 +195,7 @@ export const CreateUser = () => {
     setPassword("")
     setEmail("")
     setAddress("")
-    setisAdmin("")
+    setisAdmin(false)
     setStudents([])
     setFilterValue("")
     setSelectedUser(false)
@@ -175,6 +211,8 @@ export const CreateUser = () => {
     setFilterValueSchool("")
     setSchool({})
     setSelectedSchool(false)
+    setRoute();
+    setSelectedRoute(false);
 
     setMakeStudentForUser(false)
     setMakeUserForStudent(false)
@@ -230,16 +268,23 @@ export const CreateUser = () => {
       lastName: lastNameStudent,
       id: studentid, 
       school: school,
+      route: route
+    }
+    if (!selectedRoute) {
+      newStudent["route"] = null;
+    }
+    if (studentid.length === 0) {
+      newStudent["id"] = null;
     }
 
     if (!firstNameStudent || !lastNameStudent ) {
       alert("First Name and Last Name are Required.")
     }
-    else if (!selectedUser) {
+    else if (!(selectedUser || makeStudentForUser)) {
       alert("Please Select a User for this student.")
     }
     
-    else if (!(Number(studentid) > 0)) {
+    else if (studentid && !(Number(studentid) > 0)) {
       alert("Student ID must be a positive number")
     }
     else {
@@ -249,16 +294,21 @@ export const CreateUser = () => {
         setFirstNameStudent(""); 
         setMiddleNameStudent(""); 
         setLastNameStudent(""); 
-        setStudentId(""); 
+        setStudentId("");
+        setSelectedSchool(false);
+        setSelectedRoute(false);
         setSchool({});
+        setRoute({});
+        setRouteFilter("");
+        setFilterValueSchool("");
+        setFilteredDataSchool();
         alert("Successfully Added Student Info to User. Note: Students are created only when the user form is submitted. To create a student independently, select Create New Student")
       } 
       else {
-      console.log("3")
-      // make new student
-      setStudents(arr => [...arr, newStudent]);
-
-      await handleCreateStudent(newStudent);
+        console.log("3")
+        // make new student
+        setStudents(arr => [...arr, newStudent]);
+        await handleCreateStudent(newStudent);
       }
   }
 }
@@ -271,14 +321,25 @@ export const CreateUser = () => {
       alert("Please Validate Address.")
     }
     else{
-    if ({makeUserForStudent}) {
-      setSelectedUser(true) 
-      alert("Successfully Added User Info to Student! Note: Users are created only when this form is submitted. To create a user independently, select 'Create New User'")
-    } 
-    else {
-      // make new user
-      handleCreateUser(e)
-    }
+      if (makeUserForStudent) {
+        setUser({
+          email: email,
+          firstName: firstNameUser,
+          middleName: middleNameUser,
+          lastName: lastNameUser,
+          address: address,
+          isAdmin: isAdmin,
+          password: password,
+          latitude: lat,
+          longitude: lng
+        })
+        setSelectedUser(true);
+        alert("Successfully Added User Info to Student! Note: Users are created only when this form is submitted. To create a user independently, select 'Create New User'")
+      }
+      else {
+        // make new user
+        handleCreateUser(e)
+      }
     }
   }
 
@@ -298,12 +359,14 @@ export const CreateUser = () => {
     setisAdmin(user.isAdmin)
     setStudents(students)
     setFilterValue(user.email)
+    setUser(user)
     
   }
 
   return (
     <div>
        <h1>Student / User Create</h1>
+      <h1>{`${makeUserForStudent}`}</h1>
        <div className = "Choose-Action" > 
           <h3>
               <input type = "radio" key={'createStudent'}  name = "action" onClick = {(e) => {setActionType("Student")}}/> 
@@ -353,7 +416,7 @@ export const CreateUser = () => {
                 <input
                       type="text"
                       value={filterValueSchool}
-                      onChange={(e) => {setFilterValueSchool(e.target.value); setSelectedSchool(false)}}
+                      onChange={(e) => {setFilterValueSchool(e.target.value); setSelectedSchool(false); setSelectedRoute(false)}}
                       defaultValue = "Search"
                 /> 
             </label>
@@ -362,13 +425,34 @@ export const CreateUser = () => {
                   {filteredDataSchool && filteredDataSchool.length > 0 ? (
                     filteredDataSchool.map((school) => (
                       <li >
-                    <button key={school.uid} className="user" onClick = {(e) => {setSelectedSchool(true); setFilterValueSchool(school.name); setSchool(school)}} >
+                    <button key={school.uid} className="user" onClick = {(e) => {setSelectedSchool(true); setFilterValueSchool(school.name); setSchool(school); setRoute({});}} >
                       {school.name}   
                     </button>
                     </li>
                     ))
                     ) : (<div> </div>)}
                 </div>}
+
+            {selectedSchool && <label className="input">
+              <p> Select an Existing Route: </p>
+              <input
+                  type="text"
+                  value={routeFilter}
+                  onChange={(e) => {setRouteFilter(e.target.value); setSelectedRoute(false)}}
+                  defaultValue = "Search"
+              />
+            </label>}
+            {(selectedSchool && !selectedRoute) &&
+            <div className="route-list">
+              {school.routes.filter(route => route.name.toLowerCase().includes(routeFilter.toLowerCase())).splice(0, 10).map((route) => (
+                      <li >
+                        <button key={route.uid} className="route" onClick = {(e) => {setSelectedRoute(true); setRouteFilter(route.name); setRoute(route)}} >
+                          {route.name}
+                        </button>
+                      </li>
+                  )
+              )}
+            </div>}
 
             <label className="input">
               <p> Student ID:</p>
@@ -391,7 +475,7 @@ export const CreateUser = () => {
                     type="checkbox"
                     checked={makeUserForStudent}
                     onChange={(e) => {
-                      setMakeUserForStudent(e.target.checked); 
+                      setMakeUserForStudent(e.target.checked);
                       setSelectedUser(false);
                       setFirstNameUser("")
                       setMiddleNameUser("")
@@ -510,7 +594,7 @@ export const CreateUser = () => {
                   <input
                       type="checkbox"
                       value={isAdmin}
-                      onInput={(e) => setisAdmin(e.target.value)}
+                      onInput={(e) => setisAdmin(e.target.checked)}
                   />
               </label>
 
