@@ -4,7 +4,7 @@
 name: Main -> potato.colab.duke.edu
 
 on:
-  pull_request:
+  push:
     branches: [main]
 
   workflow_dispatch:
@@ -24,47 +24,7 @@ on:
         type: boolean
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: bus
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: model/package-lock.json
-
-      - name: Run npm commands
-        working-directory: ./model
-        run: |
-          npm ci
-          npm test
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Deploy NodeJS app
