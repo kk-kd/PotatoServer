@@ -179,10 +179,16 @@ export const EditUser = () => {
       return; 
     }
 
+    if (changePassword && !passwordCandidate){
+      alert("Please Enter a New Password.");
+      return;
+    }
+
     if (changePassword && (passwordCandidate !== passwordCandidateValidation)){
       alert("Password and Re-Enter Password Do Not Match.")
       return;
     }
+
 
     //update user
     let form_results = {
