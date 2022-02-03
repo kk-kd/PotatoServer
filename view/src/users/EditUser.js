@@ -168,7 +168,6 @@ export const EditUser = () => {
     e.preventDefault()
     //update password
 
-
     if (!addressValid) {
       alert("Please Validate Address.")
       return; 
