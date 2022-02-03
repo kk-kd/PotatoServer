@@ -255,14 +255,14 @@ export class UserController extends Repository<User> {
         request.body.password = await bcrypt.hash(request.body.password, 10);
         console.log(request.body.password);
       }
-      await getConnection()
+      const ret = await getConnection()
         .createQueryBuilder()
         .update(User)
         .where("uid = :uid", { uid: uidNumber })
         .set(request.body)
         .execute();
       response.status(200);
-      return;
+      return ret;
     } catch (e) {
       response
         .status(401)
