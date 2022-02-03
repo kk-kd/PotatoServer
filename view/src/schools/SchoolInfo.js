@@ -146,7 +146,7 @@ export const SchoolInfo = () => {
           <label id="schoolInput">School Name:
             <input
                 type="text"
-                maxLength="30"
+                maxLength="100"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 readOnly={!isEdit}
@@ -155,7 +155,7 @@ export const SchoolInfo = () => {
           <label id="schoolInput">Adress:
             <input
                 type="text"
-                maxLength="30"
+                maxLength="100"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 readOnly={!isEdit}
