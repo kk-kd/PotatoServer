@@ -10,6 +10,9 @@ createConnection().then(async (connection) => {
   firstAdmin.firstName = "Admin";
   firstAdmin.lastName = "Example";
   firstAdmin.password = await bcrypt.hash("Admin123", 10);
+  firstAdmin.address = "1 Fake Street";
+  firstAdmin.longitude = 0;
+  firstAdmin.latitude = 0;
   firstAdmin.isAdmin = true;
 
   await connection.manager.save(firstAdmin);

@@ -1,13 +1,26 @@
 import "./TableLinks.css";
 import { useLocation, Link } from "react-router-dom";
 
-export const TableLinks = ( { hash } ) => {
+export const TableLinks = ({ hash, link, display }) => {
   const location = useLocation();
-  const selected = location.pathname.includes(hash);
+  var selected;
+  if (hash === "Students") {
+    selected =
+      location.pathname.includes(hash) &&
+      !location.pathname.includes("MyStudents");
+  } else {
+    selected = location.pathname.includes(hash);
+  }
 
   return (
-    <Link to={`${hash}/list`}>
-      <button id={selected ? "selected" : "selectable"}>{hash}</button>
+    <Link to={link}>
+      <button
+        type="button"
+        class="btn btn-outline-primary"
+        id={selected ? "selected" : "selectable"}
+      >
+        {display}
+      </button>
     </Link>
   );
-}
+};

@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -139,15 +138,15 @@ export const SchoolInfo = () => {
       <div>
         <h1>School Info</h1>
         <div>
-          <button onClick={e => setIsEdit(true)}>Edit</button>
-          <button onClick={e => setIsDelete(true)}>Delete</button>
+          <button onClick={e => setIsEdit(true)}>Edit School</button>
+          <button onClick={e => setIsDelete(true)}>Delete School</button>
           <button onClick={e => navigate(`/Routes/planner/${id}`)}>Route Planner</button>
         </div>
         <form onSubmit={e => onSubmit(e)}>
           <label id="schoolInput">School Name:
             <input
                 type="text"
-                maxLength="30"
+                maxLength="100"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 readOnly={!isEdit}
@@ -156,7 +155,7 @@ export const SchoolInfo = () => {
           <label id="schoolInput">Adress:
             <input
                 type="text"
-                maxLength="30"
+                maxLength="100"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 readOnly={!isEdit}

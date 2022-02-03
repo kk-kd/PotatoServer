@@ -44,6 +44,7 @@ export const CreateUser = () => {
 
   // maps
   const [ showMap, setShowMap ] = useState(false);
+  const [ mapApi, setMapApi ] = useState();
   const [ addressValid, setAddressValid] = useState(false);
   const [ lat, setLat ] = useState();
   const [ lng, setLng ] = useState();
@@ -64,7 +65,7 @@ export const CreateUser = () => {
     //checkMap(address)
    
     let form_results = {
-      email: email,
+      email: email.toLowerCase(),
       firstName: firstNameUser,
       middleName: middleNameUser,
       lastName: lastNameUser,
@@ -74,16 +75,14 @@ export const CreateUser = () => {
       latitude: lat,
       longitude: lng
     }
-    console.log("Creating User with entries:")
-    console.log(form_results)
+
     try {
       const create_user_response = await registerUser(form_results);
       const madeUser = await getOneUser(create_user_response.data);
-      console.log(create_user_response);
-      console.log(madeUser);
+
       for(const student of students) {
         const name = await addStudent(student, madeUser.data);
-        console.log(name);
+
       };
       //let create_user_again = await registerUser({...create_user_response, students: form_results.students});
     } catch (error) {
@@ -98,7 +97,7 @@ export const CreateUser = () => {
       const created = await saveStudent({...student, parentUser: parent});
       return created;
     } catch (e) {
-      console.log(e.response);
+      
     }
   }
 
@@ -120,8 +119,7 @@ export const CreateUser = () => {
     if (studentid.length === 0) {
       form_results["id"] = null;
     }
-    console.log("Creating Student with entries:")
-    console.log(form_results)
+
     try {
       var madeUser;
       if (makeUserForStudent) {
@@ -153,7 +151,7 @@ export const CreateUser = () => {
           filterData: filterValue
         });
         setFilteredData(fetchedData.data.users);
-        console.log(filteredData);
+   
       } catch (error) {
         alert(error.response.data);
       }
@@ -176,7 +174,7 @@ export const CreateUser = () => {
           filterData: filterValueSchool
         });
         setFilteredDataSchool(fetchedDataSchool.data.schools);
-        console.log(fetchedDataSchool);
+     
       } catch (error) {
         alert(error.response.data);
       }
@@ -219,30 +217,42 @@ export const CreateUser = () => {
   
   }, [actionType])
 
+  useEffect(() => {
+    if (mapApi && !addressValid) {
+      searchLocation();
+    }
+  }, [mapApi]);
+
   const searchLocation = () => {
-    geocoder.geocode( { 'address': address }, (results, status) => {
+    mapApi.geocoder.geocode( { 'address': address }, (results, status) => {
+      if (!address || address.trim().length === 0) {
+        alert("Please Enter an Address"); 
+        return;
+      }
       if (status === "OK") {
-        map.setCenter(results[0].geometry.location);
+        mapApi.map.setCenter(results[0].geometry.location);
         setLng(results[0].geometry.location.lng());
         setLat(results[0].geometry.location.lat());
         setError(null);
         setAddress(address);
         setAddressValid(true);
       } else if (status === "ZERO_RESULTS") {
+        setAddressValid(false);
         setError("No results for that address");
-        console.log(status)
+        alert ("No results for that address");
+ 
       } else {
+        setAddressValid(false);
         setError("Server Error. Try again later");
-        console.log(status)
+        alert("Server Error. Try again later");
+        
       }
     });
   }
   const handleApiLoaded = (map, maps) => {
     const geocoder = new maps.Geocoder();
-    setGeocoder(geocoder);
-    setMap(map);
+    setMapApi({geocoder: geocoder, map: map});
     setApiLoaded(true);
-    searchLocation();
   }
   const checkMap = (e) => {
     e.preventDefault();
@@ -270,7 +280,7 @@ export const CreateUser = () => {
     }
 
     if (!firstNameStudent || !lastNameStudent ) {
-      alert("First Name and Last Name are Required.")
+      alert("Student First Name and Last Name are Required.")
     }
     else if (!(selectedUser || makeStudentForUser)) {
       alert("Please Select a User for this student.")
@@ -281,7 +291,7 @@ export const CreateUser = () => {
     }
     else {
       if (makeStudentForUser) {
-        console.log("2")
+       
         setStudents(arr => [...arr, newStudent]);
         setFirstNameStudent(""); 
         setMiddleNameStudent(""); 
@@ -297,7 +307,7 @@ export const CreateUser = () => {
         alert("Successfully Added Student Info to User. Note: Students are created only when the user form is submitted. To create a student independently, select Create New Student")
       } 
       else {
-        console.log("3")
+        
         // make new student
         setStudents(arr => [...arr, newStudent]);
         await handleCreateStudent(newStudent);
@@ -307,15 +317,15 @@ export const CreateUser = () => {
 
   async function handleUserCreateFormButton (e) {
     if (!firstNameUser || !lastNameUser) {
-      alert("First Name and Last Name are Required.")
+      alert("User First Name and Last Name are Required.")
     }
     else if (!addressValid) {
-      alert("Please Validate Address.")
+      alert("Please Validate User Address.")
     }
     else{
       if (makeUserForStudent) {
         setUser({
-          email: email,
+          email: email.toLowerCase(),
           firstName: firstNameUser,
           middleName: middleNameUser,
           lastName: lastNameUser,
@@ -352,16 +362,18 @@ export const CreateUser = () => {
     setStudents(students)
     setFilterValue(user.email)
     setUser(user)
-    
   }
 
   return (
     <div>
        <h1>Student / User Create</h1>
-      <h1>{`${makeUserForStudent}`}</h1>
        <div className = "Choose-Action" > 
           <h3>
-              <input type = "radio" key={'createStudent'}  name = "action" onClick = {(e) => {setActionType("Student")}}/> 
+              <input 
+              type = "radio" 
+              key={'createStudent'} 
+               name = "action" 
+               onClick = {(e) => {setActionType("Student")}}/> 
               Create New Student 
           </h3>
       
@@ -377,9 +389,10 @@ export const CreateUser = () => {
           <h1>Create Student Form </h1>
           <form >
             <label className="input">
-              <p>First Name:</p>
+              <p>First Name: </p>
                 <input
                     type="text"
+                    maxLength="100"
                     value={firstNameStudent}
                     onChange={(e) => setFirstNameStudent(e.target.value)}
                 />
@@ -389,6 +402,7 @@ export const CreateUser = () => {
               <p>Middle Name:</p>
                 <input
                     type="text"
+                    maxLength="100"
                     value={middleNameStudent}
                     onChange={(e) => setMiddleNameStudent(e.target.value)}
                 />
@@ -398,17 +412,19 @@ export const CreateUser = () => {
               <p>Last Name:</p>
                 <input
                     type="text"
+                    maxLength="100"
                     value={lastNameStudent}
                     onChange={(e) => setLastNameStudent(e.target.value)}
                 />
             </label>
 
             <label className="input">
-                  <p> Select an Existing School: </p>
+                  <p> School Search: </p>
                 <input
                       type="text"
+                      maxLength="100"
                       value={filterValueSchool}
-                      onChange={(e) => {setFilterValueSchool(e.target.value); setSelectedSchool(false); setSelectedRoute(false)}}
+                      onChange={(e) => {setFilterValueSchool(e.target.value); setSelectedSchool(false); setSelectedRoute(false); setRouteFilter("")}}
                       defaultValue = "Search"
                 /> 
             </label>
@@ -424,11 +440,14 @@ export const CreateUser = () => {
                     ))
                     ) : (<div> </div>)}
                 </div>}
-
-            {selectedSchool && <label className="input">
-              <p> Select an Existing Route: </p>
+            
+            <p> {(selectedSchool && (!school.routes || school.routes.length === 0)) ? " There Are No Routes Available For The Selected School. Please Create One In the Routes Tab." : ''} </p>
+            <p> {!selectedSchool ? "You must select a school before you will be able to assign a route to this student." : ""} </p>
+            {selectedSchool && school.routes && school.routes.length > 0 && <label className="input">
+              <p> Route Search: </p>
               <input
                   type="text"
+                  maxLength="100"
                   value={routeFilter}
                   onChange={(e) => {setRouteFilter(e.target.value); setSelectedRoute(false)}}
                   defaultValue = "Search"
@@ -450,19 +469,49 @@ export const CreateUser = () => {
               <p> Student ID:</p>
                 <input
                     type="text"
+                    maxLength="100"
                     value={studentid}
                     onChange={(e) => setStudentId(e.target.value)}
                 />
             </label>
-
-            {!makeStudentForUser &&
-              <label className="input">
-                <p> Associated User: {selectedUser ? "" + email : "None" }</p>
-              </label>
+          
+            {!makeStudentForUser && <div> 
+            <h4> Search for an Existing User or Create a New One.  </h4>
+            <h4> Associated User = {selectedUser ? "" + email : "None" } </h4>
+            </div>
             }
+
+            {!makeStudentForUser && !makeUserForStudent && //search for existing user 
+              <div>
+                <label className="input">
+                  <p> User Search: </p>
+                <input
+                      type="text"
+                      maxLength="100"
+                      value={filterValue}
+                      onChange={(e) => {setFilterValue(e.target.value); setSelectedUser(false); }}
+                    
+                /></label>
+
+                {!selectedUser && 
+                  <div className="user-list">
+                    {filteredData && filteredData.length > 0 ? (
+                      filteredData.map((user) => (
+                        <li >
+                      <button key={user.uid} className="user" onClick = {(e) => {
+                        handleUserSelection (e, user);}} >
+                        {user.email}   
+                        
+                      </button>
+                      </li>
+                      ))
+                      ) : (<div> </div>)}
+                  </div>}
+              </div>
+            } 
   
             {!makeStudentForUser && <label className="input">
-              <p>Make New User Associated With this Student:</p>
+              <p>Make New User:</p>
                 <input
                     type="checkbox"
                     checked={makeUserForStudent}
@@ -476,6 +525,9 @@ export const CreateUser = () => {
                       setPassword("")
                       setAddress("")
                       setisAdmin(false)
+                      setFilterValue(""); 
+                      setSelectedUser(false);
+                      setFilteredData([]);
                     }
                     }
 
@@ -483,34 +535,6 @@ export const CreateUser = () => {
                 />
             </label>
             }
-
-          {!makeStudentForUser && !makeUserForStudent && //search for existing user 
-            <div>
-              <label className="input">
-                <p> Select an Existing User: </p>
-              <input
-                    type="text"
-                    value={filterValue}
-                    onChange={(e) => {setFilterValue(e.target.value); setSelectedUser(false);}}
-                  
-              /></label>
-
-              {!selectedUser && 
-                <div className="user-list">
-                  {filteredData && filteredData.length > 0 ? (
-                    filteredData.map((user) => (
-                      <li >
-                    <button key={user.uid} className="user" onClick = {(e) => {handleUserSelection (e, user)}} >
-                      {user.email}   
-                      
-                    </button>
-                    </li>
-                    ))
-                    ) : (<div> </div>)}
-                </div>}
-            </div>
-          } 
-
 
             <div>
               <button className = "submitbutton" type="button" onClick= {(e) => {handleStudentCreateFormButton(e)}}>
@@ -529,6 +553,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>First Name:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={firstNameUser}
                       onChange={(e) => setFirstNameUser(e.target.value)}
@@ -538,6 +563,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Middle Name:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={middleNameUser}
                       onChange={(e) => setMiddleNameUser(e.target.value)}
@@ -547,6 +573,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Last Name:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={lastNameUser}
                       onChange={(e) => setLastNameUser(e.target.value)}
@@ -556,6 +583,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Email:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -565,6 +593,7 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Password:</p>
                   <input
+                      maxLength="100"
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -574,9 +603,10 @@ export const CreateUser = () => {
               <label className="input">
                 <p>Address:</p>
                   <input
+                      maxLength="100"
                       type="text"
                       value={address}
-                      onChange={(e) => setAddress(e.target.value)} 
+                      onChange={(e) => {setAddress(e.target.value); setAddressValid(false); }} 
                   />
                 <button onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate" }  </button>
               </label>
@@ -596,10 +626,9 @@ export const CreateUser = () => {
               {students.map((student) => (
                   <li >{student.firstName} 
                   <button type = "button" onClick = {(e) => {
-                    console.log(students)
+              
                     let filtered = students.filter(function(el) { return el.studentid != student.studentid;});
-                    console.log(filtered)
-
+                
                     setStudents(filtered); 
                   }}> remove </button>
                   </li>
@@ -641,7 +670,7 @@ export const CreateUser = () => {
                 onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
             >
               <Marker
-                  text="You're Address"
+                  text="Your Address"
                   lat={lat}
                   lng={lng}
               />

@@ -188,7 +188,13 @@ export class RouteController extends Repository<Route> {
   async oneRoute(request: Request, response: Response, next: NextFunction) {
     try {
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const routeQueryResult = await this.routeRepository.createQueryBuilder("routes").where("routes.uid = :uid", { uid: uidNumber }).leftJoinAndSelect("routes.students", "student").getOneOrFail();
+      const routeQueryResult = await this.routeRepository
+        .createQueryBuilder("routes")
+        .where("routes.uid = :uid", { uid: uidNumber })
+        .leftJoinAndSelect("routes.students", "students")
+        .leftJoinAndSelect("routes.school", "school")
+        .leftJoinAndSelect("students.parentUser", "parentUser")
+        .getOneOrFail();
       response.status(200);
       return routeQueryResult;
     } catch (e) {
@@ -227,9 +233,9 @@ export class RouteController extends Repository<Route> {
         return;
       }
       const uidNumber = request.params.uid;
-      await getConnection().createQueryBuilder().update(Route).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
+      const updated = await getConnection().createQueryBuilder().update(Route).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
       response.status(200);
-      return;
+      return updated;
 
     }
 

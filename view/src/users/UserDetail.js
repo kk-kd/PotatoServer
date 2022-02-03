@@ -25,20 +25,30 @@ export const UserDetail = () => {
   
   }, []);
 
-  async function handleDeleteUser (user_id, e) {
-    e.preventDefault(); 
-   
-    console.log("Deleting User with uid = " + user_id)
+  const handleDeleteUser = (user_id, e) => {
+    e.preventDefault();
+    let sName = prompt("Do you want to delete?  If so, enter User email:");
+    console.log(sName);
+    console.log(data.email);
+    if (!sName) {
+      return; 
+    } else if (sName.toLowerCase().trim() !== data.email.toLowerCase().trim()) {
+      alert("Entered Email Does Not Match."); 
+      return;
+    } else {
+      deleteUserCall(user_id);
+    } 
+  }
+  const deleteUserCall = async (user_id) => {  
     try {
-      let delete_user_response = await deleteUser(parseInt(user_id)); 
-    } catch (error)  {
-      console.log(error)
-      let message = error.response.data;
-      throw alert (message);
-    }
-    navigate('/Users/list');
-    throw alert ("User Deletion Successful");
-    
+      await deleteUser(parseInt(user_id)); 
+      alert ("User Deletion Successful");
+      navigate('/Users/list');
+    } catch (e)  {
+      console.log(e);
+      let message = e.response.data;
+      alert (message);
+    }    
   }
  
   const columns = useMemo(
@@ -83,8 +93,8 @@ export const UserDetail = () => {
   return (
       <div id="userListing">
         <h1>User Detail (
-          <Link to={'/Users/edit/' + id}> Edit</Link>, 
-          <Link to={'/Users/list'} onClick = {(e) => {handleDeleteUser(id, e)} }> Delete </Link>
+          <Link to={'/Users/edit/' + id}> Edit User </Link>,
+          <Link to={'/Users/list'} onClick = {(e) => {handleDeleteUser(id, e);} }> Delete User </Link>
           )  </h1>
         <h3>User Characteristics </h3>
    
@@ -94,11 +104,12 @@ export const UserDetail = () => {
           <p>Last Name : {data.lastName}</p>
           <p>Email : {data.email}</p>
           <p>Address : {data.address}</p>
-          <p>Password : {data.password}</p>
           <p>Admin : {data.isAdmin ? "Yes" : "No"}</p>
         </div>     
 
         <h3>Students Associated With This User </h3>
+        {students.length === 0 ? <h4>There are no students attached to this user! Create one by clicking <Link to="/Users/create">here.</Link></h4>
+            :
         <table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
           {headerGroups.map(headerGroup => (
@@ -148,7 +159,7 @@ export const UserDetail = () => {
             )
           })}
           </tbody>
-        </table> 
+        </table> }
       </div>
   );
 }
