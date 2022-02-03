@@ -6,9 +6,8 @@ import {
 } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { User } from "../entity/User";
-import * as jwt from "jsonwebtoken";
-import { isConstructorDeclaration } from "typescript";
 import * as bcrypt from "bcryptjs";
+import * as EmailValidator from "email-validator";
 
 @EntityRepository(User)
 export class UserController extends Repository<User> {
@@ -22,7 +21,7 @@ export class UserController extends Repository<User> {
       // PAGE STARTS AT 0
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
       const pageNum: number = +request.query.page;
@@ -68,7 +67,7 @@ export class UserController extends Repository<User> {
 
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
       const pageNum: number = +request.query.page;
@@ -160,19 +159,18 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-          response.locals.jwtPayload.uid +
-          " was not found adn could not be deleted."
+            response.locals.jwtPayload.uid +
+            " was not found adn could not be deleted."
         );
     }
   }
 
   async oneUser(request: Request, response: Response, next: NextFunction) {
-
     try {
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
       const usersQueryResult = await this.userRepository
@@ -190,11 +188,10 @@ export class UserController extends Repository<User> {
     }
   }
   async saveNewUser(request: Request, response: Response, next: NextFunction) {
-
     try {
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
       const user = await this.userRepository.save(request.body);
@@ -215,7 +212,7 @@ export class UserController extends Repository<User> {
       const uidNumber = request.params.uid;
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
 
@@ -235,16 +232,29 @@ export class UserController extends Repository<User> {
         .has()
         .not()
         .spaces(); // Should not have spaces
-      if (!schema.validate(request.body.password)) {
-        response.status(401).send("User Register: Password validation failed; Please specify a password with at least 8 characters, with at least 1 uppercase letter, 1 lowercase letter, and 2 digits. No spaces.");
+
+      if (!EmailValidator.validate(request.body.email)) {
+        response.status(401).send("Update User: Email validation failed");
         return;
       }
-      if (request.query.changePassword && request.query.changePassword == 'true') {
+
+      if (!schema.validate(request.body.password)) {
+        response
+          .status(401)
+          .send(
+            "Update User: Password validation failed; Please specify a password with at least 8 characters, with at least 1 uppercase letter, 1 lowercase letter, and 2 digits. No spaces."
+          );
+        return;
+      }
+      if (
+        request.query.changePassword &&
+        request.query.changePassword == "true"
+      ) {
         console.log("Hashing Password");
         console.log(request.body.password);
         request.body.password = await bcrypt.hash(request.body.password, 10);
         console.log(request.body.password);
-      } 
+      }
       await getConnection()
         .createQueryBuilder()
         .update(User)
@@ -258,18 +268,17 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User with UID " +
-          request.params.uid +
-          " and details(" +
-          request.body +
-          ") couldn't be updated with error " +
-          e
+            request.params.uid +
+            " and details(" +
+            request.body +
+            ") couldn't be updated with error " +
+            e
         );
       return;
     }
   }
 
   async deleteUser(request: Request, response: Response, next: NextFunction) {
-
     try {
       // const isAdmin = response.locals.jwtPayload.isAdmin;
       // if (!isAdmin) {
@@ -279,7 +288,7 @@ export class UserController extends Repository<User> {
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const isAdmin = response.locals.jwtPayload.isAdmin;
       if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
+        response.status(409).send("User is not an admin.");
         return;
       }
       const userQuereyResult = await this.userRepository
@@ -290,13 +299,12 @@ export class UserController extends Repository<User> {
       response.status(200);
       return userQuereyResult;
     } catch (e) {
-
       response
         .status(401)
         .send(
           "User UID: " +
-          request.params.uid +
-          " was not found adn could not be deleted."
+            request.params.uid +
+            " was not found adn could not be deleted."
         );
       return;
     }
@@ -313,10 +321,7 @@ export class UserController extends Repository<User> {
       .where("users.firstName = :firstName", { firstName })
       .getOne();
   }
-  updateUserName(
-    uid: number,
-    isAdmin: boolean,
-  ) {
+  updateUserName(uid: number, isAdmin: boolean) {
     return this.createQueryBuilder("users")
       .update()
       .set({ isAdmin: isAdmin })
@@ -336,7 +341,7 @@ export class UserController extends Repository<User> {
 function checkIfAdminForPrivileges(response) {
   const isAdmin = response.locals.jwtPayload.isAdmin;
   if (!isAdmin) {
-    response.status(409).send("User is not an admin.")
+    response.status(409).send("User is not an admin.");
     return;
   }
 }
