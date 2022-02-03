@@ -63,10 +63,8 @@ export const CreateSchool = () => {
         setValidated(true);
       } else if (status === "ZERO_RESULTS") {
         setError("No results for that address");
-        console.log(status)
       } else {
         setError("Server Error. Try again later");
-        console.log(status)
       }
     });
   }
@@ -91,7 +89,7 @@ export const CreateSchool = () => {
       <div>
         <h1>Create School</h1>
           <form onSubmit={e => onSubmit(e)}>
-            <label id="schoolInput">School Name (max 30 chars.):
+            <label id="schoolInput">School Name:
               <input
                   type="text"
                   maxLength="100"
@@ -99,7 +97,7 @@ export const CreateSchool = () => {
                   onChange={(e) => setName(e.target.value)}
               />
             </label>
-            <label id="schoolInput">Adress (max 30 chars.):
+            <label id="schoolInput">Adress:
               <input
                   type="text"
                   maxLength="100"

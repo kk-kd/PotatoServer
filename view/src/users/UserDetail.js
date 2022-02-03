@@ -3,7 +3,6 @@ import { Link, useParams, useNavigate} from "react-router-dom";
 import {useTable } from "react-table";
 import { deleteUser, getOneUser } from "../api/axios_wrapper";
 import useBatchedState from 'react-use-batched-state';
-import e from "cors";
 
 export const UserDetail = () => {
   const { id } = useParams();

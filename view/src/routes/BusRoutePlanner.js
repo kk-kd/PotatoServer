@@ -74,7 +74,7 @@ export const BusRoutePlanner = () => {
               <GoogleMapReact
                   bootstrapURLKeys={{key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`}}
                   defaultCenter={{ lat: parseFloat(school.latitude), lng: parseFloat(school.longitude) }}
-                  defaultZoom={6}
+                  defaultZoom={9}
               >
                 <Marker text={school.name}
                         lat={parseFloat(school.latitude)}
