@@ -30,6 +30,7 @@ export const EditStudent = () => {
   const [filteredDataUser, setFilteredDataUser] = useState([]);
   const [selectedUser,setSelectedUser] = useState();
   const [filterValueUser, setFilterValueUser] = useState("");
+  const [studentId, setStudentId] = useState("");
 
  
   useEffect(() => {
@@ -43,6 +44,7 @@ export const EditStudent = () => {
         setFirstName(fetchedData.data.firstName);
         setMiddleName(fetchedData.data.middleName);
         setLastName(fetchedData.data.lastName);
+        setStudentId(fetchedData.data.id || "");
 
         setRoute(fetchedData.data.route);
         setRouteFilter(fetchedData.data.route.name)
@@ -133,11 +135,19 @@ export const EditStudent = () => {
       route: route,
       school: school,
       parentUser: user,
+      id: studentId
     }
-    const a = modifyStudent(form_results); 
-
-    alert("Student Successfully Updated");
-    navigate('/Students/info/' + id);
+    if (!firstName || firstName.trim().length === 0) {
+      alert("Please enter a first name.");
+    } else if (!lastName || lastName.trim().length === 0) {
+      alert("Please enter a last name.");
+    } else if (studentId && !(Number(studentId) > 0)) {
+      alert("Student ID must be a positive integer.");
+    } else {
+      const a = modifyStudent(form_results);
+      alert("Student Successfully Updated");
+      navigate('/Students/info/' + id);
+    }
   }
 
   const modifyStudent = async (form_results) => {
@@ -191,6 +201,16 @@ export const EditStudent = () => {
                   onChange={(e) => setLastName(e.target.value)}
               />
           </label>
+
+            <label className="input">
+              <p>ID:</p>
+              <input
+                  type="text"
+                  maxLength="100"
+                  value={studentId}
+                  onChange={(e) => setStudentId(e.target.value)}
+              />
+            </label>
 
           <label className="input">
                   <p> School: </p>

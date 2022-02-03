@@ -166,10 +166,10 @@ export const StudentDetail = () => {
       <h3>Student Characteristics </h3>
       <div>
         <p>First Name : {data.firstName}</p>
-        <p>Middle Name : {data.middleName}</p>
+        <p>Middle Name : {data.middleName || ""}</p>
         <p>Last Name : {data.lastName}</p>
        <p>School: {school.schoolName} </p>
-        <p>ID : {id}</p>
+        <p>ID : {data.id || ""}</p>
       </div>
       <h3>Routes Associated With This Student </h3>
       <table {...getTableProps()} style={{ border: "solid 1px blue" }}>
