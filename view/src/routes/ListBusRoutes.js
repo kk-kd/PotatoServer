@@ -31,6 +31,9 @@ export const ListBusRoutes = () => {
               uid: route.routes_uid,
               name: route.routes_name,
               desciption: route.routes_desciption,
+              school: {
+                name: route.school_name
+              },
               students: route.count,
             }))
           );
