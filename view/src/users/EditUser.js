@@ -155,6 +155,8 @@ export const EditUser = () => {
    
     try {
       let update_user_response = await updateUser(id,form_results, changePassword); 
+      alert("User Successfully Updated");
+      navigate('/Users/info/' + id);
       return update_user_response; 
     } catch (error) {
         let message = error.response.data;
@@ -166,7 +168,6 @@ export const EditUser = () => {
     e.preventDefault()
     //update password
 
-
     if (!addressValid) {
       alert("Please Validate Address.")
       return; 
@@ -177,10 +178,16 @@ export const EditUser = () => {
       return; 
     }
 
-    if (passwordCandidate !== passwordCandidateValidation) {
+    if (changePassword && !passwordCandidate){
+      alert("Please Enter a New Password.");
+      return;
+    }
+
+    if (changePassword && (passwordCandidate !== passwordCandidateValidation)){
       alert("Password and Re-Enter Password Do Not Match.")
       return;
     }
+
 
     //update user
     let form_results = {
@@ -196,9 +203,7 @@ export const EditUser = () => {
     }
 
     const response = ModifyUserCall(form_results);
-   
-    alert("User Successfully Updated");
-    navigate('/Users/info/' + id);
+  
   }
  
   return (
@@ -252,7 +257,7 @@ export const EditUser = () => {
                   <input
                       type="checkbox"
                       value={changePassword}
-                      onChange={(e) => setChangePassword(e.target.checked)}
+                      onChange={(e) => {setChangePassword(e.target.checked); setPasswordCandidate(""); setPasswordCandidateValidation("")}}
                   />
               </label>
 
@@ -363,7 +368,7 @@ export const EditUser = () => {
 
     
             <div>
-                <button className = "submitbutton" onClick={handleModifyUser} >Submit</button>
+                <button className = "submitbutton" onClick={(e) => {handleModifyUser(e)}} >Submit</button>
             </div>
           </div> 
           </form>
