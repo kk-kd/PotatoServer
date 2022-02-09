@@ -36,7 +36,7 @@ export const allRoutes = [
     method: "get",
     route: "/api/stops/all",
     controller: StopController,
-    action: "allstops",
+    action: "allStops",
   },
   {
     method: "get",
