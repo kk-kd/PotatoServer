@@ -13,6 +13,9 @@ import { StudentController } from "./controller/StudentController";
 import { Route } from "./entity/Route";
 import { RouteController } from "./controller/RouteController";
 
+import { Stop } from "./entity/Stop";
+import { StopController } from "./controller/StopController";
+
 import { School } from "./entity/School";
 import { SchoolController } from "./controller/SchoolController";
 import { checkJwt } from "./middlewares/checkJwt";
@@ -84,6 +87,11 @@ createConnection()
     //     .execute();
     // }
 
+
+    const stopRepository = connection.getCustomRepository(StopController);
+    // stopRepository.query(`TRUNCATE ${"stops"} RESTART IDENTITY CASCADE;`);
+
+
     // const userRepository = connection.getCustomRepository(UserController);
     // userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`);
 
@@ -111,6 +119,16 @@ createConnection()
     // var count = 0.1;
     // var AdminBoolean = false;
     // var intCount = 0;
+    // Construct Stop Entity
+    const newStop = new Stop();
+    newStop.name = "My New Stop";
+    newStop.pickupTime = "7:00";
+    newStop.dropoffTime = "3:00";
+    newStop.latitude = 111111.1111;
+    newStop.longitude = 222222.222;
+    newStop.location = "My House Yo";
+    await stopRepository.save(newStop);
+
 
     // // Construct User Entity
     // for (var userNumber in nameIter) {

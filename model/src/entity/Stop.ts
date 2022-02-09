@@ -28,6 +28,6 @@ export class Stop {
   @Column({ type: "time" })
   dropoffTime: string;
 
-  @ManyToOne(() => Route, (route) => route.stops, { onDelete: "CASCADE" })
+  @ManyToOne(() => Route, (route) => route.stops, { nullable: true, onDelete: "CASCADE" })
   route: Route;
 }
