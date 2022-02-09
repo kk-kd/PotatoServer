@@ -37,7 +37,7 @@ export class Route {
     nullable: true,
     eager: true,
   })
-  stop: Stop;
+  stops: Stop;
 
   studentCount: number;
 }

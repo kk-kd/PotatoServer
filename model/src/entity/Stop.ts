@@ -23,10 +23,10 @@ export class Stop {
   latitude: number;
 
   @Column({ type: "time" })
-  pickup_time: string;
+  pickupTime: string;
 
   @Column({ type: "time" })
-  dropoff_time: string;
+  dropoffTime: string;
 
   @ManyToOne(() => Route, (route) => route.stops, { onDelete: "CASCADE" })
   route: Route;
