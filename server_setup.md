@@ -41,6 +41,12 @@
 `psql` and change user password with `ALTER USER postgres PASSWORD '<new password>';`  
 `create database bus;`
 
+## Install rabbitmq
+
+https://www.rabbitmq.com/install-debian.html#apt-quick-start-cloudsmith
+
+sudo systemctl start rabbitmq-server
+
 ## Clone the repo
 
 `git clone -b <branch> https://github.com/meganrichards3/PotatoServer.git`

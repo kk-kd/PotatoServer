@@ -1,4 +1,4 @@
-const { config } = require("process");
+const config = require("./config");
 const nodemailer = require("nodemailer");
 const amqp = require("amqplib").connect(config.amqp);
 
@@ -24,7 +24,9 @@ const publishMessage = (payload) => {
           conn.close();
         });
     })
-    .catch(console.warn(error));
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 const sendMessage = () => {
@@ -32,7 +34,7 @@ const sendMessage = () => {
     .then((conn) => {
       return conn.createChannel().then((ch) => {
         var ok = ch.assertQueue(config.queue, { durable: true });
-        ok = ok.then(function () {
+        ok = ok.then(() => {
           ch.prefetch(1);
         });
         ok = ok.then(() => {
@@ -48,16 +50,18 @@ const sendMessage = () => {
             .sendMail(message)
             .then((info) => {
               console.log("Delivered message %s", info.messageId);
-              channel.ack(data);
+              ch.ack(data);
             })
             .catch((err) => {
               console.warn(err);
-              return channel.nack(data);
+              return ch.nack(data);
             });
         }
       });
     })
-    .catch(console.warn(error));
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 const transport = nodemailer.createTransport({
@@ -70,4 +74,9 @@ const transport = nodemailer.createTransport({
   },
 });
 
-transport.verify().then(console.log).catch(console.error);
+module.exports = {
+  publishMessage,
+  sendMessage,
+};
+
+require("make-runnable");
