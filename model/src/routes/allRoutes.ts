@@ -36,7 +36,7 @@ export const allRoutes = [
     method: "get",
     route: "/api/stops/all",
     controller: StopController,
-    action: "allstops",
+    action: "allStops",
   },
   {
     method: "get",
@@ -150,7 +150,6 @@ export const allRoutes = [
     action: "deleteRoute",
   },
 
-
   /*
     Returns one entity from Table.
   */
@@ -225,7 +224,6 @@ export const allRoutes = [
     action: "filterAllStudents",
   },
 
-
   // Random Specific API Calls for specific, non-generalizable functionality:
   {
     method: "get",
@@ -244,7 +242,6 @@ export const allRoutes = [
     method: "get",
     route: "/api/routes/planner/:uid",
     controller: SchoolController,
-    action: "oneRoutePlanner"
+    action: "oneRoutePlanner",
   },
-
 ];
