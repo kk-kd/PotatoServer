@@ -1,8 +1,8 @@
-const config = require("./config");
+const config = require("../../mailerConfig");
 const nodemailer = require("nodemailer");
 const amqp = require("amqplib").connect(config.amqp);
 
-const publishMessage = (payload) => {
+export const publishMessage = (payload) => {
   amqp
     .then(function (conn) {
       return conn
@@ -10,22 +10,27 @@ const publishMessage = (payload) => {
         .then(function (ch) {
           var ok = ch.assertQueue(config.queue, { durable: true });
 
-          return ok.then(() => {
-            ch.sendToQueue(config.queue, Buffer.from(JSON.stringify(payload)), {
-              deliveryMode: true,
-              persistent: true,
-              contentType: "application/json",
-            });
+          return ok.then(async () => {
+            await ch.sendToQueue(
+              config.queue,
+              Buffer.from(JSON.stringify(payload)),
+              {
+                deliveryMode: true,
+                persistent: true,
+                contentType: "application/json",
+              }
+            );
             console.log("Sent '%s'", payload);
-            return ch.close();
+            await ch.close();
           });
         })
-        .finally(() => {
-          conn.close();
+        .finally(async () => {
+          await conn.close();
         });
     })
-    .catch((error) => {
-      console.log(error);
+    .catch((err) => {
+      console.warn(err.stack);
+      console.warn(err.stackAtStateChange);
     });
 };
 
@@ -74,9 +79,4 @@ const transport = nodemailer.createTransport({
   },
 });
 
-module.exports = {
-  publishMessage,
-  sendMessage,
-};
-
-require("make-runnable");
+sendMessage();

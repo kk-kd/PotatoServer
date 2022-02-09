@@ -1,4 +1,4 @@
-const { publishMessage, sendMessage } = require("./emailWorker");
+import { publishMessage } from "./emailWorker";
 
 var message = {
   from: "potatowebservice@gmail.com",

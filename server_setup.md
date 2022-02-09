@@ -108,7 +108,7 @@ Start pm2
 `cd ../model`  
 `npm install`  
 `npm run build`  
-`pm2 start build/index.js`  
+`pm2 start ecosystem.config.js `  
 Use `example_redirect.js` to replace `index.js` for testing purpose
 
 # Deployment Checklist
