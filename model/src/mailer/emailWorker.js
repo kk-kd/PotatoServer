@@ -63,21 +63,12 @@ const sendMessage = () => {
 
 // TODO: change later
 s;
-const transport = nodemailer.createTransport(
-  {
-    host: config.server.host,
-    port: config.server.port,
+const transport = nodemailer.createTransport({
+  host: config.server.host,
+  port: config.server.port,
 
-    // we intentionally do not set any authentication
-    // options here as we are going to use message specific
-    // credentials
-
-    // Security options to disallow using attachments from file or URL
-    disableFileAccess: true,
-    disableUrlAccess: true,
+  auth: {
+    user: config.server.user,
+    pass: config.server.password,
   },
-  {
-    // Default options for the message. Used if specific values are not set
-    from: "sender@example.com",
-  }
-);
+});
