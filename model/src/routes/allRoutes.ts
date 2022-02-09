@@ -128,10 +128,28 @@ export const allRoutes = [
     action: "updateStudent",
   },
   {
+    method: "post",
+    route: "/api/stops",
+    controller: StopController,
+    action: "saveNewStop",
+  },
+  {
+    method: "put",
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "updateStop",
+  },
+  {
     method: "delete",
     route: "/api/users/:uid",
     controller: UserController,
     action: "deleteUser",
+  },
+  {
+    method: "delete",
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "deleteStop",
   },
   {
     method: "delete",
@@ -313,11 +331,23 @@ export const allRoutes = [
     controller: RouteController,
     action: "oneRoute",
   },
+  {
+    method: "get",
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "oneStop",
+  },
 
   {
     method: "get",
     route: "/api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
     controller: RouteController,
     action: "sortAllRoutes",
+  },
+  {
+    method: "get",
+    route: "/api/stops/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
+    controller: StopController,
+    action: "sortAllStops",
   },
 ];

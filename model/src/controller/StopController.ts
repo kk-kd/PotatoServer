@@ -102,11 +102,11 @@ export class StopController extends Repository<Stop> {
     async saveNewStop(request: Request, response: Response, next: NextFunction) {
 
         try {
-            const isAdmin = response.locals.jwtPayload.isAdmin;
-            if (!isAdmin) {
-                response.status(409).send("User is not an admin.")
-                return;
-            }
+            // const isAdmin = response.locals.jwtPayload.isAdmin;
+            // if (!isAdmin) {
+            //     response.status(409).send("User is not an admin.")
+            //     return;
+
             return this.stopRepository.save(request.body);
         } catch (e) {
             response
@@ -121,11 +121,11 @@ export class StopController extends Repository<Stop> {
     async updateStop(request: Request, response: Response, next: NextFunction) {
 
         try {
-            const isAdmin = response.locals.jwtPayload.isAdmin;
-            if (!isAdmin) {
-                response.status(409).send("User is not an admin.")
-                return;
-            }
+            //     // const isAdmin = response.locals.jwtPayload.isAdmin;
+            //     // if (!isAdmin) {
+            //     //     response.status(409).send("User is not an admin.")
+            //     //     return;
+            //     // }
             const uidNumber = request.params.uid;
             const updated = await getConnection().createQueryBuilder().update(Stop).where("uid = :uid", { uid: uidNumber }).set(request.body).execute();
             response.status(200);
@@ -144,11 +144,11 @@ export class StopController extends Repository<Stop> {
     async deleteStop(request: Request, response: Response, next: NextFunction) {
 
         try {
-            const isAdmin = response.locals.jwtPayload.isAdmin;
-            if (!isAdmin) {
-                response.status(409).send("User is not an admin.")
-                return;
-            }
+            // const isAdmin = response.locals.jwtPayload.isAdmin;
+            // if (!isAdmin) {
+            //     response.status(409).send("User is not an admin.")
+            //     return;
+            // }
             const uidNumber = request.params.uid; //needed for the await call / can't nest them
             const stopQueryResult = await this.stopRepository.createQueryBuilder("stops").delete().where("stops.uid = :uid", { uid: uidNumber }).execute();
             response.status(200);
