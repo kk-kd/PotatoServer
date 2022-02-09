@@ -44,41 +44,6 @@ export class StopController extends Repository<Stop> {
             return;
         }
     }
-    async sortAllStops(
-        request: Request,
-        response: Response,
-        next: NextFunction
-    ) {
-        try {
-            const pageNum: number = +request.query.page;
-            const takeNum: number = +request.query.size;
-            var skipNum = pageNum * takeNum;
-            var sortSpecification;
-            var sortDirSpec;
-            if (request.query.sort == 'none') {
-                sortSpecification = "stops.uid";
-            }
-            else { //should error check instead of else
-                sortSpecification = "stops." + request.query.sort;
-            }
-            if ((request.query.sortDir == 'none') || (request.query.sortDir == 'ASC')) {
-                sortDirSpec = "ASC";
-            } else {
-                //error check instead of else
-                sortDirSpec = "DESC";
-            }
-            var filterSpecification;
-            filterSpecification = "stops." + request.query.sort;
-            const queryFilterType = request.query.filterType;
-            const queryFilterData = request.query.filterData;
-            const stopQueryResult = await this.stopRepository.createQueryBuilder("stops").skip(skipNum).take(takeNum).orderBy(sortSpecification, sortDirSpec).having("stops." + queryFilterType + " = :spec", { spec: queryFilterData }).groupBy("stops.uid").getMany();
-            response.status(200);
-            return stopQueryResult;
-        } catch (e) {
-            response.status(401).send("Stops were not found with error: " + e);
-            return;
-        }
-    }
 
 
     async oneStop(request: Request, response: Response, next: NextFunction) {

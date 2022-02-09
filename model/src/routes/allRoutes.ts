@@ -13,10 +13,9 @@ GET ALL STUDENTS: all/page=0&size=0&sort=none&sortDir=none
 FILTER ALL STUDENTS BY FIRST NAME: filter/page=0&size=0&sort=none&sortDir=none&filterType=firstName&filterData=first
 */
 
-// ALL PARAMETERS MUST BE SPECIFIED IN THE CALL; IN THE WRAPPER CHECK FOR NULL/ABSENT DATA AND CONVERT TO 0
 export const allRoutes = [
   /*
-    Gets all Users.
+    Gets all from table.
     page: number, denotes the number page requested; starts at 0
     size: number, denotes the size of the page requested
     sort: str, denotes the sort rule; options are:
@@ -39,46 +38,27 @@ export const allRoutes = [
     controller: StopController,
     action: "allstops",
   },
+  {
+    method: "get",
+    route: "/api/schools/all",
+    controller: SchoolController,
+    action: "allSchools",
+  },
+  {
+    method: "get",
+    route: "/api/students/all",
+    controller: StudentController,
+    action: "allStudents",
+  },
+  {
+    method: "get",
+    route: "/api/routes/all",
+    controller: RouteController,
+    action: "allRoutes",
+  },
 
-  /*
-    TODO: CONTAINS is needed, not just having/where exactly
-    
-    Filters Users to grab less than all.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any user entity column (firstName, middleName, lastName, etc.)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-    filterType: str, denotes what you want to filter by; options are:
-      - "none"
-      - any User entity column (firstName, middleName, lastName, etc.)
-        Check out model/entities/User.ts for all options.
-  */
-  {
-    method: "get",
-    route: "/api/users/filter",
-    controller: UserController,
-    action: "filterAllUsers",
-  },
-  /*
-   Returns one User by UID.
-  */
-  {
-    method: "get",
-    route: "/api/users/:uid",
-    controller: UserController,
-    action: "oneUser",
-  },
-  {
-    method: "get",
-    route: "/api/user",
-    controller: UserController,
-    action: "currentUserJWT",
-  },
+  // Saves, updates, or deletes a new entity to a table
+
   {
     method: "post",
     route: "/api/users/",
@@ -169,50 +149,17 @@ export const allRoutes = [
     controller: RouteController,
     action: "deleteRoute",
   },
-  /*
-    Gets all Students.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any student entity characteristic (firstName, middleName, lastName, id)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-  */
 
-  {
-    method: "get",
-    route: "/api/students/all",
-    controller: StudentController,
-    action: "allStudents",
-  },
-  /*    
-    Filters Students to grab less than all.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any student entity column (firstName, middleName, lastName, etc.)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-    filterType: str, denotes what you want to filter by; options are:
-      - "none"
-      - any User entity column (firstName, middleName, lastName, etc.)
-        Check out model/entities/Student.ts for all options.
-  */
-  {
-    method: "get",
-    route: "/api/students/filter",
-    controller: StudentController,
-    action: "filterAllStudents",
-  },
+
   /*
-    Returns one student by UID (not non-unique ID).
+    Returns one entity from Table.
   */
+  {
+    method: "get",
+    route: "/api/schools/:uid",
+    controller: SchoolController,
+    action: "oneSchool",
+  },
   {
     method: "get",
     route: "/api/students/:uid",
@@ -221,87 +168,24 @@ export const allRoutes = [
   },
   {
     method: "get",
-    route: "/api/routes",
+    route: "/api/routes/:uid",
     controller: RouteController,
-    action: "all",
+    action: "oneRoute",
   },
   {
     method: "get",
-    route: "/api/routes/planner/:uid",
-    controller: SchoolController,
-    action: "oneRoutePlanner"
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "oneStop",
   },
-  /*
-    Gets all Schools.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any schools entity characteristic (name, address, etc)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-  */
-
   {
     method: "get",
-    route: "/api/schools/all",
-    controller: SchoolController,
-    action: "allSchools",
+    route: "/api/users/:uid",
+    controller: UserController,
+    action: "oneUser",
   },
   /*    
-    Filters Schools to grab less than all.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any school entity column (name, address)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-    filterType: str, denotes what you want to filter by; options are:
-      - "none"
-      - any school entity column (name, address, etc.)
-        Check out model/entities/School.ts for all options.
-  */
-  {
-    method: "get",
-    route: "/api/schools/filter",
-    controller: SchoolController,
-    action: "filterAllSchools",
-  },
-  /*
-    Returns one school by UID.
-  */
-  {
-    method: "get",
-    route: "/api/schools/:uid",
-    controller: SchoolController,
-    action: "oneSchool",
-  },
-  /*
-    Gets all Routes.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any route entity characteristic (name, description)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-  */
-
-  {
-    method: "get",
-    route: "/api/routes/all",
-    controller: RouteController,
-    action: "allRoutes",
-  },
-  /*    
-    Filters Routes to grab less than all.
+    Filters table to grab less than all.
     page: number, denotes the number page requested; starts at 0
     size: number, denotes the size of the page requested
     sort: str, denotes the sort rule; options are:
@@ -322,20 +206,32 @@ export const allRoutes = [
     controller: RouteController,
     action: "filterAllRoutes",
   },
-  /*
-    Returns one school by UID.
-  */
   {
     method: "get",
-    route: "/api/routes/:uid",
-    controller: RouteController,
-    action: "oneRoute",
+    route: "/api/schools/filter",
+    controller: SchoolController,
+    action: "filterAllSchools",
   },
   {
     method: "get",
-    route: "/api/stops/:uid",
-    controller: StopController,
-    action: "oneStop",
+    route: "/api/users/filter",
+    controller: UserController,
+    action: "filterAllUsers",
+  },
+  {
+    method: "get",
+    route: "/api/students/filter",
+    controller: StudentController,
+    action: "filterAllStudents",
+  },
+
+
+  // Random Specific API Calls for specific, non-generalizable functionality:
+  {
+    method: "get",
+    route: "/api/user",
+    controller: UserController,
+    action: "currentUserJWT",
   },
 
   {
@@ -346,8 +242,9 @@ export const allRoutes = [
   },
   {
     method: "get",
-    route: "/api/stops/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
-    controller: StopController,
-    action: "sortAllStops",
+    route: "/api/routes/planner/:uid",
+    controller: SchoolController,
+    action: "oneRoutePlanner"
   },
+
 ];

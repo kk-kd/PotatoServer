@@ -193,6 +193,7 @@ export class RouteController extends Repository<Route> {
         .where("routes.uid = :uid", { uid: uidNumber })
         .leftJoinAndSelect("routes.students", "students")
         .leftJoinAndSelect("routes.school", "school")
+        .leftJoinAndSelect("routes.stops", "stops")
         .leftJoinAndSelect("students.parentUser", "parentUser")
         .getOneOrFail();
       response.status(200);
