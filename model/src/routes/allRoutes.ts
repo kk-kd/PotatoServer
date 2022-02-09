@@ -2,6 +2,9 @@ import { UserController } from "../controller/UserController";
 import { StudentController } from "../controller/StudentController";
 import { RouteController } from "../controller/RouteController";
 import { SchoolController } from "../controller/SchoolController";
+import { StopController } from "../controller/StopController";
+
+import { Stop } from "../entity/Stop";
 
 /*
 
@@ -30,6 +33,13 @@ export const allRoutes = [
     controller: UserController,
     action: "allUsers",
   },
+  {
+    method: "get",
+    route: "/api/stops/all",
+    controller: StopController,
+    action: "allstops",
+  },
+
   /*
     TODO: CONTAINS is needed, not just having/where exactly
     
