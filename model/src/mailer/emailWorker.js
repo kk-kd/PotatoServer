@@ -1,6 +1,5 @@
-const { channel } = require("diagnostics_channel");
 const { config } = require("process");
-
+const nodemailer = require("nodemailer");
 const amqp = require("amqplib").connect(config.amqp);
 
 const publishMessage = (payload) => {
@@ -61,8 +60,6 @@ const sendMessage = () => {
     .catch(console.warn(error));
 };
 
-// TODO: change later
-s;
 const transport = nodemailer.createTransport({
   host: config.server.host,
   port: config.server.port,
@@ -72,3 +69,5 @@ const transport = nodemailer.createTransport({
     pass: config.server.password,
   },
 });
+
+transport.verify().then(console.log).catch(console.error);
