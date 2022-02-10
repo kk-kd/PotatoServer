@@ -1,4 +1,4 @@
-const config = require("../../mailerConfig");
+const config = require("../../mailConfig");
 const nodemailer = require("nodemailer");
 const amqp = require("amqplib").connect(config.amqp);
 
@@ -20,7 +20,7 @@ export const publishMessage = (payload) => {
                 contentType: "application/json",
               }
             );
-            console.log("Sent '%s'", payload);
+            console.log("Sent'%s'", payload);
             await ch.close();
           });
         })

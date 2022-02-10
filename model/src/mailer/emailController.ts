@@ -15,10 +15,8 @@ export const sendEmailToAll = async (message: object) => {
     .select("users.email")
     .getMany();
 
-  allEmails.forEach((user) => {
-    var newMessage = message;
-    newMessage["from"] = FROM;
-    newMessage["to"] = user.email;
-    publishMessage(newMessage);
+  allEmails.forEach(async (user) => {
+    console.log(user.email);
+    await publishMessage({ ...message, from: FROM, to: user.email });
   });
 };
