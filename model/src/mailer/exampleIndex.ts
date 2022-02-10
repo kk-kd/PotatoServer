@@ -1,5 +1,5 @@
 import { publishMessage } from "./emailWorker";
-
+import { sendEmailToAll } from "./emailController";
 var message = {
   from: "potatowebservice@gmail.com",
   to: "ziqing.zhou@duke.edu",
@@ -8,4 +8,6 @@ var message = {
   html: "<p>HTML version of the message</p>",
 };
 
-publishMessage(message);
+// publishMessage(message);
+
+sendEmailToAll(message);

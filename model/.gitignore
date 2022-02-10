@@ -21,4 +21,4 @@ yarn-debug.log*
 yarn-error.log*
 
 secrets
-/src/mailer/config.json
+mailConfig.json
