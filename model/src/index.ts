@@ -81,23 +81,19 @@ createConnection()
 
     // Instantiate all table entity controller
 
-    const stopRepository = connection.getCustomRepository(StopController);
-    const userRepository = connection.getCustomRepository(UserController);
-    const studentRepository = connection.getCustomRepository(StudentController);
-    const schoolRepository = connection.getCustomRepository(SchoolController);
-    const routeRepository = connection.getCustomRepository(RouteController);
+    // const stopRepository = connection.getCustomRepository(StopController);
+    // const userRepository = connection.getCustomRepository(UserController);
+    // const studentRepository = connection.getCustomRepository(StudentController);
+    // const schoolRepository = connection.getCustomRepository(SchoolController);
+    // const routeRepository = connection.getCustomRepository(RouteController);
 
 
-    // Clean table
+    // Clean tables
 
     // stopRepository.query(`TRUNCATE ${"stops"} RESTART IDENTITY CASCADE;`);
-
-    userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`);
-
-    studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`);
-
-    schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
-
+    // userRepository.query(`TRUNCATE ${"users"} RESTART IDENTITY CASCADE;`);
+    // studentRepository.query(`TRUNCATE ${"students"} RESTART IDENTITY CASCADE;`);
+    // schoolRepository.query(`TRUNCATE ${"schools"} RESTART IDENTITY CASCADE;`)
     // routeRepository.query(`TRUNCATE ${"routes"} RESTART IDENTITY CASCADE;`);
 
     let firstNameIter: string[] = [
@@ -176,52 +172,64 @@ createConnection()
 
     // Add basic admin account
 
-    const newUser = new User();
-    newUser.email = "admin@example.com"
-    newUser.password = await bcrypt.hash("Admin123", 10);
-    newUser.firstName = "Ad";
-    newUser.middleName = "M";
-    newUser.lastName = "in";
-    newUser.latitude = 3.28459;
-    newUser.longitude = 171.72426;
-    newUser.isAdmin = true;
-    await userRepository.save(newUser);
+    /* 
+    **********************************************************
+    */
 
-    // Construct basic users and students.
-    for (let i = 0; i < firstNameIter.length; i++) {
-      const newUser = new User();
-      newUser.email = emailIter[i];
-      newUser.firstName = firstNameIter[i];
-      newUser.middleName = middleNameIter[i];
-      newUser.lastName = lastNameIter[i];
-      newUser.address = addressIter[i];
-      // newUser.longitude = longitude;
-      // newUser.latitude = count - 1;
-      newUser.isAdmin = false;
-      newUser.password = await bcrypt.hash("parentPassWRD9184123", 10);
+    // const newUser = new User();
+    // newUser.email = "admin@example.com"
+    // newUser.password = await bcrypt.hash("Admin123", 10);
+    // newUser.firstName = "Ad";
+    // newUser.middleName = "M";
+    // newUser.lastName = "in";
+    // newUser.latitude = 3.28459;
+    // newUser.longitude = 171.72426;
+    // newUser.isAdmin = true;
+    // await userRepository.save(newUser);
 
-      // Construct Student Entity
-      const newStudent = new Student();
-      newStudent.id = "" + i;
-      newStudent.firstName = firstNameIterStudents[i];
-      newStudent.middleName = middleNameIter[i];
-      newStudent.lastName = lastNameIter[i];
-      newUser.students = [newStudent];
+    // // Construct basic users and students.
+    // for (let i = 0; i < firstNameIter.length; i++) {
+    //   const newUser = new User();
+    //   newUser.email = emailIter[i];
+    //   newUser.firstName = firstNameIter[i];
+    //   newUser.middleName = middleNameIter[i];
+    //   newUser.lastName = lastNameIter[i];
+    //   newUser.address = addressIter[i];
+    //   // newUser.longitude = longitude;
+    //   // newUser.latitude = count - 1;
+    //   newUser.isAdmin = false;
+    //   newUser.password = await bcrypt.hash("parentPassWRD9184123", 10);
 
-      // make routes
-      const routeName = "Route " + i;
-      const newRoute = new Route();
-      newRoute.name = routeName + " Name";
-      newRoute.desciption = routeName + " Description";
-      if (i == 1 || i == 2 || i == 3) {
-      }
-      else {
-        newRoute.students = [newStudent];
-      }
-      await connection.manager.save(newUser);
-      await connection.manager.save(newRoute);
+    //   // Construct Student Entity
+    //   const newStudent = new Student();
+    //   var myNum = i + 2;
+    //   newStudent.id = "" + myNum;
+    //   newStudent.firstName = firstNameIterStudents[i];
+    //   newStudent.middleName = middleNameIter[i];
+    //   newStudent.lastName = lastNameIter[i];
+    //   newUser.students = [newStudent];
 
-    }
+    // make routes
+    // const routeName = "Route " + i;
+    // const newRoute = new Route();
+    // newRoute.name = routeName + " Name";
+    // newRoute.desciption = routeName + " Description";
+    // newRoute.
+    // if (i == 1 || i == 2 || i == 3) {
+    // }
+    // else {
+    //   newRoute.students = [newStudent];
+    // }
+
+    // await connection.manager.save(newUser);
+    // await connection.manager.save(newRoute);
+
+    // }
+
+
+    /* 
+    **********************************************************
+    */
 
 
     // Construct School Entities
