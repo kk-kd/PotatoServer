@@ -17,7 +17,7 @@ export class School {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   unique_name: string;
 
   @Column()
@@ -43,9 +43,9 @@ export class School {
   })
   routes: Route[];
 
-  @Column({ type: "time" })
+  @Column({ type: "time", nullable: true })
   arrival_time: string;
 
-  @Column({ type: "time" })
+  @Column({ type: "time", nullable: true })
   departure_time: string;
 }
