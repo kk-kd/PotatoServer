@@ -45,7 +45,10 @@
 
 https://www.rabbitmq.com/install-debian.html#apt-quick-start-cloudsmith
 
-sudo systemctl start rabbitmq-server
+Useful Commands:
+`sudo systemctl start rabbitmq-server`  
+`sudo rabbitmqctl purge_queue queue_name`  
+`sudo rabbitmqctl list_queues`
 
 ## Clone the repo
 
