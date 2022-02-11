@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { School } from "./School";
 import { Student } from "./Student";
+import { Stop } from "./Stop";
 
 @Entity({ name: "routes" })
 export class Route {
@@ -22,11 +23,21 @@ export class Route {
   @Column()
   desciption: string;
 
-  @OneToMany(() => Student, (student) => student.route, { cascade: true, nullable: true })
+  @OneToMany(() => Student, (student) => student.route, {
+    cascade: true,
+    nullable: true,
+  })
   students: Student[];
 
-  @ManyToOne(() => School, school => school.routes, { onDelete: "CASCADE" })
+  @ManyToOne(() => School, (school) => school.routes, { onDelete: "CASCADE" })
   school: School;
+
+  @OneToMany(() => Stop, (stop) => stop.route, {
+    cascade: true,
+    nullable: true,
+    eager: true,
+  })
+  stops: Stop;
 
   studentCount: number;
 }

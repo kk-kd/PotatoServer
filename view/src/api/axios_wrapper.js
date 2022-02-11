@@ -55,6 +55,12 @@ export async function getAllRoutes(specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function getAllStops(specifications) {
+  return await axios.get(`/api/stops/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
 
 /*
 FilterAll from table (students, users, schools, routes) gives you a filtered result from all entries.
@@ -97,6 +103,12 @@ export async function filterAllRoutes(specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function filterAllStops(specifications) {
+  return await axios.get(`/api/stops/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
 /*
    Returns one entry from a table (students, users, schools, routes) by UID.
 */
@@ -124,11 +136,17 @@ export async function getOneRoute(uid) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function getOneStop(uid) {
+  return await axios.get("/api/stops/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 export async function getOneRoutePlanner(uid) {
   return await axios.get("/api/routes/planner/" + uid, {
     headers: getHeaderWithAuthToken(),
   });
 }
+
 /*
    Deletes one entry from a table (students, users, schools, routes) by UID.
 */
@@ -152,7 +170,11 @@ export async function deleteRoute(uid) {
     headers: getHeaderWithAuthToken(),
   });
 }
-
+export async function deleteStop(uid) {
+  return await axios.delete("/api/stops/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 /*
 Register a User for the first time to add them to the database.
         For a User:
@@ -240,12 +262,17 @@ export async function saveRoute(specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function saveStop(specifications) {
+  return await axios.post("/api/stops", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
 export async function updateUser(uid, specifications, changePassword) {
   return await axios.put("/api/users/" + uid, specifications, {
-    params: {changePassword: changePassword},
+    params: { changePassword: changePassword },
     headers: getHeaderWithAuthToken(),
   });
 }
@@ -261,6 +288,11 @@ export async function updateSchool(uid, specifications) {
 }
 export async function updateRoute(uid, specifications) {
   return await axios.put("/api/routes/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function updateStop(uid, specifications) {
+  return await axios.put("/api/stops/" + uid, specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
