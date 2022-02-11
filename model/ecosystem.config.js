@@ -5,6 +5,9 @@ module.exports = {
       script: "build/index.js",
       exec_mode: "fork",
       watch: true,
+      env: {
+        NODE_ENV: "production",
+      },
     },
     {
       name: "emailWorker",
