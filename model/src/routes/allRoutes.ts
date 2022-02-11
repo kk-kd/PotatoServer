@@ -2,7 +2,7 @@ import { UserController } from "../controller/UserController";
 import { StudentController } from "../controller/StudentController";
 import { RouteController } from "../controller/RouteController";
 import { SchoolController } from "../controller/SchoolController";
-import EmailController from "../mailer/EmailController";
+import { EmailController } from "../mailer/EmailController";
 
 /*
 

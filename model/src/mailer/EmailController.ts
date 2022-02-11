@@ -8,8 +8,8 @@ require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
 const FROM = "noreply@potato.com";
 
-class EmailController {
-  static sendEmailToAll = async (request: Request, response: Response) => {
+export class EmailController {
+  sendEmailToAll = async (request: Request, response: Response) => {
     let { message } = request.body;
     const userRepository = getRepository(User);
     const allEmails = await userRepository
@@ -25,10 +25,7 @@ class EmailController {
     return;
   };
 
-  static sendEmailToUsersFromSchool = async (
-    request: Request,
-    response: Response
-  ) => {
+  sendEmailToUsersFromSchool = async (request: Request, response: Response) => {
     let { message, school } = request.body;
     const schoolRepository = getRepository(School);
     const schoolSelect = await schoolRepository
@@ -58,10 +55,7 @@ class EmailController {
     return;
   };
 
-  static sendEmailToUsersOnRoute = async (
-    request: Request,
-    response: Response
-  ) => {
+  sendEmailToUsersOnRoute = async (request: Request, response: Response) => {
     let { message, route } = request.body;
 
     const routeRepository = getRepository(Route);
@@ -92,5 +86,3 @@ class EmailController {
     return;
   };
 }
-
-export default EmailController;

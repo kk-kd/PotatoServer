@@ -5,14 +5,11 @@ module.exports = {
       script: "build/index.js",
       exec_mode: "fork",
       watch: true,
-      env: {
-        NODE_ENV: "production",
-      },
     },
     {
       name: "emailWorker",
       exec_mode: "fork",
-      watch: true,
+      watch: false,
       script: "build/mailer/emailWorker.js",
       instances: "1",
     },

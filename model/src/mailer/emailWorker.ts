@@ -5,28 +5,23 @@ const amqp = require("amqplib").connect(config.amqp);
 export const publishMessage = (payload) => {
   amqp
     .then(function (conn) {
-      return conn
-        .createChannel()
-        .then(function (ch) {
-          var ok = ch.assertQueue(config.queue, { durable: true });
+      return conn.createChannel().then(function (ch) {
+        var ok = ch.assertQueue(config.queue, { durable: true });
 
-          return ok.then(async () => {
-            await ch.sendToQueue(
-              config.queue,
-              Buffer.from(JSON.stringify(payload)),
-              {
-                deliveryMode: true,
-                persistent: true,
-                contentType: "application/json",
-              }
-            );
-            console.log("Sent'%s'", payload);
-            await ch.close();
-          });
-        })
-        .finally(async () => {
-          await conn.close();
+        return ok.then(async () => {
+          await ch.sendToQueue(
+            config.queue,
+            Buffer.from(JSON.stringify(payload)),
+            {
+              deliveryMode: true,
+              persistent: true,
+              contentType: "application/json",
+            }
+          );
+          console.log("Sent'%s'", payload);
+          await ch.close();
         });
+      });
     })
     .catch((err) => {
       console.warn(err.stack);
@@ -79,4 +74,4 @@ const transport = nodemailer.createTransport({
   },
 });
 
-// sendMessage();
+sendMessage();
