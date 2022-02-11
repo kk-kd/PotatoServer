@@ -39,6 +39,13 @@ export const allRoutes = [
     controller: StopController,
     action: "allStops",
   },
+  {
+    method: "get",
+    route: "/api/stops/filter",
+    controller: StopController,
+    action: "filterAllStops",
+  },
+
 
   /*
     TODO: CONTAINS is needed, not just having/where exactly
@@ -75,6 +82,12 @@ export const allRoutes = [
   },
   {
     method: "get",
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "oneStop",
+  },
+  {
+    method: "get",
     route: "/api/user",
     controller: UserController,
     action: "currentUserJWT",
@@ -86,10 +99,22 @@ export const allRoutes = [
     action: "saveNewUser",
   },
   {
+    method: "post",
+    route: "/api/stops/",
+    controller: StopController,
+    action: "saveNewStop",
+  },
+  {
     method: "put",
     route: "/api/users/:uid",
     controller: UserController,
     action: "updateUser",
+  },
+  {
+    method: "put",
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "updateStop",
   },
   {
     method: "post",
@@ -132,6 +157,12 @@ export const allRoutes = [
     route: "/api/users/:uid",
     controller: UserController,
     action: "deleteUser",
+  },
+  {
+    method: "delete",
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "deleteStop",
   },
   {
     method: "delete",

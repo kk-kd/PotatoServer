@@ -45,7 +45,66 @@ export class StopController extends Repository<Stop> {
         }
     }
 
+    async filterAllStops(request: Request, response: Response, next: NextFunction) {
+        try {
+            const pageNum: number = +request.query.page;
+            const takeNum: number = +request.query.size;
+            var skipNum = pageNum * takeNum;
 
+            var sortSpecification;
+            var sortDirSpec;
+            if (request.query.sort == 'none') {
+                sortSpecification = "stops.uid";
+            }
+            else { //should error check instead of else
+                sortSpecification = "stops." + request.query.sort;
+            }
+            if (request.query.sortDir == 'ASC') {
+                sortDirSpec = "ASC";
+            }
+            else if (request.query.sortDir == 'DESC') { //error check instead of else
+                sortDirSpec = "DESC";
+            } else {
+                sortDirSpec = "ASC";
+                sortSpecification = "stops.uid";
+            }
+            var filterSpecification;
+            filterSpecification = "stops." + request.query.sort;
+            const queryFilterType = request.query.filterType;
+            const queryFilterData = request.query.filterData;
+            if (request.query.showAll && request.query.showAll === "true") {
+                const [stopsQueryResult, total] = await this.stopRepository
+                    .createQueryBuilder("stops")
+                    .orderBy(sortSpecification, sortDirSpec)
+                    .where("stops.name ilike '%' || :name || '%'", { name: queryFilterData })
+                    .leftJoinAndSelect("stops.route", "route")
+                    .getManyAndCount();
+                response.status(200);
+                return {
+                    stops: stopsQueryResult,
+                    total: total
+                };
+            } else {
+                const [stopsQueryResult, total] = await this.stopRepository
+                    .createQueryBuilder("stops")
+                    .skip(skipNum)
+                    .take(takeNum)
+                    .orderBy(sortSpecification, sortDirSpec)
+                    .where("stops.name ilike '%' || :name || '%'", { name: queryFilterData })
+                    .leftJoinAndSelect("stops.route", "route")
+                    .getManyAndCount();
+                response.status(200);
+                return {
+                    stops: stopsQueryResult,
+                    total: total
+                };
+            }
+        }
+        catch (e) {
+            response.status(401).send("Users were not found with error: " + e);
+            return;
+        }
+    }
     async oneStop(request: Request, response: Response, next: NextFunction) {
         try {
             const uidNumber = request.params.uid; //needed for the await call / can't nest them
