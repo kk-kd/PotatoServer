@@ -245,7 +245,7 @@ export async function saveRoute(specifications) {
 */
 export async function updateUser(uid, specifications, changePassword) {
   return await axios.put("/api/users/" + uid, specifications, {
-    params: {changePassword: changePassword},
+    params: { changePassword: changePassword },
     headers: getHeaderWithAuthToken(),
   });
 }
@@ -261,6 +261,23 @@ export async function updateSchool(uid, specifications) {
 }
 export async function updateRoute(uid, specifications) {
   return await axios.put("/api/routes/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+
+// Email Calls
+export async function sendEmailToAll(uid, specifications) {
+  return await axios.post("/api/email/all" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendEmailToUsersFromSchool(uid, specifications) {
+  return await axios.post("/api/email/school" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendEmailToUsersOnRoute(uid, specifications) {
+  return await axios.post("/api/email/route" + uid, specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
