@@ -17,7 +17,7 @@ export class School {
   @Column()
   name: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   uniqueName: string;
 
   @Column()
