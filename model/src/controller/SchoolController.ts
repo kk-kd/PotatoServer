@@ -166,7 +166,9 @@ export class SchoolController extends Repository<School> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      return await this.schoolRepository.save(request.body);
+      var queryData = request.body;
+      queryData["uniqueName"] = request.body.name.toLowerCase().trim();
+      return await this.schoolRepository.save(queryData);
     }
     catch (e) {
       response
@@ -180,12 +182,9 @@ export class SchoolController extends Repository<School> {
 
     try {
       const uidNumber = request.params.uid;
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
-        return;
-      }
-      return await this.schoolRepository.save(request.body);
+      var queryData = request.body;
+      queryData["uniqueName"] = request.body.name.toLowerCase().trim();
+      return await this.schoolRepository.save(queryData);
     }
     catch (e) {
       response
@@ -214,7 +213,8 @@ export class SchoolController extends Repository<School> {
   }
   findBySchoolID(uid: number) {
     return this.createQueryBuilder("schools")
-      .where("schools.schoolId = :schoolId", { uid })
+      .where("schools.uid = :uid", { uid })
       .getOne();
   }
+
 }

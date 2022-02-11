@@ -45,12 +45,12 @@ class AuthController {
     }
 
     if (!EmailValidator.validate(email)) {
-      response.status(401).send("User Register: Email validation failed");
+      response.status(401).send("User Register: Email validation failed. Please enter a valid email.");
       return;
     }
 
     if (!schema.validate(password)) {
-      response.status(401).send("User Register: Password validation failed");
+      response.status(401).send("User Register: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers.");
       return;
     }
 
@@ -81,17 +81,17 @@ class AuthController {
     //Check if username and password are set
     let { email, password } = request.body;
     if (!(email && password)) {
-      response.status(400).send("User Login: Email or password missing");
+      response.status(400).send("User Login: Email or password missing. Please fill in all fields.");
       return;
     }
 
     if (!EmailValidator.validate(email)) {
-      response.status(401).send("User Login: Email validation failed");
+      response.status(401).send("User Login: Email validation failed. Please enter a valid email.");
       return;
     }
 
     if (!schema.validate(password)) {
-      response.status(401).send("User Login: Password validation failed");
+      response.status(401).send("User Login: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers.");
       return;
     }
 
@@ -103,12 +103,12 @@ class AuthController {
         where: { email: emailLower },
       });
     } catch (error) {
-      response.status(401).send("User Login: User not registered");
+      response.status(401).send("User Login: User not registered.");
       return;
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
-      response.status(401).send("User Login: Incorrect password");
+      response.status(401).send("User Login: Incorrect password.");
       return;
     }
 
@@ -142,18 +142,13 @@ class AuthController {
     if (!(oldPassword && newPassword)) {
       response
         .status(400)
-        .send("User Password Change: old or new password missing");
+        .send("User Password Change: old or new password missing.");
 
       return;
     }
-
-    if (!schema.validate(oldPassword)) {
-      response.status(401).send("User Login: Old Password validation failed");
-      return;
-    }
-
+    // TODO: compare old password with this one.
     if (!schema.validate(newPassword)) {
-      response.status(401).send("User Login: New Password validation failed");
+      response.status(401).send("User Login: New Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers.");
       return;
     }
 
@@ -184,7 +179,7 @@ class AuthController {
 
     response.status(204).send("User Password Change: Success");
     return;
-    
+
   };
 }
 export default AuthController;
