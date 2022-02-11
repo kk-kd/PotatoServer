@@ -213,7 +213,8 @@ export class SchoolController extends Repository<School> {
   }
   findBySchoolID(uid: number) {
     return this.createQueryBuilder("schools")
-      .where("schools.schoolId = :schoolId", { uid })
+      .where("schools.uid = :uid", { uid })
       .getOne();
   }
+
 }
