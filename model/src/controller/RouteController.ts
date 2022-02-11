@@ -135,6 +135,7 @@ export class RouteController extends Repository<Route> {
             .createQueryBuilder("routes")
             .leftJoinAndSelect("routes.school", "school")
             .leftJoinAndSelect("routes.students", "students")
+            .leftJoinAndSelect("routes.stops", "stops")
             .orderBy(sortSpecification, sortDirSpec)
             .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
             .getManyAndCount();
@@ -150,6 +151,7 @@ export class RouteController extends Repository<Route> {
             .take(takeNum)
             .leftJoinAndSelect("routes.school", "school")
             .leftJoinAndSelect("routes.students", "students")
+            .leftJoinAndSelect("routes.stops", "stops")
             .orderBy(sortSpecification, sortDirSpec)
             .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
             .getManyAndCount();
