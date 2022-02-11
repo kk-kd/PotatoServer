@@ -17,8 +17,8 @@ export class School {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  unique_name: string;
+  @Column({ unique: true })
+  uniqueName: string;
 
   @Column()
   address: string;
@@ -44,8 +44,8 @@ export class School {
   routes: Route[];
 
   @Column({ type: "time", nullable: true })
-  arrival_time: string;
+  arrivalTime: string;
 
   @Column({ type: "time", nullable: true })
-  departure_time: string;
+  departureTime: string;
 }
