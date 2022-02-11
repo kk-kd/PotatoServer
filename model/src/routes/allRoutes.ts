@@ -2,6 +2,7 @@ import { UserController } from "../controller/UserController";
 import { StudentController } from "../controller/StudentController";
 import { RouteController } from "../controller/RouteController";
 import { SchoolController } from "../controller/SchoolController";
+import EmailController from "../mailer/EmailController";
 
 /*
 
@@ -201,7 +202,7 @@ export const allRoutes = [
     method: "get",
     route: "/api/routes/planner/:uid",
     controller: SchoolController,
-    action: "oneRoutePlanner"
+    action: "oneRoutePlanner",
   },
   /*
     Gets all Schools.
@@ -309,5 +310,27 @@ export const allRoutes = [
     route: "/api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
     controller: RouteController,
     action: "sortAllRoutes",
+  },
+
+  // Email Routes
+  {
+    method: "post",
+    route: "/api/email/all",
+    controller: EmailController,
+    action: "sendEmailToAll",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/school",
+    controller: EmailController,
+    action: "sendEmailToUsersFromSchool",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/route",
+    controller: EmailController,
+    action: "sendEmailToUsersOnRoute",
   },
 ];
