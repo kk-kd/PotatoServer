@@ -1,16 +1,16 @@
-import { createConnection, getConnection, getRepository } from "typeorm";
+import { createConnection, getRepository } from "typeorm";
 import { Route } from "../entity/Route";
 import { School } from "../entity/School";
 import { User } from "../entity/User";
 import { publishMessage } from "./emailWorker";
+import { Request, Response } from "express";
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
 const FROM = "noreply@potato.com";
 
-export class EmailController {
-  static sendEmailToAll = async (message: object) => {
-    // await createConnection();
-
+class EmailController {
+  static sendEmailToAll = async (request: Request, response: Response) => {
+    let { message } = request.body;
     const userRepository = getRepository(User);
     const allEmails = await userRepository
       .createQueryBuilder("users")
@@ -20,14 +20,16 @@ export class EmailController {
     allEmails.forEach(async (user) => {
       await publishMessage({ ...message, from: FROM, to: user.email });
     });
+
+    response.status(201).send();
+    return;
   };
 
   static sendEmailToUsersFromSchool = async (
-    message: object,
-    school: string
+    request: Request,
+    response: Response
   ) => {
-    // await createConnection();
-
+    let { message, school } = request.body;
     const schoolRepository = getRepository(School);
     const schoolSelect = await schoolRepository
       .createQueryBuilder("schools")
@@ -37,7 +39,7 @@ export class EmailController {
       .getOne();
 
     if (schoolSelect == undefined) {
-      console.log("School doesn't exist");
+      response.status(401).send("School doesn't exist");
       return;
     }
 
@@ -51,10 +53,16 @@ export class EmailController {
     emailSet.forEach(async (userEmail) => {
       await publishMessage({ ...message, from: FROM, to: userEmail });
     });
+
+    response.status(201).send();
+    return;
   };
 
-  static sendEmailToUsersOnRoute = async (message: object, route: string) => {
-    await createConnection();
+  static sendEmailToUsersOnRoute = async (
+    request: Request,
+    response: Response
+  ) => {
+    let { message, route } = request.body;
 
     const routeRepository = getRepository(Route);
     const routeSelect = await routeRepository
@@ -65,7 +73,7 @@ export class EmailController {
       .getOne();
 
     if (routeSelect == undefined) {
-      console.log("Route doesn't exist");
+      response.status(401).send("Route doesn't exist");
       return;
     }
 
@@ -79,6 +87,9 @@ export class EmailController {
     emailSet.forEach(async (userEmail) => {
       await publishMessage({ ...message, from: FROM, to: userEmail });
     });
+
+    response.status(201).send();
+    return;
   };
 }
 
