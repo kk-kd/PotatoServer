@@ -1,4 +1,4 @@
-// import EmailController from "./EmailController";
+// import { EmailController } from "./EmailController";
 // var message = {
 //   from: "potatowebservice@gmail.com",
 //   to: "ziqing.zhou@duke.edu",
@@ -7,6 +7,6 @@
 //   html: "<p>HTML version of the message</p>",
 // };
 
-// // publishMessage(message);
+// // // publishMessage(message);
 
-// EmailController.sendEmailToUsersFromSchool(message, "C school");
+// EmailController.sendGeneralAnnouncementToAll(message);

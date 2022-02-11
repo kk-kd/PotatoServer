@@ -72,6 +72,9 @@ const transport = nodemailer.createTransport({
     user: config.server.user,
     pass: config.server.password,
   },
+
+  pool: true,
+  maxMessages: Infinity,
 });
 
 sendMessage();

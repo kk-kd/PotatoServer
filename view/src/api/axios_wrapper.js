@@ -267,17 +267,17 @@ export async function updateRoute(uid, specifications) {
 
 // Email Calls
 export async function sendEmailToAll(uid, specifications) {
-  return await axios.post("/api/email/all" + uid, specifications, {
+  return await axios.post("/api/email/general/all" + uid, specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
 export async function sendEmailToUsersFromSchool(uid, specifications) {
-  return await axios.post("/api/email/school" + uid, specifications, {
+  return await axios.post("/api/email/general/school" + uid, specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
 export async function sendEmailToUsersOnRoute(uid, specifications) {
-  return await axios.post("/api/email/route" + uid, specifications, {
+  return await axios.post("/api/email/general/route" + uid, specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }

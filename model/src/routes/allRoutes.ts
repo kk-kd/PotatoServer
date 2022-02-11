@@ -315,22 +315,22 @@ export const allRoutes = [
   // Email Routes
   {
     method: "post",
-    route: "/api/email/all",
+    route: "/api/email/general/all",
     controller: EmailController,
-    action: "sendEmailToAll",
+    action: "sendGeneralAnnouncementToAll",
   },
 
   {
     method: "post",
-    route: "/api/email/school",
+    route: "/api/email/general/school",
     controller: EmailController,
-    action: "sendEmailToUsersFromSchool",
+    action: "sendGeneralAnnouncementToUsersFromSchool",
   },
 
   {
     method: "post",
-    route: "/api/email/route",
+    route: "/api/email/general/route",
     controller: EmailController,
-    action: "sendEmailToUsersOnRoute",
+    action: "sendGeneralAnnouncementToUsersOnRoute",
   },
 ];
