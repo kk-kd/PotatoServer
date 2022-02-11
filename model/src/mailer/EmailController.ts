@@ -1,4 +1,5 @@
-import { createConnection, getRepository } from "typeorm";
+import { createConnection, getConnection, getRepository } from "typeorm";
+import { Route } from "../entity/Route";
 import { School } from "../entity/School";
 import { User } from "../entity/User";
 import { publishMessage } from "./emailWorker";
@@ -17,7 +18,6 @@ export class EmailController {
       .getMany();
 
     allEmails.forEach(async (user) => {
-      console.log(user.email);
       await publishMessage({ ...message, from: FROM, to: user.email });
     });
   };
@@ -26,7 +26,7 @@ export class EmailController {
     message: object,
     school: string
   ) => {
-    await createConnection();
+    // await createConnection();
 
     const schoolRepository = getRepository(School);
     const schoolSelect = await schoolRepository
@@ -36,10 +36,44 @@ export class EmailController {
       .leftJoinAndSelect("students.parentUser", "parent")
       .getOne();
 
-    const emailSet: Set<string> = new Set();
+    if (schoolSelect == undefined) {
+      console.log("School doesn't exist");
+      return;
+    }
 
+    const emailSet: Set<string> = new Set();
     schoolSelect.students.forEach(async (s) => {
-      emailSet.add(s.parentUser.email);
+      if ("parentUser" in s) {
+        emailSet.add(s.parentUser.email);
+      }
+    });
+
+    emailSet.forEach(async (userEmail) => {
+      await publishMessage({ ...message, from: FROM, to: userEmail });
+    });
+  };
+
+  static sendEmailToUsersOnRoute = async (message: object, route: string) => {
+    await createConnection();
+
+    const routeRepository = getRepository(Route);
+    const routeSelect = await routeRepository
+      .createQueryBuilder("routes")
+      .where("routes.name = :name", { name: route })
+      .leftJoinAndSelect("routes.students", "students")
+      .leftJoinAndSelect("students.parentUser", "parent")
+      .getOne();
+
+    if (routeSelect == undefined) {
+      console.log("Route doesn't exist");
+      return;
+    }
+
+    const emailSet: Set<string> = new Set();
+    routeSelect.students.forEach(async (s) => {
+      if ("parentUser" in s) {
+        emailSet.add(s.parentUser.email);
+      }
     });
 
     emailSet.forEach(async (userEmail) => {

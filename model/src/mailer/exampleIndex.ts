@@ -1,5 +1,4 @@
-import { publishMessage } from "./emailWorker";
-import { sendEmailToAll } from "./emailController";
+import EmailController from "./EmailController";
 var message = {
   from: "potatowebservice@gmail.com",
   to: "ziqing.zhou@duke.edu",
@@ -10,4 +9,4 @@ var message = {
 
 // publishMessage(message);
 
-sendEmailToAll(message);
+EmailController.sendEmailToUsersFromSchool(message, "C school");
