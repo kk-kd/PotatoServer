@@ -7,9 +7,10 @@ import { SelectableMarker } from "./../map/SelectableMarker";
 import { getOneRoutePlanner, saveRoute, updateSchool } from "./../api/axios_wrapper";
 
 export const BusRoutePlanner = () => {
-  const [ selectedRoute, setSelectedRoute ] = useState();
-  const [ loading, setLoading ] = useState(true);
-  const [ school, setSchool ] = useState();
+  const [selectedRoute, setSelectedRoute] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [school, setSchool] = useState();
+  const [firstSelect, setFirstSelect] = useState(false);
   const { schoolId } = useParams();
   useEffect(() => {
     const fetchData = async () => {
@@ -36,26 +37,25 @@ export const BusRoutePlanner = () => {
       }
     }
     try {
-      const saved = await updateSchool(schoolId, school);
+      for (var i = 0; i < school.routes.length; i++) {
+        const route = school.routes[i];
+        await saveRoute(route);
+      }
       alert("Routes updated!")
-      setSchool(saved.data);
     } catch (error) {
       alert(error.response.data);
     }
   }
-  const createRoute = async () => {
-    try {
-      const newRoute = await saveRoute({
-        name: "Default Name",
-        desciption: "Default Description",
-        school: school
-      });
-      alert("Route Created.  Now you can add students and update route name and description.")
-      setSchool({...school, routes: [...school.routes, newRoute.data]});
-      setSelectedRoute(newRoute.data);
-    } catch (error) {
-      alert(error.request.data);
-    }
+  const createRoute = () => {
+    const newRoute = {
+      name: "",
+      desciption: "",
+      school: school,
+      students: []
+    };
+    setSchool({...school, routes: [...school.routes, newRoute]});
+    setSelectedRoute(school.routes.length);
+    setFirstSelect(true);
   }
 
   return (
@@ -81,19 +81,28 @@ export const BusRoutePlanner = () => {
                         lng={parseFloat(school.longitude)}/>
                 {school.students.map((student) => (
                     <SelectableMarker
-                        id={student.uid}
-                        currentRoute={selectedRoute ? selectedRoute.uid : null}
-                        selectRoute={(id) => {
-                          if (!selectedRoute) {
-                            console.log("no");
+                        student={student}
+                        onCurrentRoute={firstSelect && school.routes[selectedRoute].students.some(s => student.uid === s.uid)}
+                        notOnRoute={!school.routes.some(route => route.students.some(s => s.uid === student.uid))}
+                        selectRoute={(st) => {
+                          if (!firstSelect) {
                             return;
                           }
-                          setSchool({...school, students: school.students.map((student) =>
-                            student.uid === id ? {...student, route: selectedRoute} : student
-                          )});
+                          if (school.routes[selectedRoute].students.some(s => s.uid === st.uid)) {
+                            setSchool({...school, routes: school.routes.map((r, index) =>
+                              index === selectedRoute ? {...r, students: r.students.filter(s => s.uid !== st.uid)} : r)});
+                          } else {
+                            setSchool({...school, routes: school.routes.map((r, index) => {
+                                if (r.students.some(s => s.uid === st.uid)) {
+                                  return {...r, students: r.students.filter(s => s.uid !== st.uid)};
+                                } else if (index === selectedRoute) {
+                                  return {...r, students: [...r.students, st]};
+                                } else {
+                                  return r;
+                                }
+                              })});
+                          }
                         }}
-                        routeId={student.route ? student.route.uid : null}
-                        text={`${student.firstName} ${student.lastName}`}
                         lat={parseFloat(student.parentUser.latitude)}
                         lng={parseFloat(student.parentUser.longitude)}
                     />
@@ -116,34 +125,37 @@ export const BusRoutePlanner = () => {
               <div id="routeChooser">
                 <div id="routes">
                   <h3>Select Route To Edit</h3>
-                  {school.routes.map((route) => (
-                      <div id={(selectedRoute && selectedRoute.uid === route.uid) ? "selectedRouteSelect" : "routeSelect"}
-                           onClick={e => setSelectedRoute(route)}>
-                        <label>{route.name}</label>
-                      </div>
-                  ))}
+                  <select onChange={e => {
+                    setSelectedRoute(parseInt(e.target.value));
+                    setFirstSelect(true);
+                  }}
+                    value={firstSelect ? selectedRoute : "-1"}
+                  >
+                    {!firstSelect && <option value="-1">Select a Route:</option>}
+                    {school.routes.map((route, index) => (
+                      <option value={index}>{route.name}</option>
+                    ))}
+                  </select>
                   <button onClick={e => createRoute()}>Create Route</button>
                 </div>
                 <div id="routeData">
                   <h3>Current Route Info</h3>
                   <h5>Route Name</h5>
-                  {selectedRoute && <input type="text"
+                  {firstSelect && <input type="text"
                           maxLength="100"
-                          value={selectedRoute.name}
+                          value={school.routes[selectedRoute].name}
                           onInput={e => {
-                            setSelectedRoute({...selectedRoute, name: e.target.value});
-                            setSchool({...school, routes:
-                                  school.routes.map((route) => route.uid === selectedRoute.uid ? {...route, name: e.target.value} : route)
-                          })}}
+                            setSchool({...school, routes: school.routes.map((r, index) =>
+                                  index === selectedRoute ? {...r, name: e.target.value} : r)});
+                          }}
                   />}
                   <h5>Route Description</h5>
-                  {selectedRoute && <textarea rows="5" cols="40" maxLength="500"
-                            value={selectedRoute.desciption}
+                  {firstSelect && <textarea rows="5" cols="40" maxLength="500"
+                            value={school.routes[selectedRoute].desciption}
                             onInput={e => {
-                              setSelectedRoute({...selectedRoute, desciption: e.target.value});
-                              setSchool({...school, routes:
-                                  school.routes.map((route) => route.uid === selectedRoute.uid ? {...route, desciption: e.target.value} : route)
-                            })}}
+                              setSchool({...school, routes: school.routes.map((r, index) =>
+                                   index === selectedRoute ? {...r, desciption: e.target.value} : r)});
+                            }}
                   />}
                 </div>
               </div>

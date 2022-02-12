@@ -145,8 +145,8 @@ export class SchoolController extends Repository<School> {
         .createQueryBuilder("schools")
         .where("schools.uid = :uid", { uid: uidNumber })
         .leftJoinAndSelect("schools.routes", "routes")
+        .leftJoinAndSelect("routes.students", "routeStudents")
         .leftJoinAndSelect("schools.students", "students")
-        .leftJoinAndSelect("students.route", "route")
         .leftJoinAndSelect("students.parentUser", "parent")
         .getOneOrFail();
       response.status(200);
