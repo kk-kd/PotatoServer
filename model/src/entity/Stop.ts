@@ -28,6 +28,9 @@ export class Stop {
   @Column({ type: "time" })
   dropoffTime: string;
 
-  @ManyToOne(() => Route, (route) => route.stops, { nullable: true, onDelete: "CASCADE" })
+  @Column({ type: "decimal", nullable: true })
+  arrivalIndex: number;
+
+  @ManyToOne(() => Route, (route) => route.stops, { onDelete: "CASCADE", orphanedRowAction: "delete" })
   route: Route;
 }

@@ -1,28 +1,75 @@
 #exampleCurrentRouteMarker {
-  width: 30px;
-  height: 30px;
-  background-color: green;
-  border-radius: 50%;
-  margin: auto;
-  position: relative;
+  color: blue;
+}
+
+#exampleCurrentRouteAndStopMarker {
+  color: green;
+}
+
+#exampleCurrentRouteNoStopMarker {
+  color: yellow;
 }
 
 #exampleNoRouteMarker {
-  width: 30px;
-  height: 30px;
-  background-color: red;
-  border-radius: 50%;
-  margin: auto;
-  position: relative;
+  color: red;
+}
+
+#exampleNoStopMarker {
+  color: orange;
 }
 
 #exampleRouteMarker {
-  width: 30px;
-  height: 30px;
-  background-color: lightgrey;
-  border-radius: 50%;
-  margin: auto;
-  position: relative;
+  color: grey;
+}
+
+#exampleCurrentStopMarker {
+  color: green;
+}
+
+#plannerComplete {
+  color: green;
+}
+
+#plannerIncomplete {
+  color: red;
+}
+
+#busRouteComplete {
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#busRouteFlex {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+#centerMapContainer {
+  flex: 50%;
+}
+
+#mapContainer {
+  height: 70vh;
+  width: 100%;
+}
+
+#mapKey {
+  background-color: white;
+  border: solid black;
+}
+
+#keyList {
+  list-style-type: none;
+}
+
+#keyItem {
+  border-top: solid black;
+  width: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 #description {
@@ -37,6 +84,17 @@
 #routeChooser {
   display: flex;
   alight-items: center;
+}
+
+#plannerLabelDisplay {
+  width: 30%;
+  text-align: right;
+  padding: 10px;
+}
+
+#routeDesciptionBox {
+  width: 70%;
+  height: 10vh;
 }
 
 #routeSelect {
@@ -57,11 +115,34 @@
 }
 
 #routes {
-  flex: 50%;
+  flex: 30%;
   display: inline-block;
-  border: solid gray;
   margin: 5px;
   padding: 5px;
+  height: 100%;
+}
+
+#routeEditor {
+  display: inline-block;
+  height: 40vh;
+  padding: 7px;
+  width: 100%;
+}
+
+#stop {
+  border: solid black;
+  cursor: pointer;
+}
+
+#selectedStop {
+  border: solid black;
+  cursor: pointer;
+  background-color: blue;
+  color: white;
+}
+
+#stops {
+  padding: 7px;
 }
 
 #routeData {

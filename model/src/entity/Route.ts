@@ -23,13 +23,21 @@ export class Route {
   @Column()
   desciption: string;
 
+  @Column({
+    nullable: true
+  })
+  polyline: string;
+
   @OneToMany(() => Student, (student) => student.route, {
     cascade: true,
     nullable: true,
   })
   students: Student[];
 
-  @ManyToOne(() => School, (school) => school.routes, { onDelete: "CASCADE" })
+  @ManyToOne(() => School, (school) => school.routes, {
+    onDelete: "CASCADE",
+    orphanedRowAction: "delete"
+  })
   school: School;
 
   @OneToMany(() => Stop, (stop) => stop.route, {
