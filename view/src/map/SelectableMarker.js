@@ -1,11 +1,9 @@
 import "./SelectableMarker.css";
-import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationPin } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
 export const SelectableMarker = ({ student, onCurrentRoute, notOnRoute, selectRoute, inRangeStop, onCurrentStop }) => {
-  const [showText, setShowText] = useState(false);
   var id;
   if (notOnRoute) {
     id = "noRouteMarker";
