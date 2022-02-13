@@ -429,6 +429,7 @@ export const BusRoutePlanner = () => {
                       </ReactTooltip></h3>}
                     {firstSelect || <h5>Select a route to edit its stops.</h5>}
                     {firstSelect && <select
+                        style={{ width: "50%" }}
                         onChange={e => {
                           setSelectedStop(parseInt(e.target.value));
                           setStopSelect(true);
@@ -436,7 +437,7 @@ export const BusRoutePlanner = () => {
                         }}
                         value={stopSelect ? selectedStop : "-1"}
                     >
-                      {stopSelect || <option value="-1">Select a Route:</option>}
+                      {stopSelect || <option value="-1">Select a Stop:</option>}
                       {school.routes[selectedRoute].stops.sort((a, b) => a.arrivalIndex - b.arrivalIndex).map(stop => (
                           <option value={stop.arrivalIndex}>{stop.name || stop.arrivalIndex}</option>
                       ))}
