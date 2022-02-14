@@ -264,7 +264,8 @@ export class RouteController extends Repository<Route> {
       return routeQueryResult;
     }
     catch (e) {
-      response.status(401).send("Route UID: " + request.params.uid + " was not found adn could not be deleted.")
+      response.status(401).send("Route UID: " + request.params.uid + " was not found adn could not be deleted.");
+      return;
     }
   }
   findByRouteID(uid: number) {
