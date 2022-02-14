@@ -11,6 +11,9 @@
 # production
 /build
 
+# Email configs:
+mailConfig.json
+
 # misc
 .DS_Store
 .env.production

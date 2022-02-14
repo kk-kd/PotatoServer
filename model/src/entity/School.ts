@@ -17,6 +17,9 @@ export class School {
   @Column()
   name: string;
 
+  @Column({ unique: true, nullable: true })
+  uniqueName: string;
+
   @Column()
   address: string;
 
@@ -39,4 +42,10 @@ export class School {
     eager: true,
   })
   routes: Route[];
+
+  @Column({ type: "time", nullable: true })
+  arrivalTime: string;
+
+  @Column({ type: "time", nullable: true })
+  departureTime: string;
 }
