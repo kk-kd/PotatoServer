@@ -7,6 +7,6 @@
 //   html: "<p>HTML version of the message</p>",
 // };
 
-// // // publishMessage(message);
+// // // // publishMessage(message);
 
-// EmailController.sendGeneralAnnouncementToAll(message);
+// EmailController.sendRouteAnnouncementToAll(message);
