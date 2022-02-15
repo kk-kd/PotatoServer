@@ -29,7 +29,14 @@ export const UserForm = () => {
     let navigate = useNavigate(); 
 
     // user 
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState({
+      firstName: '', 
+      middleName: '', 
+      lastName:'',
+      isAdmin: false, 
+      address: '', 
+      password: '',
+    });
     const [students, setStudents] = useState([]); 
     const [addressValid, setAddressValid] = useState(false);
 
@@ -68,10 +75,14 @@ export const UserForm = () => {
 
         if (!user.firstName || !user.lastName) {
             alert("User First Name and Last Name are Required.")
-          }
-          else if (!addressValid) {
+        }
+        if (!user.email) {
+          alert ("Please provide a user email")
+        }
+        else if (!addressValid) {
             alert("Please Validate User Address.")
-          }
+        }
+        
        
         let form_results = {
           email: user.email.toLowerCase(),
