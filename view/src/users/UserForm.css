@@ -1,53 +1,89 @@
+#user_create_container {
+  /* width: 80%;
+  align-items: center;
+  float: center; */
+  /* margin: 3% auto; */
+  width: 80%;
+  background-color:linen;
+}
+#content {
+  width:70%;
+  margin:auto; 
+  height:auto; 
+  background:linen; 
+  overflow:auto;
+}
 #user_create_map {
-  width: 50%;
-  padding: 12px 20px;
-  margin: 8px 0;
+  /* padding: 12px 20px; */
+  /* margin: 4px 0; */
   float: right;
-  border-radius: 4px;
-  box-sizing: border-box;
+  /* min-width: 30%; */
+  width: 50%;
+  /* border-radius: 4px;
+  box-sizing: border-box; 
+  display: flex; */
 }
 
 #user_create_form {
-  width: 50%;
-  align-items: center;
+  /* padding-left: 5%; */
   float: left;
-  background-color: #39CCCC;
+  align-items: center;
+  width: 50%;
 }
-
+/* 
 #student_create_form {
   width: 50%;
   align-items: center;
   float: right;
   background-color: #3D9970;
+} */
+
+label,
+input {
+  /* In order to define widths */
+  display: inline-block;
+}
+label {
+  width: 30%;
+  /* Positions the label text beside the input */
+  text-align: right;
+}
+
+label+input {
+  width: 30%;
+  /* Large margin-right to force the next element to the new-line
+           and margin-left to create a gutter between the label and input */
+  margin: 2% 30% 0 4%;
+}
+input+input {
+  float: right;
 }
 
 
-.input {
-  width: 80%;
-  padding: 12px 20px;
-  margin: 8px 20px;
-  display: flex;
-  border-radius: 4px;
-  box-sizing: border-box;
-  align-items: left;
-}
 
-.submitbutton {
+
+
+/* 
+#address2 {
+  float: left;
+} */
+
+/* .submitbutton {
   width: 50%;
   padding: 12px 20px;
   margin: 8px 0;
   display: inline-block;
   border-radius: 4px;
   align-items: center;
-}
+} */
 
 
-.user-list {
+/* .user-list {
   margin-top: 30px;
   align-items: center;
-}
+} */
 
-.user {
+/* .user {
   list-style: none;
   margin: 10px 0;
   padding: 10px;
@@ -55,8 +91,8 @@
   width: 50%;
   justify-content: space-between;
   align-items: center;
-}
-
+} */
+/* 
 .user-id {
   color: red;
   margin-right: 20px;
@@ -74,4 +110,4 @@ input[type=radio] {
   border: 0px;
   width: 4em;
   height: 2em;
-}
+} */

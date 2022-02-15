@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import { CreateUserStudent } from "./CreateUserStudent";
 import { CreateUser } from "./CreateUser";
 import { EditUser } from "./EditUser";
 import { ListUsers } from "./ListUsers";
