@@ -280,9 +280,7 @@ export const UserForm = () => {
          </div>
         <button style = {{display: 'in-line block', margin: '20px'}} onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate Address" }  </button>  
         <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleCreateUser(e)}} type="button"> Make User </button>
-        </div>
-
-        
+        </div>        
 
         <div id="user_create_map">
           {error && (<div>{error}</div>)}
