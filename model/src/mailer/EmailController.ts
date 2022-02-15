@@ -120,11 +120,11 @@ export class EmailController {
     request: Request,
     response: Response
   ) => {
-    let { message, school } = request.body;
+    let { message, schoolId } = request.body;
     const schoolRepository = getRepository(School);
     const schoolSelect = await schoolRepository
       .createQueryBuilder("schools")
-      .where("schools.uid = :uid", { name: school }) // TODO: change to unique name
+      .where("schools.uid = :uid", { uid: schoolId }) // TODO: change to unique name
       .leftJoinAndSelect("schools.students", "students")
       .leftJoinAndSelect("students.parentUser", "parent")
       .getOne();
@@ -151,11 +151,11 @@ export class EmailController {
     request: Request,
     response: Response
   ) => {
-    let { message, school } = request.body;
+    let { message, schoolId } = request.body;
     const schoolRepository = getRepository(School);
     const schoolSelect = await schoolRepository
       .createQueryBuilder("schools")
-      .where("schools.name = :name", { name: school }) // TODO: change to unique name
+      .where("schools.uid = :uid", { uid: schoolId }) // TODO: change to unique name
       .leftJoinAndSelect("schools.students", "students")
       .leftJoinAndSelect("students.parentUser", "parent")
       .getOne();
