@@ -51,7 +51,7 @@ export class User {
   @Column()
   isAdmin: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @OneToMany(() => Student, (student) => student.parentUser, {

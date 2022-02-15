@@ -4,6 +4,7 @@ import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
 import * as EmailValidator from "email-validator";
+import { publishMessage } from "../mailer/emailWorker";
 
 var passwordValidator = require("password-validator");
 var schema = new passwordValidator();
@@ -32,55 +33,74 @@ class AuthController {
       address,
       longitude,
       latitude,
-      password,
       isAdmin,
     } = request.body;
-    if (!(email && password && firstName && lastName && isAdmin != null)) {
+    if (!(email && firstName && lastName && isAdmin != null)) {
       response
         .status(401)
         .send(
-          "User Register: email/password/isAdmin/firstName/lastName is not provided."
+          "User Register: email/isAdmin/firstName/lastName is not provided."
         );
       return;
     }
 
     if (!EmailValidator.validate(email)) {
-      response
-        .status(401)
-        .send(
-          "User Register: Email validation failed. Please enter a valid email."
-        );
-      return;
-    }
-
-    if (!schema.validate(password)) {
-      response
-        .status(401)
-        .send(
-          "User Register: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers."
-        );
+      response.status(401).send("User Register: Please enter a valid email.");
       return;
     }
 
     let user = new User();
     const userRepository = getRepository(User);
+    user.email = email.toLowerCase();
+    user.firstName = firstName;
+    user.middleName = middleName;
+    user.lastName = lastName;
+    user.address = address;
+    user.longitude = longitude;
+    user.latitude = latitude;
+    user.isAdmin = isAdmin;
+
+    var fs = require("fs");
+    var privateKey = fs.readFileSync(
+      __dirname + "/../../secrets/jwt_private.key"
+    );
+    var payload = {
+      uid: user.uid,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    };
+    var signOptions = {
+      issuer: "Potato",
+      subject: user.email,
+      audience: "potato.colab.duke.edu",
+      expiresIn: "2h",
+      algorithm: "RS256",
+    };
+
+    const token = jwt.sign(payload, privateKey, signOptions);
+    user.confirmationCode = await bcrypt.hash(token, 10);
+    const link = `${process.env.BASE_URL}/passwordReset?token=${token}`;
+
+    await publishMessage({
+      text: `Please set your password here: ${link}`,
+      to: email,
+    });
+    // if (!schema.validate(password)) {
+    //   response
+    //     .status(401)
+    //     .send(
+    //       "User Register: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers."
+    //     );
+    //   return;
+    // }
     try {
-      user.password = await bcrypt.hash(password, 10);
-      user.email = email.toLowerCase();
-      user.firstName = firstName;
-      user.middleName = middleName;
-      user.lastName = lastName;
-      user.address = address;
-      user.longitude = longitude;
-      user.latitude = latitude;
-      user.isAdmin = isAdmin;
       const saved = await userRepository.save(user);
       console.log(saved);
-      response.status(201).send(`${user.uid}`);
     } catch (error) {
       response.status(401).send("User Register: " + error);
       return;
     }
+    response.status(201).send(`${user.uid}`);
   };
 
   static login = async (request: Request, response: Response) => {
