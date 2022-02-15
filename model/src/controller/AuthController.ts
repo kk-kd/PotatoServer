@@ -45,12 +45,20 @@ class AuthController {
     }
 
     if (!EmailValidator.validate(email)) {
-      response.status(401).send("User Register: Email validation failed. Please enter a valid email.");
+      response
+        .status(401)
+        .send(
+          "User Register: Email validation failed. Please enter a valid email."
+        );
       return;
     }
 
     if (!schema.validate(password)) {
-      response.status(401).send("User Register: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers.");
+      response
+        .status(401)
+        .send(
+          "User Register: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers."
+        );
       return;
     }
 
@@ -73,25 +81,35 @@ class AuthController {
       response.status(401).send("User Register: " + error);
       return;
     }
-
-
   };
 
   static login = async (request: Request, response: Response) => {
     //Check if username and password are set
     let { email, password } = request.body;
     if (!(email && password)) {
-      response.status(400).send("User Login: Email or password missing. Please fill in all fields.");
+      response
+        .status(400)
+        .send(
+          "User Login: Email or password missing. Please fill in all fields."
+        );
       return;
     }
 
     if (!EmailValidator.validate(email)) {
-      response.status(401).send("User Login: Email validation failed. Please enter a valid email.");
+      response
+        .status(401)
+        .send(
+          "User Login: Email validation failed. Please enter a valid email."
+        );
       return;
     }
 
     if (!schema.validate(password)) {
-      response.status(401).send("User Login: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers.");
+      response
+        .status(401)
+        .send(
+          "User Login: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers."
+        );
       return;
     }
 
@@ -104,6 +122,13 @@ class AuthController {
       });
     } catch (error) {
       response.status(401).send("User Login: User not registered.");
+      return;
+    }
+
+    if (user.status != "active") {
+      response
+        .status(401)
+        .send("Please verify your account and set a password");
       return;
     }
 
@@ -131,7 +156,6 @@ class AuthController {
 
     const token = jwt.sign(payload, privateKey, signOptions);
     response.send(token);
-
   };
 
   static changePassword = async (request: Request, response: Response) => {
@@ -148,7 +172,11 @@ class AuthController {
     }
     // TODO: compare old password with this one.
     if (!schema.validate(newPassword)) {
-      response.status(401).send("User Login: New Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers.");
+      response
+        .status(401)
+        .send(
+          "User Login: New Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers."
+        );
       return;
     }
 
@@ -179,7 +207,6 @@ class AuthController {
 
     response.status(204).send("User Password Change: Success");
     return;
-
   };
 }
 export default AuthController;
