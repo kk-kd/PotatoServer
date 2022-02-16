@@ -6,10 +6,6 @@ import {
   OneToMany,
 } from "typeorm";
 import { Student } from "./Student";
-export enum UserStatus {
-  ACTIVE = "active",
-  PENDING = "pending",
-}
 
 @Entity({ name: "users" })
 @Unique(["email"])
@@ -64,11 +60,4 @@ export class User {
     nullable: true,
   })
   confirmationCode: string;
-
-  @Column({
-    type: "enum",
-    enum: UserStatus,
-    default: UserStatus.PENDING,
-  })
-  status: UserStatus;
 }

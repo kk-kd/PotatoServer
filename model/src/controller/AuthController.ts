@@ -1,10 +1,11 @@
-import { getRepository } from "typeorm";
+import { getRepository, getTreeRepository } from "typeorm";
 import { Request, Response } from "express";
 import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
 import * as EmailValidator from "email-validator";
 import { publishMessage } from "../mailer/emailWorker";
+import { userInfo } from "os";
 
 var passwordValidator = require("password-validator");
 var schema = new passwordValidator();
@@ -22,6 +23,9 @@ schema
   .has()
   .not()
   .spaces(); // Should not have spaces
+var fs = require("fs");
+var privateKey = fs.readFileSync(__dirname + "/../../secrets/jwt_private.key");
+var publicKey = fs.readFileSync(__dirname + "/../../secrets/jwt_public.key");
 
 class AuthController {
   static register = async (request: Request, response: Response) => {
@@ -52,6 +56,7 @@ class AuthController {
     let user = new User();
     const userRepository = getRepository(User);
     user.email = email.toLowerCase();
+    user.password = null;
     user.firstName = firstName;
     user.middleName = middleName;
     user.lastName = lastName;
@@ -60,10 +65,6 @@ class AuthController {
     user.latitude = latitude;
     user.isAdmin = isAdmin;
 
-    var fs = require("fs");
-    var privateKey = fs.readFileSync(
-      __dirname + "/../../secrets/jwt_private.key"
-    );
     var payload = {
       uid: user.uid,
       email: user.email,
@@ -81,18 +82,6 @@ class AuthController {
     user.confirmationCode = await bcrypt.hash(token, 10);
     const link = `${process.env.BASE_URL}/passwordReset?token=${token}`;
 
-    await publishMessage({
-      text: `Please set your password here: ${link}`,
-      to: email,
-    });
-    // if (!schema.validate(password)) {
-    //   response
-    //     .status(401)
-    //     .send(
-    //       "User Register: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers."
-    //     );
-    //   return;
-    // }
     try {
       const saved = await userRepository.save(user);
       console.log(saved);
@@ -100,7 +89,74 @@ class AuthController {
       response.status(401).send("User Register: " + error);
       return;
     }
+
+    try {
+      await publishMessage({
+        text: `Please set your password here: ${link}`,
+        to: email,
+      });
+    } catch (error) {
+      response
+        .status(401)
+        .send("Error sending confirmation email. Please try again.");
+    }
+
     response.status(201).send(`${user.uid}`);
+  };
+
+  static generatePasswordResetLink = async (
+    request: Request,
+    response: Response
+  ) => {
+    const userUid = response.locals.jwtPayload.uid;
+    let user;
+    try {
+      user = await getRepository(User)
+        .createQueryBuilder("users")
+        .select()
+        .where("users.uid = :uid", { uid: userUid })
+        .getOneOrFail();
+    } catch (error) {
+      response.status(401).send(error);
+      return;
+    }
+
+    var payload = {
+      uid: user.uid,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    };
+    var signOptions = {
+      issuer: "Potato",
+      subject: user.email,
+      audience: "potato.colab.duke.edu",
+      expiresIn: "2h",
+      algorithm: "RS256",
+    };
+
+    const token = jwt.sign(payload, privateKey, signOptions);
+    user.confirmationCode = await bcrypt.hash(token, 10);
+    const link = `${process.env.BASE_URL}/passwordReset?token=${token}`;
+
+    try {
+      await publishMessage({
+        text: `Please set your password here: ${link}`,
+        to: user.email,
+      });
+    } catch (error) {
+      response
+        .status(401)
+        .send("Error sending confirmation email. Please try again.");
+    }
+
+    try {
+      await getRepository(User).save(user);
+    } catch (error) {
+      response.status(401).send("Failed to save user to database: " + error);
+      return;
+    }
+
+    response.status(200).send("Check your mailbox to reset password.");
   };
 
   static login = async (request: Request, response: Response) => {
@@ -145,7 +201,7 @@ class AuthController {
       return;
     }
 
-    if (user.status != "active") {
+    if (user.password == null) {
       response
         .status(401)
         .send("Please verify your account and set a password");
@@ -156,11 +212,6 @@ class AuthController {
       response.status(401).send("User Login: Incorrect password.");
       return;
     }
-
-    var fs = require("fs");
-    var privateKey = fs.readFileSync(
-      __dirname + "/../../secrets/jwt_private.key"
-    );
     var payload = {
       uid: user.uid,
       email: user.email,
@@ -175,7 +226,64 @@ class AuthController {
     };
 
     const token = jwt.sign(payload, privateKey, signOptions);
-    response.send(token);
+    response.status(200).send(token);
+  };
+
+  static resetPassword = async (request: Request, response: Response) => {
+    const { newPassword } = request.body;
+    const token = request.query.token;
+    if (!(token && newPassword)) {
+      response.status(400).send("Missing JWT or password.");
+      return;
+    }
+
+    let jwtPayload;
+    try {
+      jwtPayload = <any>jwt.verify(token, publicKey);
+    } catch (error) {
+      response
+        .status(401)
+        .send(
+          "This is not a valid password reset link or the link has expired."
+        );
+    }
+
+    if (!schema.validate(newPassword)) {
+      response
+        .status(401)
+        .send(
+          "User Register: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers."
+        );
+      return;
+    }
+
+    let user;
+    try {
+      user = await getRepository(User)
+        .createQueryBuilder("users")
+        .select()
+        .where("users.uid = :uid", { uid: jwtPayload.uid })
+        .getOneOrFail();
+    } catch (error) {
+      response.status(401).send(error);
+      return;
+    }
+
+    if (!(await bcrypt.compare(token, user.confirmationCode))) {
+      response.status(401).send("Incorrect JWT.");
+      return;
+    }
+
+    try {
+      user.password = await bcrypt.hash(newPassword, 10);
+      user.confirmationCode = null;
+      const B = await getRepository(User).save(user);
+    } catch (error) {
+      response.status(401).send("Error saving user password: " + error);
+    }
+
+    response.status(200).send("Successfully set user password.");
+    return;
   };
 
   static changePassword = async (request: Request, response: Response) => {
@@ -190,7 +298,6 @@ class AuthController {
 
       return;
     }
-    // TODO: compare old password with this one.
     if (!schema.validate(newPassword)) {
       response
         .status(401)
