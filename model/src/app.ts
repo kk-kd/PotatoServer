@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { allRoutes } from "./routes/allRoutes";
 import authRoutes from "./routes/authRoutes";
 import { checkJwt } from "./middlewares/checkJwt";
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
 // create express app
 const app = express();

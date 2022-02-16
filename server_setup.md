@@ -41,15 +41,6 @@
 `psql` and change user password with `ALTER USER postgres PASSWORD '<new password>';`  
 `create database bus;`
 
-## Install rabbitmq
-
-https://www.rabbitmq.com/install-debian.html#apt-quick-start-cloudsmith
-
-Useful Commands:
-`sudo systemctl start rabbitmq-server`  
-`sudo rabbitmqctl purge_queue queue_name`  
-`sudo rabbitmqctl list_queues`
-
 ## Clone the repo
 
 `git clone -b <branch> https://github.com/meganrichards3/PotatoServer.git`
@@ -111,7 +102,7 @@ Start pm2
 `cd ../model`  
 `npm install`  
 `npm run build`  
-`pm2 start ecosystem.config.js `  
+`pm2 start build/index.js`  
 Use `example_redirect.js` to replace `index.js` for testing purpose
 
 # Deployment Checklist

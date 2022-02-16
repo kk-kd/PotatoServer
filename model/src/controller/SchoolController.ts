@@ -208,8 +208,7 @@ export class SchoolController extends Repository<School> {
       return schoolQueryResult;
     }
     catch (e) {
-      response.status(401).send("Schools UID: " + request.params.uid + " was not found adn could not be deleted.");
-      return;
+      response.status(401).send("Schools UID: " + request.params.uid + " was not found adn could not be deleted.")
     }
   }
   findBySchoolID(uid: number) {
