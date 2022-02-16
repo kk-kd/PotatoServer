@@ -25,8 +25,10 @@ import Divider from '@mui/material/Divider';
 import CloseIcon from '@mui/icons-material/Close';
 
 
-export const UserForm = () => {
+export const UserForm = ({addUserToStudent}) => {
     let navigate = useNavigate(); 
+
+    const action_text = "Make New User" 
 
     // user 
     const [user, setUser] = useState({
@@ -37,6 +39,7 @@ export const UserForm = () => {
       address: '', 
       password: '',
     });
+
     const [students, setStudents] = useState([]); 
     const [addressValid, setAddressValid] = useState(false);
 
@@ -70,19 +73,41 @@ export const UserForm = () => {
         setStudents(students => [...students, student]);
     }
 
-    async function handleCreateUser (e) {
-        e.preventDefault(); // prevents page reload on submission
+    const validate_user_entries = () => {
+      if (!user.firstName || !user.lastName){
+          return {valid: false, error: 'User First Name and Last Name Required'}
+      }
+      else if (!user.email) {
+        return {valid: false, error:"Please provide a user email"}
+      }
+      else if (!user.address) {
+        return {valid: false, error:"Please provide a user address"}
+      }
+      else if (!addressValid) {
+        return {valid: false, error: "Please Validate User Address."}
+      }
+      return {valid: true, error: ''}
+  }
+  
 
-        if (!user.firstName || !user.lastName) {
-            alert("User First Name and Last Name are Required.")
-        }
-        if (!user.email) {
-          alert ("Please provide a user email")
-        }
-        else if (!addressValid) {
-            alert("Please Validate User Address.")
-        }
-        
+    const handleUserFormSubmit = (e) => {
+      let valid_results = validate_user_entries();
+      if (valid_results.valid) {
+          if (addUserToStudent) {
+              CreateUser(e, false);
+          }
+          else {
+              console.log("Make New User")
+              CreateUser(e, true);
+          }
+      }
+      else {
+          alert(valid_results.error)
+      }
+  }
+
+    async function CreateUser (e, nav) {
+        e.preventDefault(); // prevents page reload on submission
        
         let form_results = {
           email: user.email.toLowerCase(),
@@ -96,6 +121,7 @@ export const UserForm = () => {
           longitude: lng
         }
         console.log(form_results)
+        let message = ""
     
         try {
           const create_user_response = await registerUser(form_results);
@@ -106,11 +132,20 @@ export const UserForm = () => {
           };
 
         } catch (error) {
-            let message = error.response.data;
-            throw alert (message);
+            message = error.response.data;
+            alert (message);
         }
-        alert("User Successfully Created");
-        navigate('/Users/list');
+        if (!message) {
+          alert("User Successfully Created");
+          if (addUserToStudent) {
+            console.log("addUserToStudent Called in User Form")
+            addUserToStudent(user);
+          }
+        }
+       
+        if (nav) {
+          navigate('/Users/list');
+        } 
       }
 
       async function addStudent(student, parent) {
@@ -166,133 +201,136 @@ export const UserForm = () => {
     }
 
     return <div id="content"> 
-        <h1>Create User Form </h1>
+        {addUserToStudent && <h4> {action_text} </h4>}
+        {!addUserToStudent && <h1>  {action_text} </h1>}
         
         <div id = "user_create_form">
-        
-        <Divider>User Info </Divider>
-        <label for = "firstName"> First Name </label> 
-        <input
-            id = "username"
-            type="text"
-            maxLength="100"
-            value={user.firstName}
-            onChange={(e) => setUser({...user, firstName : e.target.value})}
-        />
-            
-        <label for = "middleName"> Middle Name </label>
-        <input
-            id = "middleName"
-            maxLength="100"
-            type="text"
-            value={user.middleName}
-            onChange={(e) => setUser({...user, middleName : e.target.value})}
-        />
+          <Divider>User Info </Divider>
+          <label for = "firstName"> First Name </label> 
+          <input
+              id = "username"
+              type="text"
+              maxLength="100"
+              value={user.firstName}
+              onChange={(e) => setUser({...user, firstName : e.target.value})}
+          />
+              
+          <label for = "middleName"> Middle Name </label>
+          <input
+              id = "middleName"
+              maxLength="100"
+              type="text"
+              value={user.middleName}
+              onChange={(e) => setUser({...user, middleName : e.target.value})}
+          />
   
-        <label for = "lastName"> Last Name </label>
-        <input
-            id = 'lastName'
-            maxLength="100"
-            type="text"
-            value={user.lastName}
-            onChange={(e) => setUser({...user, lastName : e.target.value})}
-        />
+          <label for = "lastName"> Last Name </label>
+          <input
+              id = 'lastName'
+              maxLength="100"
+              type="text"
+              value={user.lastName}
+              onChange={(e) => setUser({...user, lastName : e.target.value})}
+          />
+    
+          <label for = "email"> Email </label>
+          <input
+              id = 'email'
+              maxLength="100"
+              type="text"
+              value={user.email}
+              onChange={(e) => setUser({...user, email : e.target.value})}
+          />
+
+          <label for = "password"> Password </label>    
+          <input
+              id = "password"
+              maxLength="100"
+              type="password"
+              value={user.password}
+              onChange={(e) => setUser({...user, password : e.target.value})}
+          />
   
-        <label for = "email"> Email </label>
-        <input
-            id = 'email'
-            maxLength="100"
-            type="text"
-            value={user.email}
-            onChange={(e) => setUser({...user, email : e.target.value})}
-        />
+          <label for = "address"> Address {addressValid} </label>
+          <input
+              id = 'address'
+              maxLength="100"
+              type="text"
+              value={user.address}
+              onChange={(e) => {setUser({...user, address: e.target.value}); setAddressValid(false); }} 
+          />
+          
+          <label for = "isAdmin"> Admin </label>
+          <input
+              id = "isAdmin"
+              type="checkbox"
+              value={user.isAdmin}
+              onInput={(e) => setUser({...user, isAdmin : e.target.checked})}
+          />
 
-        <label for = "password"> Password </label>    
-        <input
-            id = "password"
-            maxLength="100"
-            type="password"
-            value={user.password}
-            onChange={(e) => setUser({...user, password : e.target.value})}
-        />
- 
-        <label for = "address"> Address {addressValid} </label>
-        <input
-            id = 'address'
-            maxLength="100"
-            type="text"
-            value={user.address}
-            onChange={(e) => {setUser({...user, address: e.target.value}); setAddressValid(false); }} 
-        />
-        
-        <label for = "isAdmin"> Admin </label>
-        <input
-            id = "isAdmin"
-            type="checkbox"
-            value={user.isAdmin}
-            onInput={(e) => setUser({...user, isAdmin : e.target.checked})}
-        />
+          <p> </p>
+          {!addUserToStudent && <div>
+            <Divider>Students</Divider>
 
-        <p> </p>
-        <Divider>Students</Divider>
+            <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto'}}>
+                <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}} 
+                >
+                {students.map((student) => {
+                    const labelId = `checkbox-list-secondary-label-${student.studentid}`;
+                    return (
+                    <ListItem
+                        key={student.studentid}
 
-        <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto'}}>
-            <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}} 
-            >
-            {students.map((student) => {
-                const labelId = `checkbox-list-secondary-label-${student.studentid}`;
-                return (
+                        secondaryAction={
+                            <IconButton aria-label="delete" style={{backgroundColor: 'transparent'}}>
+                                <DeleteIcon onClick = {(e) => {
+                                    let filtered = students.filter(function(el) { return el.studentid != student.studentid;});
+                                    setStudents(filtered); 
+                                }}/>
+                            </IconButton>
+                        }
+                        disablePadding
+                    >
+                    <ListItemButton onClick = {(e) => {setSelectedStudent(student)}}>
+                        <PersonIcon> </PersonIcon>
+                        <ListItemText id={labelId} primary={student.firstName + " " + student.lastName} />
+                    </ListItemButton>
+                    </ListItem>
+                    );
+                })}
+                
                 <ListItem
-                    key={student.studentid}
-
-                    secondaryAction={
-                        <IconButton aria-label="delete" style={{backgroundColor: 'transparent'}}>
-                            <DeleteIcon onClick = {(e) => {
-                                let filtered = students.filter(function(el) { return el.studentid != student.studentid;});
-                                setStudents(filtered); 
-                            }}/>
-                        </IconButton>
-                    }
+                    key={'-1'}
                     disablePadding
                 >
-                <ListItemButton onClick = {(e) => {setSelectedStudent(student)}}>
-                    <PersonIcon> </PersonIcon>
-                    <ListItemText id={labelId} primary={student.firstName + " " + student.lastName} />
-                </ListItemButton>
+                    <ListItemButton
+                        onClick = {(e) => {setMakeStudent(true);}}>
+                        <PersonAddIcon />
+                        <ListItemText primary={"Add New Student"} />
+                    </ListItemButton>
                 </ListItem>
-                );
-            })}
-            
-            <ListItem
-                key={'-1'}
-                disablePadding
-            >
-                <ListItemButton
-                    onClick = {(e) => {setMakeStudent(true);}}>
-                    <PersonAddIcon />
-                    <ListItemText primary={"Add New Student"} />
-                </ListItemButton>
-            </ListItem>
 
-            </List>
-        </Box>
-
-        <div>
-         {makeStudent && <div style = {{position: 'relative', margin: '25px', border:'1px solid lightgrey'}}> 
+                </List>
+            </Box>
+        </div>
+        }
+ 
+        {makeStudent && <div id = 'sub-form-wrapper'> 
             <CloseIcon onClick = {(e) => {setMakeStudent(false)}} style = {{
                         position: 'absolute',
                         right: '10px',
                         top: '10px',
                         }}></CloseIcon>
-             {makeStudent && <StudentForm addStudentToUser = {addStudentToUser}> </StudentForm>}
-        
-             </div>
-        }
+         {makeStudent && <StudentForm addStudentToUser = {addStudentToUser}> </StudentForm>}
          </div>
-        <button style = {{display: 'in-line block', margin: '20px'}} onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate Address" }  </button>  
-        <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleCreateUser(e)}} type="button"> Make User </button>
-        </div>        
-
+         } 
+        
+        <div>
+          <button style = {{display: 'in-line block', margin: '20px'}} onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate Address" } </button>  
+          <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleUserFormSubmit(e)}} type="button"> Make User </button>
+        </div> 
+        </div>
+        
         <div id="user_create_map">
           {error && (<div>{error}</div>)}
             <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
@@ -309,8 +347,9 @@ export const UserForm = () => {
                     lng={lng}
                 />
                 </GoogleMapReact>
-            </div>
+             </div>
         </div>
+    
     </div>
 
 }

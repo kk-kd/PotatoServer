@@ -12,12 +12,27 @@ import { filterAllUsers, filterAllSchools, getOneUse, saveStudent } from "../api
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { UserForm } from "../users/UserForm";
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import { ListItemButton } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import { CreateUser } from "../users/CreateUserStudent";
 
 
 export const StudentForm = ({addStudentToUser}) => {
+
+    const action_text = addStudentToUser ? "Add New Student": "Make New Student" 
   
     const [student, setStudent] = useState({'school': {'name': 'school name'}});
+    const [makeUser, setMakeUser] = useState(false);
+    const [refreshAutocomplete, setRefreshAutocomplete] = useState([]);
+    const [user, setUser] = useState()
 
     // filter search state
     const [filteredDataSchool, setFilteredDataSchool] = useState([])
@@ -27,8 +42,12 @@ export const StudentForm = ({addStudentToUser}) => {
     const [routeFilter, setRouteFilter] = useState("");
     const [selectedRoute, setSelectedRoute] = useState();
 
-    const action_text = addStudentToUser ? "Add New Student": "Make New Student" 
+    const [filteredDataUser, setFilteredDataUser] = useState([]);
+    
+    const [userFilter, setUserFilter] = useState("");
 
+
+    
     let navigate = useNavigate(); 
 
     const validate_student_entries = () => {
@@ -38,6 +57,9 @@ export const StudentForm = ({addStudentToUser}) => {
 
         return {valid: true, error: ''}
     }
+    
+    // functions passed to user form to update user state
+   
     const handleStudentFormSubmit = (e) => {
         let valid_results = validate_student_entries();
         if (valid_results.valid) {
@@ -108,61 +130,96 @@ export const StudentForm = ({addStudentToUser}) => {
       
       }, [schoolFilter])
 
+      useEffect(() => {
+        const fetchFilteredDataUser = async () => {
+          try {
+            const fetchedData = await filterAllUsers({
+              page: 0,
+              size: 10,
+              sort: 'email',
+              sortDir: "ASC",
+              filterType: '',
+              filterData: userFilter
+            });
+            setFilteredDataUser(fetchedData.data.users);
+            console.log(fetchedData.data)
+       
+          } catch (error) {
+            alert(error.response.data);
+          }
+        }
+        if (userFilter) {
+          fetchFilteredDataUser();
+        }
+      
+      }, [userFilter])
+
+      useEffect(() => {
+        console.log("make user Changed")
+        setUser();
+        setUserFilter();
+        setFilteredDataUser([]);
+        console.log(user);
+
+      }, [makeUser])
+
     return <div id = 'content'>
         {addStudentToUser && <h4> {action_text} </h4>}
         {!addStudentToUser && <h1>  {action_text} </h1>}
 
-        <label for = "firstName"> First Name: </label>      
+        <label id = 'input-label' for = "firstName"> First Name: </label>      
         <input
+            id = 'input-input'
             type="text"
             maxLength="100"
             value={student.firstName}
             onChange={(e) => setStudent({...student, firstName : e.target.value})}
         />
 
-        <label for = "middleName"> Middle Name: </label>      
+        <label id = 'input-label' for = "middleName"> Middle Name: </label>      
         <input
+            id = 'input-input'
             type="text"
             maxLength="100"
             value={student.middleName}
             onChange={(e) => setStudent({...student, middleName : e.target.value})}
         />
 
-        <label for = "lastName"> Last Name: </label>      
+        <label id = 'input-label' for = "lastName"> Last Name: </label>      
         <input
+            id = 'input-input'
             type="text"
             maxLength="100"
             value={student.lastName}
             onChange={(e) => setStudent({...student, lastName : e.target.value})}
         /> 
 
-        <label for = "lastName"> Student ID: </label>     
-        <input
+        <label id = 'input-label' for = "lastName"> Student ID: </label>     
+        <input 
+            id = 'input-input'
             type="text"
             maxLength="100"
             value={student.studentid}
-            onChange={(e) => setStudent({...student, studentid : e.target.value})}
+            onChange={(e) => {setStudent({...student, studentid : e.target.value})}}
         />
 
         <Autocomplete
-            id="school-search"
+            sx = {{paddingTop: '20px', paddingBottom: '20px', maxWidth: '600px', margin: 'auto'}}
             options={filteredDataSchool}
             freeSolo
-            style = {{display: 'inline-block', paddingTop: '8px'}}
             renderInput={params => (
-                <TextField {...params} label=" Select School " variant="outlined"
-                InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <Fragment>
-                        {params.InputProps.endAdornment}
-                      </Fragment>
-                    ),
-                  }}
+                <TextField {...params} label="Select A School" sx = {{'textAlign': 'left'}}variant="outlined" 
+                 InputProps={{
+                     ...params.InputProps,
+                     endAdornment: (
+                       <Fragment>
+                         {params.InputProps.endAdornment}
+                       </Fragment>
+                     ),
+                   }}
                 />
             )}
             getOptionLabel={option => option.name}
-            fullWidth= {true}
             
             noOptionsText = {"Type to Search"}
             value={selectedSchool}
@@ -179,10 +236,9 @@ export const StudentForm = ({addStudentToUser}) => {
 
         {selectedSchool && selectedSchool.routes && selectedSchool.routes.length > 0 && 
             <Autocomplete
-                id="route-search"
                 options={selectedSchool.routes}
                 freeSolo
-                style = {{display: 'inline-block', paddingTop: '8px'}}
+                sx = {{display: 'block',  paddingTop: '10px', paddingBottom: '10px', maxWidth: '600px', margin: 'auto'}}
                 renderInput={params => (
                     <TextField {...params} label=" Select Route " variant="outlined"
                     InputProps={{
@@ -211,6 +267,107 @@ export const StudentForm = ({addStudentToUser}) => {
             
         />
         }
+        <div> 
+
+        {!addStudentToUser && <div> 
+            <h4> Select an Existing User or Create a New One.  </h4>
+            <h4> User = {user ? "" + user.email : "None" } </h4>
+            </div>}
+
+        {<Autocomplete
+            key={String(refreshAutocomplete) + '1'} 
+            sx = {{paddingTop: '20px', paddingBottom: '20px', maxWidth: '600px', margin: 'auto'}}
+            options={filteredDataUser}
+            freeSolo
+            renderInput={params => (
+                <TextField {...params} onClick = {() => {if (makeUser) {setMakeUser(false)}}} label="Select A User" sx = {{'textAlign': 'left'}}variant="outlined" 
+                 InputProps={{
+                     ...params.InputProps,
+                     endAdornment: (
+                       <Fragment>
+                         {params.InputProps.endAdornment}
+                       </Fragment>
+                     ),
+                   }}
+                />
+            )}
+            getOptionLabel={option => option.email}
+            
+            noOptionsText = {"Type to Search"}
+            value={user}
+           
+            onInputChange = {(e, newInputValue, reason) => {
+              console.log(reason)
+              if (reason === 'reset') {
+                setUserFilter('')
+                return
+              } else if (reason === 'input') {
+                setMakeUser(false);
+                setUserFilter(newInputValue);
+              } 
+            }}
+            
+            onChange={(_event, newUser) => {
+                console.log(newUser)
+                setUser(newUser);
+            }}
+            
+        />
+        }
+
+        {!addStudentToUser && <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto'}}>
+              <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}} 
+              >
+              {(user && user.id) && [user].map((us) => {
+                  const labelId = `checkbox-list-secondary-label-${us.id}`;
+                  return (
+                  <ListItem
+                      key={us.id}
+
+                      secondaryAction={
+                          <IconButton aria-label="delete" style={{backgroundColor: 'transparent'}}>
+                              <DeleteIcon onClick = {(e) => {
+                                  setUser({}); 
+                              }}/>
+                          </IconButton>
+                      }
+                      disablePadding
+                  >
+          
+                  </ListItem>
+                  );
+              })}
+
+          <ListItem
+                  key={'-1'}
+                  disablePadding
+              >
+                  <ListItemButton
+                      onClick = {(e) => {setMakeUser(true); setRefreshAutocomplete(!refreshAutocomplete)}}>
+                      <PersonAddIcon />
+                      <ListItemText primary={"Make New User"} />
+                  </ListItemButton>
+            </ListItem>
+                  
+        </List>
+        </Box>
+        }
+        </div>
+
+        
+          {(!addStudentToUser && makeUser) && <div id = 'sub-form-wrapper'> 
+              <CloseIcon onClick = {(e) => {setMakeUser(false)}} style = {{
+                          position: 'absolute',
+                          right: '10px',
+                          top: '10px',
+                          }}></CloseIcon>
+               {(!addStudentToUser) && <UserForm addUserToStudent = {(user) => {console.log("adding user to student"); setUser(user); setMakeUser(false)}}> </UserForm> }
+          
+              </div>
+          }
+      
+ 
+
         <button className = "submitbutton" type="button" onClick= {(e) => {handleStudentFormSubmit(e)}}> {action_text} </button>
     </div>
     }

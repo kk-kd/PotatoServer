@@ -3,11 +3,12 @@
   align-items: center;
   float: center; */
   /* margin: 3% auto; */
-  width: 80%;
+  
+  max-width: 80%;
   background-color:linen;
 }
 #content {
-  width:70%;
+  width:80%;
   margin:auto; 
   height:auto; 
   background:linen; 
@@ -23,6 +24,16 @@
   box-sizing: border-box; 
   display: flex; */
 }
+#sub-form-wrapper {
+  display: block;
+  border-color: lightgray;
+  border-style: solid;
+  border-width: 1px;
+  max-width: 80%;
+  margin: 25px auto 25px auto;
+  position: relative;
+}
+
 
 #user_create_form {
   /* padding-left: 5%; */
