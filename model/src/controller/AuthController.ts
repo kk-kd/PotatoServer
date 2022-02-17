@@ -24,8 +24,6 @@ schema
   .not()
   .spaces(); // Should not have spaces
 var fs = require("fs");
-var privateKey = fs.readFileSync(__dirname + "/../../secrets/jwt_private.key");
-var publicKey = fs.readFileSync(__dirname + "/../../secrets/jwt_public.key");
 
 class AuthController {
   static register = async (request: Request, response: Response) => {
@@ -97,6 +95,9 @@ class AuthController {
       algorithm: "RS256",
     };
 
+    let privateKey = fs.readFileSync(
+      __dirname + "/../../secrets/jwt_private.key"
+    );
     const token = jwt.sign(payload, privateKey, signOptions);
     user.confirmationCode = await bcrypt.hash(token, 10);
     const link = `${process.env.BASE_URL}/passwordReset?token=${token}`;
@@ -155,6 +156,10 @@ class AuthController {
       expiresIn: "2h",
       algorithm: "RS256",
     };
+
+    let privateKey = fs.readFileSync(
+      __dirname + "/../../secrets/jwt_private.key"
+    );
 
     const token = jwt.sign(payload, privateKey, signOptions);
     user.confirmationCode = await bcrypt.hash(token, 10);
@@ -249,6 +254,9 @@ class AuthController {
       algorithm: "RS256",
     };
 
+    let privateKey = fs.readFileSync(
+      __dirname + "/../../secrets/jwt_private.key"
+    );
     const token = jwt.sign(payload, privateKey, signOptions);
     response.status(200).send(token);
   };
@@ -260,6 +268,9 @@ class AuthController {
       return;
     }
 
+    var publicKey = fs.readFileSync(
+      __dirname + "/../../secrets/jwt_public.key"
+    );
     let jwtPayload;
     try {
       jwtPayload = <any>jwt.verify(token, publicKey);
