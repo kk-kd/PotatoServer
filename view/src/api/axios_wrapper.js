@@ -1,56 +1,69 @@
-import { UserController } from "../controller/UserController";
-import { StudentController } from "../controller/StudentController";
-import { RouteController } from "../controller/RouteController";
-import { SchoolController } from "../controller/SchoolController";
-import { EmailController } from "../mailer/EmailController";
-import { StopController } from "../controller/StopController";
-
-import { Stop } from "../entity/Stop";
+import axios from "axios";
 
 /*
-
-COPY PASTABLE DEAFULT CALLS:
-GET ALL STUDENTS: all/page=0&size=0&sort=none&sortDir=none
-FILTER ALL STUDENTS BY FIRST NAME: filter/page=0&size=0&sort=none&sortDir=none&filterType=firstName&filterData=first
-*/
-
-// ALL PARAMETERS MUST BE SPECIFIED IN THE CALL; IN THE WRAPPER CHECK FOR NULL/ABSENT DATA AND CONVERT TO 0
-export const allRoutes = [
-  /*
-    Gets all Users.
+Welcome to the Axios Wrapper.
+To extract data that you need or error codes, call `.data` on the output of these calls.
+The example from ListUsers is below (as a hook):
+export const ListUsers = () => {
+  const [data] = useState([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        getAllUsers({ page: 0, size: 0, sort: "none", sortDir: "none" });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+/*
+/*
+GetAll from table (students, users, schools, routes) gives you every entry in the table.
+INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
     page: number, denotes the number page requested; starts at 0
     size: number, denotes the size of the page requested
     sort: str, denotes the sort rule; options are:
       - "none"
-      - any user entity characteristic (firstName, middleName, lastName)
+      - any user entity column (firstName, middleName, lastName, etc.)
     sortDir: str, denotes the sort direction; options are:
       - "none"
       - "ASC"
       - "DESC"
-  */
-  {
-    method: "get",
-    route: "/api/users/all",
-    controller: UserController,
-    action: "allUsers",
-  },
-  {
-    method: "get",
-    route: "/api/stops/all",
-    controller: StopController,
-    action: "allStops",
-  },
-  {
-    method: "get",
-    route: "/api/stops/filter",
-    controller: StopController,
-    action: "filterAllStops",
-  },
+*/
+export async function getAllUsers(specifications) {
+  return await axios.get(`/api/users/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getAllStudents(specifications) {
+  return await axios.get(`/api/students/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getAllSchools(specifications) {
+  return await axios.get(`/api/schools/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getAllRoutes(specifications) {
+  return await axios.get(`/api/routes/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getAllStops(specifications) {
+  return await axios.get(`/api/stops/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
 
-  /*
-    TODO: CONTAINS is needed, not just having/where exactly
-    
-    Filters Users to grab less than all.
+/*
+FilterAll from table (students, users, schools, routes) gives you a filtered result from all entries.
+INPUT: {"page": page, "size": size, "sort": sort, "sortDir": sortDir}
     page: number, denotes the number page requested; starts at 0
     size: number, denotes the size of the page requested
     sort: str, denotes the sort rule; options are:
@@ -64,334 +77,250 @@ export const allRoutes = [
       - "none"
       - any User entity column (firstName, middleName, lastName, etc.)
         Check out model/entities/User.ts for all options.
-  */
-  {
-    method: "get",
-    route: "/api/users/filter",
-    controller: UserController,
-    action: "filterAllUsers",
-  },
-  /*
-   Returns one User by UID.
-  */
-  {
-    method: "get",
-    route: "/api/users/:uid",
-    controller: UserController,
-    action: "oneUser",
-  },
-  {
-    method: "get",
-    route: "/api/stops/:uid",
-    controller: StopController,
-    action: "oneStop",
-  },
-  {
-    method: "get",
-    route: "/api/user",
-    controller: UserController,
-    action: "currentUserJWT",
-  },
-  {
-    method: "post",
-    route: "/api/users/",
-    controller: UserController,
-    action: "saveNewUser",
-  },
-  {
-    method: "post",
-    route: "/api/stops/",
-    controller: StopController,
-    action: "saveNewStop",
-  },
-  {
-    method: "put",
-    route: "/api/users/:uid",
-    controller: UserController,
-    action: "updateUser",
-  },
-  {
-    method: "put",
-    route: "/api/stops/:uid",
-    controller: StopController,
-    action: "updateStop",
-  },
-  {
-    method: "post",
-    route: "/api/schools",
-    controller: SchoolController,
-    action: "saveNewSchool",
-  },
-  {
-    method: "put",
-    route: "/api/schools/:uid",
-    controller: SchoolController,
-    action: "updateSchool",
-  },
-  {
-    method: "post",
-    route: "/api/routes",
-    controller: RouteController,
-    action: "saveNewRoute",
-  },
-  {
-    method: "put",
-    route: "/api/routes/:uid",
-    controller: RouteController,
-    action: "updateRoute",
-  },
-  {
-    method: "post",
-    route: "/api/students",
-    controller: StudentController,
-    action: "saveNewStudent",
-  },
-  {
-    method: "put",
-    route: "/api/students/:uid",
-    controller: StudentController,
-    action: "updateStudent",
-  },
-  {
-    method: "delete",
-    route: "/api/users/:uid",
-    controller: UserController,
-    action: "deleteUser",
-  },
-  {
-    method: "delete",
-    route: "/api/stops/:uid",
-    controller: StopController,
-    action: "deleteStop",
-  },
-  {
-    method: "delete",
-    route: "/api/students/:uid",
-    controller: StudentController,
-    action: "deleteStudent",
-  },
-  {
-    method: "delete",
-    route: "/api/schools/:uid",
-    controller: SchoolController,
-    action: "deleteSchool",
-  },
-  {
-    method: "delete",
-    route: "/api/routes/:uid",
-    controller: RouteController,
-    action: "deleteRoute",
-  },
-  /*
-    Gets all Students.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any student entity characteristic (firstName, middleName, lastName, id)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-  */
+*/
+export async function filterAllUsers(specifications) {
+  return await axios.get(`/api/users/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function filterAllStudents(specifications) {
+  return await axios.get(`/api/students/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function filterAllSchools(specifications) {
+  return await axios.get(`/api/schools/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function filterAllRoutes(specifications) {
+  return await axios.get(`/api/routes/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function filterAllStops(specifications) {
+  return await axios.get(`/api/stops/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+/*
+   Returns one entry from a table (students, users, schools, routes) by UID.
+*/
+export async function returnUserInfoFromJWT() {
+  return await axios.get("/api/user", { headers: getHeaderWithAuthToken() });
+}
 
-  {
-    method: "get",
-    route: "/api/students/all",
-    controller: StudentController,
-    action: "allStudents",
-  },
-  /*    
-    Filters Students to grab less than all.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any student entity column (firstName, middleName, lastName, etc.)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-    filterType: str, denotes what you want to filter by; options are:
-      - "none"
-      - any User entity column (firstName, middleName, lastName, etc.)
-        Check out model/entities/Student.ts for all options.
-  */
-  {
-    method: "get",
-    route: "/api/students/filter",
-    controller: StudentController,
-    action: "filterAllStudents",
-  },
-  /*
-    Returns one student by UID (not non-unique ID).
-  */
-  {
-    method: "get",
-    route: "/api/students/:uid",
-    controller: StudentController,
-    action: "oneStudent",
-  },
-  {
-    method: "get",
-    route: "/api/routes",
-    controller: RouteController,
-    action: "all",
-  },
-  {
-    method: "get",
-    route: "/api/routes/planner/:uid",
-    controller: SchoolController,
-    action: "oneRoutePlanner",
-  },
-  /*
-    Gets all Schools.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any schools entity characteristic (name, address, etc)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-  */
+export async function getOneUser(uid) {
+  return await axios.get("/api/users/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getOneStudent(uid) {
+  return await axios.get("/api/students/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getOneSchool(uid) {
+  return await axios.get("/api/schools/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getOneRoute(uid) {
+  return await axios.get("/api/routes/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getOneStop(uid) {
+  return await axios.get("/api/stops/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getOneRoutePlanner(uid) {
+  return await axios.get("/api/routes/planner/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 
-  {
-    method: "get",
-    route: "/api/schools/all",
-    controller: SchoolController,
-    action: "allSchools",
-  },
-  /*    
-    Filters Schools to grab less than all.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any school entity column (name, address)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-    filterType: str, denotes what you want to filter by; options are:
-      - "none"
-      - any school entity column (name, address, etc.)
-        Check out model/entities/School.ts for all options.
-  */
-  {
-    method: "get",
-    route: "/api/schools/filter",
-    controller: SchoolController,
-    action: "filterAllSchools",
-  },
-  /*
-    Returns one school by UID.
-  */
-  {
-    method: "get",
-    route: "/api/schools/:uid",
-    controller: SchoolController,
-    action: "oneSchool",
-  },
-  /*
-    Gets all Routes.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any route entity characteristic (name, description)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-  */
+/*
+   Deletes one entry from a table (students, users, schools, routes) by UID.
+*/
+export async function deleteUser(uid) {
+  return await axios.delete("/api/users/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function deleteStudent(uid) {
+  return await axios.delete("/api/students/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function deleteSchool(uid) {
+  return await axios.delete("/api/schools/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function deleteRoute(uid) {
+  return await axios.delete("/api/routes/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function deleteStop(uid) {
+  return await axios.delete("/api/stops/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+/*
+Register a User for the first time to add them to the database.
+        For a User:
+            {
+                email: "NewUniqueEmail@email.net",
+                firstName: "NewFirstName",
+                middleName: "NewMiddleName",
+                lastName: "NewLastName",
+                address: "New Address",
+                isAdmin: false,
+                password: "testnewpass",
+            }
+*/
+export async function registerUser(specifications) {
+  return await axios.post("/api/register", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 
-  {
-    method: "get",
-    route: "/api/routes/all",
-    controller: RouteController,
-    action: "allRoutes",
-  },
-  /*    
-    Filters Routes to grab less than all.
-    page: number, denotes the number page requested; starts at 0
-    size: number, denotes the size of the page requested
-    sort: str, denotes the sort rule; options are:
-      - "none"
-      - any route entity column (name, address)
-    sortDir: str, denotes the sort direction; options are:
-      - "none"
-      - "ASC"
-      - "DESC"
-    filterType: str, denotes what you want to filter by; options are:
-      - "none"
-      - any route entity column (name, descirption, etc)
-        Check out model/entities/Route.ts for all options.
-  */
-  {
-    method: "get",
-    route: "/api/routes/filter",
-    controller: RouteController,
-    action: "filterAllRoutes",
-  },
-  /*
-    Returns one school by UID.
-  */
-  {
-    method: "get",
-    route: "/api/routes/:uid",
-    controller: RouteController,
-    action: "oneRoute",
-  },
+/*
+Change a User Password
+        You need to specify the old and new password:
+            {
+                oldPassword: "OldPassword123",
+                newPassword: "NewPassword321",
+            }
+*/
+export async function changeUserPassword(specifications) {
+  return await axios.post("/api/change-password", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 
-  {
-    method: "get",
-    route: "/api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
-    controller: RouteController,
-    action: "sortAllRoutes",
-  },
+/*
+Login Validation for a User
+        You need to specify the old and new password:
+            {
+                email: "example@email.net",
+                password: "myOldPassword",
+            }
+*/
+export async function loginUser(specifications) {
+  return await axios.post("/api/login", specifications);
+}
 
-  // Email Routes
-  {
-    method: "post",
-    route: "/api/email/general/all",
-    controller: EmailController,
-    action: "sendGeneralAnnouncementToAll",
-  },
+/*
+    Saves a new entry to a table (students, users, schools, routes).
+    The INPUT is a json map of each entity property;
+        These are examples below. If you need to see the specific property names, check out 
+        model/src/entities/*.ts to see all properties
+        For a Student,
+            {
+                id: 123456,
+                firstName: "NewFirstName",
+                middleName: "NewMiddleName",
+                lastName: "NewLastName",
+            }
+        For a Route,
+            {
+                name: "NewRouteName",
+                description: "NewRouteDescription",
+            }
+        For a School:
+            {
+                name: "NewSchoolName",
+                address: "New School Address",
+                longitude: 1,
+                lattitude: 2,
+            }
+*/
 
-  {
-    method: "post",
-    route: "/api/email/route/all",
-    controller: EmailController,
-    action: "sendRouteAnnouncementToAll",
-  },
+export async function saveStudent(specifications) {
+  return await axios.post("/api/students", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 
-  {
-    method: "post",
-    route: "/api/email/general/school",
-    controller: EmailController,
-    action: "sendGeneralAnnouncementToUsersFromSchool",
-  },
+export async function saveSchool(specifications) {
+  return await axios.post("/api/schools", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function saveRoute(specifications) {
+  return await axios.post("/api/routes", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function saveStop(specifications) {
+  return await axios.post("/api/stops", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+/*
+   Updates an existing entry in a table (students, users, schools, routes) by UID.
+*/
+export async function updateUser(uid, specifications, changePassword) {
+  return await axios.put("/api/users/" + uid, specifications, {
+    params: { changePassword: changePassword },
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function updateStudent(uid, specifications) {
+  return await axios.put("/api/students/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function updateSchool(uid, specifications) {
+  return await axios.put("/api/schools/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function updateRoute(uid, specifications) {
+  return await axios.put("/api/routes/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 
-  {
-    method: "post",
-    route: "/api/email/route/school",
-    controller: EmailController,
-    action: "sendRouteAnnouncementToUsersFromSchool",
-  },
+// Email Calls
+export async function sendEmailToAll(uid, specifications) {
+  return await axios.post("/api/email/general/all" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendEmailToUsersFromSchool(uid, specifications) {
+  return await axios.post("/api/email/general/school" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendEmailToUsersOnRoute(uid, specifications) {
+  return await axios.post("/api/email/general/route" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function updateStop(uid, specifications) {
+  return await axios.put("/api/stops/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+// Helpers
+function convertMapToURL(map) {
+  return Object.keys(map)
+    .map((key) => `${key}=${map[key]}`)
+    .join("&");
+}
 
-  {
-    method: "post",
-    route: "/api/email/general/route",
-    controller: EmailController,
-    action: "sendGeneralAnnouncementToUsersOnRoute",
-  },
-
-  {
-    method: "post",
-    route: "/api/email/route/route",
-    controller: EmailController,
-    action: "sendRouteAnnouncementToUsersOnRoute",
-  },
-];
+function getHeaderWithAuthToken() {
+  const token = sessionStorage.getItem("token");
+  const header = { auth: token };
+  return header;
+}
