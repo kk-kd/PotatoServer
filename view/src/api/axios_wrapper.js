@@ -184,7 +184,6 @@ Register a User for the first time to add them to the database.
                 lastName: "NewLastName",
                 address: "New Address",
                 isAdmin: false,
-                password: "testnewpass",
             }
 */
 export async function registerUser(specifications) {
@@ -291,24 +290,32 @@ export async function updateRoute(uid, specifications) {
   });
 }
 
+export async function updateStop(uid, specifications) {
+  return await axios.put("/api/stops/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+s;
+
 // Email Calls
 export async function sendEmailToAll(uid, specifications) {
-  return await axios.post("/api/email/general/all" + uid, specifications, {
+  return await axios.post("/api/email/general/all", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
 export async function sendEmailToUsersFromSchool(uid, specifications) {
-  return await axios.post("/api/email/general/school" + uid, specifications, {
+  return await axios.post("/api/email/general/school", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
 export async function sendEmailToUsersOnRoute(uid, specifications) {
-  return await axios.post("/api/email/general/route" + uid, specifications, {
+  return await axios.post("/api/email/general/route", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
-export async function updateStop(uid, specifications) {
-  return await axios.put("/api/stops/" + uid, specifications, {
+
+export async function resetPassword(uid, specifications) {
+  return await axios.put("/api/reset-password", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }

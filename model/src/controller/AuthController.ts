@@ -53,6 +53,19 @@ class AuthController {
       return;
     }
 
+    const reptitiveEntry = await getRepository(User)
+      .createQueryBuilder("users")
+      .select()
+      .where("users.email = :email", { email: email })
+      .getOne();
+
+    console.log(reptitiveEntry);
+
+    if (reptitiveEntry != null) {
+      response.status(401).send("Email is already taken.");
+      return;
+    }
+
     let user = new User();
     const userRepository = getRepository(User);
     user.email = email.toLowerCase();
@@ -65,6 +78,12 @@ class AuthController {
     user.latitude = latitude;
     user.isAdmin = isAdmin;
 
+    try {
+      await userRepository.save(user);
+    } catch (error) {
+      response.status(401).send("User Register: " + error);
+      return;
+    }
     var payload = {
       uid: user.uid,
       email: user.email,
@@ -92,13 +111,16 @@ class AuthController {
 
     try {
       await publishMessage({
-        text: `Please set your password here: ${link}`,
-        to: email,
+        from: "Potato Web Service",
+        subject: "Set Your Password",
+        html: `<div> Please set your password <a href=${link}>here.</a></div>`,
+        to: user.email,
       });
     } catch (error) {
       response
         .status(401)
         .send("Error sending confirmation email. Please try again.");
+      return;
     }
 
     response.status(201).send(`${user.uid}`);
@@ -108,13 +130,13 @@ class AuthController {
     request: Request,
     response: Response
   ) => {
-    const userUid = response.locals.jwtPayload.uid;
+    let { email } = request.body;
     let user;
     try {
       user = await getRepository(User)
         .createQueryBuilder("users")
         .select()
-        .where("users.uid = :uid", { uid: userUid })
+        .where("users.email = :email", { email: email })
         .getOneOrFail();
     } catch (error) {
       response.status(401).send(error);
@@ -140,7 +162,9 @@ class AuthController {
 
     try {
       await publishMessage({
-        text: `Please set your password here: ${link}`,
+        from: "Potato Web Service",
+        subject: "Reset Your Password",
+        html: `<div> Please reset your password <a href=${link}>here.</a></div>`,
         to: user.email,
       });
     } catch (error) {
@@ -230,8 +254,7 @@ class AuthController {
   };
 
   static resetPassword = async (request: Request, response: Response) => {
-    const { newPassword } = request.body;
-    const token = request.query.token;
+    const { token, newPassword } = request.body;
     if (!(token && newPassword)) {
       response.status(400).send("Missing JWT or password.");
       return;
@@ -252,7 +275,7 @@ class AuthController {
       response
         .status(401)
         .send(
-          "User Register: Password validation failed. Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers."
+          "Please enter a password with at 6 least characters (with at least 1 lowercase and 1 uppercase letter) and 2 numbers."
         );
       return;
     }
@@ -269,6 +292,15 @@ class AuthController {
       return;
     }
 
+    if (user.confirmationCode == null) {
+      response
+        .status(401)
+        .send(
+          "This is not a valid password reset link or the link has expired."
+        );
+      return;
+    }
+
     if (!(await bcrypt.compare(token, user.confirmationCode))) {
       response.status(401).send("Incorrect JWT.");
       return;
@@ -277,7 +309,7 @@ class AuthController {
     try {
       user.password = await bcrypt.hash(newPassword, 10);
       user.confirmationCode = null;
-      const B = await getRepository(User).save(user);
+      await getRepository(User).save(user);
     } catch (error) {
       response.status(401).send("Error saving user password: " + error);
     }
