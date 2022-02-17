@@ -319,6 +319,11 @@ export async function resetPassword(uid, specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function forgetPassword(uid, specifications) {
+  return await axios.put("/api/forget-password", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 // Helpers
 function convertMapToURL(map) {
   return Object.keys(map)
