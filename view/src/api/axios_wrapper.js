@@ -295,8 +295,6 @@ export async function updateStop(uid, specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
-s;
-
 // Email Calls
 export async function sendEmailToAll(uid, specifications) {
   return await axios.post("/api/email/general/all", specifications, {
