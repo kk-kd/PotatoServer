@@ -15,8 +15,8 @@ export const EmailForm = () => {
     const action_text = "Send Email" 
     const [emailType, setEmailType] = useState("");
 
-    const [message, setMessage] = useState("");
-    
+    const [message, setMessage] = useState({}); // keys = subject, body
+
 
     // school filter
     const [filteredDataSchool, setFilteredDataSchool] = useState([]);
@@ -31,8 +31,8 @@ export const EmailForm = () => {
     let navigate = useNavigate(); 
 
     const validate_entries = () => {
-        if (!message){
-            return {valid: false, error: 'Message Required'}
+        if (!message.subject || !message.body){
+            return {valid: false, error: 'Subject and Body Required'}
         }
         return {valid: true, error: ''}
     }
@@ -51,33 +51,33 @@ export const EmailForm = () => {
     
     async function SendEmail (e) {
         let form_results = {
-          message: message,
+          subject: message.subject, 
+          html: <p> {message.body} </p>
         }
         console.log(emailType)
         
         try {
             if (emailType == "school") {
-            form_results["school"] = selectedSchool;
-            console.log(form_results)
-            sendEmailToUsersFromSchool(form_results)
-
+              let id = selectedSchool.uid;
+              console.log(id)
+              console.log(form_results)
+              sendEmailToUsersFromSchool(id, form_results)
             }
             else if (emailType == "route") {
-                form_results["route"] = selectedRoute;
-                console.log(form_results)
-                sendEmailToUsersOnRoute(form_results)
+              let id = selectedRoute.uid;
+              console.log(id)
+              console.log(form_results)
+              sendEmailToUsersOnRoute(id, form_results)
             }
             else {
-                console.log(form_results)
-                sendEmailToAll(form_results)
+              console.log(form_results)
+              sendEmailToAll(form_results)
             }
         }
         catch (error) {
             let message = error.response.data;
             throw alert (message);
-        }
-
-    
+        }    
         alert("Successfully Sent Email");
       }
     
@@ -139,7 +139,7 @@ export const EmailForm = () => {
         <FormLabel id="demo-radio-buttons-group-label">Email Announcment Type</FormLabel>
         <RadioGroup
             aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue="female"
+            defaultValue="all"
             name="radio-buttons-group"
             value={emailType}
             onChange={(e) => {setEmailType(e.target.value)}}
@@ -153,14 +153,24 @@ export const EmailForm = () => {
 
         <p> </p> 
         <p> </p> 
-        <label id = 'input-label' for = "firstName"> Email Message: </label>  
-        <p> </p>    
+        <label id = 'input-label' for = "n"> Email Subject Line: </label>      
+        <input
+            id = 'input-input'
+            type="text"
+            maxLength="100"
+            value={message.subject}
+            onChange={(e) => setMessage({...message, subject : e.target.value})}
+        />
+        <p> </p> 
+        <p> </p> 
+
+        <label id = 'input-label' for = "firstName"> Email Body: </label>    
         <textarea
             id = 'input-input'
             type="text"
             maxLength="100"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={message.body}
+            onChange={(e) => setMessage({...message, body : e.target.value})}
         />
 
 
