@@ -87,8 +87,13 @@ export class EmailController {
 
     const allEmails = allUserEmails
       .map((user) => {
+        if (/^.*@example\.com$/i.test(user.email)) {
+          console.log(`Skipped ${user.email}`);
+          return null;
+        }
         return user.email;
       })
+      .filter(Boolean)
       .join(", ");
 
     await publishMessage({ ...message, from: FROM, to: FROM, bcc: allEmails });
@@ -238,7 +243,10 @@ export class EmailController {
     const userSet: Set<User> = new Set();
     routeSelect.students.forEach(async (s) => {
       if ("parentUser" in s) {
-        userSet.add(s.parentUser);
+        if (/^.*@example\.com$/i.test(s.parentUser.email)) {
+          userSet.add(s.parentUser);
+          console.log(`Skipped ${s.parentUser.email}`);
+        }
       }
     });
 
