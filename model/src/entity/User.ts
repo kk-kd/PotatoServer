@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique, ManyToMany, OneToMany, JoinColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  Unique,
+  OneToMany,
+} from "typeorm";
 import { Student } from "./Student";
 
 @Entity({ name: "users" })
@@ -41,11 +47,17 @@ export class User {
   @Column()
   isAdmin: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
-  @OneToMany(() => Student, student => student.parentUser, {
-    cascade: true, eager: true,
+  @OneToMany(() => Student, (student) => student.parentUser, {
+    cascade: true,
+    eager: true,
   })
   students: Student[];
+
+  @Column({
+    nullable: true,
+  })
+  confirmationCode: string;
 }
