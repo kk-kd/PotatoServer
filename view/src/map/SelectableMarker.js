@@ -1,31 +1,31 @@
 import "./SelectableMarker.css";
 import { useState } from "react";
 
-export const SelectableMarker = ({ id, routeId, selectRoute, currentRoute, text }) => {
+export const SelectableMarker = ({ student, onCurrentRoute, notOnRoute, selectRoute }) => {
   const [showText, setShowText] = useState(false);
-  if (!routeId) {
+  if (notOnRoute) {
     return (
         <div id="noRouteMarker"
-             onClick={e => selectRoute(id)}
+             onClick={e => selectRoute(student)}
              onMouseEnter={e => setShowText(true)}
              onMouseLeave={e => setShowText(false)}
-        >{showText && `${text}`}</div>
+        >{showText && `${student.firstName} ${student.lastName}`}</div>
     );
-  } else if (routeId === currentRoute) {
+  } else if (onCurrentRoute) {
     return (
         <div id="currentRouteMarker"
-             onClick={e => selectRoute(id)}
+             onClick={e => selectRoute(student)}
              onMouseEnter={e => setShowText(true)}
              onMouseLeave={e => setShowText(false)}
-        >{showText && `${text}`}</div>
+        >{showText && `${student.firstName} ${student.lastName}`}</div>
     );
   } else {
     return (
         <div id="selectableRouteMarker"
-             onClick={e => selectRoute(id)}
+             onClick={e => selectRoute(student)}
              onMouseEnter={e => setShowText(true)}
              onMouseLeave={e => setShowText(false)}
-            >{showText && `${text}`}</div>
+            >{showText && `${student.firstName} ${student.lastName}`}</div>
     );
   }
 }

@@ -2,9 +2,8 @@ import { UserController } from "../controller/UserController";
 import { StudentController } from "../controller/StudentController";
 import { RouteController } from "../controller/RouteController";
 import { SchoolController } from "../controller/SchoolController";
+import { EmailController } from "../mailer/EmailController";
 import { StopController } from "../controller/StopController";
-
-import { Stop } from "../entity/Stop";
 
 /*
 
@@ -45,7 +44,6 @@ export const allRoutes = [
     controller: StopController,
     action: "filterAllStops",
   },
-
 
   /*
     TODO: CONTAINS is needed, not just having/where exactly
@@ -242,7 +240,7 @@ export const allRoutes = [
     method: "get",
     route: "/api/routes/planner/:uid",
     controller: SchoolController,
-    action: "oneRoutePlanner"
+    action: "oneRoutePlanner",
   },
   /*
     Gets all Schools.
@@ -350,5 +348,48 @@ export const allRoutes = [
     route: "/api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
     controller: RouteController,
     action: "sortAllRoutes",
+  },
+
+  // Email Routes
+  {
+    method: "post",
+    route: "/api/email/general/all",
+    controller: EmailController,
+    action: "sendGeneralAnnouncementToAll",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/route/all",
+    controller: EmailController,
+    action: "sendRouteAnnouncementToAll",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/general/school",
+    controller: EmailController,
+    action: "sendGeneralAnnouncementToUsersFromSchool",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/route/school",
+    controller: EmailController,
+    action: "sendRouteAnnouncementToUsersFromSchool",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/general/route",
+    controller: EmailController,
+    action: "sendGeneralAnnouncementToUsersOnRoute",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/route/route",
+    controller: EmailController,
+    action: "sendRouteAnnouncementToUsersOnRoute",
   },
 ];

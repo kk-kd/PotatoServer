@@ -145,8 +145,8 @@ export class SchoolController extends Repository<School> {
         .createQueryBuilder("schools")
         .where("schools.uid = :uid", { uid: uidNumber })
         .leftJoinAndSelect("schools.routes", "routes")
+        .leftJoinAndSelect("routes.students", "routeStudents")
         .leftJoinAndSelect("schools.students", "students")
-        .leftJoinAndSelect("students.route", "route")
         .leftJoinAndSelect("students.parentUser", "parent")
         .getOneOrFail();
       response.status(200);
@@ -208,7 +208,8 @@ export class SchoolController extends Repository<School> {
       return schoolQueryResult;
     }
     catch (e) {
-      response.status(401).send("Schools UID: " + request.params.uid + " was not found adn could not be deleted.")
+      response.status(401).send("Schools UID: " + request.params.uid + " was not found adn could not be deleted.");
+      return;
     }
   }
   findBySchoolID(uid: number) {

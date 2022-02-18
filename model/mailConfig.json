@@ -1,0 +1,13 @@
+{
+    "amqp": "amqp://localhost",
+    "queue": "email-queue",
+    "exchange-type": "fanout",
+    "exchange-name": "email-exchange",
+  
+    "server": {
+      "port": 587,
+      "host": "smtp.gmail.com",
+      "user": "potato@gmail.com",
+      "password": "<fake_credential>"
+    }
+  }

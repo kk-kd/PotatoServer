@@ -23,11 +23,20 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
+  var newPayload = {
+    uid: jwtPayload.uid,
+    email: jwtPayload.email,
+    isAdmin: jwtPayload.isAdmin,
+  };
   var signOptions = {
+    issuer: "Potato",
+    subject: jwtPayload.email,
+    audience: "potato.colab.duke.edu",
+    expiresIn: "2h",
     algorithm: "RS256",
   };
 
-  const newToken = jwt.sign(jwtPayload, privateKey, signOptions);
+  const newToken = jwt.sign(newPayload, privateKey, signOptions);
   res.setHeader("token", newToken);
 
   next();

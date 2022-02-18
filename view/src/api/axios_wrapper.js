@@ -4,7 +4,6 @@ import axios from "axios";
 Welcome to the Axios Wrapper.
 To extract data that you need or error codes, call `.data` on the output of these calls.
 The example from ListUsers is below (as a hook):
-
 export const ListUsers = () => {
   const [data] = useState([]);
   useEffect(() => {
@@ -185,7 +184,6 @@ Register a User for the first time to add them to the database.
                 lastName: "NewLastName",
                 address: "New Address",
                 isAdmin: false,
-                password: "testnewpass",
             }
 */
 export async function registerUser(specifications) {
@@ -291,8 +289,36 @@ export async function updateRoute(uid, specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+
 export async function updateStop(uid, specifications) {
   return await axios.put("/api/stops/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+// Email Calls
+export async function sendEmailToAll(uid, specifications) {
+  return await axios.post("/api/email/general/all", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendEmailToUsersFromSchool(uid, specifications) {
+  return await axios.post("/api/email/general/school", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendEmailToUsersOnRoute(uid, specifications) {
+  return await axios.post("/api/email/general/route", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+
+export async function resetPassword(uid, specifications) {
+  return await axios.put("/api/reset-password", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function forgetPassword(uid, specifications) {
+  return await axios.put("/api/forget-password", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
