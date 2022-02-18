@@ -184,11 +184,11 @@ export const StudentForm = ({addStudentToUser}) => {
         />
 
         <Autocomplete
-            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '50%', margin: 'auto'}}
+            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '55%', margin: 'auto'}}
             options={filteredDataSchool}
             freeSolo
             renderInput={params => (
-                <TextField {...params} label="Select A School"  variant="standard" 
+                <TextField {...params} label="School"  variant="standard" 
 
                 />
             )}
@@ -211,9 +211,9 @@ export const StudentForm = ({addStudentToUser}) => {
             <Autocomplete
                 options={selectedSchool.routes}
                 freeSolo
-                sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '50%', margin: 'auto'}}
+                sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '55%', margin: 'auto'}}
                 renderInput={params => (
-                    <TextField {...params} label=" Select Route " variant="standard"
+                    <TextField {...params} label=" Route " variant="standard"
                     />
                 )}
                 getOptionLabel={option => option.name}
@@ -235,11 +235,11 @@ export const StudentForm = ({addStudentToUser}) => {
         <div> 
 
         {<Autocomplete
-            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '50%', margin: 'auto'}}
+            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '55%', margin: 'auto'}}
             options={filteredDataUser}
             freeSolo
             renderInput={params => (
-                <TextField {...params} label="Select A User" variant="standard" 
+                <TextField {...params} label="User" variant="standard" 
           
                 />
             )}
