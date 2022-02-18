@@ -25,7 +25,7 @@ import Divider from '@mui/material/Divider';
 import CloseIcon from '@mui/icons-material/Close';
 
 
-export const UserForm = ({addUserToStudent}) => {
+export const UserForm = () => {
     let navigate = useNavigate(); 
 
     const action_text = "Make New User" 
@@ -93,13 +93,8 @@ export const UserForm = ({addUserToStudent}) => {
     const handleUserFormSubmit = (e) => {
       let valid_results = validate_user_entries();
       if (valid_results.valid) {
-          if (addUserToStudent) {
-              CreateUser(e, false);
-          }
-          else {
-              console.log("Make New User")
-              CreateUser(e, true);
-          }
+              CreateUser(e);
+              console.log("Make New User")  
       }
       else {
           alert(valid_results.error)
@@ -137,10 +132,6 @@ export const UserForm = ({addUserToStudent}) => {
         }
         if (!message) {
           alert("User Successfully Created");
-          if (addUserToStudent) {
-            console.log("addUserToStudent Called in User Form")
-            addUserToStudent(user);
-          }
         }
        
         if (nav) {
@@ -201,8 +192,8 @@ export const UserForm = ({addUserToStudent}) => {
     }
 
     return <div id="content"> 
-        {addUserToStudent && <h4> {action_text} </h4>}
-        {!addUserToStudent && <h1>  {action_text} </h1>}
+ 
+        <h1>  {action_text} </h1>
         
         <div id = "user_create_form">
           <Divider>User Info </Divider>
@@ -269,7 +260,7 @@ export const UserForm = ({addUserToStudent}) => {
           />
 
           <p> </p>
-          {!addUserToStudent && <div>
+          <div>
             <Divider>Students</Divider>
 
             <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto'}}>
@@ -313,7 +304,7 @@ export const UserForm = ({addUserToStudent}) => {
                 </List>
             </Box>
         </div>
-        }
+        
  
         {makeStudent && <div id = 'sub-form-wrapper'> 
             <CloseIcon onClick = {(e) => {setMakeStudent(false)}} style = {{
