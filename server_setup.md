@@ -125,3 +125,7 @@ Use `example_redirect.js` to replace `index.js` for testing purpose
   `openssl rsa -in jwt_private.key -pubout -out jwt_public.key`
 - Check that f**\*\*** ormconfig file is in .js
 - delete and restart pm2 process if necessary
+
+# New to EV2 
+- add base_url to .env
+- use pm2 ecosystem file 

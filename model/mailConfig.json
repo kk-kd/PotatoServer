@@ -7,7 +7,7 @@
     "server": {
       "port": 587,
       "host": "smtp.gmail.com",
-      "user": "potatowebservice@gmail.com",
+      "user": "potato@gmail.com",
       "password": "<fake_credential>"
     }
   }

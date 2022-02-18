@@ -2,6 +2,7 @@ import { createConnection, getConnection, getRepository } from "typeorm";
 import { Route } from "../entity/Route";
 import { School } from "../entity/School";
 import { User } from "../entity/User";
+import { Student } from "../entity/Student";
 import { publishMessage } from "./emailWorker";
 import { Request, Response } from "express";
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
@@ -15,6 +16,7 @@ export class EmailController {
       .where("users.uid = :uid", { uid: parentId })
       .leftJoinAndSelect("users.students", "children")
       .leftJoinAndSelect("children.school", "school")
+      .leftJoinAndSelect("children.route", "route")
       .getOne();
 
     // TODO: possiblly resolve this 100% script injection risk
@@ -33,18 +35,34 @@ export class EmailController {
     }
 
     for (const child of userDetail.students) {
-      info +=
-        "<p>" +
-        this.extractName(child) +
-        "<br>" +
-        ("id" in child && child.id != null ? "Student ID: " + child.id : "") +
-        "<br>" +
-        "School: " +
-        child.school.name +
-        "</p>";
+      info += "<p>" + (await this.getChildDetail(child)) + "</p>";
     }
 
     return "<div>" + info + "</div>";
+  };
+
+  private getChildDetail = async (child: Student) => {
+    var studentInfo =
+      this.extractName(child) +
+      "<br>" +
+      ("id" in child && child.id != null ? "Student ID: " + child.id : "") +
+      "<br>" +
+      "School: " +
+      child.school.name +
+      "<h5>Bus Route Information</h5>";
+
+    if (child.route == null) {
+      studentInfo += "The student does not have a route yet.";
+    } else {
+      studentInfo +=
+        "Route Name: " +
+        child.route.name +
+        "<br>" +
+        "Description: " +
+        child.route.desciption;
+    }
+
+    return studentInfo;
   };
 
   private extractName = (user) => {
@@ -91,7 +109,6 @@ export class EmailController {
       const parentDetails = await this.getParentPage(user.uid);
       var myMessage = { ...message };
       myMessage.html += parentDetails;
-      console.log(myMessage);
       await publishMessage({ ...myMessage, from: FROM, to: user.email });
     });
 
@@ -103,11 +120,11 @@ export class EmailController {
     request: Request,
     response: Response
   ) => {
-    let { message, school } = request.body;
+    let { message, schoolId } = request.body;
     const schoolRepository = getRepository(School);
     const schoolSelect = await schoolRepository
       .createQueryBuilder("schools")
-      .where("schools.name = :name", { name: school }) // TODO: change to unique name
+      .where("schools.uid = :uid", { uid: schoolId }) // TODO: change to unique name
       .leftJoinAndSelect("schools.students", "students")
       .leftJoinAndSelect("students.parentUser", "parent")
       .getOne();
@@ -134,11 +151,11 @@ export class EmailController {
     request: Request,
     response: Response
   ) => {
-    let { message, school } = request.body;
+    let { message, schoolId } = request.body;
     const schoolRepository = getRepository(School);
     const schoolSelect = await schoolRepository
       .createQueryBuilder("schools")
-      .where("schools.name = :name", { name: school }) // TODO: change to unique name
+      .where("schools.uid = :uid", { uid: schoolId }) // TODO: change to unique name
       .leftJoinAndSelect("schools.students", "students")
       .leftJoinAndSelect("students.parentUser", "parent")
       .getOne();
@@ -157,10 +174,8 @@ export class EmailController {
 
     userSet.forEach(async (user) => {
       const parentDetails = await this.getParentPage(user.uid);
-      console.log(parentDetails);
       var myMessage = { ...message };
       myMessage.html += parentDetails;
-      console.log(myMessage);
       await publishMessage({ ...myMessage, from: FROM, to: user.email });
     });
 
@@ -229,10 +244,8 @@ export class EmailController {
 
     userSet.forEach(async (user) => {
       const parentDetails = await this.getParentPage(user.uid);
-      console.log(parentDetails);
       var myMessage = { ...message };
       myMessage.html += parentDetails;
-      console.log(myMessage);
       await publishMessage({ ...myMessage, from: FROM, to: user.email });
     });
 
