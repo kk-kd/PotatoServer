@@ -53,7 +53,7 @@ export const EmailForm = () => {
   async function SendEmail(e) {
     let form_results = {
       subject: message.subject,
-      html: <p> {message.body} </p>,
+      html: `<p> ${message.body}</p>`,
     };
     console.log(emailType);
 
