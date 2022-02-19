@@ -41,6 +41,13 @@ export const StudentForm = ({addStudentToUser}) => {
         if (!student.firstName || !student.lastName){
             return {valid: false, error: 'Student First and Last Name Required'}
         }
+        if (!selectedSchool) {
+          return {valid: false, error: 'Student must have a School'}
+        }
+        if (!user && !addStudentToUser) {
+          return {valid: false, error: 'Student Must have a User'}
+        }
+        
 
         return {valid: true, error: ''}
     }
@@ -234,12 +241,12 @@ export const StudentForm = ({addStudentToUser}) => {
         }
         <div> 
 
-        {<Autocomplete
+        {!addStudentToUser && <Autocomplete
             sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '55%', margin: 'auto'}}
             options={filteredDataUser}
             freeSolo
             renderInput={params => (
-                <TextField {...params} label="User" variant="standard" 
+                <TextField {...params} label="Parent" variant="standard" 
           
                 />
             )}

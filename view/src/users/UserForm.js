@@ -37,7 +37,6 @@ export const UserForm = () => {
       lastName:'',
       isAdmin: false, 
       address: '', 
-      password: '',
     });
 
     const [students, setStudents] = useState([]); 
@@ -101,7 +100,7 @@ export const UserForm = () => {
       }
   }
 
-    async function CreateUser (e, nav) {
+    async function CreateUser (e) {
         e.preventDefault(); // prevents page reload on submission
        
         let form_results = {
@@ -111,7 +110,6 @@ export const UserForm = () => {
           lastName: user.lastName,
           address: user.address,
           isAdmin: user.isAdmin,
-          password: user.password,
           latitude: lat,
           longitude: lng
         }
@@ -134,9 +132,8 @@ export const UserForm = () => {
           alert("User Successfully Created");
         }
        
-        if (nav) {
-          navigate('/Users/list');
-        } 
+       navigate('/Users/list');
+        
       }
 
       async function addStudent(student, parent) {
@@ -233,15 +230,7 @@ export const UserForm = () => {
               onChange={(e) => setUser({...user, email : e.target.value})}
           />
 
-          <label for = "password"> Password </label>    
-          <input
-              id = "password"
-              maxLength="100"
-              type="password"
-              value={user.password}
-              onChange={(e) => setUser({...user, password : e.target.value})}
-          />
-  
+         
           <label for = "address"> Address {addressValid} </label>
           <input
               id = 'address'
