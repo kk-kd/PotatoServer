@@ -42,7 +42,7 @@ export const minutesToTimeString = (minutes) => {
     return `0${hours}:0${extraMinutes}`;
   } else if (hours < 10) {
     return `0${hours}:${extraMinutes}`;
-  } else if (minutes < 10) {
+  } else if (extraMinutes < 10) {
     return `${hours}:0${extraMinutes}`;
   }
   return `${hours}:${extraMinutes}`;

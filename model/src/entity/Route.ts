@@ -23,10 +23,11 @@ export class Route {
   @Column()
   desciption: string;
 
-  @Column({
-    nullable: true
+  @Column("text", {
+    nullable: true,
+    array: true
   })
-  polyline: string;
+  polyline: string[];
 
   @OneToMany(() => Student, (student) => student.route, {
     cascade: true,

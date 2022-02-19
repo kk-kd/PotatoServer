@@ -1,39 +1,37 @@
 import "./SelectableMarker.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationPin } from "@fortawesome/free-solid-svg-icons";
+import { faLocationDot, faLocationPin } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
-export const SelectableMarker = ({ student, onCurrentRoute, notOnRoute, selectRoute, inRangeStop, onCurrentStop }) => {
+export const SelectableMarker = ({ students, onCurrentRoute, notOnRoute, selectRoute, inRangeStop, onCurrentStop }) => {
   var id;
   if (notOnRoute) {
     id = "noRouteMarker";
   } else if (onCurrentRoute && onCurrentStop) {
     id = "currentRouteAndStopMarker";
-  } else if (onCurrentRoute && inRangeStop) {
-    id = "currentRouteMarker";
   } else if (onCurrentRoute) {
-    id = "currentRouteNoStopMarker";
-  } else if (inRangeStop) {
-    id = "routeMarker";
+    id = "currentRouteMarker";
   } else {
-    id = "noStopMarker";
+    id = "routeMarker";
   }
   return (
       <>
         <FontAwesomeIcon
-            icon={faLocationPin}
-            size="2xl"
+            icon={inRangeStop ? faLocationPin : faLocationDot}
             id={id}
-            onClick={e => selectRoute(student)}
+            onClick={e => selectRoute(students)}
             data-tip
-            data-for={`studentTooltip${student.uid}`}
+            data-for={`studentTooltip${students[0].uid}`}
         />
         <ReactTooltip
-            id={`studentTooltip${student.uid}`}
+            id={`studentTooltip${students[0].uid}`}
             place="top"
             effect="solid"
         >
-          {`Name: ${student.firstName} ${student.lastName}`}
+          <p>Students at this location:</p>
+          {students.map(student => (
+              <p>{`${student.firstName} ${student.lastName}`}</p>
+          ))}
         </ReactTooltip>
       </>
   );

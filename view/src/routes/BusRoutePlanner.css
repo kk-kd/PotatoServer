@@ -56,6 +56,32 @@
   width: 100%;
 }
 
+#mapSideContainer {
+  width: 100%
+}
+
+#mapActionButton {
+  height: 80px;
+  width: 80px;
+  margin: 0px;
+  bottom: 0px;
+}
+
+#mapActionButton:hover:enabled {
+  background-color: #0d6efd;
+  opacity: .33;
+  color: white;
+}
+
+#mapActionButtonSelected {
+  height: 80px;
+  width: 80px;
+  background-color: #0d6efd;
+  color: white;
+  margin: 0px;
+  bottom: 0px;
+}
+
 #mapKey {
   background-color: white;
   border: solid black;
@@ -114,6 +140,66 @@
   background-color: lightblue;
 }
 
+#toolbar {
+  width: 100%;
+  height: 90px;
+  padding-top: 10px;
+  justify-content: space-between;
+  display: flex;
+}
+
+#descriptiveText {
+  line-height: 15px;
+  margin: 0px;
+}
+
+#tools {
+  display: flex;
+}
+
+#plannerKeys {
+  padding-top: 20px;
+  display: flex;
+}
+
+#plannerKey {
+  width: 100px;
+  height: 60px;
+  border: solid black;
+  font-size: 10px;
+}
+
+#plannerSelectCreate {
+  padding: 10px 20px 7px 30px;
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+}
+
+#exampleGreen {
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: green;
+}
+
+#exampleBlue {
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: blue;
+}
+
+#exampleRed {
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: red;
+}
+
 #routes {
   flex: 30%;
   display: inline-block;
@@ -125,7 +211,7 @@
 #routeEditor {
   display: inline-block;
   height: 40vh;
-  padding: 7px;
+  padding: 10px 10px 0px 10px;
   width: 100%;
 }
 

@@ -4,11 +4,12 @@ import { useParams } from "react-router-dom";
 import GoogleMapReact from "google-map-react";
 import { Marker } from "./../map/Marker";
 import { SelectableMarker } from "./../map/SelectableMarker";
-import { getOneRoutePlanner, saveRoute, deleteRoute } from "./../api/axios_wrapper";
+import { getOneRoutePlanner, saveRoute, deleteRoute, saveStop } from "./../api/axios_wrapper";
 import { addDriveTime, subtractDriveTime } from "./../api/time";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLocationPin,
+  faLocationDot,
   faSchool,
   faMapPin,
   faCircleQuestion,
@@ -34,6 +35,9 @@ export const BusRoutePlanner = () => {
   const [directionsService, setDirectionsService] = useState();
   const [placeStopLocation, setPlaceStopLocation] = useState(false);
   const [deletedRoutes, setDeletedRoutes] = useState([]);
+  const [deletedStops, setDeletedStops] = useState([]);
+  const [changeRoute, setChangeRoute] = useState(false);
+  const [locations, setLocations] = useState([]);
   const { schoolId } = useParams();
   useEffect(() => {
     const fetchData = async () => {
@@ -45,6 +49,23 @@ export const BusRoutePlanner = () => {
         fetchedData.data.routes = fetchedData.data.routes.map(route =>
             ({...route, stops: route.stops.map(stop =>
                   ({...stop, arrivalIndex: parseInt(stop.arrivalIndex)}))}));
+        var locationSet = [];
+        fetchedData.data.students.forEach(student => {
+          const index = locationSet.findIndex(location =>
+              location.longitude === student.parentUser.longitude &&
+              location.latitude === student.parentUser.latitude
+          );
+          if (index === -1) {
+            locationSet = [...locationSet, {
+              longitude: student.parentUser.longitude,
+              latitude: student.parentUser.latitude,
+              students: [student]
+            }];
+          } else {
+            locationSet[index] = {...locationSet[index], students: [...locationSet[index].students, student]};
+          }
+        });
+        setLocations(locationSet);
         console.log(fetchedData);
         setSchool(fetchedData.data);
         setLoading(false);
@@ -74,7 +95,14 @@ export const BusRoutePlanner = () => {
             setSchool({...school, routes: school.routes.map((route, index) =>
                   index === selectedRoute ?
                       {...route, stops: route.stops.map(stop =>
-                            stop.arrivalIndex === selectedStop ? {...stop, latitude: e.latLng.lat(), longitude: e.latLng.lng()} : stop)} :
+                            stop.arrivalIndex === selectedStop ? {...stop,
+                              latitude: e.latLng.lat(),
+                              longitude: e.latLng.lng(),
+                              inRangeStudents: school.students.filter(student =>
+                                  school.routes[selectedRoute].students.some(s => s.uid === student.uid) &&
+                                  inRange(student, { latitude: e.latLng.lat(), longitude: e.latLng.lng() })
+                              )
+                      } : stop)} :
                       route)}
             );
           }
@@ -82,6 +110,17 @@ export const BusRoutePlanner = () => {
       }
     }
   }, [placeStopLocation, stopSelect, selectedStop]);
+  useEffect(() => {
+    if (googleMap) {
+      if (placeStopLocation) {
+        googleMap.setOptions({ draggableCursor: "pointer" });
+      } else if (changeRoute) {
+        googleMap.setOptions({ draggableCursor: "default" });
+      } else {
+        googleMap.setOptions({ draggableCursor: "grab" });
+      }
+    }
+  }, [placeStopLocation, changeRoute]);
 
   const saveData = async () => {
     for (var i = 0; i < school.routes.length; i++) {
@@ -100,6 +139,13 @@ export const BusRoutePlanner = () => {
     }
     try {
       const savedRoutes = school.routes;
+      for (var i = 0; i < deletedStops.length; i++) {
+        var stop = deletedStops[i];
+        if (stop.uid) {
+          stop.inRangeStudents = [];
+          await saveStop(stop);
+        }
+      }
       for (var i = 0; i < school.routes.length; i++) {
         const route = school.routes[i];
         if (route.uid) {
@@ -115,8 +161,12 @@ export const BusRoutePlanner = () => {
         }
       }
       for (var i = 0; i < deletedRoutes.length; i++) {
-        const route = deletedRoutes[i];
+        var route = deletedRoutes[i];
         if (route.uid) {
+          delete route.students;
+          route.stops = route.stops.map(stop => ({...stop, inRangeStudents: []}));
+          console.log(route);
+          await saveRoute(route);
           await deleteRoute(route.uid);
         }
       }
@@ -133,16 +183,17 @@ export const BusRoutePlanner = () => {
       school: school,
       students: [],
       stops: [],
-      polyline: ""
+      polyline: []
     };
     if (polylines[selectedRoute]) {
-      polylines[selectedRoute].setMap(null);
+      polylines[selectedRoute].forEach(polyline => polyline.setMap(null));
     }
     setSchool({...school, routes: [...school.routes, newRoute]});
     setSelectedRoute(school.routes.length);
+    setChangeRoute(false);
     setFirstSelect(true);
     setStopSelect(false);
-    setPolylines([...polylines, ""]);
+    setPolylines([...polylines, []]);
     setValidatedRoutes([...validatedRoutes, false]);
   }
   const handleApiLoaded = (map, maps) => {
@@ -158,88 +209,146 @@ export const BusRoutePlanner = () => {
     });
     setPolylines(school.routes.map(route => {
       if (route.polyline) {
-        return new maps.Polyline({
-          path: maps.geometry.encoding.decodePath(route.polyline),
-          strokeColor: "#FF0000",
+        return route.polyline.map(polyline => new maps.Polyline({
+          path: maps.geometry.encoding.decodePath(polyline),
+          strokeColor: "#0000FF",
           strokeOpacity: 1.0,
           strokeWeight: 2
-        });
+        }));
       }
-      return "";
+      return [];
     }
     ));
     setValidatedRoutes(school.routes.map(route => true));
+  }
+  const calculateRoutes = async () => {
+    if (validatedRoutes[selectedRoute]) {
+      return;
+    } else if (school.routes[selectedRoute].stops.length === 0) {
+      alert("Please add at least one stop onto the route.");
+      return;
+    } else if (school.routes[selectedRoute].stops.some(stop =>
+        !(stop.latitude && stop.longitude))) {
+      alert("Please place all stops on the map so route can be created.");
+      return;
+    }
+
+    try {
+      const sorted = [...school.routes[selectedRoute].stops.slice(0).sort((a, b) => b.arrivalIndex - a.arrivalIndex)];
+      const newSchool = school;
+      var newPolylinesEncoded = [];
+      var newPolylinesDecoded = [];
+      for (var j = 0; j < sorted.length/26; j++) {
+        const request = {
+          origin: {
+            lat: j === 0 ? parseFloat(school.latitude) : parseFloat(sorted[j * 26 - 1].latitude),
+            lng: j === 0 ? parseFloat(school.longitude) : parseFloat(sorted[j * 26 - 1].longitude),
+          },
+          destination: {
+            lat: parseFloat(sorted[Math.min(sorted.length - 1, j * 26 + 25)].latitude),
+            lng: parseFloat(sorted[Math.min(sorted.length - 1, j * 26 + 25)].longitude)
+          },
+          travelMode: 'DRIVING',
+          waypoints: sorted.filter(
+              (stop, index) => index >= j * 26 && index < Math.min(sorted.length - 1, j * 26 + 25)).map(stop => ({
+            location: {
+              lat: parseFloat(stop.latitude),
+              lng: parseFloat(stop.longitude)
+            }
+          }))
+        };
+        const result = await directionsService.route(request);
+        console.log(result);
+        if (result.status === "OK") {
+          if (polylines[selectedRoute]) {
+            polylines[selectedRoute].forEach(oldPolyline => oldPolyline.setMap(null));
+          }
+          const polyLine = new googleMaps.Polyline({
+            path: googleMaps.geometry.encoding.decodePath(
+                result.routes[0].overview_polyline),
+            strokeColor: "#0000FF",
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+          newPolylinesDecoded = [...newPolylinesDecoded, polyLine];
+          newPolylinesEncoded = [...newPolylinesEncoded, result.routes[0].overview_polyline];
+          const len = result.routes[0].legs.length;
+          for (var i = 0; i < result.routes[0].legs.length; i++) {
+            if (i === 0 && j === 0) {
+              sorted[0].pickupTime =
+                  subtractDriveTime(school.arrivalTime,
+                      Math.trunc(result.routes[0].legs[0].duration.value / 60));
+              sorted[0].dropoffTime =
+                  addDriveTime(school.departureTime,
+                      Math.trunc(result.routes[0].legs[0].duration.value / 60));
+            } else {
+              sorted[j * 26 + i].pickupTime =
+                  subtractDriveTime(sorted[j * 26 + i - 1].pickupTime,
+                      Math.trunc(result.routes[0].legs[i].duration.value / 60));
+              sorted[j * 26 + i].dropoffTime =
+                  addDriveTime(sorted[j * 26 + i - 1].dropoffTime,
+                      Math.trunc(result.routes[0].legs[i].duration.value / 60));
+            }
+          }
+          console.log(sorted);
+          console.log(result.routes[0].overview_polyline);
+          console.log(result.routes[0].overview_polyline.includes(","));
+        } else {
+          alert(result.status);
+          return;
+        }
+      }
+      setPolylines(polylines.map((line, index) =>
+          index === selectedRoute ? newPolylinesDecoded : line
+      ));
+      setValidatedRoutes(validatedRoutes.map((bool, index) =>
+          index === selectedRoute ? true : bool
+      ));
+      newPolylinesDecoded.forEach(newpolyLine => newpolyLine.setMap(googleMap));
+      newSchool.routes[selectedRoute].stops = sorted;
+      newSchool.routes[selectedRoute].polyline = newPolylinesEncoded;
+      setSchool(newSchool);
+    } catch (e) {
+      alert(e);
+    }
   }
   const completeRoute = firstSelect && !school.students.some(student =>
         (school.routes[selectedRoute].students.some(s => student.uid === s.uid) &&
             !hasInRangeStop(student, school.routes[selectedRoute])));
 
-
   return (
       <div id="busRouteComplete">
         {loading ? <h3>Loading</h3> :
             <div id="busRouteFlex">
-              <h1>{school.name} <FontAwesomeIcon
-                  icon={faCircleQuestion}
-                  size="xs"
-                  data-tip
-                  data-for="plannerTip"
-              /><ReactTooltip
-                  id="plannerTip"
-                  place="bottom"
-                  effect="solid"
-              >
-                <p>Use this page to update the routes and stops for the current school.</p>
-                <p>Make sure to save before leaving the page, or all of your progress will be lost.</p>
-                <p>Map Key</p>
-                <div id="keyList">
-                  <div id="keyItem"><label>School: <FontAwesomeIcon
-                      icon={faSchool}
-                      size="sm"
-                  /></label></div>
-                  <div id="keyItem"><label>Student with no route: <FontAwesomeIcon
-                      icon={faLocationPin}
-                      size="sm"
-                      id="exampleNoRouteMarker"
-                  /></label></div>
-                  <div id="keyItem"><label>Student on other route with no in-range stop: <FontAwesomeIcon
-                      icon={faLocationPin}
-                      size="sm"
-                      id="exampleNoStopMarker"
-                  /></label></div>
-                  <div id="keyItem"><label>Student on other route with in-range stop: <FontAwesomeIcon
-                      icon={faLocationPin}
-                      size="sm"
-                      id="exampleRouteMarker"
-                  /></label></div>
-                  <div id="keyItem"><label>Student on current route with no in-range stop: <FontAwesomeIcon
-                      icon={faLocationPin}
-                      size="sm"
-                      id="exampleCurrentRouteNoStopMarker"
-                  /></label></div>
-                  <div id="keyItem"><label>Student on current route: <FontAwesomeIcon
-                      icon={faLocationPin}
-                      size="sm"
-                      id="exampleCurrentRouteMarker"
-                  /></label></div>
-                  <div id="keyItem"><label>Student on current route and in-range of current stop: <FontAwesomeIcon
-                      icon={faLocationPin}
-                      size="sm"
-                      id="exampleCurrentRouteAndStopMarker"
-                  /></label></div>
-                  <div id="keyItem"><label>Bus stop: <FontAwesomeIcon
-                      icon={faMapPin}
-                      size="sm"
-                  /></label></div>
-                  <div id="keyItem"><label>Current bus stop: <FontAwesomeIcon
-                      icon={faMapPin}
-                      size="sm"
-                      id="exampleCurrentStopMarker"
-                  /></label></div>
-                </div>
-              </ReactTooltip></h1>
               <div style={{display: 'flex'}}>
                 <div id="routes">
+                  <h1>{school.name} <FontAwesomeIcon
+                      icon={faCircleQuestion}
+                      size="xs"
+                      data-tip
+                      data-for="plannerTip"
+                  /><ReactTooltip
+                      id="plannerTip"
+                      place="bottom"
+                      effect="solid"
+                  >
+                    <p>Use this page to update the routes and stops for the current school.</p>
+                    <p>Make sure to save before leaving the page, or all of your progress will be lost.</p>
+                  </ReactTooltip> <FontAwesomeIcon
+                      icon={!validatedRoutes.includes(false) ? faCheck : faXmark}
+                      id={!validatedRoutes.includes(false) ? "plannerComplete" : "plannerIncomplete"}
+                      size="sm"
+                      data-tip
+                      data-for="readyToSaveTip"
+                  /><ReactTooltip
+                      id="readyToSaveTip"
+                      place="top"
+                      effect="solid"
+                  >
+                    {!validatedRoutes.includes(false) ? "All routes have been validated and can be saved." :
+                        "Not all routes have been validated.  All routes must be validated before saving."
+                    }
+                  </ReactTooltip></h1>
                   <div id="routeEditor">
                     <h3>Current Route <FontAwesomeIcon
                         icon={faCircleQuestion}
@@ -252,8 +361,8 @@ export const BusRoutePlanner = () => {
                         effect="solid"
                       >
                         <p>Select a route from the dropdown to edit it.</p>
-                        <p>Click on a student in the map to add/remove it to/from the current route.</p>
                         <p>Click on Create Route to add a new route to the school.</p>
+                        <p>Click on the student icon in the toolbar to add/remove students to/from this route by clicking their icon on the map.</p>
                         <p>Click on the Validate Route button to create a route path based on the route's stops.</p>
                       </ReactTooltip> {firstSelect && <><FontAwesomeIcon
                         icon={completeRoute ? faCheck : faXmark}
@@ -271,16 +380,17 @@ export const BusRoutePlanner = () => {
                       }
                       </ReactTooltip></>}
                     </h3>
-                    <div style={{padding: "10px"}}>
+                    <div id="plannerSelectCreate">
                     <select
                         style={{width: "50%"}}
                       onChange={e => {
                         setSelectedRoute(parseInt(e.target.value));
+                        setChangeRoute(false);
                         if (firstSelect && polylines[selectedRoute]) {
-                          polylines[selectedRoute].setMap(null)
+                          polylines[selectedRoute].forEach(polyline => polyline.setMap(null));
                         }
                         if (polylines[parseInt(e.target.value)]) {
-                          polylines[parseInt(e.target.value)].setMap(googleMap);
+                          polylines[parseInt(e.target.value)].forEach(polyline => polyline.setMap(googleMap));
                         }
                         setFirstSelect(true);
                         setPlaceStopLocation(false);
@@ -290,7 +400,7 @@ export const BusRoutePlanner = () => {
                   >
                     {!firstSelect && <option value="-1">Select a Route:</option>}
                     {school.routes.map((route, index) => (
-                        <option value={index}>{route.name}</option>
+                        <option value={index}>{route.name || "New Route"}</option>
                     ))}
                   </select>
                   <button onClick={e => createRoute()}>Create Route</button>
@@ -314,87 +424,18 @@ export const BusRoutePlanner = () => {
                               index === selectedRoute ? {...r, desciption: e.target.value} : r)});
                       }}
                   /></div>}
+                    {firstSelect && <div style={{width: "100%"}}>{`Students on route: ${school.routes[selectedRoute].students.length}`}</div>}
                     {firstSelect && <div><button
-                      onClick={e => {
-                        if (validatedRoutes[selectedRoute]) {
-                          return;
-                        } else if (school.routes[selectedRoute].stops.length === 0) {
-                          alert("Please add at least one stop onto the route.");
-                          return;
-                        } else if (school.routes[selectedRoute].stops.some(stop =>
-                            !(stop.latitude && stop.longitude))) {
-                          alert("Please place all stops on the map so route can be created.");
-                          return;
-                        }
-                        const sorted = school.routes[selectedRoute].stops.sort((a, b) => a.arrivalIndex - b.arrivalIndex);
-                        const request = {
-                          origin: {
-                            lat: parseFloat(sorted[0].latitude),
-                            lng: parseFloat(sorted[0].longitude),
-                          },
-                          destination: {
-                            lat: parseFloat(school.latitude),
-                            lng: parseFloat(school.longitude)
-                          },
-                          travelMode: 'DRIVING',
-                          waypoints: sorted.filter((stop, index) => index > 0).map(stop => ({
-                            location: {
-                              lat: parseFloat(stop.latitude),
-                              lng: parseFloat(stop.longitude)
-                            }
-                          }))
-                        };
-                        const path = directionsService.route(request, function(result, status) {
-                          console.log(result);
-                          if (status == "OK") {
-                            if (polylines[selectedRoute]) {
-                              const oldPolyline = polylines[selectedRoute];
-                              oldPolyline.setMap(null);
-                            }
-                            const polyLine = new googleMaps.Polyline({
-                              path: googleMaps.geometry.encoding.decodePath(result.routes[0].overview_polyline),
-                              strokeColor: "#FF0000",
-                              strokeOpacity: 1.0,
-                              strokeWeight: 2
-                            });
-                            polyLine.setMap(googleMap);
-                            setPolylines(polylines.map((line, index) =>
-                                index === selectedRoute ? polyLine : line
-                            ));
-                            const newSchool = school;
-                            newSchool.routes[selectedRoute].polyline = result.routes[0].overview_polyline;
-                            const len = result.routes[0].legs.length;
-                            sorted[len - 1].pickupTime =
-                                subtractDriveTime(school.arrivalTime, Math.trunc(result.routes[0].legs[len - 1].duration.value/60));
-                            sorted[len - 1].dropoffTime =
-                                addDriveTime(school.arrivalTime, Math.trunc(result.routes[0].legs[len - 1].duration.value/60));
-                            for (var i = result.routes[0].legs.length - 2; i >= 0; i --) {
-                              sorted[i].pickupTime =
-                                  subtractDriveTime(sorted[i + 1].pickupTime,
-                                      Math.trunc(result.routes[0].legs[i].duration.value/60));
-                              sorted[i].dropoffTime =
-                                  addDriveTime(sorted[i + 1].dropoffTime,
-                                      Math.trunc(result.routes[0].legs[i].duration.value/60));
-                            }
-                            newSchool.routes[selectedRoute].stops = sorted;
-                            setSchool(newSchool);
-                            console.log(newSchool);
-                            setValidatedRoutes(validatedRoutes.map((bool, index) =>
-                                index === selectedRoute ? true : bool
-                            ));
-                            console.log(result.routes[0].legs[0].duration.text);
-                            console.log(subtractDriveTime("09:00", Math.trunc(result.routes[0].legs[0].duration.value/60)));
-                            console.log(addDriveTime("15:25", Math.trunc(result.routes[0].legs[0].duration.value/60)));
-                            console.log(subtractDriveTime("00:20", Math.trunc(result.routes[0].legs[0].duration.value/60)));
-                            console.log(addDriveTime("23:35", Math.trunc(result.routes[0].legs[0].duration.value/60)));
-                          }
-                        })
-                      }
-                      }>{validatedRoutes[selectedRoute] ? "Valid Route!" : "Validate Route"}</button>
+                      onClick={e => calculateRoutes()}
+                    >{validatedRoutes[selectedRoute] ? "Valid Route!" : "Validate Route"}</button>
                       <button
                           onClick={e => {
                             setDeletedRoutes([...deletedRoutes, school.routes[selectedRoute]]);
                             setSchool({...school, routes: school.routes.filter((route, index) => index !== selectedRoute)});
+                            if (polylines[selectedRoute]) {
+                              polylines[selectedRoute].forEach(polyline => polyline.setMap(null));
+                            }
+                            setPolylines(polylines.filter((p, index) => index !== selectedRoute));
                             setFirstSelect(false);
                             setStopSelect(false);
                             setPlaceStopLocation(false);
@@ -424,11 +465,27 @@ export const BusRoutePlanner = () => {
                           effect="solid"
                       >
                         <p>Select a stop from the dropdown to edit that stop.</p>
-                        <p>Check the Edit Stop Location box and click on the map to change the stops location.</p>
+                        <p>Click Create Stop to add a new stop to the current route.</p>
+                        <p>Check the stop icon in the toolbar to place/change the current stops location by clicking the map.</p>
                         <p>The stop times will be calculated and edited automatically when route is validated.</p>
-                      </ReactTooltip></h3>}
+                      </ReactTooltip> {stopSelect && <><FontAwesomeIcon
+                          icon={school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).longitude ? faCheck : faXmark}
+                          id={school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).longitude ? "plannerComplete" : "plannerIncomplete"}
+                          size="sm"
+                          data-tip
+                          data-for="placedStopTip"
+                      /><ReactTooltip
+                          id="placedStopTip"
+                          place="top"
+                          effect="solid"
+                      >
+                        {school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).longitude ?
+                            "This stop has had its location set on the map." :
+                            "This stop has not had its location set on the map."
+                        }
+                      </ReactTooltip></>}</h3>}
                     {firstSelect || <h5>Select a route to edit its stops.</h5>}
-                    {firstSelect && <select
+                    {firstSelect && <div id="plannerSelectCreate"><select
                         style={{ width: "50%" }}
                         onChange={e => {
                           setSelectedStop(parseInt(e.target.value));
@@ -438,12 +495,11 @@ export const BusRoutePlanner = () => {
                         value={stopSelect ? selectedStop : "-1"}
                     >
                       {stopSelect || <option value="-1">Select a Stop:</option>}
-                      {school.routes[selectedRoute].stops.sort((a, b) => a.arrivalIndex - b.arrivalIndex).map(stop => (
-                          <option value={stop.arrivalIndex}>{stop.name || stop.arrivalIndex}</option>
+                      {school.routes[selectedRoute].stops.slice(0).sort((a, b) => a.arrivalIndex - b.arrivalIndex).map(stop => (
+                          <option value={stop.arrivalIndex}>{stop.name || (stop.uid ? `Stop #${stop.uid}` : "New Stop")}</option>
                       ))}
                     </select>
-                    }
-                    {(firstSelect && school.routes[selectedRoute].stops.length < 25) && <button
+                    <button
                         onClick={e => {
                           setSchool({...school, routes: school.routes.map((route, index) =>
                                 index === selectedRoute ? {...route, stops: [...route.stops, {
@@ -451,7 +507,8 @@ export const BusRoutePlanner = () => {
                                     location: "",
                                     arrivalIndex: route.stops.length,
                                     pickupTime: "00:00",
-                                    dropoffTime: "00:00"
+                                    dropoffTime: "00:00",
+                                    inRangeStudents: []
                                   }]} : route
                             )}
                           );
@@ -462,7 +519,7 @@ export const BusRoutePlanner = () => {
                               index === selectedRoute ? false : bool
                           ));
                         }}
-                    >Create Stop</button>}
+                    >Create Stop</button></div>}
                     {stopSelect && <div style={{ width: "100%" }}>
                       <div style={{ width: "100%"}}>
                         <label id="plannerLabelDisplay">Stop Name: </label>
@@ -470,7 +527,7 @@ export const BusRoutePlanner = () => {
                             type="text"
                             maxLength="100"
                             style={{ width: "70%" }}
-                            value={school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).name}
+                            value={school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).name || ""}
                             onInput={e => {
                               setSchool({...school, routes: school.routes.map((route, index) =>
                                     index === selectedRoute ? {...route, stops: route.stops.map(stop =>
@@ -480,12 +537,12 @@ export const BusRoutePlanner = () => {
                         />
                       </div>
                       <div style={{ width: "100%"}}>
-                        <label id="plannerLabelDisplay">Stop Location: </label>
+                        <label id="plannerLabelDisplay">Location Description: </label>
                         <input
                             type="text"
                             maxLength="100"
                             style={{ width: "70%" }}
-                            value={school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).location}
+                            value={school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).location || ""}
                             onInput={e => {
                               setSchool({...school, routes: school.routes.map((route, index) =>
                                     index === selectedRoute ? {...route, stops: route.stops.map(stop =>
@@ -544,24 +601,20 @@ export const BusRoutePlanner = () => {
                             }}
                             value={selectedStop}
                         >
-                          {school.routes[selectedRoute].stops.sort((a, b) => a.arrivalIndex - b.arrivalIndex).map(stop => (
+                          {school.routes[selectedRoute].stops.slice(0).sort((a, b) => a.arrivalIndex - b.arrivalIndex).map(stop => (
                               <option value={stop.arrivalIndex}>{stop.arrivalIndex + 1}</option>
                           ))}
                         </select>
                         </label>
-                        <label style={{padding: "10px"}}>Select Stop Location: <input
-                            type="checkbox"
-                            checked={placeStopLocation}
-                            onChange={e => setPlaceStopLocation(e.target.checked)}
-                        /></label>
                       </div>
                     </div>}
-                    {stopSelect && <div style={{ display: "flex" }}>
+                    {stopSelect && <div style={{ display: "flex", alignItems: "center" }}>
                       <div style={{ flex: "35%" }}>
                         <label>Pick-Up Time: <input
                             type="time"
                             value={school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).pickupTime}
                             readOnly={true}
+                            style={{ backgroundColor: "transparent", border: "none" }}
                         /></label>
                       </div>
                       <div style={{ flex: "35%" }}>
@@ -569,6 +622,7 @@ export const BusRoutePlanner = () => {
                             type="time"
                             value={school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).dropoffTime}
                             readOnly={true}
+                            style={{ backgroundColor: "transparent", border: "none" }}
                         /></label>
                       </div>
                       <div style={{ flex: "30%" }}>
@@ -586,6 +640,7 @@ export const BusRoutePlanner = () => {
                                       )} : route)});
                               setStopSelect(false);
                               setPlaceStopLocation(false);
+                              setDeletedStops([...deletedStops, school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop)]);
                               setValidatedRoutes(validatedRoutes.map((bool, index) =>
                                   index === selectedRoute ? false : bool
                               ));
@@ -604,7 +659,110 @@ export const BusRoutePlanner = () => {
                   </div>
                 </div>
                 <div id="centerMapContainer">
-                <div id="mapContainer">
+                <div id="mapSideContainer">
+                  <div id="toolbar">
+                    <div id="tools">
+                    <button
+                        id={changeRoute ? "mapActionButtonSelected" : "mapActionButton"}
+                        disabled={!firstSelect}
+                        onClick={e => {
+                          setChangeRoute(!changeRoute);
+                          setPlaceStopLocation(false);
+                        }}
+                        data-tip
+                        data-for="changeStudentRouteTip"
+                    ><FontAwesomeIcon
+                        icon={faLocationPin}
+                        size="xl"
+                    /></button><ReactTooltip
+                      id="changeStudentRouteTip"
+                      place="top"
+                      effect="solid"
+                  >
+                    Add/remove student(s) to current route by clicking their icon on the map.
+                  </ReactTooltip>
+                    <button
+                        id={placeStopLocation ? "mapActionButtonSelected" : "mapActionButton"}
+                        disabled={!stopSelect}
+                        onClick={e => {
+                          setChangeRoute(false);
+                          setPlaceStopLocation(!placeStopLocation);
+                        }}
+                        data-tip
+                        data-for="placeStopTip"
+                    ><FontAwesomeIcon
+                        icon={faMapPin}
+                        size="xl"
+                    /></button><ReactTooltip
+                      id="placeStopTip"
+                      place="top"
+                      effect="solid"
+                  >
+                    Place/move stop location by clicking on the map.
+                  </ReactTooltip>
+                    </div>
+                    <div id="plannerKeys">
+                      <div id="plannerKey">
+                        <FontAwesomeIcon
+                            icon={faMapPin}
+                            size="2xl"
+                        />
+                        <ReactTooltip
+                            id="placeStopTip"
+                            place="top"
+                            effect="solid"
+                        >
+                          Place/move stop location by clicking on the map.
+                        </ReactTooltip>
+                        <p>Stop</p>
+                      </div>
+                      <div id="plannerKey">
+                        <FontAwesomeIcon
+                            icon={faLocationPin}
+                            size="2xl"
+                        />
+                        <ReactTooltip
+                            id="placeStopTip"
+                            place="top"
+                            effect="solid"
+                        >
+                          Place/move stop location by clicking on the map.
+                        </ReactTooltip>
+                        <p>Student(s)</p>
+                      </div>
+                      <div id="plannerKey">
+                        <FontAwesomeIcon
+                            icon={faLocationDot}
+                            size="2xl"
+                        />
+                        <ReactTooltip
+                            id="placeStopTip"
+                            place="top"
+                            effect="solid"
+                        >
+                          Place/move stop location by clicking on the map.
+                        </ReactTooltip>
+                        <p id="descriptiveText">Student(s) w/o</p>
+                        <p id="descriptiveText">in-range stop</p>
+                      </div>
+                      <div id="plannerKey">
+                        <div id="exampleRed"/>
+                        <p id="descriptiveText">Not on route</p>
+                        <p id="descriptiveText">route</p>
+                      </div>
+                      <div id="plannerKey">
+                        <div id="exampleBlue"/>
+                        <p id="descriptiveText">On selected</p>
+                        <p id="descriptiveText">route</p>
+                      </div>
+                      <div id="plannerKey">
+                        <div id="exampleGreen"/>
+                        <p id="descriptiveText">In range of</p>
+                        <p id="descriptiveText">selected stop</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div id="mapContainer">
                   <GoogleMapReact
                       bootstrapURLKeys={{key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`}}
                       defaultCenter={{ lat: parseFloat(school.latitude), lng: parseFloat(school.longitude) }}
@@ -618,39 +776,51 @@ export const BusRoutePlanner = () => {
                         lng={parseFloat(school.longitude)}
                         isSchool
                     />
-                    {school.students.map((student) => (
+                    {locations.map((location) => (
                         <SelectableMarker
-                            student={student}
-                            onCurrentRoute={firstSelect && school.routes[selectedRoute].students.some(s => student.uid === s.uid)}
-                            notOnRoute={!school.routes.some(route => route.students.some(s => s.uid === student.uid))}
-                            inRangeStop={school.routes.some(route => route.students.some(s => s.uid === student.uid)) &&
-                                hasInRangeStop(student, school.routes.find(route => route.students.some(s => student.uid === s.uid)))
-                            }
+                            students={location.students}
+                            onCurrentRoute={firstSelect && school.routes[selectedRoute].students.some(s => location.students[0].uid === s.uid)}
+                            notOnRoute={!school.routes.some(route => route.students.some(s => s.uid === location.students[0].uid))}
+                            inRangeStop={school.routes.some(route => route.stops.some(stop => stop.inRangeStudents.some(s => s.uid === location.students[0].uid)))}
                             onCurrentStop={firstSelect && stopSelect &&
-                                school.routes[selectedRoute].students.some(s => student.uid === s.uid) &&
-                                inRange(student, school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop))
+                                school.routes[selectedRoute].stops.find(stop => stop.arrivalIndex === selectedStop).inRangeStudents.some(s => location.students[0].uid === s.uid)
                             }
-                            selectRoute={(st) => {
-                              if (!firstSelect) {
+                            selectRoute={(students) => {
+                              if (!firstSelect || !changeRoute) {
                                 return;
                               }
-                              if (school.routes[selectedRoute].students.some(s => s.uid === st.uid)) {
+                              if (school.routes[selectedRoute].students.some(s => s.uid === students[0].uid)) {
                                 setSchool({...school, routes: school.routes.map((r, index) =>
-                                  index === selectedRoute ? {...r, students: r.students.filter(s => s.uid !== st.uid)} : r)});
+                                  index === selectedRoute ? {...r,
+                                    students: r.students.filter(s => !students.some(st => st.uid === s.uid)),
+                                    stops: r.stops.map(stop => ({...stop,
+                                      inRangeStudents: stop.inRangeStudents.filter(s => !students.some(st => st.uid === s.uid))
+                                    }))
+                                } : r)});
                               } else {
                                 setSchool({...school, routes: school.routes.map((r, index) => {
-                                  if (r.students.some(s => s.uid === st.uid)) {
-                                    return {...r, students: r.students.filter(s => s.uid !== st.uid)};
+                                  if (r.students.some(s => s.uid === students[0].uid)) {
+                                    return {...r,
+                                      students: r.students.filter(s => !students.some(st => st.uid === s.uid)),
+                                      stops: r.stops.map(stop => ({...stop,
+                                        inRangeStudents: stop.inRangeStudents.filter(s => !students.some(st => st.uid === s.uid))
+                                      }))
+                                    };
                                   } else if (index === selectedRoute) {
-                                    return {...r, students: [...r.students, st]};
+                                    return {...r,
+                                      students: [...r.students, ...students],
+                                      stops: r.stops.map(stop => ({...stop,
+                                          inRangeStudents: inRange(students[0], stop) ? [...stop.inRangeStudents, ...students] : stop.inRangeStudents
+                                      }))
+                                    };
                                   } else {
                                     return r;
                                   }
                                 })});
                               }
                             }}
-                            lat={parseFloat(student.parentUser.latitude)}
-                            lng={parseFloat(student.parentUser.longitude)}
+                            lat={parseFloat(location.latitude)}
+                            lng={parseFloat(location.longitude)}
                         />
                     ))}
                     {firstSelect && school.routes[selectedRoute].stops.filter(stop => stop.latitude && stop.longitude).map(stop => (
@@ -662,6 +832,7 @@ export const BusRoutePlanner = () => {
                         />
                     ))}
                   </GoogleMapReact>
+                  </div>
                 </div>
                   <button onClick={e => saveData()}>Save All Changes</button>
                 </div>
