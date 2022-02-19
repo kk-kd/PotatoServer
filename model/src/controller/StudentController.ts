@@ -41,11 +41,6 @@ export class StudentController extends Repository<Student> {
   }
   async filterAllStudents(request: Request, response: Response, next: NextFunction) {
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
-        response.status(409).send("User is not an admin.")
-        return;
-      }
       const pageNum: number = +request.query.page;
       const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
@@ -203,7 +198,8 @@ export class StudentController extends Repository<Student> {
       return studentQueryResult;
     }
     catch (e) {
-      response.status(401).send("Student UID: " + request.params.uid + " was not found adn could not be deleted.")
+      response.status(401).send("Student UID: " + request.params.uid + " was not found adn could not be deleted.");
+      return;
     }
   }
   findByStudentID(uid: number) {
