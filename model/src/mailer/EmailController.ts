@@ -87,8 +87,13 @@ export class EmailController {
 
     const allEmails = allUserEmails
       .map((user) => {
+        if (/^.*@example\.com$/i.test(user.email)) {
+          console.log(`Skipped ${user.email}`);
+          return null;
+        }
         return user.email;
       })
+      .filter(Boolean)
       .join(", ");
 
     await publishMessage({ ...message, from: FROM, to: FROM, bcc: allEmails });
@@ -106,10 +111,14 @@ export class EmailController {
       .getMany();
 
     allEmails.forEach(async (user) => {
-      const parentDetails = await this.getParentPage(user.uid);
-      var myMessage = { ...message };
-      myMessage.html += parentDetails;
-      await publishMessage({ ...myMessage, from: FROM, to: user.email });
+      if (!/^.*@example\.com$/i.test(user.email)) {
+        const parentDetails = await this.getParentPage(user.uid);
+        var myMessage = { ...message };
+        myMessage.html += parentDetails;
+        await publishMessage({ ...myMessage, from: FROM, to: user.email });
+      } else {
+        console.log(`Skipped ${user.email}`);
+      }
     });
 
     response.status(201).send();
@@ -124,7 +133,7 @@ export class EmailController {
     const schoolRepository = getRepository(School);
     const schoolSelect = await schoolRepository
       .createQueryBuilder("schools")
-      .where("schools.uid = :uid", { uid: schoolId }) // TODO: change to unique name
+      .where("schools.uid = :uid", { uid: schoolId })
       .leftJoinAndSelect("schools.students", "students")
       .leftJoinAndSelect("students.parentUser", "parent")
       .getOne();
@@ -137,7 +146,11 @@ export class EmailController {
     const emailSet: Set<string> = new Set();
     schoolSelect.students.forEach(async (s) => {
       if ("parentUser" in s) {
-        emailSet.add(s.parentUser.email);
+        if (!/^.*@example\.com$/i.test(s.parentUser.email)) {
+          emailSet.add(s.parentUser.email);
+        } else {
+          console.log(`Skipped ${s.parentUser.email}`);
+        }
       }
     });
     const allEmails = Array.from(emailSet).join(", ");
@@ -155,7 +168,7 @@ export class EmailController {
     const schoolRepository = getRepository(School);
     const schoolSelect = await schoolRepository
       .createQueryBuilder("schools")
-      .where("schools.uid = :uid", { uid: schoolId }) // TODO: change to unique name
+      .where("schools.uid = :uid", { uid: schoolId })
       .leftJoinAndSelect("schools.students", "students")
       .leftJoinAndSelect("students.parentUser", "parent")
       .getOne();
@@ -168,7 +181,11 @@ export class EmailController {
     const userSet: Set<User> = new Set();
     schoolSelect.students.forEach(async (s) => {
       if ("parentUser" in s) {
-        userSet.add(s.parentUser);
+        if (!/^.*@example\.com$/i.test(s.parentUser.email)) {
+          userSet.add(s.parentUser);
+        } else {
+          console.log(`Skipped ${s.parentUser.email}`);
+        }
       }
     });
 
@@ -205,7 +222,11 @@ export class EmailController {
     const emailSet: Set<string> = new Set();
     routeSelect.students.forEach(async (s) => {
       if ("parentUser" in s) {
-        emailSet.add(s.parentUser.email);
+        if (!/^.*@example\.com$/i.test(s.parentUser.email)) {
+          emailSet.add(s.parentUser.email);
+        } else {
+          console.log(`Skipped ${s.parentUser.email}`);
+        }
       }
     });
 
@@ -238,7 +259,10 @@ export class EmailController {
     const userSet: Set<User> = new Set();
     routeSelect.students.forEach(async (s) => {
       if ("parentUser" in s) {
-        userSet.add(s.parentUser);
+        if (/^.*@example\.com$/i.test(s.parentUser.email)) {
+          userSet.add(s.parentUser);
+          console.log(`Skipped ${s.parentUser.email}`);
+        }
       }
     });
 
