@@ -296,29 +296,29 @@ export async function updateStop(uid, specifications) {
   });
 }
 // Email Calls
-export async function sendEmailToAll(uid, specifications) {
+export async function sendEmailToAll(specifications) {
   return await axios.post("/api/email/general/all", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
-export async function sendEmailToUsersFromSchool(uid, specifications) {
+export async function sendEmailToUsersFromSchool(specifications) {
   return await axios.post("/api/email/general/school", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
-export async function sendEmailToUsersOnRoute(uid, specifications) {
+export async function sendEmailToUsersOnRoute(specifications) {
   return await axios.post("/api/email/general/route", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
 
-export async function resetPassword(uid, specifications) {
-  return await axios.put("/api/reset-password", specifications, {
+export async function resetPassword(specifications) {
+  return await axios.post("/api/reset-password", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
 export async function forgetPassword(specifications) {
-  return await axios.put("/api/forget-password", specifications, {
+  return await axios.post("/api/forget-password", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
