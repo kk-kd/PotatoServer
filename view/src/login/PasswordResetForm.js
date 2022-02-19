@@ -1,10 +1,9 @@
 
 import "./PasswordResetForm.css"
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment} from "react";
 import { resetPassword } from "../api/axios_wrapper";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate,  useParams } from "react-router-dom";
 import TextField from '@mui/material/TextField';
-
 
 
 export const PasswordResetForm = () => {
@@ -12,7 +11,8 @@ export const PasswordResetForm = () => {
     const action_text =  "Reset Password"
 
     // get token
-    const token = sessionStorage.getItem("token")
+    const {token} = useParams();
+    sessionStorage.setItem("token", "exToken");
     
     const [password, setPassword] = useState("");
     const [passwordValidate, setPasswordValidate] = useState("");
@@ -45,7 +45,7 @@ export const PasswordResetForm = () => {
     
     async function CallResetPassword (e) {
         let form_results = {
-          password: password,
+          newPassword: password,
           token: token
         }
         console.log(form_results)

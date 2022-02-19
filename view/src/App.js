@@ -48,7 +48,7 @@ export const App = () => {
             element={<PasswordForgotForm />}
           />
           <Route
-            path="/PasswordReset"
+            path="/PasswordReset/:token"
             element={<PasswordResetForm />}
           />
           <Route path="*" element={<Navigate to="/LogIn" />} />
