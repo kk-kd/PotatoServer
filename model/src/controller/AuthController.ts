@@ -1,11 +1,10 @@
-import { getRepository, getTreeRepository } from "typeorm";
+import { getRepository } from "typeorm";
 import { Request, Response } from "express";
 import { User } from "../entity/User";
 import * as jwt from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
 import * as EmailValidator from "email-validator";
 import { publishMessage } from "../mailer/emailWorker";
-import { userInfo } from "os";
 
 var passwordValidator = require("password-validator");
 var schema = new passwordValidator();
@@ -100,7 +99,7 @@ class AuthController {
     );
     const token = jwt.sign(payload, privateKey, signOptions);
     user.confirmationCode = await bcrypt.hash(token, 10);
-    const link = `${process.env.BASE_URL}/passwordReset?token=${token}`;
+    const link = `${process.env.BASE_URL}/PasswordReset/${token}`;
 
     try {
       const saved = await userRepository.save(user);
