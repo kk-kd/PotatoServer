@@ -1,31 +1,101 @@
 #exampleCurrentRouteMarker {
-  width: 30px;
-  height: 30px;
-  background-color: green;
-  cursor: pointer;
-  border-radius: 50%;
-  margin: auto;
-  position: relative;
+  color: blue;
+}
+
+#exampleCurrentRouteAndStopMarker {
+  color: green;
+}
+
+#exampleCurrentRouteNoStopMarker {
+  color: yellow;
 }
 
 #exampleNoRouteMarker {
-  width: 30px;
-  height: 30px;
-  background-color: red;
-  cursor: pointer;
-  border-radius: 50%;
-  margin: auto;
-  position: relative;
+  color: red;
+}
+
+#exampleNoStopMarker {
+  color: orange;
 }
 
 #exampleRouteMarker {
-  width: 30px;
-  height: 30px;
-  background-color: lightgrey;
-  cursor: pointer;
-  border-radius: 50%;
-  margin: auto;
-  position: relative;
+  color: grey;
+}
+
+#exampleCurrentStopMarker {
+  color: green;
+}
+
+#plannerComplete {
+  color: green;
+}
+
+#plannerIncomplete {
+  color: red;
+}
+
+#busRouteComplete {
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#busRouteFlex {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+#centerMapContainer {
+  flex: 50%;
+}
+
+#mapContainer {
+  height: 70vh;
+  width: 100%;
+}
+
+#mapSideContainer {
+  width: 100%
+}
+
+#mapActionButton {
+  height: 80px;
+  width: 80px;
+  margin: 0px;
+  bottom: 0px;
+}
+
+#mapActionButton:hover:enabled {
+  background-color: #0d6efd;
+  opacity: .33;
+  color: white;
+}
+
+#mapActionButtonSelected {
+  height: 80px;
+  width: 80px;
+  background-color: #0d6efd;
+  color: white;
+  margin: 0px;
+  bottom: 0px;
+}
+
+#mapKey {
+  background-color: white;
+  border: solid black;
+}
+
+#keyList {
+  list-style-type: none;
+}
+
+#keyItem {
+  border-top: solid black;
+  width: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 #description {
@@ -40,6 +110,17 @@
 #routeChooser {
   display: flex;
   alight-items: center;
+}
+
+#plannerLabelDisplay {
+  width: 30%;
+  text-align: right;
+  padding: 10px;
+}
+
+#routeDesciptionBox {
+  width: 70%;
+  height: 10vh;
 }
 
 #routeSelect {
@@ -59,12 +140,95 @@
   background-color: lightblue;
 }
 
+#toolbar {
+  width: 100%;
+  height: 90px;
+  padding-top: 10px;
+  justify-content: space-between;
+  display: flex;
+}
+
+#descriptiveText {
+  line-height: 15px;
+  margin: 0px;
+}
+
+#tools {
+  display: flex;
+}
+
+#plannerKeys {
+  padding-top: 20px;
+  display: flex;
+}
+
+#plannerKey {
+  width: 100px;
+  height: 60px;
+  border: solid black;
+  font-size: 10px;
+}
+
+#plannerSelectCreate {
+  padding: 10px 20px 7px 30px;
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+}
+
+#exampleGreen {
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: green;
+}
+
+#exampleBlue {
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: blue;
+}
+
+#exampleRed {
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: red;
+}
+
 #routes {
-  flex: 50%;
+  flex: 30%;
   display: inline-block;
-  border: solid gray;
   margin: 5px;
   padding: 5px;
+  height: 100%;
+}
+
+#routeEditor {
+  display: inline-block;
+  height: 40vh;
+  padding: 10px 10px 0px 10px;
+  width: 100%;
+}
+
+#stop {
+  border: solid black;
+  cursor: pointer;
+}
+
+#selectedStop {
+  border: solid black;
+  cursor: pointer;
+  background-color: blue;
+  color: white;
+}
+
+#stops {
+  padding: 7px;
 }
 
 #routeData {

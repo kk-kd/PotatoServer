@@ -2,6 +2,8 @@ import { UserController } from "../controller/UserController";
 import { StudentController } from "../controller/StudentController";
 import { RouteController } from "../controller/RouteController";
 import { SchoolController } from "../controller/SchoolController";
+import { EmailController } from "../mailer/EmailController";
+import { StopController } from "../controller/StopController";
 
 /*
 
@@ -30,6 +32,19 @@ export const allRoutes = [
     controller: UserController,
     action: "allUsers",
   },
+  {
+    method: "get",
+    route: "/api/stops/all",
+    controller: StopController,
+    action: "allStops",
+  },
+  {
+    method: "get",
+    route: "/api/stops/filter",
+    controller: StopController,
+    action: "filterAllStops",
+  },
+
   /*
     TODO: CONTAINS is needed, not just having/where exactly
     
@@ -65,6 +80,12 @@ export const allRoutes = [
   },
   {
     method: "get",
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "oneStop",
+  },
+  {
+    method: "get",
     route: "/api/user",
     controller: UserController,
     action: "currentUserJWT",
@@ -76,10 +97,22 @@ export const allRoutes = [
     action: "saveNewUser",
   },
   {
+    method: "post",
+    route: "/api/stops/",
+    controller: StopController,
+    action: "saveNewStop",
+  },
+  {
     method: "put",
     route: "/api/users/:uid",
     controller: UserController,
     action: "updateUser",
+  },
+  {
+    method: "put",
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "updateStop",
   },
   {
     method: "post",
@@ -122,6 +155,12 @@ export const allRoutes = [
     route: "/api/users/:uid",
     controller: UserController,
     action: "deleteUser",
+  },
+  {
+    method: "delete",
+    route: "/api/stops/:uid",
+    controller: StopController,
+    action: "deleteStop",
   },
   {
     method: "delete",
@@ -201,7 +240,7 @@ export const allRoutes = [
     method: "get",
     route: "/api/routes/planner/:uid",
     controller: SchoolController,
-    action: "oneRoutePlanner"
+    action: "oneRoutePlanner",
   },
   /*
     Gets all Schools.
@@ -309,5 +348,48 @@ export const allRoutes = [
     route: "/api/routes/sort/page=:page&size=:size&sort=:sort&sortDir=:sortDir",
     controller: RouteController,
     action: "sortAllRoutes",
+  },
+
+  // Email Routes
+  {
+    method: "post",
+    route: "/api/email/general/all",
+    controller: EmailController,
+    action: "sendGeneralAnnouncementToAll",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/route/all",
+    controller: EmailController,
+    action: "sendRouteAnnouncementToAll",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/general/school",
+    controller: EmailController,
+    action: "sendGeneralAnnouncementToUsersFromSchool",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/route/school",
+    controller: EmailController,
+    action: "sendRouteAnnouncementToUsersFromSchool",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/general/route",
+    controller: EmailController,
+    action: "sendGeneralAnnouncementToUsersOnRoute",
+  },
+
+  {
+    method: "post",
+    route: "/api/email/route/route",
+    controller: EmailController,
+    action: "sendRouteAnnouncementToUsersOnRoute",
   },
 ];

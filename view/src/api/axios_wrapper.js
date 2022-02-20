@@ -4,7 +4,6 @@ import axios from "axios";
 Welcome to the Axios Wrapper.
 To extract data that you need or error codes, call `.data` on the output of these calls.
 The example from ListUsers is below (as a hook):
-
 export const ListUsers = () => {
   const [data] = useState([]);
   useEffect(() => {
@@ -55,6 +54,12 @@ export async function getAllRoutes(specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function getAllStops(specifications) {
+  return await axios.get(`/api/stops/all`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
 
 /*
 FilterAll from table (students, users, schools, routes) gives you a filtered result from all entries.
@@ -97,6 +102,12 @@ export async function filterAllRoutes(specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function filterAllStops(specifications) {
+  return await axios.get(`/api/stops/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
 /*
    Returns one entry from a table (students, users, schools, routes) by UID.
 */
@@ -124,11 +135,17 @@ export async function getOneRoute(uid) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function getOneStop(uid) {
+  return await axios.get("/api/stops/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 export async function getOneRoutePlanner(uid) {
   return await axios.get("/api/routes/planner/" + uid, {
     headers: getHeaderWithAuthToken(),
   });
 }
+
 /*
    Deletes one entry from a table (students, users, schools, routes) by UID.
 */
@@ -152,7 +169,11 @@ export async function deleteRoute(uid) {
     headers: getHeaderWithAuthToken(),
   });
 }
-
+export async function deleteStop(uid) {
+  return await axios.delete("/api/stops/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 /*
 Register a User for the first time to add them to the database.
         For a User:
@@ -163,7 +184,6 @@ Register a User for the first time to add them to the database.
                 lastName: "NewLastName",
                 address: "New Address",
                 isAdmin: false,
-                password: "testnewpass",
             }
 */
 export async function registerUser(specifications) {
@@ -240,12 +260,17 @@ export async function saveRoute(specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function saveStop(specifications) {
+  return await axios.post("/api/stops", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 /*
    Updates an existing entry in a table (students, users, schools, routes) by UID.
 */
 export async function updateUser(uid, specifications, changePassword) {
   return await axios.put("/api/users/" + uid, specifications, {
-    params: {changePassword: changePassword},
+    params: { changePassword: changePassword },
     headers: getHeaderWithAuthToken(),
   });
 }
@@ -261,6 +286,39 @@ export async function updateSchool(uid, specifications) {
 }
 export async function updateRoute(uid, specifications) {
   return await axios.put("/api/routes/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+
+export async function updateStop(uid, specifications) {
+  return await axios.put("/api/stops/" + uid, specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+// Email Calls
+export async function sendEmailToAll(uid, specifications) {
+  return await axios.post("/api/email/general/all", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendEmailToUsersFromSchool(uid, specifications) {
+  return await axios.post("/api/email/general/school", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendEmailToUsersOnRoute(uid, specifications) {
+  return await axios.post("/api/email/general/route", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+
+export async function resetPassword(uid, specifications) {
+  return await axios.put("/api/reset-password", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function forgetPassword(uid, specifications) {
+  return await axios.put("/api/forget-password", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
