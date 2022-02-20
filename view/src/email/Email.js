@@ -5,7 +5,9 @@ import { EmailForm } from "./EmailForm";
 export const Emails = () => {
   return (
     <Routes>
-      <Route path="/send" element={<EmailForm />} />
+      <Route path="/send" element={<EmailForm />} /> 
+      <Route path="/send/:schoolid" element={<EmailForm />} /> 
+      <Route path="/send/:schoolid/:routeid" element={<EmailForm />} /> 
       <Route path="*" element={<Navigate from="*" to="/send" />} />
     </Routes>
   );

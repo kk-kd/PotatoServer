@@ -1,13 +1,15 @@
 import "./EmailForm.css"
 import { useEffect, useState, Fragment } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   filterAllRoutes,
   filterAllSchools,
   sendGeneralAnnouncementToUsersFromSchool,
   sendGeneralAnnouncementToUsersOnRoute,
   sendRouteAnnouncementToAll, 
-  sendGeneralAnnouncementToAll, 
+  sendGeneralAnnouncementToAll,
+  getOneSchool, 
+  getOneRoute
 } from "../api/axios_wrapper";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -16,7 +18,10 @@ import { FormControl, InputLabel, Select, MenuItem, CustomSelect, StyledOption} 
 
 
 export const EmailForm = () => {
+  const {schoolid, routeid} = useParams()
   const action_text = "Send Email";
+  const [schoolLoading, setSchoolLoading] = useState(true);
+
   const [emailType, setEmailType] = useState("");
 
   const [message, setMessage] = useState({}); // keys = subject, body
@@ -31,8 +36,6 @@ export const EmailForm = () => {
   const [filteredDataRoute, setFilteredDataRoute] = useState([]);
   const [routeFilter, setRouteFilter] = useState("");
   const [selectedRoute, setSelectedRoute] = useState();
-
-  let navigate = useNavigate();
 
   const resetState = () => {
     setEmailType('');
@@ -178,16 +181,65 @@ export const EmailForm = () => {
     }
   }, [routeFilter]);
 
+
+
+  const callGetSchool = async () => {
+    try {
+      const schoolData = await getOneSchool(schoolid);
+      const newSchool = schoolData.data
+      setFilteredDataSchool([newSchool]); 
+      setSelectedSchool(newSchool);
+         
+      return; 
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const callGetRoute = async () => {
+    try {
+      const routeData = await getOneRoute(routeid);
+      const newRoute= routeData.data
+      setFilteredDataRoute([newRoute]); 
+      setSelectedRoute(newRoute);
+          return; 
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    if (schoolid) {
+      setEmailType("school"); 
+      try {
+        const a = callGetSchool();   
+      }
+      catch (e) {
+        console.log(e)
+      }
+
+    }
+    else if (routeid) {
+      setEmailType("route")
+      try {
+        const a = callGetRoute();   
+      }
+      catch (e) {
+        console.log(e)
+      }
+    }
+  }, []);
+
   return (
     <div id="content">
       <h1> {action_text} </h1>
       <p> </p>
-      <p> </p>
+      <p>  </p>
       <p> </p>
   
         <label id="input-label" >
             {" "}
-            Send Email To:{"     "} {emailType}
+            Send Email To:{"     "} 
         </label>
         <FormControl  style={{minWidth: "10%"}} id = 'input-input' variant = "standard"> 
         <Select value = {emailType} onChange={(e) => {setEmailType(e.target.value);}}  >
@@ -213,13 +265,21 @@ export const EmailForm = () => {
             <TextField {...params} label="School" variant="standard" />
           )}
           getOptionLabel={(option) => option.name}
-          noOptionsText={"Type to Search"}
           
           value={selectedSchool}
-          onInputChange={(e) => {
-            setSchoolFilter(e.target.value);
+          onInputChange = {(e, newInputValue, reason) => {
+            console.log(reason)
+            if (reason === 'reset') {
+              
+              setSchoolFilter('')
+              return
+            } else if (reason === 'input') {
+              setSchoolFilter(newInputValue);
+            } 
           }}
+        
           onChange={(_event, newSchool) => {
+            console.log("on change")
             console.log(newSchool);
             setSelectedSchool(newSchool);
           }}
