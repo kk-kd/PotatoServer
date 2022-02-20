@@ -133,23 +133,26 @@ export const ListSchools = () => {
             </tbody>
           </table>
           <div className="pagination">
-            <button onClick={() => setPage(0)} disabled={page === 0 || showAll}>
+            <button className="paginationButton" onClick={() => setPage(0)} disabled={page === 0 || showAll}>
               {"<<"}
             </button>{" "}
             <button
-              onClick={() => setPage(page - 1)}
+                className="paginationButton"
+                onClick={() => setPage(page - 1)}
               disabled={page === 0 || showAll}
             >
               {"<"}
             </button>{" "}
             <button
-              onClick={() => setPage(page + 1)}
+                className="paginationButton"
+                onClick={() => setPage(page + 1)}
               disabled={page >= total / size - 1 || showAll}
             >
               {">"}
             </button>{" "}
             <button
-              onClick={() => setPage(Math.ceil(total / size) - 1)}
+                className="paginationButton"
+                onClick={() => setPage(Math.ceil(total / size) - 1)}
               disabled={page >= total / size - 1 || showAll}
             >
               {">>"}

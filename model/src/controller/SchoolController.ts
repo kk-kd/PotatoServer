@@ -125,7 +125,10 @@ export class SchoolController extends Repository<School> {
         .where("schools.uid = :uid", { uid: uidNumber })
         .leftJoinAndSelect("schools.routes", "routes")
         .leftJoinAndSelect("schools.students", "students")
+        .leftJoinAndSelect("students.inRangeStops", "studentInRangeStops")
         .leftJoinAndSelect("students.route", "route")
+        .leftJoinAndSelect("routes.students", "routeStudents")
+        .leftJoinAndSelect("routeStudents.inRangeStops", "inRangeStops")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;

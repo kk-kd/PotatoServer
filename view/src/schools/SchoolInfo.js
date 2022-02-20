@@ -180,8 +180,10 @@ export const SchoolInfo = () => {
             />
           </GoogleMapReact>
         </div>)}
-        <SchoolStudents data={students} />
-        <SchoolRoutes data={routes} />
+        <div style={{ display: "flex", width: "90%", marginLeft: "auto", marginRight: "auto" }}>
+          <SchoolStudents data={students} />
+          <SchoolRoutes data={routes} />
+        </div>
       </div>
   );
 }

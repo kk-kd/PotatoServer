@@ -3,13 +3,31 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
 export const SchoolRoutes = ({ data }) => {
   const columns = useMemo(
       () => [
         {
           Header: 'name',
-          accessor: 'name'
+          accessor: 'name',
+          Cell: props => (
+              <div><label>{props.value} {!props.row.original.students.some(student => !student.inRangeStops || student.inRangeStops.length === 0) || <><FontAwesomeIcon
+                  icon={faCircleExclamation}
+                  size="lg"
+                  style={{ color: "red" }}
+                  data-tip
+                  data-for="incompleteTip"
+              /><ReactTooltip
+                  id="incompleteTip"
+                  place="bottom"
+                  effect="solid"
+              >
+                At least one student on this route does not have an in-range stop.
+              </ReactTooltip></>}</label></div>
+          )
         },
         {
           Header: "Detail Page",
@@ -88,16 +106,16 @@ export const SchoolRoutes = ({ data }) => {
           </tbody>
         </table>
         <div className="pagination">
-          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          <button className="paginationButton" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
             {'<<'}
           </button>{' '}
-          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          <button className="paginationButton" onClick={() => previousPage()} disabled={!canPreviousPage}>
             {'<'}
           </button>{' '}
-          <button onClick={() => nextPage()} disabled={!canNextPage}>
+          <button className="paginationButton" onClick={() => nextPage()} disabled={!canNextPage}>
             {'>'}
           </button>{' '}
-          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          <button className="paginationButton" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
             {'>>'}
           </button>{' '}
           <span>
