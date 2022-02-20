@@ -20,6 +20,7 @@
     "body-parser": "^1.19.1",
     "class-validator": "^0.13.2",
     "cors": "^2.8.5",
+    "csv-parse": "^5.0.4",
     "dotenv": "^14.3.2",
     "email-validator": "^2.0.4",
     "express": "^4.17.2",
@@ -30,7 +31,8 @@
     "reflect-metadata": "^0.1.13",
     "ts-node": "^10.4.0",
     "typeorm": "^0.2.41",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "xhr2": "^0.2.1"
   },
   "devDependencies": {
     "@types/chai-http": "^4.2.0",
