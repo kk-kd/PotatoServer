@@ -1,3 +1,4 @@
+import "./EmailForm.css"
 import { useEffect, useState, Fragment } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -11,9 +12,9 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import { Radio } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
-import { FormControl } from "@mui/material";
-import { FormLabel } from "@mui/material";
-import { RadioGroup } from "@mui/material";
+import { FormControl, InputLabel, Select, MenuItem, CustomSelect, StyledOption} from "@mui/material";
+import SelectUnstyled from '@mui/base/SelectUnstyled';
+
 
 export const EmailForm = () => {
   const action_text = "Send Email";
@@ -131,67 +132,31 @@ export const EmailForm = () => {
   return (
     <div id="content">
       <h1> {action_text} </h1>
+      {/* <p> </p>
+      <p> </p>
+      <p> </p> */}
 
-      <div>
-        <FormControl>
-          <FormLabel id="demo-radio-buttons-group-label">
-            Email Announcment Type
-          </FormLabel>
-          <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue="all"
-            name="radio-buttons-group"
-            value={emailType}
-            onChange={(e) => {
-              setEmailType(e.target.value);
-            }}
-          >
-            <FormControlLabel value="all" control={<Radio />} label="All" />
-            <FormControlLabel value="route" control={<Radio />} label="Route" />
-            <FormControlLabel
-              value="school"
-              control={<Radio />}
-              label="School"
-            />
-          </RadioGroup>
+  
+        <label id="input-label" >
+            {" "}
+            Send Email To:{"     "}
+        </label>
+        <FormControl style={{minWidth: "10%"}} id = 'input-input' variant = "standard">
+        <Select defaultValue={"all"} onChange={(e) => {setEmailType(e.target.value);}} >
+            <MenuItem value={"all"}> All Parents </MenuItem>
+            <MenuItem value={"school"}>Parents of a Given School </MenuItem>
+            <MenuItem value={"route"}>Parents of a Given Route</MenuItem>
+        </Select>
+                
         </FormControl>
-      </div>
-
-      <p> </p>
-      <p> </p>
-      <label id="input-label" for="n">
-        {" "}
-        Email Subject Line:{" "}
-      </label>
-      <input
-        id="input-input"
-        type="text"
-        maxLength="100"
-        value={message.subject}
-        onChange={(e) => setMessage({ ...message, subject: e.target.value })}
-      />
-      <p> </p>
-      <p> </p>
-
-      <label id="input-label" for="firstName">
-        {" "}
-        Email Body:{" "}
-      </label>
-      <textarea
-        id="input-input"
-        type="text"
-        maxLength="100"
-        value={message.body}
-        onChange={(e) => setMessage({ ...message, body: e.target.value })}
-      />
 
       {emailType == "school" && (
         <Autocomplete
           sx={{
             paddingTop: "15px",
             paddingBottom: "10px",
-            paddingRight: "7%",
-            maxWidth: "50%",
+            // paddingRight: "7%",
+            maxWidth: "45%",
             margin: "auto",
           }}
           options={filteredDataSchool}
@@ -241,6 +206,35 @@ export const EmailForm = () => {
       )}
       <div></div>
 
+      <p> </p>
+      <p> </p>
+      <label id="input-label" for="n">
+        {" "}
+        Subject Line:{" "}
+      </label>
+      <input
+        id="input-input"
+        type="text"
+        maxLength="100"
+        value={message.subject}
+        onChange={(e) => setMessage({ ...message, subject: e.target.value })}
+      />
+      <p> </p>
+      <p> </p>
+
+      <label id="input-label" for="firstName">
+        {" "}
+        Email Body:{" "}
+      </label>
+      <textarea
+        id="input-input"
+        cols = "300"
+        maxLength="100"
+        value={message.body}
+        onChange={(e) => setMessage({ ...message, body: e.target.value })}
+      />
+      <p> </p>
+      <p> </p>
       <button
         className="submitbutton"
         type="button"
