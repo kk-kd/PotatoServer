@@ -5,10 +5,13 @@ import {
   OneToOne,
   JoinColumn,
   ManyToOne,
+  ManyToMany,
+  JoinTable
 } from "typeorm";
 import { Route } from "./Route";
 import { School } from "./School";
 import { User } from "./User";
+import { Stop } from "./Stop";
 
 @Entity({ name: "students" })
 export class Student {
@@ -39,4 +42,8 @@ export class Student {
 
   @ManyToOne(() => User, user => user.students, { onDelete: 'CASCADE' })
   parentUser: User;
+
+  @ManyToMany(() => Stop, stop => stop.inRangeStudents, { cascade: true, nullable: true })
+  @JoinTable()
+  inRangeStops: Stop[];
 }
