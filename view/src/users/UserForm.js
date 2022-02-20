@@ -119,8 +119,13 @@ export const UserForm = () => {
         try {
           const create_user_response = await registerUser(form_results);
           const madeUser = await getOneUser(create_user_response.data);
+          console.log("Made User")
+          console.log(madeUser.data)
+          console.log("Students = ")
+          console.log(students)
     
           for(const student of students) {
+            console.log(student)
             const name = await addStudent(student, madeUser.data);
           };
 
@@ -130,17 +135,21 @@ export const UserForm = () => {
         }
         if (!message) {
           alert("User Successfully Created");
+          navigate('/Users/list');
         }
        
-       navigate('/Users/list');
+       
         
       }
 
       async function addStudent(student, parent) {
         try {
-          const created = await saveStudent({...student, parentUser: parent});
+          const student_form = {...student, parentUser: parent}
+          console.log(student_form)
+          const created = await saveStudent(student_form);
           return created;
         } catch (e) {
+          console.log(e)
         }
       }
     

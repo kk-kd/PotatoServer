@@ -60,7 +60,15 @@ export const StudentForm = ({addStudentToUser}) => {
         if (valid_results.valid) {
             if (addStudentToUser) {
                 console.log("Adding Student to User");
-                addStudentToUser(student);
+                let form_results = {
+                  firstName: student.firstName,
+                  middleName: student.middleName,
+                  lastName: student.lastName,
+                  school: selectedSchool, 
+                  id: student.studentid,
+                  route: selectedRoute
+                }
+                addStudentToUser(form_results);
             }
             else {
                 console.log("Make New Student")
