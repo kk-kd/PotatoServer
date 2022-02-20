@@ -2,10 +2,12 @@ import "./login.css";
 import { useState } from "react";
 import PropTypes from "prop-types";
 import loginUserValidator from "../api/login_api";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Login({ setLoggedIn }) {
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
+  let navigate = useNavigate(); 
 
   async function handleLoginSubmit(e) {
     e.preventDefault(); // prevents page reload on submission
@@ -84,6 +86,8 @@ export default function Login({ setLoggedIn }) {
               <button className=" btn btn-outline-primary" type="submit">
                 Submit
               </button>
+              <button type="button" onClick= {(e) => {navigate('/PasswordForgot/');}}> {"Forgot Password"} </button>
+              <button type="button" onClick= {(e) => {navigate('/PasswordReset/');}}> {"Reset Password"} </button>
             </div>
           </form>
         </div>

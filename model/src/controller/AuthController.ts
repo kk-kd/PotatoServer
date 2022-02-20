@@ -163,7 +163,7 @@ class AuthController {
 
     const token = jwt.sign(payload, privateKey, signOptions);
     user.confirmationCode = await bcrypt.hash(token, 10);
-    const link = `${process.env.BASE_URL}/passwordReset?token=${token}`;
+    const link = `${process.env.BASE_URL}/PasswordReset/${token}`;
 
     try {
       await publishMessage({
