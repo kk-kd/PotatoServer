@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllRoutes } from "./../api/axios_wrapper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
 export const ListBusRoutes = () => {
   const [data, setData] = useState([]);
@@ -25,26 +28,7 @@ export const ListBusRoutes = () => {
           nameFilter: nameFilter,
           showAll: showAll,
         });
-        if (fetchedData.data.special) {
-          setData(
-            fetchedData.data.routes.map((route) => ({
-              uid: route.routes_uid,
-              name: route.routes_name,
-              desciption: route.routes_desciption,
-              school: {
-                name: route.school_name
-              },
-              students: route.count,
-            }))
-          );
-        } else {
-          setData(
-            fetchedData.data.routes.map((route) => ({
-              ...route,
-              students: route.students.length || 0,
-            }))
-          );
-        }
+        setData(fetchedData.data.routes);
         setTotal(fetchedData.data.total);
       } catch (error) {
         alert(error.response.data);
@@ -69,6 +53,9 @@ export const ListBusRoutes = () => {
       setSortDirec("ASC");
     }
   };
+  const isComplete = (students) => {
+    return !students.some(student => !student.inRangeStops || student.inRangeStops.length === 0);
+  }
 
   const columns = useMemo(
     () => [
@@ -80,16 +67,38 @@ export const ListBusRoutes = () => {
         HeaderName: "School",
         accessor: "school",
         Cell: (props) => {
-          return <label>{props.value ? props.value.name : ""}</label>;
+          return <div>{props.value ? props.value.name : ""}</div>;
         },
       },
       {
         HeaderName: "Student Count",
-        accessor: "students",
+        accessor: "students.length",
       },
       {
         Header: "Route Description",
         accessor: "desciption",
+      },
+      {
+        Header: "Complete",
+        accessor: "students",
+        Cell: (props) => (
+            <div>
+              <FontAwesomeIcon
+                  icon={isComplete(props.value) ? faCheck : faXmark}
+                  style={isComplete(props.value) ? { color: "green"} : { color: "red" }}
+                  size="xl"
+                  data-tip
+                  data-for={`copmleteRouteTip${props.row.original.uid}`}
+              />
+              <ReactTooltip
+                  id={`copmleteRouteTip${props.row.original.uid}`}
+                  place="bottom"
+                  effect="solid"
+              >
+                {isComplete(props.value) ? "Every student on this route has an in-range stop." : "At least one student on this route does not have an in-range stop."}
+              </ReactTooltip>
+            </div>
+        )
       },
       {
         Header: "Detail Page",
