@@ -7,9 +7,16 @@
 }
 
 #schoolMarker {
-  width: 20px;
-  height: 20px;
-  background-color: red;
-  border-radius: 50%;
   color: black;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+#stopMarker {
+  color: black;
+  transform: translateX(-50%) translateY(-100%);
+}
+
+#currentStopMarker {
+  color: green;
+  transform: translateX(-50%) translateY(-100%);
 }

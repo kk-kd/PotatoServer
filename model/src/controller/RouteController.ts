@@ -135,6 +135,7 @@ export class RouteController extends Repository<Route> {
             .createQueryBuilder("routes")
             .leftJoinAndSelect("routes.school", "school")
             .leftJoinAndSelect("routes.students", "students")
+            .leftJoinAndSelect("routes.stops", "stops")
             .orderBy(sortSpecification, sortDirSpec)
             .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
             .getManyAndCount();
@@ -150,6 +151,7 @@ export class RouteController extends Repository<Route> {
             .take(takeNum)
             .leftJoinAndSelect("routes.school", "school")
             .leftJoinAndSelect("routes.students", "students")
+            .leftJoinAndSelect("routes.stops", "stops")
             .orderBy(sortSpecification, sortDirSpec)
             .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
             .getManyAndCount();
@@ -193,6 +195,7 @@ export class RouteController extends Repository<Route> {
         .where("routes.uid = :uid", { uid: uidNumber })
         .leftJoinAndSelect("routes.students", "students")
         .leftJoinAndSelect("routes.school", "school")
+        .leftJoinAndSelect("routes.stops", "stops")
         .leftJoinAndSelect("students.parentUser", "parentUser")
         .getOneOrFail();
       response.status(200);
@@ -213,7 +216,7 @@ export class RouteController extends Repository<Route> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      return this.routeRepository.save(request.body);
+      return await this.routeRepository.save(request.body);
     } catch (e) {
       response
         .status(401)
@@ -261,7 +264,8 @@ export class RouteController extends Repository<Route> {
       return routeQueryResult;
     }
     catch (e) {
-      response.status(401).send("Route UID: " + request.params.uid + " was not found adn could not be deleted.")
+      response.status(401).send("Route UID: " + request.params.uid + " was not found adn could not be deleted.");
+      return;
     }
   }
   findByRouteID(uid: number) {
