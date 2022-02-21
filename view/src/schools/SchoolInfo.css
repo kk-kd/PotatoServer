@@ -1,4 +1,4 @@
-#schoolCreateForm {
+#schoolInfoForm {
   display: flex;
   width: 90%;
   align-items: center;
@@ -7,17 +7,17 @@
   padding: 10px;
 }
 
-#schoolCreateNameInput {
+#schoolInfoNameInput {
   flex: 30%;
   padding: 7px;
 }
 
-#schoolCreateAddressInput {
+#schoolInfoAddressInput {
   flex: 30%;
   padding: 7px;
 }
 
-#schoolCreateTimeInput {
+#schoolInfoTimeInput {
   flex: 15%;
   padding: 7px;
 }

@@ -9,6 +9,8 @@ export const CreateSchool = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [arrivalTime, setArrivalTime] = useState();
+  const [departureTime, setDepartureTime] = useState();
   const [mapApi, setMapApi] = useState();
   const [lat, setLat] = useState();
   const [lng, setLng] = useState();
@@ -38,13 +40,19 @@ export const CreateSchool = () => {
       alert("Please input a valid address");
     } else if (!(validated && lat && lng)) {
       alert("Please press the validate address button to validate the entered address");
+    } else if (!arrivalTime) {
+      alert("Please input an arrival time for the school.")
+    } else if (!departureTime) {
+      alert("Please input a departure time for the school.")
     } else {
       try {
         await saveSchool({
           name: name,
           address: address,
           latitude: lat,
-          longitude: lng
+          longitude: lng,
+          arrivalTime: arrivalTime,
+          departureTime: departureTime
         });
         alert("School succesfully created!");
         navigate("/Schools/list");
@@ -75,8 +83,8 @@ export const CreateSchool = () => {
       setShowMap(true);
     }
   }
-  const handleApiLoaded = (map, maps) => {
-    const geocoder = new maps.Geocoder();
+  const handleApiLoaded = async (map, maps) => {
+    const geocoder = await new maps.Geocoder();
     setMapApi({
       map: map,
       maps: maps,
@@ -89,23 +97,54 @@ export const CreateSchool = () => {
       <div>
         <h1>Create School</h1>
           <form onSubmit={e => onSubmit(e)}>
-            <label id="schoolInput">School Name:
-              <input
-                  type="text"
-                  maxLength="100"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-              />
-            </label>
-            <label id="schoolInput">Adress:
-              <input
-                  type="text"
-                  maxLength="100"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-              />
-              <button type="button" onClick={e => checkMap()}>Validate Address</button>
-            </label>
+            <div id="schoolCreateForm">
+              <div id="schoolCreateNameInput">
+                <label>School Name:
+                  <input
+                      type="text"
+                      maxLength="100"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                  />
+                </label>
+              </div>
+              <div id="schoolCreateAddressInput">
+                <label>Adress:
+                  <input
+                      type="text"
+                      maxLength="100"
+                      value={address}
+                      onChange={(e) => {
+                        setAddress(e.target.value);
+                        setValidated(false);
+                      }}
+                      required
+                  />
+                  <button type="button" onClick={e => checkMap()}>{validated ? "Valid Address" : "Validate Address"}</button>
+                </label>
+              </div>
+              <div id="schoolCreateTimeInput">
+                <label>Arrival Time:
+                  <input
+                      type="time"
+                      value={arrivalTime}
+                      onChange={e => setArrivalTime(e.target.value)}
+                      required
+                  />
+                </label>
+              </div>
+              <div id="schoolCreateTimeInput">
+                <label >Departure Time:
+                  <input
+                      type="time"
+                      value={departureTime}
+                      onChange={e => setDepartureTime(e.target.value)}
+                      required
+                  />
+                </label>
+              </div>
+            </div>
           <input type="submit" value="submit" />
         </form>
         {error && (<div>{error}</div>)}
@@ -121,6 +160,7 @@ export const CreateSchool = () => {
                 text="You're Address"
                 lat={lat}
                 lng={lng}
+                isSchool
             />
           </GoogleMapReact>
         </div>)}
