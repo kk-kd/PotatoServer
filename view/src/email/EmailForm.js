@@ -263,10 +263,10 @@ export const EmailForm = () => {
         <Autocomplete
           sx={{
             paddingTop: "15px",
-            paddingBottom: "10px",
-            paddingRight: "7%",
-            maxWidth: "37%",
-            marginLeft: '52%'
+            paddingBottom: "10px",  
+            margin:'auto',
+            marginRight: '25%',
+            width: "30%",
           }}
           options={filteredDataSchool}
           freeSolo
@@ -302,10 +302,9 @@ export const EmailForm = () => {
           sx={{
             paddingTop: "15px",
             paddingBottom: "10px",
-            paddingRight: "7%",
-            maxWidth: "37%",
-            // margin: "auto",
-            marginLeft: '52%'
+            margin:'auto',
+            marginRight: '25%',
+            width: "30%",
           }}
           renderInput={(params) => (
             <TextField {...params} label=" Route " variant="standard" />
