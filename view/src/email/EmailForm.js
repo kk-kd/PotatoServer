@@ -246,11 +246,11 @@ export const EmailForm = () => {
       <p>  </p>
       <p> </p>
   
-        <label id="input-label" >
+        <label id="input-label-email" >
             {" "}
             Send Email To:{"     "} 
         </label>
-        <FormControl  style={{minWidth: "10%"}} id = 'input-input-email' variant = "standard"> 
+        <FormControl  style={{minWidth: "10%"}} id = 'input-input-select-email' variant = "standard"> 
         <Select value = {emailType} onChange={(e) => {setEmailType(e.target.value);}}  >
             <MenuItem value={"all"}> All Parents </MenuItem>
             <MenuItem value={"school"}>Parents of a Given School </MenuItem>
@@ -323,39 +323,36 @@ export const EmailForm = () => {
           }}
         />
       )}
-      <p> </p>
-      <p> </p>
-      <p> </p>
+
       
-      <label id="input-label" > Include Student Route Information  </label>
+      <label id="input-label-email" > Include Student Route Information  </label>
         <input
-            id  = "input-check"
+            id  = "input-check-email"
             style ={{paddingLeft: '10%'}}
             type="checkbox"
             checked ={includeRouteInfo}
             onInput={(e) => setIncludeRouteInfo(!includeRouteInfo)}
        />
 
-      <p> </p>
-      <p> </p>
-      <label id="input-label" for="n">
+
+      <label id="input-label-email" for="n">
         {" "}
         Subject Line:{" "}
       </label>
       <input
-        id="input-input"
+        id="input-input-email"
         type="text"
         maxLength="100"
         value={message.subject}
         onChange={(e) => setMessage({ ...message, subject: e.target.value })}
       />
-      <p> </p>
-      <p> </p>
-      <span> <hr style = {{marginLeft: '2'}}></hr></span>
 
+      <p> </p>
+      <p>  </p>
+      <p> </p>
       <p  id = "label-2">
         {" "}
-        Email Body:{" "}
+        Email Body{" "}
       </p>
       <textarea
         style = {{width: "60%", margin: 'auto', display: 'flex'}}
