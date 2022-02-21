@@ -23,12 +23,13 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { ListItemButton } from "@mui/material";
 import Divider from '@mui/material/Divider';
 import CloseIcon from '@mui/icons-material/Close';
+import { fontSize } from "@mui/system";
 
 
 export const UserForm = () => {
     let navigate = useNavigate(); 
 
-    const action_text = "Make New User" 
+    const action_text = "Make New Parent or Adminstrator" 
 
     // user 
     const [user, setUser] = useState({
@@ -199,10 +200,12 @@ export const UserForm = () => {
 
     return <div id="content"> 
  
-        <h1>  {action_text} </h1>
+        <h2 id = 'title'>  {action_text} </h2>
         
-        <div id = "user_create_form">
-          <Divider>User Info </Divider>
+        <div id = "main_form">
+              
+        <Divider id = 'divider'>Information</Divider>
+
           <label for = "firstName"> First Name </label> 
           <input
               id = "username"
@@ -259,9 +262,9 @@ export const UserForm = () => {
 
           <p> </p>
           <div>
-            <Divider>Students</Divider>
+            <Divider id = 'divider'>Students</Divider>
 
-            <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto'}}>
+            <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto', marginTop: '10px'}}>
                 <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}} 
                 >
                 {students.map((student) => {
@@ -304,7 +307,7 @@ export const UserForm = () => {
         </div>
         
  
-        {makeStudent && <div id = 'sub-form-wrapper'> 
+        {makeStudent && <div id = 'sub-form'> 
             <CloseIcon onClick = {(e) => {setMakeStudent(false)}} style = {{
                         position: 'absolute',
                         right: '10px',
@@ -320,7 +323,7 @@ export const UserForm = () => {
         </div> 
         </div>
         
-        <div id="user_create_map">
+        <div id="map">
           {error && (<div>{error}</div>)}
             <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
                 <GoogleMapReact

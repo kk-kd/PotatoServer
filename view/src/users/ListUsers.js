@@ -129,8 +129,8 @@ export const ListUsers = () => {
       <div class="card-body core-card-color">
         <div id="userListing">
           <Link to="/Users/create">
-            <button className="btn btn-outline-primary">
-              Create User/Student
+            <button className="btn btn-outline-primary" >
+              Create Parent or Administrator
             </button>
           </Link>
           <table {...getTableProps()} style={{ border: "solid 1px blue" }}>

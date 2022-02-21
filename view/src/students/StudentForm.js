@@ -41,21 +41,20 @@ export const StudentForm = ({addStudentToUser}) => {
         if (!student.firstName || !student.lastName){
             return {valid: false, error: 'Student First and Last Name Required'}
         }
+        else if (student.studentid && !(Number(student.studentid) > 0)) {
+          return {valid: false, error: "Student ID must be a positive number"}
+        }
         if (!selectedSchool) {
           return {valid: false, error: 'Student must have a School'}
         }
         if (!user && !addStudentToUser) {
           return {valid: false, error: 'Student Must have a User'}
         }
-        
 
         return {valid: true, error: ''}
     }
-    
-    // functions passed to user form to update user state
-   
+       
     const handleStudentFormSubmit = (e) => {
-      console.log("submitting!")
         let valid_results = validate_student_entries();
         if (valid_results.valid) {
             if (addStudentToUser) {
@@ -158,9 +157,9 @@ export const StudentForm = ({addStudentToUser}) => {
       
       }, [userFilter])
 
-    return <div id = 'content'>
-        {addStudentToUser && <h4> {action_text} </h4>}
-        {!addStudentToUser && <h1>  {action_text} </h1>}
+    return <div id = 'student-content'>
+        {addStudentToUser && <h4 id = 'subtitle'> {action_text} </h4>}
+        {!addStudentToUser && <h1 id = 'title'>  {action_text} </h1>}
 
         <label id = 'input-label' for = "firstName"> First Name: </label>      
         <input
@@ -197,9 +196,9 @@ export const StudentForm = ({addStudentToUser}) => {
             value={student.studentid}
             onChange={(e) => {setStudent({...student, studentid : e.target.value})}}
         />
-
+        
         <Autocomplete
-            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '55%', margin: 'auto'}}
+            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingLeft: '15%', maxWidth: '55%', margin: 'auto'}}
             options={filteredDataSchool}
             freeSolo
             renderInput={params => (
@@ -226,7 +225,7 @@ export const StudentForm = ({addStudentToUser}) => {
             <Autocomplete
                 options={selectedSchool.routes}
                 freeSolo
-                sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '55%', margin: 'auto'}}
+                sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingLeft: '15%', maxWidth: '65%', margin: 'auto'}}
                 renderInput={params => (
                     <TextField {...params} label=" Route " variant="standard"
                     />
@@ -250,7 +249,7 @@ export const StudentForm = ({addStudentToUser}) => {
         <div> 
 
         {!addStudentToUser && <Autocomplete
-            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingRight: '7%', maxWidth: '55%', margin: 'auto'}}
+            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingLeft: '15%', maxWidth: '55%', margin: 'auto'}}
             options={filteredDataUser}
             freeSolo
             renderInput={params => (

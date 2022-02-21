@@ -7,16 +7,33 @@
     background-color:linen;
     border:1px solid grey;
   }
-  #content {
-    width:60%;
+
+  #title {
+    background-color: black;
+    color: white;
     margin:auto; 
-    height:auto; 
-    background:linen; 
-    overflow:auto;
-    align-items: center;
-    
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  #subtitle {
+    border-bottom: 1px solid black;
+    color: black;
+    margin:auto; 
+    padding-bottom: 20px;
+    padding-top: 20px;
+    margin-bottom: 10px;
   }
 
+  #student-content {
+    margin:auto; 
+    height:auto; 
+    background: #ebebeb;
+    overflow:auto;
+    padding-bottom: 20px;
+    width: 80%;
+    margin-bottom: 20px;
+  }
+  
   #autocomplete {
     display: block; 
     padding-top: 20px; 
@@ -50,84 +67,10 @@
   }
 
   #input-input {
-    width: 30%;
+    width: 40%;
+    min-width: 150px;
     /* Large margin-right to force the next element to the new-line
              and margin-left to create a gutter between the label and input */
-    margin: 2% 30% 0 4%;
+    margin: 2% 20% 0 4%;
   }
 
-  
-  /* label,
-  input {
-    /* In order to define widths 
-    display: inline-block;
-  }   
-   /* label {
-    max-width: 30%;
-    /* Positions the label text beside the input 
-    text-align: right;
-  }
-  */
-  
-  /* label+input {
-    width: 30%;
-    /* Large margin-right to force the next element to the new-line
-             and margin-left to create a gutter between the label and input 
-    margin: 2% 30% 0 4%;
-  }
-  input+input {
-    float: right;
-  } */
-  
-  
-  
-  
-  
-  /* 
-  #address2 {
-    float: left;
-  } */
-  
-  /* .submitbutton {
-    width: 50%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border-radius: 4px;
-    align-items: center;
-  } */
-  
-  
-  /* .user-list {
-    margin-top: 30px;
-    align-items: center;
-  } */
-  
-  /* .user {
-    list-style: none;
-    margin: 10px 0;
-    padding: 10px;
-    background: #eee;
-    width: 50%;
-    justify-content: space-between;
-    align-items: center;
-  } */
-  /* 
-  .user-id {
-    color: red;
-    margin-right: 20px;
-  }
-  
-  .user-name {
-    color: blue;
-  }
-  
-  .user-age {
-    margin-left: auto;
-  }
-  
-  input[type=radio] {
-    border: 0px;
-    width: 4em;
-    height: 2em;
-  } */
