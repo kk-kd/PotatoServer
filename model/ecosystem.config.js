@@ -4,7 +4,7 @@ module.exports = {
       name: "index",
       script: "build/index.js",
       exec_mode: "fork",
-      watch: true,
+      watch: false,
       env: {
         NODE_ENV: "production",
       },
