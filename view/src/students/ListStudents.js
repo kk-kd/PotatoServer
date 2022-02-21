@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllStudents } from "../api/axios_wrapper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
 export const ListStudents = () => {
   const [data, setData] = useState([]);
@@ -27,6 +30,7 @@ export const ListStudents = () => {
           idFilter: idFilter,
           showAll: showAll,
         });
+        console.log(fetchedData);
         setData(fetchedData.data.students);
         setTotal(fetchedData.data.total);
       } catch (error) {
@@ -77,7 +81,38 @@ export const ListStudents = () => {
       },
       {
         Header: "Route",
-        accessor: "route.name",
+        accessor: "route",
+        Cell: props => (
+            <div>
+              {props.value ?
+                  <label>{props.value.name} {(props.row.original.inRangeStops && props.row.original.inRangeStops.length > 0) || <><FontAwesomeIcon
+                  icon={faCircleExclamation}
+                  size="lg"
+                  style={{ color: "red" }}
+                  data-tip
+                  data-for="noInRangeStopTip"
+              /><ReactTooltip
+                    id="noInRangeStopTip"
+                    place="bottom"
+                    effect="solid"
+                    >
+                    This student does not have any in-range stops.
+                    </ReactTooltip></>}</label> :
+                  <><FontAwesomeIcon
+                      icon={faXmark}
+                      size="xl"
+                      style={{ color: "red" }}
+                      data-tip
+                      data-for="noStopTip"
+                  /><ReactTooltip
+                id="noStopTip"
+                place="bottom"
+                effect="solid"
+                >
+                This student is not on a route.
+                </ReactTooltip></>}
+            </div>
+        )
       },
       {
         Header: "Detail Page",
@@ -96,7 +131,7 @@ export const ListStudents = () => {
     <div class="card">
       <div class="card-body core-card-color">
         <div id="userListing">
-          <Link to="/Users/create">
+          <Link to="/Students/create">
             <button className="btn btn-outline-primary">Create Student</button>
           </Link>
           <table {...getTableProps()} style={{ border: "solid 1px blue" }}>

@@ -139,7 +139,11 @@ class AuthController {
         .where("users.email = :email", { email: email })
         .getOneOrFail();
     } catch (error) {
-      response.status(401).send(error);
+      response
+        .status(401)
+        .send(
+          "The user has not been registered. Please contact an admin to get registered."
+        );
       return;
     }
 

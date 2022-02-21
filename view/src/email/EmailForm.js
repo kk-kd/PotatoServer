@@ -351,11 +351,12 @@ export const EmailForm = () => {
       />
       <p> </p>
       <p> </p>
+      <span> <hr style = {{marginLeft: '2'}}></hr></span>
 
-      <label  >
+      <p  id = "label-2">
         {" "}
         Email Body:{" "}
-      </label>
+      </p>
       <textarea
         style = {{width: "60%", margin: 'auto', display: 'flex'}}
       

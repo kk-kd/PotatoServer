@@ -1,7 +1,7 @@
 import "./UserForm.css";
 import GoogleMapReact from "google-map-react";
 import { useEffect, useState } from "react";
-import { Marker } from "./../map/Marker";
+import { Marker } from "../map/Marker";
 import {registerUser, saveStudent} from "../api/axios_wrapper";
 import { Link, useNavigate } from "react-router-dom";
 import { Users } from "./Users";
