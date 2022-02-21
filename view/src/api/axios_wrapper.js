@@ -334,7 +334,7 @@ export async function resetPassword(specifications) {
   });
 }
 export async function forgetPassword(specifications) {
-  return await axios.put("/api/forget-password", specifications, {
+  return await axios.post("/api/forget-password", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }

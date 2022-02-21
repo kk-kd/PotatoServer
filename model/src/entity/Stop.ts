@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany } from "typeorm";
 import { Route } from "./Route";
+import { Student } from "./Student";
 
 @Entity({ name: "stops" })
 export class Stop {
@@ -28,6 +29,12 @@ export class Stop {
   @Column({ type: "time" })
   dropoffTime: string;
 
-  @ManyToOne(() => Route, (route) => route.stops, { nullable: true, onDelete: "CASCADE" })
+  @Column({ type: "decimal", nullable: true })
+  arrivalIndex: number;
+
+  @ManyToOne(() => Route, (route) => route.stops, { onDelete: "CASCADE", orphanedRowAction: "delete" })
   route: Route;
+
+  @ManyToMany(() => Student, student => student.inRangeStops, { nullable: true })
+  inRangeStudents: Student[];
 }

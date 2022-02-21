@@ -216,7 +216,7 @@ export class RouteController extends Repository<Route> {
         response.status(409).send("User is not an admin.")
         return;
       }
-      return this.routeRepository.save(request.body);
+      return await this.routeRepository.save(request.body);
     } catch (e) {
       response
         .status(401)

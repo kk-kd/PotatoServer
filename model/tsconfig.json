@@ -15,6 +15,7 @@
       "node_modules",
       "tests",
       "jest.config.ts",
-      "createAdmin.ts"
+      "createAdmin.ts",
+      "test_data"
   ]
 }

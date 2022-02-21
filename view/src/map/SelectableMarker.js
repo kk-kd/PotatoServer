@@ -1,31 +1,38 @@
 import "./SelectableMarker.css";
-import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLocationDot, faLocationPin } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
-export const SelectableMarker = ({ student, onCurrentRoute, notOnRoute, selectRoute }) => {
-  const [showText, setShowText] = useState(false);
+export const SelectableMarker = ({ students, onCurrentRoute, notOnRoute, selectRoute, inRangeStop, onCurrentStop }) => {
+  var id;
   if (notOnRoute) {
-    return (
-        <div id="noRouteMarker"
-             onClick={e => selectRoute(student)}
-             onMouseEnter={e => setShowText(true)}
-             onMouseLeave={e => setShowText(false)}
-        >{showText && `${student.firstName} ${student.lastName}`}</div>
-    );
+    id = "noRouteMarker";
+  } else if (onCurrentRoute && onCurrentStop) {
+    id = "currentRouteAndStopMarker";
   } else if (onCurrentRoute) {
-    return (
-        <div id="currentRouteMarker"
-             onClick={e => selectRoute(student)}
-             onMouseEnter={e => setShowText(true)}
-             onMouseLeave={e => setShowText(false)}
-        >{showText && `${student.firstName} ${student.lastName}`}</div>
-    );
+    id = "currentRouteMarker";
   } else {
-    return (
-        <div id="selectableRouteMarker"
-             onClick={e => selectRoute(student)}
-             onMouseEnter={e => setShowText(true)}
-             onMouseLeave={e => setShowText(false)}
-            >{showText && `${student.firstName} ${student.lastName}`}</div>
-    );
+    id = "routeMarker";
   }
+  return (
+      <>
+        <FontAwesomeIcon
+            icon={inRangeStop ? faLocationPin : faLocationDot}
+            id={id}
+            onClick={e => selectRoute(students)}
+            data-tip
+            data-for={`studentTooltip${students[0].uid}`}
+        />
+        <ReactTooltip
+            id={`studentTooltip${students[0].uid}`}
+            place="top"
+            effect="solid"
+        >
+          <p>Students at this location:</p>
+          {students.map(student => (
+              <p>{`${student.firstName} ${student.lastName}`}</p>
+          ))}
+        </ReactTooltip>
+      </>
+  );
 }

@@ -29,7 +29,6 @@ height:auto;
 background:linen; 
 overflow:auto;
 align-items: center;
-
 }
 
 #submitbutton {
@@ -38,3 +37,11 @@ align-items: center;
     align-items: center;
     margin-bottom: 5px;
 }
+
+#title {
+    background-color: black;
+    color: white;
+    margin:auto; 
+    padding: 10px;
+    margin-bottom: 20px;
+  }

@@ -181,6 +181,15 @@ export const EmailForm = () => {
     }
   }, [routeFilter]);
 
+  useEffect(() => {
+    setSelectedSchool()
+    setFilteredDataSchool([])
+    setSchoolFilter("")
+    setSelectedRoute()
+    setFilteredDataRoute([])
+    setRouteFilter("")
+
+  }, [emailType]);
 
 
   const callGetSchool = async () => {
@@ -232,7 +241,7 @@ export const EmailForm = () => {
 
   return (
     <div id="content">
-      <h1> {action_text} </h1>
+      <h1 id = 'title'> {action_text} </h1>
       <p> </p>
       <p>  </p>
       <p> </p>
