@@ -1,4 +1,5 @@
-const config = require("../../mailConfig");
+const config = require("../../mailConfig"); 
+
 const nodemailer = require("nodemailer");
 const amqp = require("amqplib").connect(config.amqp);
 
