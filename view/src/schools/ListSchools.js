@@ -4,12 +4,16 @@ import { Link } from "react-router-dom";
 import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllSchools } from "./../api/axios_wrapper";
+import { getDisplayTime } from "./../api/time";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 export const ListSchools = () => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(1);
   const [size, setSize] = useState(10);
+  const [sortBy, setSortBy] = useState("name");
   const [showAll, setShowAll] = useState(false);
   const [sortDirec, setSortDirec] = useState("none");
   const [nameFilter, setNameFilter] = useState("");
@@ -19,7 +23,7 @@ export const ListSchools = () => {
         const fetchedData = await filterAllSchools({
           page: page,
           size: size,
-          sort: "name",
+          sort: sortBy,
           sortDir: sortDirec,
           filterType: "name",
           filterData: nameFilter,
@@ -35,7 +39,14 @@ export const ListSchools = () => {
   }, [page, size, sortDirec, nameFilter, showAll]);
 
   const nextSort = (id) => {
-    if (sortDirec === "ASC") {
+    if (sortBy !== id) {
+      setSortBy(id);
+      if (sortDirec === "none" || sortDirec === "DESC") {
+        setSortDirec("ASC");
+      } else {
+        setSortDirec("DESC");
+      }
+    } else if (sortDirec === "ASC") {
       setSortDirec("DESC");
     } else if (sortDirec === "DESC") {
       setSortDirec("none");
@@ -53,6 +64,20 @@ export const ListSchools = () => {
       {
         Header: "Address",
         accessor: "address",
+      },
+      {
+        HeaderName: "Arrival Time",
+        accessor: "arrivalTime",
+        Cell: props => (
+            <div>{props.value ? getDisplayTime(props.value) : ""}</div>
+        )
+      },
+      {
+        HeaderName: "Departure Time",
+        accessor: "departureTime",
+        Cell: props => (
+            <div>{props.value ? getDisplayTime(props.value) : ""}</div>
+        )
       },
       {
         Header: "Detail Page",
@@ -88,7 +113,7 @@ export const ListSchools = () => {
                         fontWeight: "bold",
                       }}
                     >
-                      {column.id === "name" ? (
+                      {(column.id === "name" || column.id === "arrivalTime" || column.id == "departureTime") ? (
                         <div id="header">
                           <label
                             onClick={() => {
@@ -96,7 +121,14 @@ export const ListSchools = () => {
                             }}
                             style={{ cursor: "pointer" }}
                           >
-                            {column.HeaderName}
+                            {column.HeaderName} {(sortBy === column.id && sortDirec !== "none") && (sortDirec === "DESC" ? <FontAwesomeIcon
+                                  icon={faArrowDown}
+                                  size="sm"
+                              /> : <FontAwesomeIcon
+                                  icon={faArrowUp}
+                                  size="sm"
+                              />
+                            )}
                           </label>
                           <DefaultColumnFilter setFilter={setNameFilter} />
                         </div>

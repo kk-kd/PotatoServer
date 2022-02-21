@@ -5,7 +5,7 @@ import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllStudents } from "../api/axios_wrapper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUp, faArrowDown, faCircleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
 export const ListStudents = () => {
@@ -158,7 +158,14 @@ export const ListStudents = () => {
                             }}
                             style={{ cursor: "pointer" }}
                           >
-                            {column.HeaderName}
+                            {column.HeaderName} {(sortBy === column.id && sortDirec !== "none") && (sortDirec === "DESC" ? <FontAwesomeIcon
+                                  icon={faArrowDown}
+                                  size="sm"
+                              /> : <FontAwesomeIcon
+                                  icon={faArrowUp}
+                                  size="sm"
+                              />
+                          )}
                           </label>
                           {column.id === "school.name" || (
                             <DefaultColumnFilter
