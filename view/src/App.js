@@ -11,8 +11,12 @@ import { returnUserInfoFromJWT } from "./api/axios_wrapper";
 import { MyStudents } from "./parents/MyStudents";
 import { ParentStudent } from "./parents/ParentStudent";
 import { ChangeMyPassword } from "./parents/ChangeMyPassword";
+import { PasswordForgotForm } from "./login/PasswordForgotForm";
+import { PasswordResetForm } from "./login/PasswordResetForm";
+
 
 export const App = () => {
+  
   const [loggedIn, setLoggedIn] = useState(
     sessionStorage.getItem("token") != null
   );
@@ -38,6 +42,14 @@ export const App = () => {
           <Route
             path="/LogIn"
             element={<LoginPage setLoggedIn={setLoggedIn} />}
+          />
+          <Route
+            path="/PasswordForgot"
+            element={<PasswordForgotForm />}
+          />
+          <Route
+            path="/PasswordReset/:token"
+            element={<PasswordResetForm />}
           />
           <Route path="*" element={<Navigate to="/LogIn" />} />
         </Routes>
