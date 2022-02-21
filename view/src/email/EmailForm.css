@@ -1,28 +1,28 @@
-#input-label {
+#input-label-email {
 width: 30%;
 /* Positions the label text beside the input */
 text-align: right;
 }
 
-#input-input {
+#input-input-email {
 width: 30%;
 /* Large margin-right to force the next element to the new-line
             and margin-left to create a gutter between the label and input */
 margin: 0% 0% 0 4%;
 }
-#input-check {
+#input-check-email {
     width: 30%;
     /* Large margin-right to force the next element to the new-line
                 and margin-left to create a gutter between the label and input */
     margin: 0% 0% 0 4%;
 }
   
-#container {
+#container-email {
 width: 80%;
 background-color:linen;
 border:1px solid grey;
 }
-#content {
+#content-email {
 width:60%;
 margin:auto; 
 height:auto; 
@@ -31,14 +31,14 @@ overflow:auto;
 align-items: center;
 }
 
-#submitbutton {
+#submitbutton-email {
     width:'5%';
     margin: auto;
     align-items: center;
     margin-bottom: 5px;
 }
 
-#title {
+#title-email {
     background-color: black;
     color: white;
     margin:auto; 

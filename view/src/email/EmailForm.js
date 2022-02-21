@@ -241,7 +241,7 @@ export const EmailForm = () => {
 
   return (
     <div id="content">
-      <h1 id = 'title'> {action_text} </h1>
+      <h1 id = 'title-email'> {action_text} </h1>
       <p> </p>
       <p>  </p>
       <p> </p>
@@ -250,7 +250,7 @@ export const EmailForm = () => {
             {" "}
             Send Email To:{"     "} 
         </label>
-        <FormControl  style={{minWidth: "10%"}} id = 'input-input' variant = "standard"> 
+        <FormControl  style={{minWidth: "10%"}} id = 'input-input-email' variant = "standard"> 
         <Select value = {emailType} onChange={(e) => {setEmailType(e.target.value);}}  >
             <MenuItem value={"all"}> All Parents </MenuItem>
             <MenuItem value={"school"}>Parents of a Given School </MenuItem>

@@ -61,7 +61,7 @@
   }
 
   #input-label {
-    max-width: 30%;
+    width: 30%;
     /* Positions the label text beside the input */
     text-align: right;
   }
@@ -73,4 +73,3 @@
              and margin-left to create a gutter between the label and input */
     margin: 2% 20% 0 4%;
   }
-
