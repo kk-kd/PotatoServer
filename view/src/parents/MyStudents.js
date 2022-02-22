@@ -51,20 +51,12 @@ export const MyStudents = ({ user }) => {
             {data.length === 0 ? (
               <h4>You have no registered child students.</h4>
             ) : (
-              <table {...getTableProps()} style={{ border: "solid 1px blue" }}>
-                <thead>
+              <table {...getTableProps()} class="table table-striped">
+                <thead class="thead-dark">
                   {headerGroups.map((headerGroup) => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
                       {headerGroup.headers.map((column) => (
-                        <th
-                          {...column.getHeaderProps()}
-                          style={{
-                            borderBottom: "solid 3px red",
-                            background: "aliceblue",
-                            color: "black",
-                            fontWeight: "bold",
-                          }}
-                        >
+                        <th {...column.getHeaderProps()}>
                           {column.render("Header")}
                         </th>
                       ))}
@@ -78,14 +70,7 @@ export const MyStudents = ({ user }) => {
                       <tr {...row.getRowProps()}>
                         {row.cells.map((cell) => {
                           return (
-                            <td
-                              {...cell.getCellProps()}
-                              style={{
-                                padding: "10px",
-                                border: "solid 1px gray",
-                                background: "papayawhip",
-                              }}
-                            >
+                            <td {...cell.getCellProps()}>
                               {cell.render("Cell")}
                             </td>
                           );
