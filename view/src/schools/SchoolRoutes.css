@@ -10,3 +10,8 @@
 #schoolRouteListing > * {
   margin: 10px;
 }
+.test-centering {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -32,7 +32,7 @@ export const ListBusRoutes = () => {
               name: route.routes_name,
               desciption: route.routes_desciption,
               school: {
-                name: route.school_name
+                name: route.school_name,
               },
               students: route.count,
             }))
@@ -108,22 +108,14 @@ export const ListBusRoutes = () => {
     <div class="card">
       <div class="card-body core-card-color">
         <div id="routeListing">
-          <table {...getTableProps()} style={{ border: "solid 1px blue" }}>
-            <thead>
+          <table {...getTableProps()} class="table table-striped">
+            <thead class="thead-dark">
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => (
-                    <th
-                      {...column.getHeaderProps()}
-                      style={{
-                        borderBottom: "solid 3px red",
-                        background: "aliceblue",
-                        color: "black",
-                        fontWeight: "bold",
-                      }}
-                    >
+                    <th {...column.getHeaderProps()}>
                       {column.HeaderName ? (
-                        <div id="header">
+                        <div>
                           <label
                             onClick={() => {
                               nextSort(column.id);
@@ -151,16 +143,7 @@ export const ListBusRoutes = () => {
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell) => {
                       return (
-                        <td
-                          {...cell.getCellProps()}
-                          style={{
-                            padding: "10px",
-                            border: "solid 1px gray",
-                            background: "papayawhip",
-                          }}
-                        >
-                          {cell.render("Cell")}
-                        </td>
+                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                       );
                     })}
                   </tr>
@@ -168,51 +151,74 @@ export const ListBusRoutes = () => {
               })}
             </tbody>
           </table>
-          <div className="pagination">
-            <button className="paginationButton" onClick={() => setPage(0)} disabled={page === 0 || showAll}>
-              {"<<"}
-            </button>{" "}
-            <button
-                className="paginationButton"
+          <div className="test-centering">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button
+                onClick={() => setPage(0)}
+                disabled={page === 0 || showAll}
+                class="btn btn-secondary"
+                style={{ maxWidth: "5em" }}
+              >
+                {"<<"}
+              </button>{" "}
+              <button
                 onClick={() => setPage(page - 1)}
-              disabled={page === 0 || showAll}
-            >
-              {"<"}
-            </button>{" "}
-            <button
-                className="paginationButton"
+                disabled={page === 0 || showAll}
+                class="btn btn-secondary"
+                style={{ maxWidth: "5em" }}
+              >
+                {"<"}
+              </button>{" "}
+              <button
                 onClick={() => setPage(page + 1)}
-              disabled={page >= total / size - 1 || showAll}
-            >
-              {">"}
-            </button>{" "}
-            <button
-                className="paginationButton"
+                disabled={page >= total / size - 1 || showAll}
+                class="btn btn-secondary"
+                style={{ maxWidth: "5em" }}
+              >
+                {">"}
+              </button>{" "}
+              <button
                 onClick={() => setPage(Math.ceil(total / size) - 1)}
-              disabled={page >= total / size - 1 || showAll}
-            >
-              {">>"}
-            </button>{" "}
-            <span>
-              Page <strong>{page + 1}</strong>{" "}
-            </span>
-            <span>
-              | Go to page:{" "}
-              <input
-                type="number"
-                defaultValue={page + 1}
-                onChange={(e) => {
-                  const pagee = e.target.value ? Number(e.target.value) - 1 : 0;
-                  setPage(pagee);
-                }}
-                style={{ width: "100px" }}
-              />
-            </span>{" "}
+                disabled={page >= total / size - 1 || showAll}
+                class="btn btn-secondary"
+                style={{ maxWidth: "5em" }}
+              >
+                {">>"}
+              </button>
+              {"     "}
+            </div>
+            <div>
+              <div
+                class="input-group"
+                style={{ padding: ".3em", textAlign: "center" }}
+              >
+                <div class="input-group-text" id="btnGroupAddon">
+                  Page:{" "}
+                </div>
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="Input group example"
+                  aria-label="Input group example"
+                  aria-describedby="btnGroupAddon"
+                  defaultValue={page + 1}
+                  onChange={(e) => {
+                    const pagee = e.target.value
+                      ? Number(e.target.value) - 1
+                      : 0;
+                    setPage(pagee);
+                  }}
+                  style={{ maxWidth: "3em", minWidth: "2em" }}
+                />
+              </div>
+            </div>
             <select
               value={size}
               onChange={(e) => {
                 setSize(Number(e.target.value));
               }}
+              class="form-select"
+              style={{ maxWidth: "13em" }}
             >
               {[10, 20, 30, 40, 50].map((size) => (
                 <option key={size} value={size}>
@@ -220,13 +226,14 @@ export const ListBusRoutes = () => {
                 </option>
               ))}
             </select>
-            <label>
-              Show All
+            <label style={{ maxWidth: "5em" }}>
               <input
                 type="checkbox"
                 value={showAll}
                 onChange={(e) => setShowAll(!showAll)}
+                class="form-check-input"
               />
+              Show All
             </label>
           </div>
         </div>
