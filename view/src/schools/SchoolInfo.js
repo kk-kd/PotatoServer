@@ -141,7 +141,7 @@ export const SchoolInfo = () => {
           <button onClick={e => setIsEdit(true)}>Edit School</button>
           <button onClick={e => setIsDelete(true)}>Delete School</button>
           <button onClick={e => navigate(`/Routes/planner/${id}`)}>Route Planner</button>
-          <button onClick={e => navigate(`/Emails/send/${id}`)}>Send Email Announcement</button>
+          <button onClick={e => navigate(`/Emails/send/${id}`)}>Send Announcement</button>
         </div>
         <form onSubmit={e => onSubmit(e)}>
           <label id="schoolInput">School Name:
