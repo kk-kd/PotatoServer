@@ -163,6 +163,12 @@ export const SchoolInfo = () => {
         >
           Route Planner
         </button>
+        <button
+          className="btn btn-outline-secondary"
+          onClick={(e) => navigate(`/Emails/send/${id}`)}
+        >
+          Send Email Announcement
+        </button>
       </div>
       <form onSubmit={(e) => onSubmit(e)}>
         <fieldset disabled>

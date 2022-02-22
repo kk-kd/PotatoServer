@@ -62,22 +62,22 @@ export const PasswordResetForm = () => {
       }
     
 
-    return <div id = 'content'>
+    return <div id = 'content-reset'>
        
         <h1>  {action_text} </h1>
 
-        <label id = 'input-label' for = "email"> New Password: </label>      
+        <label id = 'input-label-reset' for = "email"> New Password: </label>      
         <input
-            id = 'input-input'
+            id = 'input-input-reset'
             type="password"
             maxLength="100"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
         />
 
-        <label id = 'input-label' for = "email"> Re-enter Password: </label>      
+        <label id = 'input-label-reset' for = "email"> Re-enter Password: </label>      
         <input
-            id = 'input-input'
+            id = 'input-input-reset'
             type="password"
             maxLength="100"
             value={passwordValidate}
