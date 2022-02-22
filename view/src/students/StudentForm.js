@@ -161,36 +161,36 @@ export const StudentForm = ({addStudentToUser}) => {
         {addStudentToUser && <h4 id = 'subtitle'> {action_text} </h4>}
         {!addStudentToUser && <h1 id = 'title'>  {action_text} </h1>}
 
-        <label id = 'input-label' for = "firstName"> First Name: </label>      
+        <label id = 'input-label-student'> First Name: </label>      
         <input
-            id = 'input-input'
+            id = 'input-input-student'
             type="text"
             maxLength="100"
             value={student.firstName}
             onChange={(e) => setStudent({...student, firstName : e.target.value})}
         />
 
-        <label id = 'input-label' for = "middleName"> Middle Name: </label>      
+        <label id = 'input-label-student'> Middle Name: </label>      
         <input
-            id = 'input-input'
+            id = 'input-input-student'
             type="text"
             maxLength="100"
             value={student.middleName}
             onChange={(e) => setStudent({...student, middleName : e.target.value})}
         />
 
-        <label id = 'input-label' for = "lastName"> Last Name: </label>      
+        <label id = 'input-label-student' > Last Name: </label>      
         <input
-            id = 'input-input'
+            id = 'input-input-student'
             type="text"
             maxLength="100"
             value={student.lastName}
             onChange={(e) => setStudent({...student, lastName : e.target.value})}
         /> 
 
-        <label id = 'input-label' for = "lastName"> Student ID: </label>     
+        <label id = 'input-label-student' for = "lastName"> Student ID: </label>     
         <input 
-            id = 'input-input'
+            id = 'input-input-student'
             type="text"
             maxLength="100"
             value={student.studentid}
@@ -198,7 +198,7 @@ export const StudentForm = ({addStudentToUser}) => {
         />
         
         <Autocomplete
-            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingLeft: '15%', maxWidth: '55%', margin: 'auto'}}
+            sx = {{paddingTop: '20px', paddingBottom: '10px',  paddingRight: '4%', width: '43%', margin: 'auto'}}
             options={filteredDataSchool}
             freeSolo
             renderInput={params => (
@@ -225,7 +225,7 @@ export const StudentForm = ({addStudentToUser}) => {
             <Autocomplete
                 options={selectedSchool.routes}
                 freeSolo
-                sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingLeft: '15%', maxWidth: '65%', margin: 'auto'}}
+                sx = {{paddingTop: '20px', paddingBottom: '10px',  paddingRight: '4%', width: '43%', margin: 'auto'}}
                 renderInput={params => (
                     <TextField {...params} label=" Route " variant="standard"
                     />
@@ -249,7 +249,7 @@ export const StudentForm = ({addStudentToUser}) => {
         <div> 
 
         {!addStudentToUser && <Autocomplete
-            sx = {{paddingTop: '15px', paddingBottom: '10px',  paddingLeft: '15%', maxWidth: '55%', margin: 'auto'}}
+            sx = {{paddingTop: '20px', paddingBottom: '10px',  paddingRight: '4%', width: '43%', margin: 'auto'}}
             options={filteredDataUser}
             freeSolo
             renderInput={params => (

@@ -41,26 +41,19 @@
 }
 
 
-label,
-input {
-  /* In order to define widths */
-  display: inline-block;
-}
-label {
+#label-user {
   width: 30%;
   color: black;
   /* Positions the label text beside the input */
   text-align: right;
 }
 
-label+input {
+#input-user{
   width: 30%;
   /* Large margin-right to force the next element to the new-line
            and margin-left to create a gutter between the label and input */
   margin: 2% 30% 0 4%;
 }
-input+input {
-  float: right;
-}
+
 
 
