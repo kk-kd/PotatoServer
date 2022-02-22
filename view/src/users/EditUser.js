@@ -77,11 +77,6 @@ export const EditUser = () => {
     setOldPassword(data.password)
   }, [data])
 
-//   if (fetchedData.dataaddress) {
-//     setAddressValid(true);
-//     searchLocation();
-// }
-
   useEffect(() => {
     if (mapApi && !addressValid) {
       searchLocation();
@@ -159,7 +154,7 @@ export const EditUser = () => {
   const ModifyUserCall = async (form_results) => {
    
     try {
-      let update_user_response = await updateUser(id, form_results, changePassword); 
+      let update_user_response = await updateUser(id,form_results, changePassword); 
       alert("User Successfully Updated");
       navigate('/Users/info/' + id);
       return update_user_response; 
@@ -213,7 +208,7 @@ export const EditUser = () => {
  
   return (
     <div > 
-    <h1> Edit {}  </h1>
+    <h1> Edit User </h1>
     <div >
          
         <form newUserClicked = {false} id='form'>
