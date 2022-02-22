@@ -9,6 +9,8 @@ export const CreateSchool = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [arrivalTime, setArrivalTime] = useState();
+  const [departureTime, setDepartureTime] = useState();
   const [mapApi, setMapApi] = useState();
   const [lat, setLat] = useState();
   const [lng, setLng] = useState();
@@ -37,9 +39,11 @@ export const CreateSchool = () => {
     } else if (!address) {
       alert("Please input a valid address");
     } else if (!(validated && lat && lng)) {
-      alert(
-        "Please press the validate address button to validate the entered address"
-      );
+      alert("Please press the validate address button to validate the entered address");
+    } else if (!arrivalTime) {
+      alert("Please input an arrival time for the school.")
+    } else if (!departureTime) {
+      alert("Please input a departure time for the school.")
     } else {
       try {
         await saveSchool({
@@ -47,6 +51,8 @@ export const CreateSchool = () => {
           address: address,
           latitude: lat,
           longitude: lng,
+          arrivalTime: arrivalTime,
+          departureTime: departureTime
         });
         alert("School succesfully created!");
         navigate("/Schools/list");
@@ -76,9 +82,9 @@ export const CreateSchool = () => {
     } else {
       setShowMap(true);
     }
-  };
-  const handleApiLoaded = (map, maps) => {
-    const geocoder = new maps.Geocoder();
+  }
+  const handleApiLoaded = async (map, maps) => {
+    const geocoder = await new maps.Geocoder();
     setMapApi({
       map: map,
       maps: maps,
@@ -135,6 +141,26 @@ export const CreateSchool = () => {
               </button>
             </label>
           </div>
+          <div id="schoolCreateTimeInput">
+            <label>Arrival Time:
+              <input
+                  type="time"
+                  value={arrivalTime}
+                  onChange={e => setArrivalTime(e.target.value)}
+                  required
+              />
+            </label>
+          </div>
+          <div id="schoolCreateTimeInput">
+            <label >Departure Time:
+              <input
+                  type="time"
+                  value={departureTime}
+                  onChange={e => setDepartureTime(e.target.value)}
+                  required
+               />
+            </label>
+          </div>
           <button type="submit" class="btn btn-primary" value="submit">
             Submit
           </button>
@@ -152,7 +178,12 @@ export const CreateSchool = () => {
             yesIWantToUseGoogleMapApiInternals
             onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
           >
-            <Marker text="You're Address" lat={lat} lng={lng} />
+            <Marker
+                text="You're Address"
+                lat={lat}
+                lng={lng}
+                isSchool
+            />
           </GoogleMapReact>
         </div>
       )}

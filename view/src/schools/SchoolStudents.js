@@ -3,38 +3,75 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
 export const SchoolStudents = ({ data, routes }) => {
   const columns = useMemo(
-    () => [
-      {
-        Header: "First Name",
-        accessor: "firstName",
-      },
-      {
-        Header: "Last Name",
-        accessor: "lastName",
-      },
-      {
-        Header: "ID",
-        accessor: "id",
-      },
-      {
-        Header: "Has Route",
-        accessor: "route",
-        Cell: (props) => {
-          return <label>{`${props.value != null}`}</label>;
+      () => [
+        {
+          Header: 'Name',
+          accessor: 'firstName',
+          Cell: props => (
+              <div>
+                {`${props.value} ${props.row.original.lastName}`}
+              </div>
+          )
         },
-      },
-      {
-        Header: "Detail Page",
-        accessor: "uid",
-        Cell: (props) => {
-          return <Link to={`/Students/info/${props.value}`}>view</Link>;
+        {
+          Header: 'ID',
+          accessor: 'id'
         },
-      },
-    ],
-    []
+        {
+          Header: 'Route',
+          accessor: 'route',
+          Cell: (props) => (
+              <div>
+                {props.value ?
+                    <label>
+                      {props.value.name} {props.row.original.inRangeStops.length > 0 || <><FontAwesomeIcon
+                        icon={faCircleExclamation}
+                        size="lg"
+                        style={{ color: "red" }}
+                        data-tip
+                        data-for={`noStopTip${props.row.original.uid}`}
+                    /><ReactTooltip
+                        id={`noStopTip${props.row.original.uid}`}
+                        place="bottom"
+                        effect="solid"
+                    >
+                      This student does not have an in-range stop.
+                    </ReactTooltip></>}
+                    </label> :
+                    <>
+                    <FontAwesomeIcon
+                        icon={faXmark}
+                        size="lg"
+                        style={{ color: "red" }}
+                        data-tip
+                        data-for={`noRouteTip${props.row.original.uid}`}
+                        /><ReactTooltip
+                            id={`noRouteTip${props.row.original.uid}`}
+                            place="bottom"
+                            effect="solid"
+                        >
+                    This student is not on a route.
+                    </ReactTooltip>
+                    </>
+                  }
+              </div>
+          )
+        },
+        {
+          Header: "Detail Page",
+          accessor: "uid",
+          Cell: (props) => {
+            return <Link to={`/Students/info/${props.value}`}>view</Link>
+          }
+        }
+      ],
+      []
   );
 
   const {
