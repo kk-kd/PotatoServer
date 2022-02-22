@@ -3,19 +3,31 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
 export const SchoolRoutes = ({ data }) => {
   const columns = useMemo(
-    () => [
-      {
-        Header: "name",
-        accessor: "name",
-      },
-      {
-        Header: "Detail Page",
-        accessor: "uid",
-        Cell: (props) => {
-          return <Link to={`/Routes/info/${props.value}`}>view</Link>;
+      () => [
+        {
+          Header: 'name',
+          accessor: 'name',
+          Cell: props => (
+              <div><label>{props.value} {!props.row.original.students.some(student => !student.inRangeStops || student.inRangeStops.length === 0) || <><FontAwesomeIcon
+                  icon={faCircleExclamation}
+                  size="lg"
+                  style={{ color: "red" }}
+                  data-tip
+                  data-for="incompleteTip"
+              /><ReactTooltip
+                  id="incompleteTip"
+                  place="bottom"
+                  effect="solid"
+              >
+                At least one student on this route does not have an in-range stop.
+              </ReactTooltip></>}</label></div>
+          )
         },
       },
     ],

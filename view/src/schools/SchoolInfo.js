@@ -251,10 +251,11 @@ export const SchoolInfo = () => {
           >
             <Marker text="You're Address" lat={lat} lng={lng} />
           </GoogleMapReact>
+        </div>)}
+        <div style={{ display: "flex", width: "90%", marginLeft: "auto", marginRight: "auto" }}>
+          <SchoolStudents data={students} />
+          <SchoolRoutes data={routes} />
         </div>
-      )}
-      <SchoolStudents data={students} />
-      <SchoolRoutes data={routes} />
-    </div>
+      </div>
   );
 };

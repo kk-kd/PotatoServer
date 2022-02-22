@@ -4,6 +4,7 @@
   flex-direction: column;
   flex-wrap: wrap;
   width: 90%;
+  flex: 60%
 }
 
 #schoolStudentListing > * {
