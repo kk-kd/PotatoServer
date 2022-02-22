@@ -17,10 +17,13 @@ export class EmailController {
       .leftJoinAndSelect("users.students", "children")
       .leftJoinAndSelect("children.school", "school")
       .leftJoinAndSelect("children.route", "route")
+      .leftJoinAndSelect("children.inRangeStops", "inRangeStops")
       .getOne();
 
     // TODO: possiblly resolve this 100% script injection risk
-    var info = "<h3>" + this.extractName(userDetail) + "</h3>";
+    var info = `<h3>${this.extractName(
+      userDetail
+    )}</h3>, here is your child information:`;
     console.log(userDetail);
     if (!("students" in userDetail) || userDetail.students.length == 0) {
       info =
@@ -35,36 +38,37 @@ export class EmailController {
     }
 
     for (const child of userDetail.students) {
-      info += "<p>" + (await this.getChildDetail(child)) + "</p>";
+      info += `<p>${await this.getChildDetail(child)}</p>`;
     }
 
-    return "<div>" + info + "</div>";
+    return `<div>${info}</div>`;
   };
 
   private getChildDetail = async (child: Student) => {
     var studentInfo =
-      this.extractName(child) +
-      "<br>" +
-      ("id" in child && child.id != null ? "Student ID: " + child.id : "") +
+      `<h3>${this.extractName(child)}</h3>` +
+      ("id" in child && child.id != null
+        ? `<br><b>Student ID</b>: ${child.id}`
+        : "") +
       "<br>" +
       "School: " +
       child.school.name +
-      "<h5>Bus Route Information</h5>";
+      "<h4>Bus Route Information</h4>";
 
     if (child.route == null) {
-      studentInfo += "The student does not have a route yet.";
+      studentInfo +=
+        "The student does not have a route yet. Please contact the school admin if you have any questions.";
     } else {
       studentInfo +=
-        "Route Name: " +
-        child.route.name +
-        "<br>" +
-        "Description: " +
-        child.route.desciption;
+        `<b>Route Name</b>: ${child.route.name}<br>` +
+        `<b>Description</b>: ${child.route.desciption}`;
     }
 
-    studentInfo += "<h5>Stop Information (dropoff/pickup time)</h5>";
+    studentInfo += "<h4>Stop Information (dropoff/pickup time)</h4>";
+    console.log(child);
     if (child.inRangeStops == null) {
-      studentInfo += "The student does not have any in-range stops.";
+      studentInfo +=
+        "The student does not have any in-range stops. Please contact the school admin if you have any questions.";
     } else {
       const stops = child.inRangeStops.sort((a, b) => {
         if (a.arrivalIndex < b.arrivalIndex) return -1;
@@ -73,7 +77,7 @@ export class EmailController {
       });
 
       for (var stop of stops) {
-        studentInfo += `<b>${stop.name}</b>(${stop.dropoffTime}/${stop.pickupTime})`;
+        studentInfo += `<b>${stop.name}</b>(${stop.dropoffTime}/${stop.pickupTime})<br>`;
       }
     }
 

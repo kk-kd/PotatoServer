@@ -1,24 +1,24 @@
-import "./EmailForm.css"
+import "./EmailForm.css";
 import { useEffect, useState, Fragment } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   filterAllRoutes,
   filterAllSchools,
+  sendRouteAnnouncementToUsersFromSchool,
   sendGeneralAnnouncementToUsersFromSchool,
+  sendRouteAnnouncementToUsersOnRoute,
   sendGeneralAnnouncementToUsersOnRoute,
-  sendRouteAnnouncementToAll, 
+  sendRouteAnnouncementToAll,
   sendGeneralAnnouncementToAll,
-  getOneSchool, 
-  getOneRoute
+  getOneSchool,
+  getOneRoute,
 } from "../api/axios_wrapper";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { FormControl, InputLabel, Select, MenuItem, CustomSelect, StyledOption} from "@mui/material";
-
-
+import { FormControl, Select, MenuItem } from "@mui/material";
 
 export const EmailForm = () => {
-  const {schoolid, routeid} = useParams()
+  const { schoolid, routeid } = useParams();
   const action_text = "Send Email";
   const [schoolLoading, setSchoolLoading] = useState(true);
 
@@ -38,8 +38,8 @@ export const EmailForm = () => {
   const [selectedRoute, setSelectedRoute] = useState();
 
   const resetState = () => {
-    setEmailType('');
-    setMessage({subject: '', body: ''});
+    setEmailType("");
+    setMessage({ subject: "", body: "" });
     setIncludeRouteInfo(false);
     setFilteredDataSchool([]);
     setSchoolFilter("");
@@ -48,7 +48,7 @@ export const EmailForm = () => {
     setRouteFilter("");
     setSelectedRoute();
     return 1;
-  }
+  };
 
   const validate_entries = () => {
     if (!emailType) {
@@ -56,12 +56,16 @@ export const EmailForm = () => {
     }
     if (!message.subject || !message.body) {
       return { valid: false, error: "Subject and Body Required" };
-    }
-    else if (emailType == "school" && !selectedSchool) {
-      return { valid: false, error: "Please Select a School or Change Sender Type" };
-    }
-    else if (emailType == "route" && !selectedRoute) {
-      return { valid: false, error: "Please Select a Route or Change Sender Type" };
+    } else if (emailType == "school" && !selectedSchool) {
+      return {
+        valid: false,
+        error: "Please Select a School or Change Sender Type",
+      };
+    } else if (emailType == "route" && !selectedRoute) {
+      return {
+        valid: false,
+        error: "Please Select a Route or Change Sender Type",
+      };
     }
     return { valid: true, error: "" };
   };
@@ -88,6 +92,7 @@ export const EmailForm = () => {
         console.log(id);
         console.log(form_results);
         if (includeRouteInfo) {
+<<<<<<< Updated upstream
           console.log("route annoucement to users from school")
           // sendRouteAnnouncementToUsersFromSchool({
           //   message: form_results,
@@ -100,34 +105,45 @@ export const EmailForm = () => {
           //   message: form_results,
           //   schoolId: id,
           // });
+=======
+          console.log("route annoucement to users from school");
+          sendRouteAnnouncementToUsersFromSchool({
+            message: form_results,
+            schoolId: id,
+          });
+        } else {
+          console.log("general annoucement to users from school");
+          sendGeneralAnnouncementToUsersFromSchool({
+            message: form_results,
+            schoolId: id,
+          });
+>>>>>>> Stashed changes
         }
       } else if (emailType === "route") {
         let id = selectedRoute.uid;
         console.log(id);
         console.log(form_results);
         if (includeRouteInfo) {
-          console.log("route annoucement to users on route")
-          // sendRouteAnnouncementToUsersOnRoute({
-          //   message: form_results,
-          //   routeId: id,
-          // });
-        }
-        else {
-          console.log("general annoucement to users on route")
-          // sendGeneralAnnouncementToUsersOnRoute({
-          //   message: form_results,
-          //   routeId: id,
-          // });
+          console.log("route annoucement to users on route");
+          sendRouteAnnouncementToUsersOnRoute({
+            message: form_results,
+            routeId: id,
+          });
+        } else {
+          console.log("general annoucement to users on route");
+          sendGeneralAnnouncementToUsersOnRoute({
+            message: form_results,
+            routeId: id,
+          });
         }
       } else {
         console.log(form_results);
         if (includeRouteInfo) {
-          console.log("route annoucement to all users")
-          //sendRouteAnnouncementToAll({ message: form_results });
-        }
-        else {
-          console.log("general annoucement to all ")
-          //sendGeneralAnnouncementToAll({ message: form_results });
+          console.log("route annoucement to all users");
+          sendRouteAnnouncementToAll({ message: form_results });
+        } else {
+          console.log("general annoucement to all ");
+          sendGeneralAnnouncementToAll({ message: form_results });
         }
       }
     } catch (error) {
@@ -182,90 +198,95 @@ export const EmailForm = () => {
   }, [routeFilter]);
 
   useEffect(() => {
-    setSelectedSchool()
-    setFilteredDataSchool([])
-    setSchoolFilter("")
-    setSelectedRoute()
-    setFilteredDataRoute([])
-    setRouteFilter("")
-
+    setSelectedSchool();
+    setFilteredDataSchool([]);
+    setSchoolFilter("");
+    setSelectedRoute();
+    setFilteredDataRoute([]);
+    setRouteFilter("");
   }, [emailType]);
-
 
   const callGetSchool = async () => {
     try {
       const schoolData = await getOneSchool(schoolid);
-      const newSchool = schoolData.data
-      setFilteredDataSchool([newSchool]); 
+      const newSchool = schoolData.data;
+      setFilteredDataSchool([newSchool]);
       setSelectedSchool(newSchool);
-         
-      return; 
+
+      return;
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
+  };
 
   const callGetRoute = async () => {
     try {
       const routeData = await getOneRoute(routeid);
-      const newRoute= routeData.data
-      setFilteredDataRoute([newRoute]); 
+      const newRoute = routeData.data;
+      setFilteredDataRoute([newRoute]);
       setSelectedRoute(newRoute);
-          return; 
+      return;
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
+  };
 
   useEffect(() => {
     if (schoolid) {
-      setEmailType("school"); 
+      setEmailType("school");
       try {
-        const a = callGetSchool();   
+        const a = callGetSchool();
+      } catch (e) {
+        console.log(e);
       }
-      catch (e) {
-        console.log(e)
-      }
-
-    }
-    else if (routeid) {
-      setEmailType("route")
+    } else if (routeid) {
+      setEmailType("route");
       try {
-        const a = callGetRoute();   
-      }
-      catch (e) {
-        console.log(e)
+        const a = callGetRoute();
+      } catch (e) {
+        console.log(e);
       }
     }
   }, []);
 
   return (
     <div id="content">
-      <h1 id = 'title-email'> {action_text} </h1>
+      <h1 id="title-email"> {action_text} </h1>
       <p> </p>
-      <p>  </p>
       <p> </p>
-  
-        <label id="input-label-email" >
-            {" "}
-            Send Email To:{"     "} 
-        </label>
-        <FormControl  style={{minWidth: "10%"}} id = 'input-input-select-email' variant = "standard"> 
-        <Select value = {emailType} onChange={(e) => {setEmailType(e.target.value);}}  >
-            <MenuItem value={"all"}> All Parents </MenuItem>
-            <MenuItem value={"school"}>Parents of a Given School </MenuItem>
-            <MenuItem value={"route"}>Parents of a Given Route</MenuItem>
+      <p> </p>
+
+      <label id="input-label-email"> Send Email To:{"     "}</label>
+      <FormControl
+        style={{ minWidth: "10%" }}
+        id="input-input-select-email"
+        variant="standard"
+      >
+        <Select
+          value={emailType}
+          onChange={(e) => {
+            setEmailType(e.target.value);
+          }}
+        >
+          <MenuItem value={"all"}> All Parents </MenuItem>
+          <MenuItem value={"school"}>Parents of a Given School </MenuItem>
+          <MenuItem value={"route"}>Parents of a Given Route</MenuItem>
         </Select>
-                
-        </FormControl> 
+      </FormControl>
 
       {emailType == "school" && (
         <Autocomplete
           sx={{
             paddingTop: "15px",
+<<<<<<< Updated upstream
             paddingBottom: "10px",  
             margin:'auto',
             marginRight: '25%',
+=======
+            paddingBottom: "10px",
+            margin: "auto",
+            marginRight: "25%",
+>>>>>>> Stashed changes
             width: "30%",
           }}
           options={filteredDataSchool}
@@ -274,21 +295,18 @@ export const EmailForm = () => {
             <TextField {...params} label="School" variant="standard" />
           )}
           getOptionLabel={(option) => option.name}
-          
           value={selectedSchool}
-          onInputChange = {(e, newInputValue, reason) => {
-            console.log(reason)
-            if (reason === 'reset') {
-              
-              setSchoolFilter('')
-              return
-            } else if (reason === 'input') {
+          onInputChange={(e, newInputValue, reason) => {
+            console.log(reason);
+            if (reason === "reset") {
+              setSchoolFilter("");
+              return;
+            } else if (reason === "input") {
               setSchoolFilter(newInputValue);
-            } 
+            }
           }}
-        
           onChange={(_event, newSchool) => {
-            console.log("on change")
+            console.log("on change");
             console.log(newSchool);
             setSelectedSchool(newSchool);
           }}
@@ -302,8 +320,8 @@ export const EmailForm = () => {
           sx={{
             paddingTop: "15px",
             paddingBottom: "10px",
-            margin:'auto',
-            marginRight: '25%',
+            margin: "auto",
+            marginRight: "25%",
             width: "30%",
           }}
           renderInput={(params) => (
@@ -323,16 +341,14 @@ export const EmailForm = () => {
         />
       )}
 
-      
-      <label id="input-label-email" > Include Student Route Information  </label>
-        <input
-            id  = "input-check-email"
-            style ={{paddingLeft: '10%'}}
-            type="checkbox"
-            checked ={includeRouteInfo}
-            onInput={(e) => setIncludeRouteInfo(!includeRouteInfo)}
-       />
-
+      <label id="input-label-email"> Include Student Route Information </label>
+      <input
+        id="input-check-email"
+        style={{ paddingLeft: "10%" }}
+        type="checkbox"
+        checked={includeRouteInfo}
+        onInput={(e) => setIncludeRouteInfo(!includeRouteInfo)}
+      />
 
       <label id="input-label-email" for="n">
         {" "}
@@ -347,15 +363,11 @@ export const EmailForm = () => {
       />
 
       <p> </p>
-      <p>  </p>
       <p> </p>
-      <p  id = "label-2">
-        {" "}
-        Email Body{" "}
-      </p>
+      <p> </p>
+      <p id="label-2"> Email Body </p>
       <textarea
-        style = {{width: "60%", margin: 'auto', display: 'flex'}}
-      
+        style={{ width: "60%", margin: "auto", display: "flex" }}
         value={message.body}
         onChange={(e) => setMessage({ ...message, body: e.target.value })}
       />
@@ -368,7 +380,6 @@ export const EmailForm = () => {
           handleEmailFormSubmit(e);
         }}
       >
-       
         {action_text}
       </button>
     </div>
