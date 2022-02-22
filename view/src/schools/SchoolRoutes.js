@@ -29,7 +29,6 @@ export const SchoolRoutes = ({ data }) => {
               </ReactTooltip></>}</label></div>
           )
         },
-      },
     ],
     []
   );
