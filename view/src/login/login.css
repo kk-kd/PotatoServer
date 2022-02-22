@@ -5,6 +5,10 @@
 .header-image {
   height: 10em;
 }
+.login-input-core {
+  width: 92%;
+}
+
 .login-wrapper {
   /* height: 100vh; */
   width: 100%;
@@ -15,16 +19,6 @@
   background-color: #dadada;
   /* background-size: 100%;
   min-height: max-content; */
-}
-
-.input {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 20px;
-  display: flex;
-  border-radius: 4px;
-  box-sizing: border-box;
-  align-items: center;
 }
 
 /* .submitbutton {

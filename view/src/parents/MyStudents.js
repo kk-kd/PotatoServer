@@ -46,7 +46,7 @@ export const MyStudents = ({ user }) => {
   } else {
     return (
       <div class="card">
-        <div class="card-body core-card-color">
+        <div class="card-body core-card-style">
           <div id="myStudentListing">
             {data.length === 0 ? (
               <h4>You have no registered child students.</h4>
