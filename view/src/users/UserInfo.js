@@ -5,7 +5,7 @@ import { Marker } from "../map/Marker";
 import {registerUser, saveStudent} from "../api/axios_wrapper";
 import { Link, use, useNavigate, useParams } from "react-router-dom";
 import { Users } from "./Users";
-import { filterAllUsers, filterAllSchools, getOneUser , updateUser, deleteUser} from "../api/axios_wrapper";
+import { filterAllUsers, filterAllSchools, getOneUser , createUser, updateUser, deleteUser} from "../api/axios_wrapper";
 import { StudentForm } from "../students/StudentForm";
 import {useTable} from "react-table";
 
@@ -78,6 +78,17 @@ export const UserInfo = ({edit}) => {
       CreateStudent(student_candidate);  
     }
 
+    // functions passed to student form to update students state
+    // const addStudentToUser = (student) => {
+    //   students.forEach((stud) => {
+    //     if (stud.student.id === student.studentid) {
+    //       alert("A Student with this ID is already associated with this user.");
+    //     }
+    //   });
+    //   setStudents((students) => [...students, student]);
+    // };
+
+
     const validate_user_entries = () => {
       if (!user.firstName || !user.lastName){
           return {valid: false, error: 'User First Name and Last Name Required'}
@@ -119,7 +130,6 @@ export const UserInfo = ({edit}) => {
           isAdmin: user.isAdmin,
           latitude: lat,
           longitude: lng,
-          students: studentsList,
           password: user.password,
           uid: user.uid,
           confirmationCode: user.confirmationCode,
@@ -133,8 +143,12 @@ export const UserInfo = ({edit}) => {
           
           const response = await updateUser(id, form_results, false); //false shouldn't be in the call anymore!
           const madeUser = await getOneUser(id);
+          console.log(madeUser)
           setUser(madeUser.data);
           setStudents([madeUser.data][0].students);
+          setEditable(false);
+          fetchUserData();
+
 
           console.log("Updated User")
           console.log(madeUser.data)
