@@ -4,9 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   filterAllRoutes,
   filterAllSchools,
-  sendRouteAnnouncementToUsersFromSchool,
   sendGeneralAnnouncementToUsersFromSchool,
-  sendRouteAnnouncementToUsersOnRoute,
   sendGeneralAnnouncementToUsersOnRoute,
   sendRouteAnnouncementToAll,
   sendGeneralAnnouncementToAll,
@@ -15,7 +13,14 @@ import {
 } from "../api/axios_wrapper";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import { FormControl, Select, MenuItem } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  CustomSelect,
+  StyledOption,
+} from "@mui/material";
 
 export const EmailForm = () => {
   const { schoolid, routeid } = useParams();
@@ -92,32 +97,17 @@ export const EmailForm = () => {
         console.log(id);
         console.log(form_results);
         if (includeRouteInfo) {
-<<<<<<< Updated upstream
-          console.log("route annoucement to users from school")
+          console.log("route annoucement to users from school");
           // sendRouteAnnouncementToUsersFromSchool({
           //   message: form_results,
           //   schoolId: id,
           // });
-        }
-        else {
-          console.log("general annoucement to users from school")
+        } else {
+          console.log("general annoucement to users from school");
           // sendGeneralAnnouncementToUsersFromSchool({
           //   message: form_results,
           //   schoolId: id,
           // });
-=======
-          console.log("route annoucement to users from school");
-          sendRouteAnnouncementToUsersFromSchool({
-            message: form_results,
-            schoolId: id,
-          });
-        } else {
-          console.log("general annoucement to users from school");
-          sendGeneralAnnouncementToUsersFromSchool({
-            message: form_results,
-            schoolId: id,
-          });
->>>>>>> Stashed changes
         }
       } else if (emailType === "route") {
         let id = selectedRoute.uid;
@@ -125,25 +115,25 @@ export const EmailForm = () => {
         console.log(form_results);
         if (includeRouteInfo) {
           console.log("route annoucement to users on route");
-          sendRouteAnnouncementToUsersOnRoute({
-            message: form_results,
-            routeId: id,
-          });
+          // sendRouteAnnouncementToUsersOnRoute({
+          //   message: form_results,
+          //   routeId: id,
+          // });
         } else {
           console.log("general annoucement to users on route");
-          sendGeneralAnnouncementToUsersOnRoute({
-            message: form_results,
-            routeId: id,
-          });
+          // sendGeneralAnnouncementToUsersOnRoute({
+          //   message: form_results,
+          //   routeId: id,
+          // });
         }
       } else {
         console.log(form_results);
         if (includeRouteInfo) {
           console.log("route annoucement to all users");
-          sendRouteAnnouncementToAll({ message: form_results });
+          //sendRouteAnnouncementToAll({ message: form_results });
         } else {
           console.log("general annoucement to all ");
-          sendGeneralAnnouncementToAll({ message: form_results });
+          //sendGeneralAnnouncementToAll({ message: form_results });
         }
       }
     } catch (error) {
@@ -278,15 +268,9 @@ export const EmailForm = () => {
         <Autocomplete
           sx={{
             paddingTop: "15px",
-<<<<<<< Updated upstream
-            paddingBottom: "10px",  
-            margin:'auto',
-            marginRight: '25%',
-=======
             paddingBottom: "10px",
             margin: "auto",
             marginRight: "25%",
->>>>>>> Stashed changes
             width: "30%",
           }}
           options={filteredDataSchool}
