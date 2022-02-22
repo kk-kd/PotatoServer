@@ -60,17 +60,16 @@
     width: 50%;
   }
 
-  #input-label {
-    max-width: 30%;
+  #input-label-student {
+    width: 30%;
     /* Positions the label text beside the input */
     text-align: right;
   }
 
-  #input-input {
-    width: 40%;
+  #input-input-student {
+    width: 30%;
     min-width: 150px;
     /* Large margin-right to force the next element to the new-line
              and margin-left to create a gutter between the label and input */
-    margin: 2% 20% 0 4%;
+    margin: 2% 30% 0 4%;
   }
-
