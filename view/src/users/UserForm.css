@@ -1,21 +1,11 @@
-#content {
-  width:75%;
-  margin:auto; 
-  height:auto; 
-  background: #ebebeb;
-  overflow:auto;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-}
-
 #map {
   float: right;
   width: 43%;
-  padding-bottom: '20px';
+  padding-bottom: "20px";
   padding: 2%;
 }
 
-#sub-form{
+#sub-form {
   display: block;
   border-color: lightgray;
   border-style: solid;
@@ -28,39 +18,12 @@
 #title {
   background-color: black;
   color: white;
-  margin:auto; 
+  margin: auto;
   padding: 10px;
   margin-bottom: 20px;
 }
-
-#main_form {
-  float: left;
+.test-centering {
+  display: flex;
   align-items: center;
-  width: 57%;
-  padding: 2%;
+  justify-content: center;
 }
-
-
-label,
-input {
-  /* In order to define widths */
-  display: inline-block;
-}
-label {
-  width: 30%;
-  color: black;
-  /* Positions the label text beside the input */
-  text-align: right;
-}
-
-label+input {
-  width: 30%;
-  /* Large margin-right to force the next element to the new-line
-           and margin-left to create a gutter between the label and input */
-  margin: 2% 30% 0 4%;
-}
-input+input {
-  float: right;
-}
-
-

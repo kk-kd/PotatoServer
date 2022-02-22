@@ -1,12 +1,13 @@
-#schoolStudentListing {
+#routeStopListing {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
   flex-wrap: wrap;
-  width: 90%;
-  flex: 60%
+  width: 100%;
+  flex: 35%;
+  padding: 10px;
 }
 
-#schoolStudentListing > * {
+#routeStopListing > * {
   margin: 10px;
 }

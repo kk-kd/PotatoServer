@@ -45,7 +45,7 @@ export const ChangeMyPassword = () => {
             <div class="mb-3">
               <label
                 for="exampleInputPassword2"
-                class="form-label"
+                class="form-label center"
                 id="schoolInput"
               >
                 Old Password
@@ -53,45 +53,62 @@ export const ChangeMyPassword = () => {
 
               <input
                 type="password"
-                class="form-control"
+                class="form-control login-input-core"
                 id="exampleInputPassword2"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
               />
+              <div class="form-text">
+                Enter your old password exactly how you originally recieved or
+                registered it! Case sensitive!
+              </div>
             </div>
             <div class="mb-3">
               <label
                 id="schoolInput"
                 for="exampleInputPassword3"
-                class="form-label"
+                class="form-label center"
               >
                 New Password
               </label>
               <input
                 type="password"
-                class="form-control"
+                class="form-control login-input-core"
                 id="exampleInputPassword3"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
+              <div class="form-text">
+                Enter in a new strong password with at least 8 characters
+                containing at least: 2 numbers, 1 uppercase letter and 1 lower
+                case letter.
+              </div>
             </div>
             <div class="mb-3">
               <label
                 for="exampleInputPassword4"
-                class="form-label"
+                class="form-label center"
                 id="schoolInput"
               >
                 Re-Enter New Password
               </label>
               <input
                 type="password"
-                class="form-control"
+                class="form-control login-input-core"
                 id="exampleInputPassword4"
                 value={newPasswordMatch}
                 onChange={(e) => setNewPasswordMatch(e.target.value)}
               />
+              <div class="form-text">
+                Enter in the same password as before; case sensitive! Don't
+                forget it!
+              </div>
             </div>
-            <input type="submit" value="Submit" />
+            <input
+              className="btn btn-outline-primary"
+              type="submit"
+              value="Submit"
+            />
           </form>
         </div>
       </div>

@@ -93,7 +93,9 @@ export class EmailController {
     request: Request,
     response: Response
   ) => {
+    console.log(request.body);
     let { message } = request.body;
+    console.log(message);
     const userRepository = getRepository(User);
     const allUserEmails = await userRepository
       .createQueryBuilder("users")
