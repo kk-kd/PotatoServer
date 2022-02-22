@@ -204,7 +204,7 @@ export const UserForm = () => {
         
         <div id = "main_form">
               
-        <Divider id = 'divider'>Information</Divider>
+        <h5 id = "sub-header"> Information </h5>
 
           <label id = 'label-user'> First Name </label> 
           <input
@@ -262,7 +262,7 @@ export const UserForm = () => {
 
           <p> </p>
           <div>
-            <Divider id = 'divider'>Students</Divider>
+            <h5 id = "sub-header"> Students </h5>
 
             <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto', marginTop: '10px'}}>
                 <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}} 

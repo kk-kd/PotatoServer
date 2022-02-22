@@ -24,6 +24,9 @@ import { ListItemButton } from "@mui/material";
 import Divider from '@mui/material/Divider';
 import CloseIcon from '@mui/icons-material/Close';
 import { fontSize } from "@mui/system";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
 // this functions as the user edit and detail pages. 
 
@@ -161,7 +164,7 @@ export const UserInfo = ({edit}) => {
 
     const handleDeleteUser = (user_id, e) => {
       e.preventDefault();
-      let sName = prompt("Do you want to delete?  If so, enter User email:");
+      let sName = prompt("Do you want to delete?  If so, enter user email:");
       if (!sName) {
         return; 
       } else if (sName.toLowerCase().trim() !== user.email.toLowerCase().trim()) {
@@ -275,31 +278,69 @@ export const UserInfo = ({edit}) => {
     const columns = useMemo(
       () => [
         {
-            Header: 'Student First Name',
-            accessor: 'firstName',
+          Header: "First Name",
+          accessor: "firstName",
         },
         {
-          Header: 'Student Last Name',
-          accessor: 'lastName',
+          Header: "Middle Name",
+          accessor: "middleName",
         },
-         {
-          Header: 'Missing Route',
-          disableFilters : true,
-          accessor: 'route',
-          Cell: ({value}) => { 
-              return <ul> {value ? 'No' : 'Yes' } </ul> 
-          }
-      },
-      {
-        Header: ' ',
-        disableFilters: true,
-        accessor: 'uid',
-        Cell: ({value}) => { 
-          return <Link to = {"/Students/info/" + value}> {"View Student Detail"} </Link>   
-        }
-        }
-          ],
-          []
+        {
+          HeaderName: "Last Name",
+          accessor: "lastName",
+        },
+        {
+          HeaderName: "ID",
+          accessor: "id",
+        },
+        {
+          HeaderName: "School",
+          accessor: "school.name",
+        },
+        {
+          Header: "Route",
+          accessor: "route",
+          Cell: props => (
+              <div>
+                {props.value ?
+                    <label>{props.value.name} {(props.row.original.inRangeStops && props.row.original.inRangeStops.length > 0) || <><FontAwesomeIcon
+                    icon={faCircleExclamation}
+                    size="lg"
+                    style={{ color: "red" }}
+                    data-tip
+                    data-for="noInRangeStopTip"
+                /><ReactTooltip
+                      id="noInRangeStopTip"
+                      place="bottom"
+                      effect="solid"
+                      >
+                      This student does not have any in-range stops.
+                      </ReactTooltip></>}</label> :
+                    <><FontAwesomeIcon
+                        icon={faXmark}
+                        size="xl"
+                        style={{ color: "red" }}
+                        data-tip
+                        data-for="noStopTip"
+                    /><ReactTooltip
+                  id="noStopTip"
+                  place="bottom"
+                  effect="solid"
+                  >
+                  This student is not on a route.
+                  </ReactTooltip></>}
+              </div>
+          )
+        },
+        {
+          Header: "Detail Page",
+          accessor: "uid",
+          Cell: (props) => {
+            return <Link to={`/Students/info/${props.value}`}>view</Link>;
+          },
+        },
+      ],
+      []
     );
 
     const {
@@ -328,7 +369,8 @@ export const UserInfo = ({edit}) => {
         
         <div id = "main_form">
               
-        <Divider id = 'divider'>Information {editable}</Divider>
+        {/* <Divider id = 'divider'>Information {editable}</Divider> */}
+        <h5 id = "sub-header"> Information </h5>
 
           <label id = "label-user"> First Name </label> 
           <input
@@ -400,7 +442,7 @@ export const UserInfo = ({edit}) => {
             <p> </p>
             <p> </p>
             <p> </p>
-            <Divider id = 'divider'>Students</Divider>
+            <h5 id = "sub-header"> Students </h5>
             <p> </p>
             <p> </p>
             <p> </p>

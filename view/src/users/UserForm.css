@@ -33,6 +33,14 @@
   margin-bottom: 20px;
 }
 
+#sub-header {
+  background-color: black;
+  color: white;
+  margin:auto; 
+  padding: 5px;
+  margin-bottom: 20px;
+}
+
 #main_form {
   float: left;
   align-items: center;
