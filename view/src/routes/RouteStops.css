@@ -1,13 +1,13 @@
-#routeStudentListing {
+#routeStopListing {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
   flex-wrap: wrap;
   width: 100%;
-  flex: 15%;
+  flex: 35%;
   padding: 10px;
 }
 
-#routeStudentListing > * {
+#routeStopListing > * {
   margin: 10px;
 }

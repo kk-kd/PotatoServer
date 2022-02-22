@@ -218,6 +218,7 @@ export class RouteController extends Repository<Route> {
         .createQueryBuilder("routes")
         .where("routes.uid = :uid", { uid: uidNumber })
         .leftJoinAndSelect("routes.students", "students")
+        .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
         .leftJoinAndSelect("routes.school", "school")
         .leftJoinAndSelect("routes.stops", "stops")
         .leftJoinAndSelect("students.parentUser", "parentUser")
