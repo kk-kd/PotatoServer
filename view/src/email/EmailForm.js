@@ -218,7 +218,9 @@ export const EmailForm = () => {
   }
 
   useEffect(() => {
-    if (schoolid) {
+    
+    if ((schoolid) && (schoolid !== '-1')) {
+      console.log(schoolid)
       setEmailType("school"); 
       try {
         const a = callGetSchool();   
@@ -228,7 +230,8 @@ export const EmailForm = () => {
       }
 
     }
-    else if (routeid) {
+    else if (routeid && routeid !=='-1') {
+      console.log("route")
       setEmailType("route")
       try {
         const a = callGetRoute();   
