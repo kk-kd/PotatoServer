@@ -119,7 +119,7 @@ export const UserInfo = ({edit}) => {
           students: studentsList,
           password: user.password,
           uid: user.uid,
-          ConfirmationCode: user.ConfirmationCode,
+          confirmationCode: user.confirmationCode,
         }
         console.log("Updating User with Entries:")
         console.log(form_results)
@@ -182,6 +182,10 @@ export const UserInfo = ({edit}) => {
         alert (message);
       }    
     }
+    const updateUserLoading = (data) => {
+      console.log(data)
+      setUserLoaded(true);
+    }
 
     const fetchUserData = async () => {
       try {
@@ -191,6 +195,8 @@ export const UserInfo = ({edit}) => {
         });
         setUser(fetchedData.data);
         setStudents([fetchedData.data][0].students);
+        updateUserLoading(fetchedData.data);
+        console.log("User from API Call:")
         console.log(fetchedData.data)
       } catch (error) {
         console.log(error);
@@ -215,24 +221,13 @@ export const UserInfo = ({edit}) => {
     useEffect(() => {
       console.log(" api loaded or user loaded changed")
       console.log("api loaded = " + apiLoaded)
+      console.log("user loaded = " + userLoaded)
+      console.log("address = " + user.address)
       if ((apiLoaded) && (userLoaded) && (user.address)) {
         checkMap(null);
       } 
     }, [apiLoaded, userLoaded]);
 
-    useEffect(() => {
-      if (!userLoaded) {
-        console.log("userLoaded set to true")
-        setUserLoaded(true);
-      }
-    }, [user]);
-
-    useEffect(() => {
-      if (!userLoaded) {
-        console.log("userLoaded set to true")
-        setUserLoaded(true);
-      }
-    }, [editable]);
 
     //maps
     const checkMap = (e) => {
