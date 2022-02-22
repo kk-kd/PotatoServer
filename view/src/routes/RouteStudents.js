@@ -3,28 +3,34 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
 export const RouteStudents = ({ data, routes }) => {
   const columns = useMemo(
       () => [
         {
-          Header: 'First Name',
-          accessor: 'firstName'
-        },
-        {
-          Header: 'Last Name',
-          accessor: 'lastName'
-        },
-        {
-          Header: 'ID',
-          accessor: 'id'
-        },
-        {
-          Header: "Detail Page",
-          accessor: "uid",
-          Cell: (props) => {
-            return <Link to={`/Students/info/${props.value}`}>view</Link>
-          }
+          Header: 'Name',
+          accessor: 'firstName',
+          Cell: props => (
+              <label>
+                <Link to={`/Students/info/${props.row.original.uid}`}>{`${props.value} ${props.row.original.lastName}`}</Link>
+                {(props.row.original.inRangeStops && props.row.original.inRangeStops.length > 0) || <><FontAwesomeIcon
+                    icon={faCircleExclamation}
+                    size="lg"
+                    style={{ color: "red" }}
+                    data-tip
+                    data-for="noInRangeStopTip"
+                /><ReactTooltip
+                    id="noInRangeStopTip"
+                    place="bottom"
+                    effect="solid"
+                >
+                  This student does not have any in-range stops.
+                </ReactTooltip></>}
+              </label>
+          )
         }
       ],
       []
@@ -96,48 +102,18 @@ export const RouteStudents = ({ data, routes }) => {
           </tbody>
         </table>
         <div className="pagination">
-          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          <button className="paginationButton" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
             {'<<'}
           </button>{' '}
-          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          <button className="paginationButton" onClick={() => previousPage()} disabled={!canPreviousPage}>
             {'<'}
           </button>{' '}
-          <button onClick={() => nextPage()} disabled={!canNextPage}>
+          <button className="paginationButton" onClick={() => nextPage()} disabled={!canNextPage}>
             {'>'}
           </button>{' '}
-          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          <button className="paginationButton" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
             {'>>'}
           </button>{' '}
-          <span>
-          Page{' '}
-            <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{' '}
-        </span>
-          <span>
-          | Go to page:{' '}
-            <input
-                type="number"
-                defaultValue={pageIndex + 1}
-                onChange={e => {
-                  const page = e.target.value ? Number(e.target.value) - 1 : 0
-                  gotoPage(page)
-                }}
-                style={{ width: '100px' }}
-            />
-        </span>{' '}
-          <select
-              value={pageSize}
-              onChange={e => {
-                setPageSize(Number(e.target.value))
-              }}
-          >
-            {[10, 20, 30, 40, 50].map(pageSize => (
-                <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
-                </option>
-            ))}
-          </select>
         </div>
             </>}
       </div>

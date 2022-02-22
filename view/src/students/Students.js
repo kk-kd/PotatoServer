@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ListStudents } from "./ListStudents";
-import { StudentDetail } from "./StudentDetail";
 import { StudentInfo } from "./StudentInfo";
 import { StudentForm } from "./StudentForm";
 

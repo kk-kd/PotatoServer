@@ -115,18 +115,29 @@ export class RouteController extends Repository<Route> {
           nameFilter,
           sortDirSpec
         );
+        const total = routesByStudentsCount.length;
         response.status(200);
         if (request.query.showAll && request.query.showAll === "true") {
+          if (sortDirSpec === "ASC") {
+            return {
+              routes: routesByStudentsCount.sort((a, b) => a.students.length - b.students.length),
+              total: total
+            }
+          }
           return {
-            routes: routesByStudentsCount,
-            total: routesByStudentsCount.length,
-            special: true
+            routes: routesByStudentsCount.sort((a, b) => b.students.length - a.students.length),
+            total: total,
           };
         } else {
+          if (sortDirSpec === "ASC") {
+            return {
+              routes: routesByStudentsCount.sort((a, b) => a.students.length - b.students.length).splice(skipNum, skipNum + takeNum),
+              total: total
+            }
+          }
           return {
-            routes: routesByStudentsCount.splice(skipNum, skipNum + takeNum),
-            total: routesByStudentsCount.length,
-            special: true
+            routes: routesByStudentsCount.sort((a, b) => b.students.length - a.students.length).splice(skipNum, skipNum + takeNum),
+            total: total
           };
         }
       } else {
@@ -135,6 +146,7 @@ export class RouteController extends Repository<Route> {
             .createQueryBuilder("routes")
             .leftJoinAndSelect("routes.school", "school")
             .leftJoinAndSelect("routes.students", "students")
+            .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
             .leftJoinAndSelect("routes.stops", "stops")
             .orderBy(sortSpecification, sortDirSpec)
             .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
@@ -151,6 +163,7 @@ export class RouteController extends Repository<Route> {
             .take(takeNum)
             .leftJoinAndSelect("routes.school", "school")
             .leftJoinAndSelect("routes.students", "students")
+            .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
             .leftJoinAndSelect("routes.stops", "stops")
             .orderBy(sortSpecification, sortDirSpec)
             .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
@@ -174,17 +187,28 @@ export class RouteController extends Repository<Route> {
   ) {
     return await this.routeRepository
       .createQueryBuilder("routes")
-      .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
       .leftJoinAndSelect("routes.school", "school")
-      .addSelect((subQuery) => {
-        return subQuery
-          .select("COUNT(students.uid)", "count")
-          .from(Student, "students")
-          .where("students.route.uid = routes.uid");
-      }, "count")
-      .orderBy('"count"', sortDirSpec)
-      .loadRelationCountAndMap("routes.studentCount", "routes.students")
-      .getRawMany();
+      .leftJoinAndSelect("routes.students", "students")
+      .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+      .leftJoinAndSelect("routes.stops", "stops")
+      .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
+      .getMany();
+    // return await this.routeRepository
+    //   .createQueryBuilder("routes")
+    //   .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
+    //   .leftJoinAndSelect("routes.school", "school")
+    //   .leftJoinAndSelect("routes.students", "students")
+    //   .leftJoinAndSelect("routes.stops", "stops")
+    //   .leftJoinAndSelect("stops.inRangeStudents", "inRangeStudents")
+    //   .addSelect((subQuery) => {
+    //     return subQuery
+    //       .select("COUNT(students.uid)", "count")
+    //       .from(Student, "students")
+    //       .where("students.route.uid = routes.uid");
+    //   }, "count")
+    //   .orderBy('"count"', sortDirSpec)
+    //   .loadRelationCountAndMap("routes.studentCount", "routes.students")
+    //   .getRawMany();
   }
 
   async oneRoute(request: Request, response: Response, next: NextFunction) {
@@ -194,6 +218,7 @@ export class RouteController extends Repository<Route> {
         .createQueryBuilder("routes")
         .where("routes.uid = :uid", { uid: uidNumber })
         .leftJoinAndSelect("routes.students", "students")
+        .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
         .leftJoinAndSelect("routes.school", "school")
         .leftJoinAndSelect("routes.stops", "stops")
         .leftJoinAndSelect("students.parentUser", "parentUser")

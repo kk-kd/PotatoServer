@@ -297,33 +297,53 @@ export const SchoolInfo = ({edit}) => {
                     value={school.address}
                     onChange={(e) => {setSchool({...school, address: e.target.value}); setAddressValid(false); }} 
                 />
+
+                <label id='label-user'> Arrival Time:  </label>
+                  <input
+                      id = 'input-user'
+                      type="time"
+                      value={school.arrivalTime}
+                      onChange={e => {setSchool({...school, arrivalTime: e.target.value});}} 
+                      required
+                  />
+              
+                <label id='label-user'> Departure Time: </label>
+                  <input
+                      id = 'input-user'
+                      type="time"
+                      value={school.departureTime}
+                      onChange={e => {setSchool({...school, departureTime: e.target.value});}} 
+                      required
+                  />
+          
                         
-            
                 {editable && <div>
-                <button style = {{display: 'in-line block', margin: '20px'}} onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate Address" } </button>  
-                <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleSchoolFormSubmit(e)}} type="button"> Update School </button>
-                </div>} 
-                </div>
+                  <button style = {{display: 'in-line block', margin: '20px'}} onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate Address" } </button>  
+                  <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleSchoolFormSubmit(e)}} type="button"> Update School </button>
+                  </div>
+                } 
+              </div>
 
             
-                <div id="map">
-                    {error && (<div>{error}</div>)}
-                    <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
-                        <GoogleMapReact
-                            bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
-                            defaultCenter={defaultProps.center}
-                            defaultZoom={defaultProps.zoom}
-                            yesIWantToUseGoogleMapApiInternals
-                            onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
-                        >
-                        <Marker
-                            text="Your Address"
-                            lat={lat}
-                            lng={lng}
-                        />
-                        </GoogleMapReact>
-                    </div>
-                </div>
+              <div id="map">
+                  {error && (<div>{error}</div>)}
+                  <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
+                      <GoogleMapReact
+                          bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
+                          defaultCenter={defaultProps.center}
+                          defaultZoom={defaultProps.zoom}
+                          yesIWantToUseGoogleMapApiInternals
+                          onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+                      >
+                      <Marker
+                          text="Your Address"
+                          lat={lat}
+                          lng={lng}
+                          isSchool
+                      />
+                      </GoogleMapReact>
+                  </div>
+            </div>
         </div>
 
      

@@ -46,10 +46,8 @@ export default function Login({ setLoggedIn }) {
         src={"./cute_potato.png"}
         alt="Cute Potato!"
       />
-      <h2 className="site-title-wrapper">Welcome to Potato Web Service.</h2>
-      <h5 className="site-title-wrapper">
-        Your Premier School Bus Logistics Platform
-      </h5>
+      <h2 className="display-4">Welcome to Potato Web Service.</h2>
+      <h5 className="lead">Your Premier School Bus Logistics Platform</h5>
       <div class="card border-dark core-login-forms">
         <div class="card-body">
           <form onSubmit={handleLoginSubmit}>

@@ -566,6 +566,7 @@ export const UserInfo = ({edit}) => {
                     text="Your Address"
                     lat={lat}
                     lng={lng}
+                    isUser
                 />
                 </GoogleMapReact>
              </div>

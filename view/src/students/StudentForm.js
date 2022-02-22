@@ -27,7 +27,7 @@ export const StudentForm = ({addStudentToUser}) => {
     const [schoolFilter, setSchoolFilter] = useState("");
 
     const [routeFilter, setRouteFilter] = useState("");
-    const [selectedRoute, setSelectedRoute] = useState();
+   // const [selectedRoute, setSelectedRoute] = useState();
 
     const [filteredDataUser, setFilteredDataUser] = useState([]);
     
@@ -65,7 +65,7 @@ export const StudentForm = ({addStudentToUser}) => {
                   lastName: student.lastName,
                   school: selectedSchool, 
                   id: student.studentid,
-                  route: selectedRoute
+                  // route: selectedRoute
                 }
                 addStudentToUser(form_results);
             }
@@ -88,12 +88,12 @@ export const StudentForm = ({addStudentToUser}) => {
           school: selectedSchool, 
           id: student.studentid,
           parentUser: user,
-          route: selectedRoute
+          //route: selectedRoute
         }
         console.log(form_results)
-        if (!selectedRoute) {
-          form_results["route"] = null;
-        }
+        // if (!selectedRoute) {
+        //   form_results["route"] = null;
+        // }
         if (student.studentid.length === 0) {
           form_results["id"] = null;
         }
@@ -221,7 +221,7 @@ export const StudentForm = ({addStudentToUser}) => {
             
         />
 
-        {selectedSchool && selectedSchool.routes && selectedSchool.routes.length > 0 && 
+        {/* {selectedSchool && selectedSchool.routes && selectedSchool.routes.length > 0 && 
             <Autocomplete
                 options={selectedSchool.routes}
                 freeSolo
@@ -245,7 +245,7 @@ export const StudentForm = ({addStudentToUser}) => {
                 }}
             
         />
-        }
+        } */}
         <div> 
 
         {!addStudentToUser && <Autocomplete

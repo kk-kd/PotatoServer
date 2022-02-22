@@ -1,21 +1,11 @@
-#content {
-  width:75%;
-  margin:auto; 
-  height:auto; 
-  background: #ebebeb;
-  overflow:auto;
-  padding-bottom: 20px;
-  margin-bottom: 20px;
-}
-
 #map {
   float: right;
-  width: 43%;
-  padding-bottom: '20px';
+  width: 40%;
+  padding-bottom: "20px";
   padding: 2%;
 }
 
-#sub-form{
+#sub-form {
   display: block;
   border-color: lightgray;
   border-style: solid;
@@ -28,7 +18,7 @@
 #title {
   background-color: black;
   color: white;
-  margin:auto; 
+  margin: auto;
   padding: 10px;
   margin-bottom: 20px;
 }
@@ -44,8 +34,9 @@
 #main_form {
   float: left;
   align-items: center;
-  width: 57%;
-  padding: 2%;
+  justify-content: center;
+  width:60%;
+  padding:2%;
 }
 
 
@@ -61,6 +52,15 @@
   /* Large margin-right to force the next element to the new-line
            and margin-left to create a gutter between the label and input */
   margin: 2% 15% 0 4%;
+}
+
+#content {
+  background: #ebebeb;
+  height: auto;
+  margin: auto auto 20px;
+  overflow: auto;
+  padding-bottom: 20px;
+  width: 80%;
 }
 
 

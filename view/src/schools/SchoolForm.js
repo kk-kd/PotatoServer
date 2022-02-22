@@ -18,11 +18,12 @@ export const SchoolForm = () => {
 
     const [school, setSchool] = useState({
       name: '', 
-      address: '', 
+      address: '',
+      arrivalTime: null,
+      departureTime: null, 
     });
 
     const [addressValid, setAddressValid] = useState(false);
-
 
     // maps
     const [ mapApi, setMapApi ] = useState();
@@ -68,12 +69,15 @@ export const SchoolForm = () => {
     async function CreateSchool (e) {
         e.preventDefault(); // prevents page reload on submission
         let message = ""
+ 
         try {
             await saveSchool({
             name: school.name,
             address: school.address,
             latitude: lat,
-            longitude: lng
+            longitude: lng, 
+            arrivalTime: school.arrivalTime, 
+            departureTime: school.departureTime
             });
             alert("School succesfully created!");
             navigate("/Schools/list");
@@ -147,6 +151,26 @@ export const SchoolForm = () => {
               value={school.address}
               onChange={(e) => {setSchool({...school, address: e.target.value}); setAddressValid(false); }} 
           />
+
+
+          <label id='label-user'> Arrival Time:  </label>
+            <input
+                id = 'input-user'
+                type="time"
+                value={school.arrivalTime}
+                onChange={e => {setSchool({...school, arrivalTime: e.target.value});}} 
+                required
+            />
+         
+          <label id='label-user'> Departure Time: </label>
+            <input
+                id = 'input-user'
+                type="time"
+                value={school.departureTime}
+                onChange={e => {setSchool({...school, departureTime: e.target.value});}} 
+                required
+            />
+          
           
 
           <p> </p>
@@ -172,6 +196,7 @@ export const SchoolForm = () => {
                     text="Your Address"
                     lat={lat}
                     lng={lng}
+                    isSchool
                 />
                 </GoogleMapReact>
              </div>

@@ -204,7 +204,7 @@ export const UserForm = () => {
         
         <div id = "main_form">
               
-        <h5 id = "sub-header"> Information </h5>
+          <h5 id = "sub-header"> Information </h5>
 
           <label id = 'label-user'> First Name </label> 
           <input
@@ -259,6 +259,7 @@ export const UserForm = () => {
               value={user.isAdmin}
               onInput={(e) => setUser({...user, isAdmin : e.target.checked})}
           />
+
 
           <p> </p>
           <div>
@@ -321,27 +322,31 @@ export const UserForm = () => {
           <button style = {{display: 'in-line block', margin: '20px'}} onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate Address" } </button>  
           <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleUserFormSubmit(e)}} type="button"> Submit </button>
         </div> 
+
         </div>
-        
         <div id="map">
-          {error && (<div>{error}</div>)}
-            <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
-                <GoogleMapReact
-                    bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
-                    defaultCenter={defaultProps.center}
-                    defaultZoom={defaultProps.zoom}
-                    yesIWantToUseGoogleMapApiInternals
-                    onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
-                >
-                <Marker
-                    text="Your Address"
-                    lat={lat}
-                    lng={lng}
-                />
-                </GoogleMapReact>
-             </div>
-        </div>
-    
+            {error && (<div>{error}</div>)}
+              <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
+                  <GoogleMapReact
+                      bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
+                      defaultCenter={defaultProps.center}
+                      defaultZoom={defaultProps.zoom}
+                      yesIWantToUseGoogleMapApiInternals
+                      onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+                  >
+                  <Marker
+                      text="Your Address"
+                      lat={lat}
+                      lng={lng}
+                      isUser
+                  />
+                  </GoogleMapReact>
+              </div>
+          </div>
+          
+       
+        
+  
     </div>
 
 }
