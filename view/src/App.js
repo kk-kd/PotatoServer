@@ -11,6 +11,7 @@ import { returnUserInfoFromJWT } from "./api/axios_wrapper";
 import { MyStudents } from "./parents/MyStudents";
 import { ParentStudent } from "./parents/ParentStudent";
 import { ChangeMyPassword } from "./parents/ChangeMyPassword";
+import { Emails } from "./email/Email";
 import { PasswordForgotForm } from "./login/PasswordForgotForm";
 import { PasswordResetForm } from "./login/PasswordResetForm";
 
@@ -90,6 +91,7 @@ export const App = () => {
             <Route path="Users/*" element={<Users />} />
             <Route path="Students/*" element={<Students />} />
             <Route path="Routes/*" element={<BusRoutes />} />
+            <Route path="Emails/*" element={<Emails />} />
             <Route path="*" element={<Navigate to="MyStudents" />} />
           </Routes>
         </div>

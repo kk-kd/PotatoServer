@@ -1,5 +1,4 @@
 
-import "./PasswordForgotForm.css"
 import { useEffect, useState, Fragment } from "react";
 import { resetPassword, forgetPassword } from "../api/axios_wrapper";
 import { Link, useNavigate } from "react-router-dom";

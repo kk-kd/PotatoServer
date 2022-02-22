@@ -21,3 +21,8 @@
   flex: 15%;
   padding: 7px;
 }
+.test-centering {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

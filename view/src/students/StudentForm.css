@@ -1,0 +1,50 @@
+#student_create_container {
+  /* width: 80%;
+    align-items: center;
+    float: center; */
+  /* margin: 3% auto; */
+  width: 80%;
+  background-color: linen;
+  border: 1px solid grey;
+}
+
+#student-content {
+  margin: auto;
+  height: auto;
+  background: #ebebeb;
+  overflow: auto;
+  padding-bottom: 20px;
+  width: 80%;
+  margin-bottom: 20px;
+}
+
+#autocomplete {
+  display: block;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  max-width: 600px;
+  margin: auto;
+}
+
+#sub-form-wrapper {
+  display: block;
+  border-color: lightgray;
+  border-style: solid;
+  border-width: 1px;
+  max-width: 80%;
+  margin: 25px auto 25px auto;
+  position: relative;
+}
+
+#student_create_form {
+  /* padding-left: 5%; */
+  float: left;
+  align-items: center;
+  width: 50%;
+}
+
+.test-centering {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

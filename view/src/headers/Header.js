@@ -14,12 +14,15 @@ export const Header = ({ setLoggedIn, isAdmin }) => {
       {isAdmin && (
         <TableLinks hash="Schools" link="Schools/list" display="Schools" />
       )}
-      {isAdmin && <TableLinks hash="Users" link="Users/list" display="Users" />}
+      {isAdmin && <TableLinks hash="Users" link="Users/list" display="Parents & Administrators " />}
       {isAdmin && (
         <TableLinks hash="Students" link="Students/list" display="Students" />
       )}
       {isAdmin && (
         <TableLinks hash="Routes" link="Routes/list" display="Routes" />
+      )}
+      {isAdmin && (
+        <TableLinks hash="Emails" link="Emails/send" display="Send Email" />
       )}
       <LogOut setLoggedIn={setLoggedIn} />
     </div>
