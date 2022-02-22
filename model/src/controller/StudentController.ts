@@ -76,6 +76,7 @@ export class StudentController extends Repository<Student> {
             .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
+            .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
           return {
@@ -92,6 +93,7 @@ export class StudentController extends Repository<Student> {
             .andWhere("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
+            .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
           return {
@@ -107,6 +109,7 @@ export class StudentController extends Repository<Student> {
             .where("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
+            .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
           return {
@@ -122,6 +125,7 @@ export class StudentController extends Repository<Student> {
             .where("students.lastName ilike '%' || :lastName || '%'", { lastName: queryLastNameFilter })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
+            .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
           return {
