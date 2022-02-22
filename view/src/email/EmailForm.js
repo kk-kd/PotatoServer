@@ -89,17 +89,17 @@ export const EmailForm = () => {
         console.log(form_results);
         if (includeRouteInfo) {
           console.log("route annoucement to users from school")
-          // sendRouteAnnouncementToUsersFromSchool({
-          //   message: form_results,
-          //   schoolId: id,
-          // });
+          sendRouteAnnouncementToUsersFromSchool({
+            message: form_results,
+            schoolId: id,
+          });
         }
         else {
           console.log("general annoucement to users from school")
-          // sendGeneralAnnouncementToUsersFromSchool({
-          //   message: form_results,
-          //   schoolId: id,
-          // });
+          sendGeneralAnnouncementToUsersFromSchool({
+            message: form_results,
+            schoolId: id,
+          });
         }
       } else if (emailType === "route") {
         let id = selectedRoute.uid;
@@ -107,27 +107,27 @@ export const EmailForm = () => {
         console.log(form_results);
         if (includeRouteInfo) {
           console.log("route annoucement to users on route")
-          // sendRouteAnnouncementToUsersOnRoute({
-          //   message: form_results,
-          //   routeId: id,
-          // });
+          sendRouteAnnouncementToUsersOnRoute({
+            message: form_results,
+            routeId: id,
+          });
         }
         else {
           console.log("general annoucement to users on route")
-          // sendGeneralAnnouncementToUsersOnRoute({
-          //   message: form_results,
-          //   routeId: id,
-          // });
+          sendGeneralAnnouncementToUsersOnRoute({
+            message: form_results,
+            routeId: id,
+          });
         }
       } else {
         console.log(form_results);
         if (includeRouteInfo) {
           console.log("route annoucement to all users")
-          //sendRouteAnnouncementToAll({ message: form_results });
+          sendRouteAnnouncementToAll({ message: form_results });
         }
         else {
           console.log("general annoucement to all ")
-          //sendGeneralAnnouncementToAll({ message: form_results });
+          sendGeneralAnnouncementToAll({ message: form_results });
         }
       }
     } catch (error) {
