@@ -86,19 +86,21 @@ export const CreateSchool = () => {
 
   //TODO: replace address field with Google Maps API
   return (
-      <div>
-        <h1>Create School</h1>
-          <form onSubmit={e => onSubmit(e)}>
-            <label id="schoolInput">School Name:
+    <div id = 'student-content'>
+        <h2 id = "title">Create School</h2>
+         
+            <label id="input-label-student">School Name:
               <input
+                  id = 'input-input-student'
                   type="text"
                   maxLength="100"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
               />
             </label>
-            <label id="schoolInput">Adress:
+            <label id='input-label-student'>Address:
               <input
+                 id = 'input-input-student'
                   type="text"
                   maxLength="100"
                   value={address}
@@ -106,8 +108,8 @@ export const CreateSchool = () => {
               />
               <button type="button" onClick={e => checkMap()}>Validate Address</button>
             </label>
-          <input type="submit" value="submit" />
-        </form>
+          <button onClick = {e => onSubmit(e)} />
+     
         {error && (<div>{error}</div>)}
         {showMap && (<div style={{ height: '50vh', width: '50%', display: "inline-block" }}>
           <GoogleMapReact

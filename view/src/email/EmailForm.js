@@ -246,7 +246,7 @@ export const EmailForm = () => {
 
   return (
     <div id="content">
-      <h1 id = 'title-email'> {action_text} </h1>
+      <h2 id = 'title-email'> {action_text} </h2>
       <p> </p>
       <p>  </p>
       <p> </p>

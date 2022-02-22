@@ -56,7 +56,6 @@ export const SchoolStudents = ({ data, routes }) => {
       usePagination);
   return (
   <div id="schoolStudentListing">
-    <h1>Students</h1>
     {data.length === 0 ? <h4>There are no students attached to this school! Create some by clicking <Link to="/Users/create">here.</Link></h4>
         : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
       <thead>

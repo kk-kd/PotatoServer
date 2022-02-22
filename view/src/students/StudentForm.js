@@ -159,7 +159,7 @@ export const StudentForm = ({addStudentToUser}) => {
 
     return <div id = 'student-content'>
         {addStudentToUser && <h4 id = 'subtitle'> {action_text} </h4>}
-        {!addStudentToUser && <h1 id = 'title'>  {action_text} </h1>}
+        {!addStudentToUser && <h2 id = 'title'>  {action_text} </h2>}
 
         <label id = 'input-label-student'> First Name: </label>      
         <input

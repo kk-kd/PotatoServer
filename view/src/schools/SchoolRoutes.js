@@ -41,7 +41,6 @@ export const SchoolRoutes = ({ data }) => {
       usePagination);
   return (
       <div id="schoolRouteListing">
-        <h1>Routes</h1>
         {data.length === 0 ? <h4>There are no routes attached to this school! Create some by clicking Route Planner and selecting Create Route.</h4>
             : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
