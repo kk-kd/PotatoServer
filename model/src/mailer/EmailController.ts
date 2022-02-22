@@ -62,6 +62,21 @@ export class EmailController {
         child.route.desciption;
     }
 
+    studentInfo += "<h5>Stop Information (dropoff/pickup time)</h5>";
+    if (child.inRangeStops == null) {
+      studentInfo += "The student does not have any in-range stops.";
+    } else {
+      const stops = child.inRangeStops.sort((a, b) => {
+        if (a.arrivalIndex < b.arrivalIndex) return -1;
+        if (a.arrivalIndex > b.arrivalIndex) return 1;
+        return 0;
+      });
+
+      for (var stop of stops) {
+        studentInfo += `<b>${stop.name}</b>(${stop.dropoffTime}/${stop.pickupTime})`;
+      }
+    }
+
     return studentInfo;
   };
 
