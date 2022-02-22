@@ -21,9 +21,9 @@ export class EmailController {
       .getOne();
 
     // TODO: possiblly resolve this 100% script injection risk
-    var info = `<h3>${this.extractName(
+    var info = `${this.extractName(
       userDetail
-    )}</h3>, here is your child information:`;
+    )}, here is your child information:`;
     console.log(userDetail);
     if (!("students" in userDetail) || userDetail.students.length == 0) {
       info =
@@ -44,14 +44,21 @@ export class EmailController {
     return `<div>${info}</div>`;
   };
 
+  private to12Hours = (timeToConvert) => {
+    let hours = timeToConvert.split(":")[0];
+    let AmOrPm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12 || 12;
+    let minutes = timeToConvert.split(":")[1];
+    return hours + ":" + minutes + " " + AmOrPm;
+  };
+
   private getChildDetail = async (child: Student) => {
     var studentInfo =
       `<h3>${this.extractName(child)}</h3>` +
       ("id" in child && child.id != null
-        ? `<br><b>Student ID</b>: ${child.id}`
+        ? `<u>Student ID</u>: ${child.id}<br>`
         : "") +
-      "<br>" +
-      "School: " +
+      "<u>School</u>: " +
       child.school.name +
       "<h4>Bus Route Information</h4>";
 
@@ -60,12 +67,11 @@ export class EmailController {
         "The student does not have a route yet. Please contact the school admin if you have any questions.";
     } else {
       studentInfo +=
-        `<b>Route Name</b>: ${child.route.name}<br>` +
-        `<b>Description</b>: ${child.route.desciption}`;
+        `<u>Route Name</u>: ${child.route.name}<br>` +
+        `  Description: ${child.route.desciption}`;
     }
 
-    studentInfo += "<h4>Stop Information (dropoff/pickup time)</h4>";
-    console.log(child);
+    studentInfo += "<h4>Stop Information (Pickup/Dropoff Time)</h4>";
     if (child.inRangeStops == null) {
       studentInfo +=
         "The student does not have any in-range stops. Please contact the school admin if you have any questions.";
@@ -77,7 +83,9 @@ export class EmailController {
       });
 
       for (var stop of stops) {
-        studentInfo += `<b>${stop.name}</b>(${stop.dropoffTime}/${stop.pickupTime})<br>`;
+        studentInfo += `<u>${stop.name}</u> (${this.to12Hours(
+          stop.pickupTime
+        )}/${this.to12Hours(stop.dropoffTime)})<br>`;
       }
     }
 
@@ -280,8 +288,9 @@ export class EmailController {
     const userSet: Set<User> = new Set();
     routeSelect.students.forEach(async (s) => {
       if ("parentUser" in s) {
-        if (/^.*@example\.com$/i.test(s.parentUser.email)) {
+        if (!/^.*@example\.com$/i.test(s.parentUser.email)) {
           userSet.add(s.parentUser);
+        } else {
           console.log(`Skipped ${s.parentUser.email}`);
         }
       }
