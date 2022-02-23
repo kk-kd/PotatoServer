@@ -22,7 +22,7 @@ export const Header = ({ setLoggedIn, isAdmin }) => {
         <TableLinks hash="Routes" link="Routes/list" display="Routes" />
       )}
       {isAdmin && (
-        <TableLinks hash="Emails" link="Emails/send" display="Send Email" />
+        <TableLinks hash="Emails" link="Emails/send" display="Send Announcement" />
       )}
       <LogOut setLoggedIn={setLoggedIn} />
     </div>

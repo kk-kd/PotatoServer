@@ -68,7 +68,6 @@ export const RouteStops = ({ data, routes }) => {
       usePagination);
   return (
       <div id="routeStopListing">
-        <h1>Stops</h1>
         {data.length === 0 ? <h4>There are no students attached to this route! Add some by selecting Route Planner.</h4>
             : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
               <thead>
