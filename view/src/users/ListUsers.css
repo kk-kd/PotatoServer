@@ -11,5 +11,10 @@
   margin: 10px;
 }
 .core-card-color {
-  background: #cfcfcf;
+  background: white;
+}
+.test-centering {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

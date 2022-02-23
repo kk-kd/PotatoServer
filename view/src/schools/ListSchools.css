@@ -3,7 +3,7 @@
   margin: 0 auto;
   flex-direction: column;
   flex-wrap: wrap;
-  width: 70%;
+  width: 90%;
 }
 
 #schoolListing > * {
@@ -11,4 +11,9 @@
 }
 .core-card-color {
   background: #cfcfcf;
+}
+.test-centering {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

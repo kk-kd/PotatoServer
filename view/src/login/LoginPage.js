@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Login({ setLoggedIn }) {
   const [username, setUserName] = useState();
   const [password, setPassword] = useState();
-  let navigate = useNavigate(); 
+  let navigate = useNavigate();
 
   async function handleLoginSubmit(e) {
     e.preventDefault(); // prevents page reload on submission
@@ -46,21 +46,20 @@ export default function Login({ setLoggedIn }) {
         src={"./cute_potato.png"}
         alt="Cute Potato!"
       />
-      <h2 className="site-title-wrapper">Hi, Welcome to Potato Web Service.</h2>
+      <h2 className="site-title-wrapper">Welcome to Potato Web Service.</h2>
       <h5 className="site-title-wrapper">
-        The Premier School Bus Logistics Platform
+        Your Premier School Bus Logistics Platform
       </h5>
       <div class="card border-dark core-login-forms">
         <div class="card-body">
           <form onSubmit={handleLoginSubmit}>
             <div class="mb-3">
-              <label for="exampleInputEmail1" class="form-label">
+              <label for="exampleInputEmail1" class="form-label center">
                 Username
               </label>
-
               <input
                 type="email"
-                class="form-control"
+                class="form-control login-input-core"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
                 onChange={(e) => setUserName(e.target.value)}
@@ -72,22 +71,30 @@ export default function Login({ setLoggedIn }) {
               </div>
             </div>
             <div class="mb-3">
-              <label for="exampleInputPassword1" class="form-label">
+              <label for="exampleInputPassword1" class="form-label center">
                 Password
               </label>
               <input
                 type="password"
-                class="form-control"
+                class="form-control login-Welinput-core"
                 id="exampleInputPassword1"
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <div className="center">
-              <button className=" btn btn-outline-primary" type="submit">
+              <button className="btn btn-outline-primary" type="submit">
                 Submit
               </button>
-              <button type="button" onClick= {(e) => {navigate('/PasswordForgot/');}}> {"Forgot Password"} </button>
-              <button type="button" onClick= {(e) => {navigate('/PasswordReset/');}}> {"Reset Password"} </button>
+              <button
+                className="btn btn-outline-primary"
+                type="button"
+                onClick={(e) => {
+                  navigate("/PasswordForgot/");
+                }}
+              >
+                {" "}
+                {"Forgot Password"}{" "}
+              </button>
             </div>
           </form>
         </div>

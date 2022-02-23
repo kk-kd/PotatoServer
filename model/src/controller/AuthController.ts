@@ -112,8 +112,8 @@ class AuthController {
     try {
       await publishMessage({
         from: "Potato Web Service",
-        subject: "Set Your Password",
-        html: `<div> Please set your password <a href=${link}>here.</a></div>`,
+        subject: "[Potato] Please set your password",
+        html: `<div> Your school admin just made you an account! Please set your password <a href=${link}>here.</a></div>`,
         to: user.email,
       });
     } catch (error) {
@@ -139,7 +139,11 @@ class AuthController {
         .where("users.email = :email", { email: email })
         .getOneOrFail();
     } catch (error) {
-      response.status(401).send(error);
+      response
+        .status(401)
+        .send(
+          "The user has not been registered. Please contact an admin to get registered."
+        );
       return;
     }
 
@@ -167,8 +171,8 @@ class AuthController {
     try {
       await publishMessage({
         from: "Potato Web Service",
-        subject: "Reset Your Password",
-        html: `<div> Please reset your password <a href=${link}>here.</a></div>`,
+        subject: "[Potato] Please reset your password",
+        html: `<div> We heard that you lost your password. Please reset your password <a href=${link}>here.</a></div>`,
         to: user.email,
       });
     } catch (error) {

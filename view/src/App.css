@@ -1,7 +1,8 @@
 .App {
   text-align: center;
-  height: 100vh;
-  background-color: #dadada;
+  height: -webkit-fill-available;
+  background-color: #34815c; 
+  overflow-y: auto;
 }
 
 .App-logo {
@@ -13,6 +14,14 @@
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+a {
+  color: #34815c;
+}
+
+.btn-outline-primary {
+border-color: #fff;
+color: white;
 }
 
 .App-header {
@@ -28,6 +37,23 @@
 
 .App-link {
   color: #61dafb;
+}
+
+.paginationButton {
+  height: 40px;
+  width: 40px;
+
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-text: center;
+}
+
+.pagination > * {
+  padding: 5px;
 }
 
 @keyframes App-logo-spin {

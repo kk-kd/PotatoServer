@@ -4,8 +4,14 @@
   flex-direction: column;
   flex-wrap: wrap;
   width: 90%;
+  flex: 40%;
 }
 
 #schoolRouteListing > * {
   margin: 10px;
+}
+.test-centering {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

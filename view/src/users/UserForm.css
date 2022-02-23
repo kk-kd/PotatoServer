@@ -1,77 +1,68 @@
-#user_create_map {
-  width: 50%;
-  padding: 12px 20px;
-  margin: 8px 0;
+#map {
   float: right;
-  border-radius: 4px;
-  box-sizing: border-box;
+  width: 40%;
+  padding-bottom: "20px";
+  padding: 2%;
 }
 
-#user_create_form {
-  width: 50%;
-  align-items: center;
-  float: left;
-  background-color: #39CCCC;
+#sub-form {
+  display: block;
+  border-color: lightgray;
+  border-style: solid;
+  border-width: 1px;
+  max-width: 80%;
+  margin: 25px auto 25px auto;
+  position: relative;
 }
 
-#student_create_form {
-  width: 50%;
-  align-items: center;
-  float: right;
-  background-color: #3D9970;
-}
-
-
-.input {
-  width: 80%;
-  padding: 12px 20px;
-  margin: 8px 20px;
-  display: flex;
-  border-radius: 4px;
-  box-sizing: border-box;
-  align-items: left;
-}
-
-.submitbutton {
-  width: 50%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border-radius: 4px;
-  align-items: center;
-}
-
-
-.user-list {
-  margin-top: 30px;
-  align-items: center;
-}
-
-.user {
-  list-style: none;
-  margin: 10px 0;
+#title {
+  background-color: black;
+  color: white;
+  margin: auto;
   padding: 10px;
-  background: #eee;
-  width: 50%;
-  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+#sub-header {
+  background-color: black;
+  color: white;
+  margin:auto; 
+  padding: 5px;
+  margin-bottom: 20px;
+  width: 98%;
+}
+
+#main_form {
+  float: left;
   align-items: center;
+  justify-content: center;
+  width:60%;
+  padding:2%;
 }
 
-.user-id {
-  color: red;
-  margin-right: 20px;
+
+#label-user {
+  width: 30%;
+  color: black;
+  /* Positions the label text beside the input */
+  text-align: right;
 }
 
-.user-name {
-  color: blue;
+#input-user{
+  width: 40%;
+  /* Large margin-right to force the next element to the new-line
+           and margin-left to create a gutter between the label and input */
+  margin: 2% 15% 0 4%;
 }
 
-.user-age {
-  margin-left: auto;
+#content {
+  background: #f6f9f7;
+  height: auto;
+  margin: auto auto 20px;
+  overflow: auto;
+  padding-bottom: 20px;
+  width: 80%;
 }
 
-input[type=radio] {
-  border: 0px;
-  width: 4em;
-  height: 2em;
-}
+
+

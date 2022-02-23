@@ -296,18 +296,34 @@ export async function updateStop(uid, specifications) {
   });
 }
 // Email Calls
-export async function sendEmailToAll(specifications) {
+export async function sendGeneralAnnouncementToAll(specifications) {
   return await axios.post("/api/email/general/all", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
-export async function sendEmailToUsersFromSchool(specifications) {
+export async function sendGeneralAnnouncementToUsersFromSchool(specifications) {
   return await axios.post("/api/email/general/school", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
-export async function sendEmailToUsersOnRoute(specifications) {
+export async function sendGeneralAnnouncementToUsersOnRoute(specifications) {
   return await axios.post("/api/email/general/route", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+
+export async function sendRouteAnnouncementToAll(specifications) {
+  return await axios.post("/api/email/route/all", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendRouteAnnouncementToUsersFromSchool(specifications) {
+  return await axios.post("/api/email/route/school", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function sendRouteAnnouncementToUsersOnRoute(specifications) {
+  return await axios.post("/api/email/route/route", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
