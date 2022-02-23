@@ -43,6 +43,7 @@ export class StudentController extends Repository<Student> {
     try {
       const pageNum: number = +request.query.page;
       const takeNum: number = +request.query.size;
+      var studentIDBool: boolean = false;
       var skipNum = pageNum * takeNum;
 
       var sortSpecification;
@@ -53,6 +54,11 @@ export class StudentController extends Repository<Student> {
         sortSpecification = "school.name";
       } else { //should error check instead of else
         sortSpecification = "students." + request.query.sort;
+      }
+      if (sortSpecification == "students.id") { // Need to convert existing string id to number to be able to sort if they ask for student_id to be sorted
+        sortSpecification == "students.uid";
+        studentIDBool = true;
+
       }
       if (request.query.sortDir == 'ASC') {
         sortDirSpec = "ASC";
@@ -69,7 +75,7 @@ export class StudentController extends Repository<Student> {
       const queryLastNameFilter = request.query.lastNameFilter;
       if (queryIdFilter) {
         if (request.query.showAll && request.query.showAll === "true") {
-          const [studentsQueryResult, total] = await this.studentRepository
+          var [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
             .orderBy(sortSpecification, sortDirSpec)
             .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
@@ -79,6 +85,16 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
+          if (studentIDBool && sortDirSpec == "ASC") {
+            studentsQueryResult.sort(function (first, second) {
+              return parseInt(first.id) - parseInt(second.id);
+            });
+          }
+          else if (studentIDBool) {
+            studentsQueryResult.sort(function (first, second) {
+              return parseInt(second.id) - parseInt(first.id);
+            });
+          }
           return {
             students: studentsQueryResult,
             total: total
@@ -96,6 +112,16 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
+          if (studentIDBool && sortDirSpec == "ASC") {
+            studentsQueryResult.sort(function (first, second) {
+              return parseInt(first.id) - parseInt(second.id);
+            });
+          }
+          else if (studentIDBool) {
+            studentsQueryResult.sort(function (first, second) {
+              return parseInt(second.id) - parseInt(first.id);
+            });
+          }
           return {
             students: studentsQueryResult,
             total: total
@@ -112,6 +138,16 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
+          if (studentIDBool && sortDirSpec == "ASC") {
+            studentsQueryResult.sort(function (first, second) {
+              return parseInt(first.id) - parseInt(second.id);
+            });
+          }
+          else if (studentIDBool) {
+            studentsQueryResult.sort(function (first, second) {
+              return parseInt(second.id) - parseInt(first.id);
+            });
+          }
           return {
             students: studentsQueryResult,
             total: total
@@ -128,6 +164,16 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
+          if (studentIDBool && sortDirSpec == "ASC") {
+            studentsQueryResult.sort(function (first, second) {
+              return parseInt(first.id) - parseInt(second.id);
+            });
+          }
+          else if (studentIDBool) {
+            studentsQueryResult.sort(function (first, second) {
+              return parseInt(second.id) - parseInt(first.id);
+            });
+          }
           return {
             students: studentsQueryResult,
             total: total
@@ -135,6 +181,7 @@ export class StudentController extends Repository<Student> {
         }
       }
     }
+
     catch (e) {
       response.status(401).send("Students were not found with error: " + e);
       return;
