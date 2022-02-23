@@ -65,11 +65,6 @@ export const UserForm = () => {
 
     // functions passed to student form to update students state
     const addStudentToUser = (student) => {
-        students.forEach((stud) => {
-            if (stud.student.id === student.studentid) {
-                alert("A Student with this ID is already associated with this user.")
-            }
-        });
         setStudents(students => [...students, student]);
     }
 
@@ -204,38 +199,38 @@ export const UserForm = () => {
         
         <div id = "main_form">
               
-        <Divider id = 'divider'>Information</Divider>
+          <h5 id = "sub-header"> Information </h5>
 
-          <label for = "firstName"> First Name </label> 
+          <label id = 'label-user'> First Name </label> 
           <input
-              id = "username"
+              id = "input-user"
               type="text"
               maxLength="100"
               value={user.firstName}
               onChange={(e) => setUser({...user, firstName : e.target.value})}
           />
               
-          <label for = "middleName"> Middle Name </label>
+          <label  id = 'label-user' > Middle Name </label>
           <input
-              id = "middleName"
+              id = "input-user"
               maxLength="100"
               type="text"
               value={user.middleName}
               onChange={(e) => setUser({...user, middleName : e.target.value})}
           />
   
-          <label for = "lastName"> Last Name </label>
+          <label  id = 'label-user'> Last Name </label>
           <input
-              id = 'lastName'
+              id = "input-user"
               maxLength="100"
               type="text"
               value={user.lastName}
               onChange={(e) => setUser({...user, lastName : e.target.value})}
           />
     
-          <label for = "email"> Email </label>
+          <label  id = 'label-user'> Email </label>
           <input
-              id = 'email'
+              id = "input-user"
               maxLength="100"
               type="text"
               value={user.email}
@@ -243,26 +238,27 @@ export const UserForm = () => {
           />
 
          
-          <label for = "address"> Address {addressValid} </label>
+          <label  id = 'label-user'> Address {addressValid} </label>
           <input
-              id = 'address'
+              id = "input-user"
               maxLength="100"
               type="text"
               value={user.address}
               onChange={(e) => {setUser({...user, address: e.target.value}); setAddressValid(false); }} 
           />
           
-          <label for = "isAdmin"> Admin </label>
+          <label  id = 'label-user'> Admin </label>
           <input
-              id = "isAdmin"
+              id = "input-user"
               type="checkbox"
               value={user.isAdmin}
               onInput={(e) => setUser({...user, isAdmin : e.target.checked})}
           />
 
+
           <p> </p>
           <div>
-            <Divider id = 'divider'>Students</Divider>
+            <h5 id = "sub-header"> Students </h5>
 
             <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto', marginTop: '10px'}}>
                 <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}} 
@@ -319,29 +315,33 @@ export const UserForm = () => {
         
         <div>
           <button style = {{display: 'in-line block', margin: '20px'}} onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate Address" } </button>  
-          <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleUserFormSubmit(e)}} type="button"> Make User </button>
+          <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleUserFormSubmit(e)}} type="button"> Submit </button>
         </div> 
+
         </div>
-        
         <div id="map">
-          {error && (<div>{error}</div>)}
-            <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
-                <GoogleMapReact
-                    bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
-                    defaultCenter={defaultProps.center}
-                    defaultZoom={defaultProps.zoom}
-                    yesIWantToUseGoogleMapApiInternals
-                    onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
-                >
-                <Marker
-                    text="Your Address"
-                    lat={lat}
-                    lng={lng}
-                />
-                </GoogleMapReact>
-             </div>
-        </div>
-    
+            {error && (<div>{error}</div>)}
+              <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
+                  <GoogleMapReact
+                      bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
+                      defaultCenter={defaultProps.center}
+                      defaultZoom={defaultProps.zoom}
+                      yesIWantToUseGoogleMapApiInternals
+                      onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+                  >
+                  <Marker
+                      text="Your Address"
+                      lat={lat}
+                      lng={lng}
+                      isUser
+                  />
+                  </GoogleMapReact>
+              </div>
+          </div>
+          
+       
+        
+  
     </div>
 
 }

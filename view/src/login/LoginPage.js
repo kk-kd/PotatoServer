@@ -95,16 +95,6 @@ export default function Login({ setLoggedIn }) {
                 {" "}
                 {"Forgot Password"}{" "}
               </button>
-              <button
-                className="btn btn-outline-primary"
-                type="button"
-                onClick={(e) => {
-                  navigate("/PasswordReset/");
-                }}
-              >
-                {" "}
-                {"Reset Password"}{" "}
-              </button>
             </div>
           </form>
         </div>

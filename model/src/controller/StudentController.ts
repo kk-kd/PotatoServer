@@ -149,6 +149,7 @@ export class StudentController extends Repository<Student> {
         .leftJoinAndSelect("students.route", "route")
         .leftJoinAndSelect("students.school", "school")
         .leftJoinAndSelect("students.parentUser", "user")
+        .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;

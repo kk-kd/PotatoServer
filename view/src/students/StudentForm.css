@@ -1,56 +1,47 @@
 #student_create_container {
-    /* width: 80%;
+  /* width: 80%;
     align-items: center;
     float: center; */
-    /* margin: 3% auto; */
-    width: 80%;
-    background-color:linen;
-    border:1px solid grey;
-  }
+  /* margin: 3% auto; */
+  width: 80%;
+  background-color: linen;
+  border: 1px solid grey;
+}
 
-  #title {
-    background-color: black;
-    color: white;
-    margin:auto; 
-    padding: 10px;
-    margin-bottom: 20px;
-  }
-  #subtitle {
-    border-bottom: 1px solid black;
-    color: black;
-    margin:auto; 
-    padding-bottom: 20px;
-    padding-top: 20px;
-    margin-bottom: 10px;
-  }
+#student-content {
+  margin: auto;
+  height: auto;
+  background: #ebebeb;
+  overflow: auto;
+  padding-bottom: 20px;
+  width: 80%;
+  margin-bottom: 20px;
+}
 
-  #student-content {
-    margin:auto; 
-    height:auto; 
-    background: #ebebeb;
-    overflow:auto;
-    padding-bottom: 20px;
-    width: 80%;
-    margin-bottom: 20px;
-  }
-  
-  #autocomplete {
-    display: block; 
-    padding-top: 20px; 
-    padding-bottom: 10px;  
-    max-width: 600px; 
-    margin: auto;}
+#autocomplete {
+  display: block;
+  padding-top: 20px;
+  padding-bottom: 10px;
+  max-width: 600px;
+  margin: auto;
+}
 
+#sub-form-wrapper {
+  display: block;
+  border-color: lightgray;
+  border-style: solid;
+  border-width: 1px;
+  max-width: 80%;
+  margin: 25px auto 25px auto;
+  position: relative;
+}
 
-  #sub-form-wrapper {
-    display: block;
-    border-color: lightgray;
-    border-style: solid;
-    border-width: 1px;
-    max-width: 80%;
-    margin: 25px auto 25px auto;
-    position: relative;
-  }
+#student_create_form {
+  /* padding-left: 5%; */
+  float: left;
+  align-items: center;
+  width: 50%;
+}
 
   
   #student_create_form {
@@ -60,17 +51,29 @@
     width: 50%;
   }
 
-  #input-label {
-    max-width: 30%;
+  #input-label-student {
+    width: 30%;
     /* Positions the label text beside the input */
     text-align: right;
   }
 
-  #input-input {
+  #input-input-student {
     width: 40%;
     min-width: 150px;
     /* Large margin-right to force the next element to the new-line
              and margin-left to create a gutter between the label and input */
     margin: 2% 20% 0 4%;
   }
+
+  #input-input-student-display {
+    width: 40%;
+    min-width: 150px;
+    /* Large margin-right to force the next element to the new-line
+             and margin-left to create a gutter between the label and input */
+    margin: 2% 20% 0 4%;
+    background-color: #ebebeb;
+    outline-width: 0px;
+    border: 0px;
+  }
+
 
