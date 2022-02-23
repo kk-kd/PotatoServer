@@ -112,9 +112,10 @@ export class StudentController extends Repository<Student> {
         } else {
           const [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
+
+            .orderBy("students.id:int", sortDirSpec)
             .skip(skipNum)
             .take(takeNum)
-            .orderBy("students.id:int", sortDirSpec)
             .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
             .andWhere("students.lastName ilike '%' || :lastName || '%'", {
               lastName: queryLastNameFilter,
@@ -143,24 +144,28 @@ export class StudentController extends Repository<Student> {
         if (request.query.showAll && request.query.showAll === "true") {
           const [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
-            .orderBy(sortSpecification, sortDirSpec)
-            .where("students.lastName ilike '%' || :lastName || '%'", {
-              lastName: queryLastNameFilter,
-            })
+            // .orderBy(
+            //   "NULLIF(regexp_replace(students.id, '\\D', '', 'g'), '')::int",
+            //   sortDirSpec
+            // )
+            // .where("students.lastName ilike '%' || :lastName || '%'", {
+            //   lastName: queryLastNameFilter,
+            // })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
-          if (studentIDBool && sortDirSpec == "ASC") {
-            studentsQueryResult.sort(function (first, second) {
-              return parseInt(first.id) - parseInt(second.id);
-            });
-          } else if (studentIDBool) {
-            studentsQueryResult.sort(function (first, second) {
-              return parseInt(second.id) - parseInt(first.id);
-            });
-          }
+          // if (studentIDBool && sortDirSpec == "ASC") {
+          //   studentsQueryResult.sort(function (first, second) {
+          //     return parseInt(first.id) - parseInt(second.id);
+          //   });
+          // } else if (studentIDBool) {
+          //   studentsQueryResult.sort(function (first, second) {
+          //     return parseInt(second.id) - parseInt(first.id);
+          //   });
+          // }
+          console.log(studentsQueryResult);
           return {
             students: studentsQueryResult,
             total: total,
@@ -170,24 +175,24 @@ export class StudentController extends Repository<Student> {
             .createQueryBuilder("students")
             .skip(skipNum)
             .take(takeNum)
-            .orderBy(sortSpecification, sortDirSpec)
-            .where("students.lastName ilike '%' || :lastName || '%'", {
-              lastName: queryLastNameFilter,
-            })
+            .orderBy("students.id", sortDirSpec)
+            // .where("students.lastName ilike '%' || :lastName || '%'", {
+            //   lastName: queryLastNameFilter,
+            // })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
-          if (studentIDBool && sortDirSpec == "ASC") {
-            studentsQueryResult.sort(function (first, second) {
-              return parseInt(first.id) - parseInt(second.id);
-            });
-          } else if (studentIDBool) {
-            studentsQueryResult.sort(function (first, second) {
-              return parseInt(second.id) - parseInt(first.id);
-            });
-          }
+          // if (studentIDBool && sortDirSpec == "ASC") {
+          //   studentsQueryResult.sort(function (first, second) {
+          //     return parseInt(first.id) - parseInt(second.id);
+          //   });
+          // } else if (studentIDBool) {
+          //   studentsQueryResult.sort(function (first, second) {
+          //     return parseInt(second.id) - parseInt(first.id);
+          //   });
+          // }
           return {
             students: studentsQueryResult,
             total: total,
