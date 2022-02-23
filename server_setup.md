@@ -70,6 +70,9 @@ add to `~/.bashrc`
 `pm2 startup systemd`  
 copy-paste what's given
 
+## Enable Rabbitmq-server to start on boot
+`sudo systemctl enable  rabbitmq-server`  
+
 ## Enable binding to ports under 1024
 
 `sudo apt-get install libcap2-bin`  
