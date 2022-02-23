@@ -9,6 +9,10 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import ReactSelect from "react-select";
 import { useForm, Controller } from "react-hook-form";
+import { flexbox } from "@mui/system";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUp, faArrowDown, faCircleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { RouteStops } from "../routes/RouteStops";
 
 // this page is the student detail and edit page
 export const StudentInfo = ({edit}) => {
@@ -140,59 +144,26 @@ export const StudentInfo = ({edit}) => {
             let message = error.response.data;
             throw alert (message);
         }
-    
         alert("Successfully Created Student");
         navigate('/Students/list');
       }
-
-      //
-      // const updateSelections = (studentData) => {
-      //   console.log("updateSelections");
-      //   console.log(studentData)
-      //   console.log(studentData.parentUser)
-
-      //   // setUserDefault(studentData.parentUser)
-
-      //   // if (schoolData){
-      //   //     setSelectedSchool(schoolData);
-      //   //     setFilteredDataSchool([schoolData]);
-      //   //     console.log(schoolData)
-      //   // }
-      //   if (studentData && studentData.parentUser) {
-      //       console.log("setting student user")
-      //       setUser(studentData.parentUser)
-      //       setFilteredDataUser([{email: 'example'}])
-      //       // setUser(studentData.parentUser)
-      //       // setFilteredDataUser([studentData.parentUser])
-      //       // console.log(studentData.parentUser)
-      //   }
-      // }
-
-      // const updateStudentLoading = (data) => {
-      //   console.log(data)
-      //   setStudentLoaded(true);
-      // }
 
       const fetchStudentData = async () => {
         try {
           const fetchedData = await getOneStudent(id);
           setStudent(fetchedData.data)
 
-          if ([fetchedData.data][0].parentUser) {
+          if (fetchedData.data.parentUser) {
               setUser(fetchedData.data.parentUser); 
           }
         
-          if ([fetchedData.data][0].school) {
-              setSelectedSchool([fetchedData.data][0].school);
+          if (fetchedData.data.school) {
+              setSelectedSchool(fetchedData.data.school);
           }
-          if ([fetchedData.data][0].school && [fetchedData.data][0].school.route) {
-              setSelectedRoute([fetchedData.data][0].school.route)
+          if (fetchedData.data.route) {
+              setSelectedRoute(fetchedData.data.route)
           }
-          console.log(fetchedData.data)
-          console.log(fetchedData.data.parentUser)
-    
-
-                        
+          console.log(fetchedData.data)                  
         } catch (error) {
           let message = error.response.data;
           throw alert(message);
@@ -273,9 +244,7 @@ export const StudentInfo = ({edit}) => {
           {editable &&  
             <button onClick={e => setEditable(false)}> Cancel Edits </button>
           }
-          {user && user.uid && <button style = {{width: 'auto'}} onClick = {(e) => {console.log(user.uid); navigate("/Users/info/" + user.uid);}}> View Parent </button>}
-          {selectedSchool && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/Schools/info/" + selectedSchool.uid);}}> View School </button> }
-          {selectedRoute && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/Routes/info/" + selectedRoute.uid);}}> View Route </button>}
+         
           
         
         </div>
@@ -320,16 +289,63 @@ export const StudentInfo = ({edit}) => {
             onChange={(e) => {setStudent({...student, studentid : e.target.value})}}
         />
 
-    {!editable && <div>
-    <label id = 'input-label-student' > School: </label>     
-         <input 
-            id = 'input-input-student-display'
-            disabled = {true}
-            type="text"
-            maxLength="100"
-            value={((student) && (student.school))  ? student.school.name : "None"}
-            onChange = {(e) => {console.log(e)}}
-        />
+      {!editable && <div>
+          <label id = 'input-label-student' > Parent: </label>     
+          {user && <span id = "input-input-inline-item"> <Link to={"/Users/info/" + user.uid}> {user.firstName} {user.lastName}</Link> </span>}
+          {!user && <span id = "input-input-inline-item">  None </span>}
+        </div>}
+
+  
+            {editable && <Autocomplete
+               sx={{
+                   paddingTop: "20px",
+                   paddingBottom: "10px",  
+                   margin:'auto',
+                   marginRight: '23%',
+                   width: "40%",
+                 }}
+               options= {filteredDataUser}
+               
+               freeSolo
+               renderInput={params => (
+                   <TextField {...params} label="Parent" variant="standard" onInputChange = {(e, newInputValue, reason) => {
+                       console.log("input change " + reason)
+                       if (reason === 'reset') {
+                         setUserFilter('')
+                         return
+                       } else if (reason === 'input') {
+                         setUserFilter(newInputValue);
+                       } 
+                     }}
+                   />
+               )}
+               getOptionLabel={option => option.email}
+                          
+               noOptionsText = {"Type to Search"}
+               value = {user}
+              
+               onInputChange = {(e, newInputValue, reason) => {
+                 console.log("input change " + reason)
+                 if (reason === 'reset') {
+                   setUserFilter('')
+                   return
+                 } else if (reason === 'input') {
+                   setUserFilter(newInputValue);
+                 } 
+               }}
+               
+               onChange={(_event, newUser) => {
+                   
+                   console.log(newUser)
+                   setUser(newUser);
+               }}
+               
+           />}
+
+        {!editable && <div>
+          <label id = 'input-label-student' > School: </label>     
+          {selectedSchool && <span id = "input-input-inline-item"> <Link to={"/Schools/info/" + selectedSchool.uid}> {selectedSchool.name}</Link> </span>}
+          {!selectedRoute && <span id = "input-input-inline-item">  None </span>}
         </div>}
 
         
@@ -369,118 +385,38 @@ export const StudentInfo = ({edit}) => {
         />
         }
 
+
+
         {!editable && <div>
           <label id = 'input-label-student' > Route: </label>     
-          <input 
-              id = 'input-input-student-display'
-              disabled = {true}
-              type="text"
-              maxLength="100"
-              value={((student) && (student.school) && (student.school.route) && (student.school.route.name))  ? student.school.route.name : "None"}
-              onChange = {(e) => {console.log(e)}}
-          />           
+          {selectedRoute && <span id = "input-input-inline-item"> <Link to={"/Routes/info/" + selectedRoute.uid}> {selectedRoute.name} </Link> </span>}
+          {!selectedRoute && <span id = "input-input-inline-item"> <FontAwesomeIcon
+                      icon={faXmark}
+                      size="lg"
+                      style={{ color: "red" }}
+                      data-tip
+                      data-for="noInRangeStopTip"
+                    /> {" "} No Route Assigned </span>}
         </div>}
 
+        {student && student.inRangeStops && student.inRangeStops.length !==0 && <div style={{ display: "flex", width: "90%", marginLeft: "auto", marginRight: "auto" }}>
+              <RouteStops data={student.inRangeStops} />
+          </div>
+          }
 
-        {/* {editable && selectedSchool && 
-            <Autocomplete
-                options={selectedSchool.routes ? selectedSchool.routes : []}
-                freeSolo
-                disabled = {(editable && selectedSchool && (!selectedSchool.routes || selectedSchool.routes.length === 0))}
-                sx={{
-                    paddingTop: "20px",
-                    paddingBottom: "10px",  
-                    margin:'auto',
-                    marginRight: '23%',
-                    width: "40%",
-                  }}
-                renderInput={params => (
-                    <TextField {...params} label=" Route " variant="standard"
-                    />
-                )}
-                getOptionLabel={option => option.name}
-                fullWidth= {true}
-                noOptionsText = {"No Matching Routes"}
-                value={selectedRoute}
-                onInputChange = {(e, newInputValue, reason) => {
-                   
-                    if (reason === 'reset') {
-                      
-                      setRouteFilter('')
-                      return
-                    } else if (reason === 'input') {
-                      setRouteFilter(newInputValue);
-                    } 
-                  }}
-                
-                onChange={(_event, newRoute) => {
-                    console.log(newRoute)
-                    setSelectedRoute(newRoute);
-                }}
-        />
-        } */}
- 
-        {/* {((editable) && (selectedSchool) && (!selectedSchool.routes || selectedSchool.routes.length === 0)) && <div style = {{marginLeft: '38%', width: '40%'}}> This School has No Routes. You can create routes in the Routes tab.</div>}  */}
-
+        {!editable && !(student && student.inRangeStops && student.inRangeStops.length !==0) && <div>
+          <label id = 'input-label-student' > Stops: </label>     
+          <span id = "input-input-inline-item"> <FontAwesomeIcon
+                      icon={faCircleExclamation}
+                      size="lg"
+                      style={{ color: "red" }}
+                      data-tip
+                      data-for="noInRangeStopTip"
+                    /> No Stops In Range </span>
+               
+        </div>} 
         <div> 
 
-        {!editable && <div><label id = 'input-label-student' > Parent: </label>     
-        <input 
-            id = 'input-input-student-display'
-            disabled = {true}
-            type="text"
-            maxLength="100"
-            value={((student) && (student.parentUser) && (student.parentUser.email))  ? student.parentUser.email : "None"}
-            onChange = {(e) => {console.log(e)}}
-        /> </div>}
-        
-
-         {editable && <Autocomplete
-            sx={{
-                paddingTop: "20px",
-                paddingBottom: "10px",  
-                margin:'auto',
-                marginRight: '23%',
-                width: "40%",
-              }}
-            options= {filteredDataUser}
-            
-            freeSolo
-            renderInput={params => (
-                <TextField {...params} label="Parent" variant="standard" onInputChange = {(e, newInputValue, reason) => {
-                    console.log("input change " + reason)
-                    if (reason === 'reset') {
-                      setUserFilter('')
-                      return
-                    } else if (reason === 'input') {
-                      setUserFilter(newInputValue);
-                    } 
-                  }}
-                />
-            )}
-            getOptionLabel={option => option.email}
-                       
-            noOptionsText = {"Type to Search"}
-            value = {user}
-           
-            onInputChange = {(e, newInputValue, reason) => {
-              console.log("input change " + reason)
-              if (reason === 'reset') {
-                setUserFilter('')
-                return
-              } else if (reason === 'input') {
-                setUserFilter(newInputValue);
-              } 
-            }}
-            
-            onChange={(_event, newUser) => {
-                
-                console.log(newUser)
-                setUser(newUser);
-            }}
-            
-        />}
-               
         </div>
 
         
