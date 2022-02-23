@@ -51,7 +51,6 @@ export class StudentController extends Repository<Student> {
     try {
       const pageNum: number = +request.query.page;
       const takeNum: number = +request.query.size;
-      var studentIDBool: boolean = false;
       var skipNum = pageNum * takeNum;
 
       var sortSpecification;
@@ -66,8 +65,8 @@ export class StudentController extends Repository<Student> {
       }
       if (sortSpecification == "students.id") {
         // Need to convert existing string id to number to be able to sort if they ask for student_id to be sorted
-        sortSpecification == "students.uid";
-        studentIDBool = true;
+        sortSpecification =
+          "NULLIF(regexp_replace(students.id, '\\D', '', 'g'), '')::int";
       }
       if (request.query.sortDir == "ASC") {
         sortDirSpec = "ASC";
@@ -96,15 +95,6 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
-          if (studentIDBool && sortDirSpec == "ASC") {
-            studentsQueryResult.sort(function (first, second) {
-              return parseInt(first.id) - parseInt(second.id);
-            });
-          } else if (studentIDBool) {
-            studentsQueryResult.sort(function (first, second) {
-              return parseInt(second.id) - parseInt(first.id);
-            });
-          }
           return {
             students: studentsQueryResult,
             total: total,
@@ -112,10 +102,7 @@ export class StudentController extends Repository<Student> {
         } else {
           const [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
-
-            .orderBy("students.id:int", sortDirSpec)
-            .skip(skipNum)
-            .take(takeNum)
+            .orderBy(sortSpecification, sortDirSpec)
             .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
             .andWhere("students.lastName ilike '%' || :lastName || '%'", {
               lastName: queryLastNameFilter,
@@ -123,18 +110,10 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .offset(skipNum)
+            .limit(takeNum)
             .getManyAndCount();
           response.status(200);
-          // if (studentIDBool && sortDirSpec == "ASC") {
-          //   studentsQueryResult.sort(function (first, second) {
-          //     return parseInt(first.id) - parseInt(second.id);
-          //   });
-          // }
-          // else if (studentIDBool) {
-          //   studentsQueryResult.sort(function (first, second) {
-          //     return parseInt(second.id) - parseInt(first.id);
-          //   });
-          // }
           return {
             students: studentsQueryResult,
             total: total,
@@ -144,28 +123,15 @@ export class StudentController extends Repository<Student> {
         if (request.query.showAll && request.query.showAll === "true") {
           const [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
-            // .orderBy(
-            //   "NULLIF(regexp_replace(students.id, '\\D', '', 'g'), '')::int",
-            //   sortDirSpec
-            // )
-            // .where("students.lastName ilike '%' || :lastName || '%'", {
-            //   lastName: queryLastNameFilter,
-            // })
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("students.lastName ilike '%' || :lastName || '%'", {
+              lastName: queryLastNameFilter,
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .getManyAndCount();
           response.status(200);
-          // if (studentIDBool && sortDirSpec == "ASC") {
-          //   studentsQueryResult.sort(function (first, second) {
-          //     return parseInt(first.id) - parseInt(second.id);
-          //   });
-          // } else if (studentIDBool) {
-          //   studentsQueryResult.sort(function (first, second) {
-          //     return parseInt(second.id) - parseInt(first.id);
-          //   });
-          // }
-          console.log(studentsQueryResult);
           return {
             students: studentsQueryResult,
             total: total,
@@ -173,26 +139,18 @@ export class StudentController extends Repository<Student> {
         } else {
           const [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
-            .skip(skipNum)
-            .take(takeNum)
-            .orderBy("students.id", sortDirSpec)
-            // .where("students.lastName ilike '%' || :lastName || '%'", {
-            //   lastName: queryLastNameFilter,
-            // })
+            .orderBy(sortSpecification, sortDirSpec)
+
+            .where("students.lastName ilike '%' || :lastName || '%'", {
+              lastName: queryLastNameFilter,
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .offset(skipNum)
+            .limit(takeNum)
             .getManyAndCount();
           response.status(200);
-          // if (studentIDBool && sortDirSpec == "ASC") {
-          //   studentsQueryResult.sort(function (first, second) {
-          //     return parseInt(first.id) - parseInt(second.id);
-          //   });
-          // } else if (studentIDBool) {
-          //   studentsQueryResult.sort(function (first, second) {
-          //     return parseInt(second.id) - parseInt(first.id);
-          //   });
-          // }
           return {
             students: studentsQueryResult,
             total: total,
