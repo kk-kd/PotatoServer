@@ -11,10 +11,10 @@ export const SchoolRoutes = ({ data }) => {
   const columns = useMemo(
       () => [
         {
-          Header: 'name',
+          Header: 'Name',
           accessor: 'name',
           Cell: props => (
-              <div><label>{props.value} {!props.row.original.students.some(student => !student.inRangeStops || student.inRangeStops.length === 0) || <><FontAwesomeIcon
+              <div><label><Link to={`/Routes/info/${props.row.original.uid}`}>{props.value}</Link> {!props.row.original.students.some(student => !student.inRangeStops || student.inRangeStops.length === 0) || <><FontAwesomeIcon
                   icon={faCircleExclamation}
                   size="lg"
                   style={{ color: "red" }}
