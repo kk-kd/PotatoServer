@@ -5,6 +5,8 @@ import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { getAllUsers, deleteUser } from "../api/axios_wrapper";
 import { filterAllUsers } from "../api/axios_wrapper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 export const ListUsers = () => {
   let navigate = useNavigate();
@@ -147,7 +149,14 @@ export const ListUsers = () => {
                             }}
                             style={{ cursor: "pointer" }}
                           >
-                            {column.HeaderName}
+                            {column.HeaderName} {(sortBy === column.id && sortDirec !== "none") && (sortDirec === "DESC" ? <FontAwesomeIcon
+                                  icon={faArrowDown}
+                                  size="sm"
+                              /> : <FontAwesomeIcon
+                                  icon={faArrowUp}
+                                  size="sm"
+                              />
+                          )}
                           </label>
                           <DefaultColumnFilter
                             setFilter={
