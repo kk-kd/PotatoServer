@@ -47,3 +47,18 @@ export const minutesToTimeString = (minutes) => {
   }
   return `${hours}:${extraMinutes}`;
 }
+
+export const getDisplayTime = (time) => {
+  const timeSplit = time.split(':');
+  const hours = parseInt(timeSplit[0]);
+  const minutes = timeSplit[1];
+  if (hours > 12) {
+    return `${hours - 12}:${minutes} PM`;
+  } else if (hours === 0) {
+    return `12:${minutes} AM`;
+  } else if (hours < 12) {
+    return `${hours}:${minutes} AM`
+  } else {
+    return `${hours}:${minutes} PM`;
+  }
+}

@@ -5,7 +5,7 @@ import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllRoutes } from "./../api/axios_wrapper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
 export const ListBusRoutes = () => {
@@ -131,7 +131,14 @@ export const ListBusRoutes = () => {
                             }}
                             style={{ cursor: "pointer" }}
                           >
-                            {column.HeaderName}
+                            {column.HeaderName} {(sortBy === column.id && sortDirec !== "none") && (sortDirec === "DESC" ? <FontAwesomeIcon
+                                  icon={faArrowDown}
+                                  size="sm"
+                              /> : <FontAwesomeIcon
+                                  icon={faArrowUp}
+                                  size="sm"
+                              />
+                          )}
                           </label>
                           {column.id === "name" && (
                             <DefaultColumnFilter setFilter={setNameFilter} />
