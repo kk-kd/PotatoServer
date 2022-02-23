@@ -146,32 +146,32 @@ export const StudentInfo = ({edit}) => {
       }
 
       //
-      const updateSelections = (studentData) => {
-        console.log("updateSelections");
-        console.log(studentData)
-        console.log(studentData.parentUser)
+      // const updateSelections = (studentData) => {
+      //   console.log("updateSelections");
+      //   console.log(studentData)
+      //   console.log(studentData.parentUser)
 
-        // setUserDefault(studentData.parentUser)
+      //   // setUserDefault(studentData.parentUser)
 
-        // if (schoolData){
-        //     setSelectedSchool(schoolData);
-        //     setFilteredDataSchool([schoolData]);
-        //     console.log(schoolData)
-        // }
-        if (studentData && studentData.parentUser) {
-            console.log("setting student user")
-            setUser({email: 'example'})
-            setFilteredDataUser([{email: 'example'}])
-            // setUser(studentData.parentUser)
-            // setFilteredDataUser([studentData.parentUser])
-            // console.log(studentData.parentUser)
-        }
-      }
+      //   // if (schoolData){
+      //   //     setSelectedSchool(schoolData);
+      //   //     setFilteredDataSchool([schoolData]);
+      //   //     console.log(schoolData)
+      //   // }
+      //   if (studentData && studentData.parentUser) {
+      //       console.log("setting student user")
+      //       setUser(studentData.parentUser)
+      //       setFilteredDataUser([{email: 'example'}])
+      //       // setUser(studentData.parentUser)
+      //       // setFilteredDataUser([studentData.parentUser])
+      //       // console.log(studentData.parentUser)
+      //   }
+      // }
 
-      const updateStudentLoading = (data) => {
-        console.log(data)
-        setStudentLoaded(true);
-      }
+      // const updateStudentLoading = (data) => {
+      //   console.log(data)
+      //   setStudentLoaded(true);
+      // }
 
       const fetchStudentData = async () => {
         try {
@@ -273,7 +273,7 @@ export const StudentInfo = ({edit}) => {
           {editable &&  
             <button onClick={e => setEditable(false)}> Cancel Edits </button>
           }
-          {user && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/User/info/" + user.uid);}}> View Parent </button>}
+          {user && user.uid && <button style = {{width: 'auto'}} onClick = {(e) => {console.log(user.uid); navigate("/Users/info/" + user.uid);}}> View Parent </button>}
           {selectedSchool && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/Schools/info/" + selectedSchool.uid);}}> View School </button> }
           {selectedRoute && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/Routes/info/" + selectedRoute.uid);}}> View Route </button>}
           

@@ -139,7 +139,7 @@ export const BusRouteInfo = () => {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}>
           <button onClick={e => setIsEdit(true)}>Edit Route</button>
           <button onClick={e => setIsDelete(true)}>Delete Route</button>
-          <button onClick={e => navigate(`/Routes/planner/${school.uid}`)}>Edit Students/Stops</button>
+          <button onClick={e => {if (school.uid) {navigate(`/Routes/planner/${school.uid}`)}}}>Edit Students/Stops</button>
           <button onClick={e => navigate(`/Emails/send/-1/${id}`)}>Send Announcement</button>
         </div>
         <form onSubmit={e => onSubmit(e)}>
