@@ -65,11 +65,6 @@ export const UserForm = () => {
 
     // functions passed to student form to update students state
     const addStudentToUser = (student) => {
-        students.forEach((stud) => {
-            if (stud.student.id === student.studentid) {
-                alert("A Student with this ID is already associated with this user.")
-            }
-        });
         setStudents(students => [...students, student]);
     }
 
