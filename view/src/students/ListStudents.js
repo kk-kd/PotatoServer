@@ -95,10 +95,10 @@ export const ListStudents = () => {
                       size="lg"
                       style={{ color: "red" }}
                       data-tip
-                      data-for="noInRangeStopTip"
+                      data-for={`noInRangeStopTip${props.row.original.uid}`}
                     />
                     <ReactTooltip
-                      id="noInRangeStopTip"
+                      id={`noInRangeStopTip${props.row.original.uid}`}
                       place="bottom"
                       effect="solid"
                     >
@@ -114,9 +114,9 @@ export const ListStudents = () => {
                   size="xl"
                   style={{ color: "red" }}
                   data-tip
-                  data-for="noStopTip"
+                  data-for={`noStopTip${props.row.original.uid}`}
                 />
-                <ReactTooltip id="noStopTip" place="bottom" effect="solid">
+                <ReactTooltip id={`noStopTip${props.row.original.uid}`} place="bottom" effect="solid">
                   This student is not on a route.
                 </ReactTooltip>
               </>
