@@ -1,3 +1,19 @@
 .Header {
   padding-top: 1em;
 }
+
+.header-image-app {
+  display:inline-flex;
+  height: 3em;
+  margin-bottom: 1em; 
+}
+
+.site-title-wrapper-app {
+  width: 40%;
+  margin-bottom: 0.5em;
+  text-align: center;
+  display: inline;
+  height: 7em;
+  font-family: Marker Felt, fantasy;
+  color:black;
+}

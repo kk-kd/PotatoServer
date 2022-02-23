@@ -127,8 +127,8 @@ export const ListUsers = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
   return (
-    <div class="card">
-      <div class="card-body core-card-color">
+    <div id = "content">
+       <h2 id = "title"> Parents and Administrators </h2>
         <div id="userListing">
           <Link to="/Users/create">
             <button >
@@ -275,7 +275,6 @@ export const ListUsers = () => {
             </label>
           </div>
         </div>
-      </div>
     </div>
   );
 };

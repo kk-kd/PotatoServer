@@ -251,7 +251,7 @@ export const EmailForm = () => {
 
   return (
     <div id="content">
-      <h2 id = 'title-email'> {action_text} </h2>
+      <h2 id = 'title-email'> Send Email Announcement </h2>
       <p> </p>
       <p> </p>
 

@@ -2,6 +2,7 @@
   text-align: center;
   height: -webkit-fill-available;
   background-color: #34815c; 
+  overflow-y: auto;
 }
 
 .App-logo {
@@ -17,8 +18,6 @@
 a {
   color: #34815c;
 }
-
-
 
 .btn-outline-primary {
 border-color: #fff;

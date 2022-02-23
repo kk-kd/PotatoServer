@@ -76,7 +76,7 @@ export default function Login({ setLoggedIn }) {
               </label>
               <input
                 type="password"
-                class="form-control login-input-core"
+                class="form-control login-Welinput-core"
                 id="exampleInputPassword1"
                 onChange={(e) => setPassword(e.target.value)}
               />

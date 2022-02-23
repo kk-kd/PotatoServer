@@ -114,8 +114,8 @@ export const ListBusRoutes = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
   return (
-    <div class="card">
-      <div class="card-body core-card-color">
+    <div id = "content">
+        <h2 id = "title"> Bus Routes</h2>
         <div id="routeListing">
           <table {...getTableProps()} class="table table-striped">
             <thead class="thead-dark">
@@ -253,7 +253,6 @@ export const ListBusRoutes = () => {
             </label>
           </div>
         </div>
-      </div>
     </div>
   );
 };

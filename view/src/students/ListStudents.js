@@ -138,8 +138,8 @@ export const ListStudents = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
   return (
-    <div class="card">
-      <div class="card-body core-card-color">
+    <div id = "content">
+       <h2 id = "title"> Students </h2>
         <div id="userListing">
           <Link to="/Students/create">
             <button >Create Student</button>
@@ -287,7 +287,6 @@ export const ListStudents = () => {
               Show All
             </label>
           </div>
-        </div>
       </div>
     </div>
   );
