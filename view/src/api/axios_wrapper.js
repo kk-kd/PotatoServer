@@ -329,7 +329,7 @@ export async function sendRouteAnnouncementToUsersOnRoute(specifications) {
 }
 
 export async function resetPassword(specifications) {
-  return await axios.put("/api/reset-password", specifications, {
+  return await axios.post("/api/reset-password", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
