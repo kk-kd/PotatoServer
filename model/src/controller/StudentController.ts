@@ -166,6 +166,27 @@ export class StudentController extends Repository<Student> {
 
   async saveNewStudent(request: Request, response: Response, next: NextFunction) {
     try {
+      const existingStudent = await this.studentRepository
+        .createQueryBuilder("students")
+        .leftJoinAndSelect("students.school", "school")
+        .leftJoinAndSelect("students.parentUser", "user")
+        .leftJoinAndSelect("students.route", "route")
+        .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+        .where("school.uniqueName = :school", {
+          school: request.body.school.uniqueName,
+        })
+        .andWhere("user.longitude = :longitude", {
+          longitude: request.body.parentUser.longitude,
+        })
+        .andWhere("user.latitude = :latitude", {
+          latitude: request.body.parentUser.latitude,
+        })
+        .getOne();
+
+      if (existingStudent != undefined) {
+        request.body.route = existingStudent.route;
+        request.body.inRangeStops = existingStudent.inRangeStops;
+      }
       const result = await this.studentRepository.save(request.body);
       response.status(200);
       return result;
