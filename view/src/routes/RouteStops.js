@@ -68,8 +68,9 @@ export const RouteStops = ({ data, routes }) => {
       usePagination);
   return (
       <div id="routeStopListing">
+
         {data.length === 0 ? <h4>There are no students attached to this route! Add some by selecting Route Planner.</h4>
-            : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+            : <><table {...getTableProps()} class="table table-striped">
               <thead>
               {headerGroups.map(headerGroup => (
                   <tr {...headerGroup.getHeaderGroupProps()}>
@@ -77,8 +78,8 @@ export const RouteStops = ({ data, routes }) => {
                         <th
                             {...column.getHeaderProps()}
                             style={{
-                              borderBottom: 'solid 3px red',
-                              background: 'aliceblue',
+                              borderBottom: 'solid 3px black',
+                              background: 'white',
                               color: 'black',
                               fontWeight: 'bold',
                             }}
@@ -96,17 +97,8 @@ export const RouteStops = ({ data, routes }) => {
                     <tr {...row.getRowProps()}>
                       {row.cells.map(cell => {
                         return (
-                            <td
-                                {...cell.getCellProps()}
-                                style={{
-                                  padding: '10px',
-                                  border: 'solid 1px gray',
-                                  background: 'papayawhip',
-                                }}
-                            >
-                              {cell.render('Cell')}
-                            </td>
-                        )
+                          <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                        );
                       })}
                     </tr>
                 )

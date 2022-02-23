@@ -54,48 +54,39 @@ export const RouteStudents = ({ data, routes }) => {
   } = useTable({ columns, data, initialState: { pageIndex: 0 } },
       usePagination);
   return (
-      <div id="routeStudentListing">
+      <div >
         {data.length === 0 ? <h4>This route has no students. Add some by clicking Edit Students/Stops.</h4>
-            : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+            : <><table {...getTableProps()} class="table table-striped">
           <thead>
           {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column => (
-                    <th
-                        {...column.getHeaderProps()}
-                        style={{
-                          borderBottom: 'solid 3px red',
-                          background: 'aliceblue',
-                          color: 'black',
-                          fontWeight: 'bold',
-                        }}
-                    >
-                      {column.render('Header')}
-                    </th>
-                ))}
-              </tr>
-          ))}
+                  <tr {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map(column => (
+                        <th
+                            {...column.getHeaderProps()}
+                            style={{
+                              borderBottom: 'solid 3px black',
+                              background: 'white',
+                              color: 'black',
+                              fontWeight: 'bold',
+                            }}
+                        >
+                          {column.render('Header')}
+                        </th>
+                    ))}
+                  </tr>
+              ))}
           </thead>
           <tbody {...getTableBodyProps()}>
           {page.map((row, i) => {
             prepareRow(row)
             return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map(cell => {
-                    return (
-                        <td
-                            {...cell.getCellProps()}
-                            style={{
-                              padding: '10px',
-                              border: 'solid 1px gray',
-                              background: 'papayawhip',
-                            }}
-                        >
-                          {cell.render('Cell')}
-                        </td>
-                    )
-                  })}
-                </tr>
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => {
+                  return (
+                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  );
+                })}
+              </tr>
             )
           })}
           </tbody>

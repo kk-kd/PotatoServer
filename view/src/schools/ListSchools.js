@@ -93,11 +93,11 @@ export const ListSchools = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
   return (
-    <div class="card">
-      <div class="card-body core-card-color">
+    <div id = "content">
+       <h2 id = "title"> Schools </h2>
         <div id="schoolListing">
           <Link to="/Schools/create">
-            <button className="btn btn-outline-primary">Create School</button>
+            <button>Create School</button>
           </Link>
           <table {...getTableProps()} class="table table-striped">
             <thead class="thead-dark">
@@ -233,7 +233,6 @@ export const ListSchools = () => {
             </label>
           </div>
         </div>
-      </div>
     </div>
   );
 };
