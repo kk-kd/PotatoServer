@@ -372,12 +372,12 @@ export const UserInfo = ({edit}) => {
         <h2 id = 'title'> {user.firstName}  {user.lastName}  </h2>
         <div>
           {!editable &&  
-              <button onClick={e => setEditable(true)}> Edit </button>
+              <button onClick={e => setEditable(true)}> Edit Details </button>
           }
           {editable &&  
             <button onClick={e => setEditable(false)}> Cancel Edits </button>
           }
-          {!editable && <button onClick = {(e) => {handleDeleteUser(id, e);}}>Delete </button>}
+          {!editable && <button onClick = {(e) => {handleDeleteUser(id, e);}}>Delete Account </button>}
           
         </div>
         

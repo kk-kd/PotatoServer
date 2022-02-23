@@ -265,14 +265,19 @@ export const StudentInfo = ({edit}) => {
        <h2 id = 'title'> {student ? student.firstName : ""}  {student ? student.lastName : ""}  </h2>
         <div>
           {!editable &&  
-              <button onClick={e => {setEditable(true); setUser({email: 'ex'}); setFilteredDataUser([{email:'ex'}])}}> Edit </button>
+              <button onClick={e => {setEditable(true); setUser({email: 'ex'}); setFilteredDataUser([{email:'ex'}])}}> Edit Student </button>
+          }
+          {!editable && 
+            <button onClick = {(e) => {handleDeleteStudent(id, e);}}>Delete Student </button>
           }
           {editable &&  
             <button onClick={e => setEditable(false)}> Cancel Edits </button>
           }
-          <button onClick = {(e) => {handleDeleteStudent(id, e);}}>Delete </button> 
-          {selectedSchool && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/Schools/info/" + selectedSchool.uid);}}> {selectedSchool.name} </button> }
-          {selectedRoute && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/Routes/info/" + selectedRoute.uid);}}> {selectedRoute.name} </button> }
+          {user && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/User/info/" + user.uid);}}> View Parent </button>}
+          {selectedSchool && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/Schools/info/" + selectedSchool.uid);}}> View School </button> }
+          {selectedRoute && <button style = {{width: 'auto'}} onClick = {(e) => {navigate("/Routes/info/" + selectedRoute.uid);}}> View Route </button>}
+          
+        
         </div>
 
         <label id = 'input-label-student'> First Name: </label>      
@@ -364,18 +369,20 @@ export const StudentInfo = ({edit}) => {
         />
         }
 
-        {!editable && <div><label id = 'input-label-student' > Route: </label>     
-        <input 
-            id = 'input-input-student-display'
-            disabled = {true}
-            type="text"
-            maxLength="100"
-            value={((student) && (student.school) && (student.school.route) && (student.school.route.name))  ? student.school.route.name : "None"}
-            onChange = {(e) => {console.log(e)}}
-        /> </div>}
+        {!editable && <div>
+          <label id = 'input-label-student' > Route: </label>     
+          <input 
+              id = 'input-input-student-display'
+              disabled = {true}
+              type="text"
+              maxLength="100"
+              value={((student) && (student.school) && (student.school.route) && (student.school.route.name))  ? student.school.route.name : "None"}
+              onChange = {(e) => {console.log(e)}}
+          />           
+        </div>}
 
 
-        {editable && selectedSchool && 
+        {/* {editable && selectedSchool && 
             <Autocomplete
                 options={selectedSchool.routes ? selectedSchool.routes : []}
                 freeSolo
@@ -410,11 +417,10 @@ export const StudentInfo = ({edit}) => {
                     console.log(newRoute)
                     setSelectedRoute(newRoute);
                 }}
-            
         />
-        }
+        } */}
  
-        {((editable) && (selectedSchool) && (!selectedSchool.routes || selectedSchool.routes.length === 0)) && <div style = {{marginLeft: '38%', width: '40%'}}> This School has No Routes. You can create routes in the Routes tab.</div>} 
+        {/* {((editable) && (selectedSchool) && (!selectedSchool.routes || selectedSchool.routes.length === 0)) && <div style = {{marginLeft: '38%', width: '40%'}}> This School has No Routes. You can create routes in the Routes tab.</div>}  */}
 
         <div> 
 

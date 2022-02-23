@@ -95,7 +95,7 @@ export const SchoolStudents = ({ data, routes }) => {
   );
   return (
   <div id="schoolStudentListing">
-    {data.length === 0 ? <h4>There are no students attached to this school! Create some by clicking <Link to="/Users/create">here.</Link></h4>
+    {data.length === 0 ? <h5> This school has no students. Create some by clicking <Link to="/Students/create">here.</Link></h5>
         : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
       <thead>
       {headerGroups.map(headerGroup => (

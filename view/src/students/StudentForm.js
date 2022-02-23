@@ -87,14 +87,11 @@ export const StudentForm = ({addStudentToUser}) => {
           lastName: student.lastName,
           school: selectedSchool, 
           id: student.studentid,
-          parentUser: user,
-          //route: selectedRoute
+          parentUser: user
         }
         console.log(form_results)
-        // if (!selectedRoute) {
-        //   form_results["route"] = null;
-        // }
-        if (student.studentid.length === 0) {
+
+        if (!student.studentid || student.studentid.length === 0) {
           form_results["id"] = null;
         }
     

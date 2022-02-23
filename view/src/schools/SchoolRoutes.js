@@ -54,7 +54,7 @@ export const SchoolRoutes = ({ data }) => {
   );
   return (
       <div id="schoolRouteListing">
-        {data.length === 0 ? <h4>There are no routes attached to this school! Create some by clicking Route Planner and selecting Create Route.</h4>
+        {data.length === 0 ? <h5>This school has no routes. Create some by clicking Route Planner.</h5>
             : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
           {headerGroups.map(headerGroup => (
@@ -157,7 +157,7 @@ export const SchoolRoutes = ({ data }) => {
             </select>
           </div>
         </>
-      })
+      }
     </div>
   );
 };
