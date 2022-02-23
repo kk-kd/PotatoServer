@@ -74,7 +74,7 @@ export const StudentInfo = ({edit}) => {
                 route: selectedRoute,
                 school: selectedSchool,
                 parentUser: user,
-                id: student.id
+                id: student.studentid
             }
             console.log(form_results)
             const a = modifyStudent(form_results);
