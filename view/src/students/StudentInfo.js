@@ -244,10 +244,8 @@ export const StudentInfo = ({edit}) => {
           {editable &&  
             <button onClick={e => setEditable(false)}> Cancel Edits </button>
           }
-         
-          
-        
-        </div>
+           
+      </div>
 
         <label id = 'input-label-student'> First Name: </label>      
         <input
@@ -399,10 +397,7 @@ export const StudentInfo = ({edit}) => {
                     /> {" "} No Route Assigned </span>}
         </div>}
 
-        {student && student.inRangeStops && student.inRangeStops.length !==0 && <div style={{ display: "flex", width: "90%", marginLeft: "auto", marginRight: "auto" }}>
-              <RouteStops data={student.inRangeStops} />
-          </div>
-          }
+ 
 
         {!editable && !(student && student.inRangeStops && student.inRangeStops.length !==0) && <div>
           <label id = 'input-label-student' > Stops: </label>     
@@ -413,13 +408,18 @@ export const StudentInfo = ({edit}) => {
                       data-tip
                       data-for="noInRangeStopTip"
                     /> No Stops In Range </span>
-               
         </div>} 
+        {editable && <button className = "submitbutton" type="button" onClick= {(e) => {handleModifyStudent(e)}}> Submit </button>}
+        
+        {student && student.inRangeStops && student.inRangeStops.length !==0 && <div style={{ display: "flex", width: "90%", marginLeft: "auto", marginRight: "auto" }}>
+              <RouteStops data={student.inRangeStops} />
+          </div>
+          }
         <div> 
 
         </div>
 
         
-        {editable && <button className = "submitbutton" type="button" onClick= {(e) => {handleModifyStudent(e)}}> Submit </button>}
+        
     </div>
     }

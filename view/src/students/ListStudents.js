@@ -142,7 +142,7 @@ export const ListStudents = () => {
       <div class="card-body core-card-color">
         <div id="userListing">
           <Link to="/Students/create">
-            <button className="btn btn-outline-primary">Create Student</button>
+            <button >Create Student</button>
           </Link>
           <table {...getTableProps()} class="table table-striped">
             <thead class="thead-dark">

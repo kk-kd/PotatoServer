@@ -131,7 +131,7 @@ export const ListUsers = () => {
       <div class="card-body core-card-color">
         <div id="userListing">
           <Link to="/Users/create">
-            <button className="btn btn-outline-primary">
+            <button >
               Create Parent or Administrator
             </button>
           </Link>
