@@ -76,4 +76,10 @@
     border: 0px;
   }
 
+  #input-input-inline-item {
+    display:inline-flex;
+    margin:2% 20% 0% 4%;
+    width: 40%;
+  }
+
 

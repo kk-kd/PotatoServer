@@ -99,7 +99,11 @@ export const SchoolInfo = ({edit}) => {
           departureTime: departureTime
         });
         for (var i = 0; i < routes.length; i++) {
-          await saveRoute(routes[i]);
+          await saveRoute({...routes[i],
+            students: routes[i].students.map(student => ({...student,
+              inRangeStops: student.inRangeStops.map(stop => routes[i].stops.find(s => s.uid === stop.uid))
+            }))
+          });
         }
         alert("School Succesfully Updated");
         setEditable(false);
@@ -282,6 +286,7 @@ export const SchoolInfo = ({edit}) => {
 
                 <label id='label-user'> Arrival Time:  </label>
                 <input
+                    disabled={!editable}
                     type="time"
                     id = "input-user"
                     value={arrivalTime}
@@ -290,18 +295,18 @@ export const SchoolInfo = ({edit}) => {
                       setRoutes(routes.map(route => ({...route,
                           stops: route.stops.map(stop => ({...stop,
                           pickupTime: findNewPickupTime(e.target.value, arrivalTime, stop.pickupTime)
-                          }))
+                        }))
                       })));
                     }}
-                    readOnly={!isEdit}
                     required
                 />
               
                 <label id='label-user'> Departure Time: </label>
                   <input
+                      disabled={!editable}
                       id = 'input-user'
                       type="time"
-                      value={school.departureTime}
+                      value={departureTime}
                       onChange={e => {
                         setDepartureTime(e.target.value);
                         setRoutes(routes.map(route => ({...route,
@@ -310,7 +315,6 @@ export const SchoolInfo = ({edit}) => {
                         }))
                         })));
                       }}
-                      readOnly={!isEdit}
                       required
                   />
           

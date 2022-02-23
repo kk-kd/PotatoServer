@@ -5,6 +5,15 @@ import { TableLinks } from "./TableLinks";
 export const Header = ({ setLoggedIn, isAdmin }) => {
   return (
     <div className="Header">
+      <div>
+        <h1 className="site-title-wrapper-app"> Potato Web Service. </h1>
+        <img
+          className="header-image-app"
+          src={"../cute_potato.png"}
+          alt="Cute Potato!"
+        />
+      </div>
+      
       <TableLinks hash="MyStudents" link="MyStudents" display="My Students" />
       <TableLinks
         hash="ChangeMyPassword"

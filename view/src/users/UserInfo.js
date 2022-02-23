@@ -288,7 +288,6 @@ export const UserInfo = ({edit}) => {
         setMapApi({geocoder: geocoder, map: map});
         setApiLoaded(true);
     }
-
     const columns = useMemo(
       () => [
         {
@@ -300,11 +299,11 @@ export const UserInfo = ({edit}) => {
           accessor: "middleName",
         },
         {
-          HeaderName: "Last Name",
+          Header: "Last Name",
           accessor: "lastName",
         },
         {
-          HeaderName: "ID",
+          Header: "ID",
           accessor: "id",
         },
         {
@@ -314,37 +313,47 @@ export const UserInfo = ({edit}) => {
         {
           Header: "Route",
           accessor: "route",
-          Cell: props => (
-              <div>
-                {props.value ?
-                    <label>{props.value.name} {(props.row.original.inRangeStops && props.row.original.inRangeStops.length > 0) || <><FontAwesomeIcon
-                    icon={faCircleExclamation}
-                    size="lg"
-                    style={{ color: "red" }}
-                    data-tip
-                    data-for="noInRangeStopTip"
-                /><ReactTooltip
-                      id="noInRangeStopTip"
-                      place="bottom"
-                      effect="solid"
-                      >
-                      This student does not have any in-range stops.
-                      </ReactTooltip></>}</label> :
-                    <><FontAwesomeIcon
-                        icon={faXmark}
-                        size="xl"
+          Cell: (props) => (
+            <div>
+              {props.value ? (
+                <label>
+                  {props.value.name}{" "}
+                  {(props.row.original.inRangeStops &&
+                    props.row.original.inRangeStops.length > 0) || (
+                    <>
+                      <FontAwesomeIcon
+                        icon={faCircleExclamation}
+                        size="lg"
                         style={{ color: "red" }}
                         data-tip
-                        data-for="noStopTip"
-                    /><ReactTooltip
-                  id="noStopTip"
-                  place="bottom"
-                  effect="solid"
-                  >
-                  This student is not on a route.
-                  </ReactTooltip></>}
-              </div>
-          )
+                        data-for="noInRangeStopTip"
+                      />
+                      <ReactTooltip
+                        id="noInRangeStopTip"
+                        place="bottom"
+                        effect="solid"
+                      >
+                        This student does not have any in-range stops.
+                      </ReactTooltip>
+                    </>
+                  )}
+                </label>
+              ) : (
+                <>
+                  <FontAwesomeIcon
+                    icon={faXmark}
+                    size="xl"
+                    style={{ color: "red" }}
+                    data-tip
+                    data-for="noStopTip"
+                  />
+                  <ReactTooltip id="noStopTip" place="bottom" effect="solid">
+                    This student is not on a route.
+                  </ReactTooltip>
+                </>
+              )}
+            </div>
+          ),
         },
         {
           Header: "Detail Page",
@@ -460,60 +469,44 @@ export const UserInfo = ({edit}) => {
             <p> </p>
             <p> </p>
             <p> </p>
-
-           {(students.length !== 0) && <div id ='table'>
-            <table {...getTableProps()} style={{ border: 'solid 1px blue', margin: 'auto', marginBottom: '5%'} }>
-              <thead>
-              {headerGroups.map(headerGroup => (
-                  <tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map(column => (
-                        <th
-                            {...column.getHeaderProps((column.id === "name" || column.id === "email_address"))}
-                            style={column.id === "name" || column.id === "email_address" ? {
-                              borderBottom: 'solid 3px red',
-                              background: 'aliceblue',
-                              color: 'black',
-                              fontWeight: 'bold',
-                              cursor: 'pointer'
-                            } : {
-                              borderBottom: 'solid 3px red',
-                              background: 'aliceblue',
-                              color: 'black',
-                              fontWeight: 'bold',
-                            }}
-                        >
-                          {column.render('Header')}
-                        </th>
-                    ))}
-                  </tr>
-              ))}
-              </thead>
-              <tbody {...getTableBodyProps()}>
-              {rows.map(row => {
-                prepareRow(row)
-                return (
-                    <tr {...row.getRowProps()}>
-                      {row.cells.map(cell => {
-                        return (
-                            <td
-                                {...cell.getCellProps()}
+                <table {...getTableProps()} class="table table-striped">
+                  <thead class="thead-dark">
+                  {headerGroups.map(headerGroup => (
+                      <tr {...headerGroup.getHeaderGroupProps()}>
+                        {headerGroup.headers.map(column => (
+                            <th
+                                {...column.getHeaderProps()}
                                 style={{
-                                  padding: '10px',
-                                  border: 'solid 1px gray',
-                                  background: 'papayawhip',
+                                  borderBottom: 'solid 3px black',
+                                  background: 'white',
+                                  color: 'black',
+                                  fontWeight: 'bold',
                                 }}
                             >
-                                {cell.render('Cell')}
-                            </td>
-                        )
-                      })}
-                    </tr>
-                )
-              })
-              }
-              </tbody>
-            </table> 
-            </div>}
+                              {column.render('Header')}
+                            </th>
+                        ))}
+                      </tr>
+                  ))}
+                  </thead>
+                  <tbody {...getTableBodyProps()}>
+                    {rows.map((row) => {
+                      prepareRow(row);
+                      return (
+                        <tr {...row.getRowProps()}>
+                          {row.cells.map((cell) => {
+                            return (
+                              <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+
+
+
 
           {(students.length ===0) && <div>
             <p> There are no students associated with this account. {editable ? "" : "Click Edit to Add a Student."} </p>
