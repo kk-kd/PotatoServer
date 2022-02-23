@@ -1,404 +1,391 @@
-import "./SchoolInfo.css"
+import "./SchoolInfo.css";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import GoogleMapReact from "google-map-react";
-import { useState, useMemo, useEffect  } from "react";
-import { Marker } from "../map/Marker";
-
-import {saveSchool, updateSchool, deleteSchool, getOneSchool} from "../api/axios_wrapper";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
-import ReactTooltip from "react-tooltip";
-import { Link, use, useNavigate, useParams} from "react-router-dom";
-import {useTable} from "react-table";
-import * as React from 'react';
-import { SchoolStudents} from "./SchoolStudents";
+import { Marker } from "./../map/Marker";
+import { deleteSchool, getOneSchool, updateSchool, saveRoute } from "./../api/axios_wrapper";
+import {
+  addDriveTime,
+  subtractDriveTime,
+  findNewPickupTime,
+  findNewDropOffTime
+} from "./../api/time";
+import { SchoolStudents } from "./SchoolStudents";
 import { SchoolRoutes } from "./SchoolRoutes";
 
-
-export const SchoolInfo = ({edit}) => {
-    let navigate = useNavigate(); 
-
-    const { id } = useParams();
-
-    const [editable, setEditable] = useState(edit);
-    const action_text = editable ? "Edit" : "View" 
-    const [ schoolLoaded,  setSchoolLoaded ] = useState(false);
-
-    const [school, setSchool] = useState({
-      name: '', 
-      address: '', 
-      students: [],
-    });
-
-    const [addressValid, setAddressValid] = useState(false);
-
-
-    // maps
-    const [ mapApi, setMapApi ] = useState();
-    const [ lat, setLat ] = useState();
-    const [ lng, setLng ] = useState();
-    const [ map, setMap ] = useState();
-    const [ apiLoaded, setApiLoaded ] = useState(false);
-    const [ geocoder, setGeocoder ] = useState();
-    const [ error, setError ] = useState(null);
-    const defaultProps = {
-        center: {
-        lat: 0,
-        lng: 0
-        },
-        zoom: 13
+export const SchoolInfo = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [loadingMap, setLoadingMap] = useState(true);
+  const [students, setStudents] = useState([]);
+  const [routes, setRoutes] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
+  const [school, setSchool] = useState();
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [arrivalTime, setArrivalTime] = useState("00:00");
+  const [departureTime, setDepartureTime] = useState("00:00");
+  const [mapApi, setMapApi] = useState();
+  const [lat, setLat] = useState();
+  const [lng, setLng] = useState();
+  const [showMap, setShowMap] = useState(false);
+  const [validated, setValidated] = useState(true);
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    if (mapApi && !validated) {
+      searchLocation();
+    }
+  }, [mapApi]);
+  useEffect(() => {
+    const getSchool = async () => {
+      try {
+        const schoolData = await getOneSchool(id);
+        console.log(schoolData);
+        setSchool(schoolData.data);
+        setAddress(schoolData.data.address);
+        setName(schoolData.data.name);
+        setLat(schoolData.data.latitude);
+        setLng(schoolData.data.longitude);
+        setStudents(schoolData.data.students);
+        setRoutes(schoolData.data.routes.map(route =>
+            ({...route, stops: route.stops.map(stop =>
+                  ({...stop, arrivalIndex: parseInt(stop.arrivalIndex)}))})));
+        setArrivalTime(schoolData.data.arrivalTime);
+        setDepartureTime(schoolData.data.departureTime);
+        setLoading(false);
+      } catch (e) {
+        alert(e.response.data);
+      }
     };
-
-
-    const validate_entries = () => {
-      if (!school.name || school.name.trim().length === 0){
-          return {valid: false, error: 'School Name Required'}
-      }
-      else if (!school.address) {
-        return {valid: false, error:"Please provide an address"}
-      }
-      else if (!addressValid) {
-        return {valid: false, error: "Please Validate Address."}
-      }
-      return {valid: true, error: ''}
-  }
-    const handleSchoolFormSubmit = async (e) => {
-        e.preventDefault();
-        let valid_results = validate_entries();
-        if (valid_results.valid) {
-            try {
-                await updateSchool(school.uid, {...school,
-                name: school.name,
-                address: school.address,
-                latitude: lat,
-                longitude: lng
-                });
-                alert("School Update Successful");
-                setEditable(false); 
-                fetchSchoolData();
-            } catch (e) {
-                alert(e.response.data);
-            }
-        }
-        else {
-            alert(valid_results.error)
-        }
-        
-    }
-    const deleteSch = async () => {
-        try {
-          await deleteSchool(id);
-          alert("School was succesfully deleted");
-          navigate("/Schools/list")
-        } catch (e) {
-          alert(e.response.data);
-        }
-      }
-
-    const handleDeleteSchool = async (e) => {
-        let sName = prompt("Do you want to delete?  If so, enter school name:");
-        console.log(sName.trim().toLowerCase() !== school.name.trim().toLowerCase())
-        if (!sName || (sName.trim().toLowerCase() !== school.name.trim().toLowerCase())) {
-            alert ("Entries Do Not Match")
-            return;
-        } else {
-            deleteSch();
-        }
-    }
-
-    const fetchSchoolData = async () => {
-        try {
-          const schoolData = await getOneSchool(id);
-          setSchool(schoolData.data)
-          console.log(schoolData.data)
-          updateSchoolLoading(schoolData.data);
-        } catch (e) {
-          alert(e.response.data);
-        }
-      }
-
-    // load data on page load 
-    useEffect(() => {
-        fetchSchoolData();
-    }, []);
-    
-    // refresh data when changing from edit/view mode
-    useEffect(() => {
-        fetchSchoolData();
-    }, [editable]);
-
-    // waits until both api and data are loaded to load map address. 
-    useEffect(() => {
-        if ((apiLoaded) && (schoolLoaded) && (school.address)) {
-          checkMap(null);
-        } 
-      }, [apiLoaded, schoolLoaded]);
-
-      const updateSchoolLoading = (data) => {
-        console.log(data)
-        setSchoolLoaded(true);
-      }
-  
-  
-      //maps
-      const checkMap = (e) => {
-        if (e) {
-          e.preventDefault();
-        }
-        console.log(apiLoaded)
-        if (apiLoaded) {
-          searchLocation()
-        } 
-      }
-
-    const searchLocation = () => {
-        mapApi.geocoder.geocode( { 'address': school.address }, (results, status) => {
-          if (!school.address || school.address.trim().length === 0) {
-            alert("Please Enter an Address"); 
-            return;
-          }
-          if (status === "OK") {
-            mapApi.map.setCenter(results[0].geometry.location);
-            setLng(results[0].geometry.location.lng());
-            setLat(results[0].geometry.location.lat());
-            setError(null);
-            setSchool({...school, address : school.address});
-            setAddressValid(true);
-          } else if (status === "ZERO_RESULTS") {
-            setAddressValid(false);
-            setError("No results for that address");
-            alert ("No results for that address");
-     
-          } else {
-            setAddressValid(false);
-            setError("Server Error. Try again later");
-            alert("Server Error. Try again later"); 
-          }
-        });
-    }
-    const handleApiLoaded = (map, maps) => {
-        const geocoder = new maps.Geocoder();
-        setMapApi({geocoder: geocoder, map: map});
-        setApiLoaded(true);
-    }
-
-    const columns = useMemo(
-        () => [
-          {
-            Header: "First Name",
-            accessor: "firstName",
-          },
-          {
-            Header: "Middle Name",
-            accessor: "middleName",
-          },
-          {
-            HeaderName: "Last Name",
-            accessor: "lastName",
-          },
-          {
-            HeaderName: "ID",
-            accessor: "id",
-          },
-          {
-            HeaderName: "School",
-            accessor: "school.name",
-          },
-          {
-            Header: "Route",
-            accessor: "route",
-            Cell: props => (
-                <div>
-                  {props.value ?
-                      <label>{props.value.name} {(props.row.original.inRangeStops && props.row.original.inRangeStops.length > 0) || <><FontAwesomeIcon
-                      icon={faCircleExclamation}
-                      size="lg"
-                      style={{ color: "red" }}
-                      data-tip
-                      data-for="noInRangeStopTip"
-                  /><ReactTooltip
-                        id="noInRangeStopTip"
-                        place="bottom"
-                        effect="solid"
-                        >
-                        This student does not have any in-range stops.
-                        </ReactTooltip></>}</label> :
-                      <><FontAwesomeIcon
-                          icon={faXmark}
-                          size="xl"
-                          style={{ color: "red" }}
-                          data-tip
-                          data-for="noStopTip"
-                      /><ReactTooltip
-                    id="noStopTip"
-                    place="bottom"
-                    effect="solid"
-                    >
-                    This student is not on a route.
-                    </ReactTooltip></>}
-                </div>
-            )
-          },
-          {
-            Header: "Detail Page",
-            accessor: "uid",
-            Cell: (props) => {
-              return <Link to={`/Students/info/${props.value}`}>view</Link>;
-            },
-          },
-        ],
-        []
+    getSchool();
+  }, []);
+  const defaultProps = {
+    center: {
+      lat: 10.99835602,
+      lng: 77.01502627,
+    },
+    zoom: 13,
+  };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    if (!name || name.trim().length === 0) {
+      alert("Please input a school name.");
+    } else if (!address) {
+      alert("Please input a valid address");
+    } else if (!(validated && lat && lng)) {
+      alert(
+        "Please press the validate address button to validate the entered address"
       );
-
-      const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        rows,
-        prepareRow
-      } = useTable({columns, data: school.students});
-
-    return <div id="content"> 
- 
-        <h2 id = 'title'> {school.name}</h2>
-        <div>
-          {!editable &&  
-              <button onClick={e => setEditable(true)}> Edit </button>
+    } else {
+      try {
+        await updateSchool(school.uid, {
+          ...school,
+          name: name,
+          address: address,
+          latitude: lat,
+          longitude: lng,
+          arrivalTime: arrivalTime,
+          departureTime: departureTime
+        });
+        for (var i = 0; i < routes.length; i++) {
+          await saveRoute(routes[i]);
+        }
+        alert("Succesfully edit school.");
+        navigate("/Schools/list");
+      } catch (e) {
+        alert(e.response.data);
+      }
+    }
+  }
+  const calculateRoutes = async (newLat, newLng) => {
+    try {
+      console.log(routes);
+      const newRoutes = routes;
+      for (var selectedRoute = 0; selectedRoute < routes.length; selectedRoute++) {
+        const sorted = [...routes[selectedRoute].stops.slice(0).sort(
+            (a, b) => b.arrivalIndex - a.arrivalIndex)];
+        var newPolylinesEncoded = [];
+        for (var j = 0; j < sorted.length / 26; j++) {
+          const request = {
+            origin: {
+              lat: j === 0 ? newLat : parseFloat(
+                  sorted[j * 26 - 1].latitude),
+              lng: j === 0 ? newLng : parseFloat(
+                  sorted[j * 26 - 1].longitude),
+            },
+            destination: {
+              lat: parseFloat(
+                  sorted[Math.min(sorted.length - 1, j * 26 + 25)].latitude),
+              lng: parseFloat(
+                  sorted[Math.min(sorted.length - 1, j * 26 + 25)].longitude)
+            },
+            travelMode: 'DRIVING',
+            waypoints: sorted.filter(
+                (stop, index) => index >= j * 26 && index < Math.min(
+                    sorted.length - 1, j * 26 + 25)).map(stop => ({
+              location: {
+                lat: parseFloat(stop.latitude),
+                lng: parseFloat(stop.longitude)
+              }
+            }))
+          };
+          const result = await mapApi.directionsService.route(request);
+          console.log(result);
+          if (result.status === "OK") {
+            newPolylinesEncoded = [...newPolylinesEncoded,
+              result.routes[0].overview_polyline];
+            const len = result.routes[0].legs.length;
+            for (var i = 0; i < result.routes[0].legs.length; i++) {
+              if (i === 0 && j === 0) {
+                sorted[0].pickupTime =
+                    subtractDriveTime(arrivalTime,
+                        Math.trunc(
+                            result.routes[0].legs[0].duration.value / 60));
+                sorted[0].dropoffTime =
+                    addDriveTime(departureTime,
+                        Math.trunc(
+                            result.routes[0].legs[0].duration.value / 60));
+              } else {
+                sorted[j * 26 + i].pickupTime =
+                    subtractDriveTime(sorted[j * 26 + i - 1].pickupTime,
+                        Math.trunc(
+                            result.routes[0].legs[i].duration.value / 60));
+                sorted[j * 26 + i].dropoffTime =
+                    addDriveTime(sorted[j * 26 + i - 1].dropoffTime,
+                        Math.trunc(
+                            result.routes[0].legs[i].duration.value / 60));
+              }
+            }
+          } else {
+            alert(result.status);
+            return;
           }
-          {editable &&  
-            <button onClick={e => setEditable(false)}> Cancel Edits </button>
-          }
-          {!editable && <button onClick = {(e) => {handleDeleteSchool(id, e);}}>Delete </button>}
-          
-        </div>
-        
+        }
+        newRoutes[selectedRoute].stops = sorted;
+        newRoutes[selectedRoute].polyline = newPolylinesEncoded;
+      }
+      console.log(newRoutes);
+      setRoutes(newRoutes);
+    } catch (e) {
+      alert(e);
+    }
+  }
+  const searchLocation = async () => {
+    mapApi.geocoder.geocode( { 'address': address }, async (results, status) => {
+      if (status === "OK") {
+        mapApi.map.setCenter(results[0].geometry.location);
+        setLng(results[0].geometry.location.lng());
+        setLat(results[0].geometry.location.lat());
+        await calculateRoutes(results[0].geometry.location.lat(), results[0].geometry.location.lng());
+        setError(null);
+        setValidated(true);
+      } else if (status === "ZERO_RESULTS") {
+        setError("No results for that address");
+        console.log(status);
+      } else {
+        setError("Server Error. Try again later");
+        console.log(status);
+      }
+    });
+  };
+  const checkMap = () => {
+    if (mapApi) {
+      searchLocation();
+    } else if (!validated) {
+      setShowMap(true);
+    }
+  }
+  const handleApiLoaded = async (map, maps) => {
+    const geocoder = await new maps.Geocoder();
+    const directionsService = await new maps.DirectionsService();
+    setMapApi({
+      map: map,
+      maps: maps,
+      geocoder: geocoder,
+      directionsService: directionsService
+    });
+  };
+  const deleteSch = async () => {
+    try {
+      await deleteSchool(id);
+      alert("School was succesfully deleted");
+      navigate("/Schools/list");
+    } catch (e) {
+      alert(e.response.data);
+    }
+  };
+  if (isDelete) {
+    let sName = prompt("Do you want to delete?  If so, enter school name:");
+    if (!sName || sName.toLowerCase() !== school.name.toLowerCase()) {
+      setIsDelete(false);
+    } else {
+      deleteSch();
+    }
+  }
 
+  if (loading) {
+    return <h1>Loading.</h1>
+  }
 
-        <div id = "top-half-wrapper">
-            <div id = "main_form">
-                <h5 id = "sub-header"> Information </h5>
-            
-                <label id = 'label-user'> School Name </label> 
+  return (
+    <div>
+      <h1>School Info</h1>
+      <div>
+        <button
+          className="btn btn-outline-secondary"
+          onClick={(e) => setIsEdit(true)}
+        >
+          Edit School
+        </button>
+        <button
+          className="btn btn-outline-secondary"
+          onClick={(e) => setIsDelete(true)}
+        >
+          Delete School
+        </button>
+        <button
+          className="btn btn-outline-secondary"
+          onClick={(e) => navigate(`/Routes/planner/${id}`)}
+        >
+          Route Planner
+        </button>
+        <button
+          className="btn btn-outline-secondary"
+          onClick={(e) => navigate(`/Emails/send/${id}`)}
+        >
+          Send Email Announcement
+        </button>
+      </div>
+      <form onSubmit={(e) => onSubmit(e)}>
+        <fieldset disabled>
+          <div
+            class="input-group mb-3"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
+            <span class="input-group-text" id="basic-addon3">
+              School Name
+            </span>
+            <input
+              type="text"
+              maxLength="100"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              id="disabledTextInput"
+              class="form-control"
+              aria-describedby="basic-addon3"
+              placeholder={!isEdit}
+              style={{ maxWidth: "12em", fontWeight: "bold" }}
+            ></input>
+          </div>
+        </fieldset>
+        <div
+          class="input-group mb-3"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
+          <span class="input-group-text" id="basic-addon4">
+            Address
+          </span>
+          <input
+            type="text"
+            maxLength="100"
+            value={address}
+            id="disabledTextInput"
+            class="form-control"
+            aria-describedby="basic-addon4"
+            placeholder={!isEdit}
+            style={{ maxWidth: "12em", fontWeight: "bold" }}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          <div id="schoolInfoTimeInput">
+              <label>Arrival Time:
                 <input
-                    disabled = {!editable}
-                    id = "input-user"
-                    type="text"
-                    maxLength="100"
-                    value={school.name}
-                    onChange={(e) => setSchool({...school, name : e.target.value})}
+                    type="time"
+                    value={arrivalTime}
+                    onChange={e => {
+                      setArrivalTime(e.target.value);
+                      setRoutes(routes.map(route => ({...route,
+                          stops: route.stops.map(stop => ({...stop,
+                          pickupTime: findNewPickupTime(e.target.value, arrivalTime, stop.pickupTime)
+                          }))
+                      })));
+                    }}
+                    readOnly={!isEdit}
+                    required
                 />
-                
-                <label  id = 'label-user'> Address {addressValid} </label>
-                <input
-                    disabled = {!editable}
-                    id = "input-user"
-                    maxLength="100"
-                    type="text"
-                    value={school.address}
-                    onChange={(e) => {setSchool({...school, address: e.target.value}); setAddressValid(false); }} 
-                />
-
-                <label id='label-user'> Arrival Time:  </label>
-                  <input
-                      id = 'input-user'
-                      type="time"
-                      value={school.arrivalTime}
-                      onChange={e => {setSchool({...school, arrivalTime: e.target.value});}} 
-                      required
-                  />
-              
-                <label id='label-user'> Departure Time: </label>
-                  <input
-                      id = 'input-user'
-                      type="time"
-                      value={school.departureTime}
-                      onChange={e => {setSchool({...school, departureTime: e.target.value});}} 
-                      required
-                  />
-          
-                        
-                {editable && <div>
-                  <button style = {{display: 'in-line block', margin: '20px'}} onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate Address" } </button>  
-                  <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleSchoolFormSubmit(e)}} type="button"> Update School </button>
-                  </div>
-                } 
-              </div>
-
-            
-              <div id="map">
-                  {error && (<div>{error}</div>)}
-                  <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
-                      <GoogleMapReact
-                          bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
-                          defaultCenter={defaultProps.center}
-                          defaultZoom={defaultProps.zoom}
-                          yesIWantToUseGoogleMapApiInternals
-                          onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
-                      >
-                      <Marker
-                          text="Your Address"
-                          lat={lat}
-                          lng={lng}
-                          isSchool
-                      />
-                      </GoogleMapReact>
-                  </div>
+              </label>
             </div>
+            <div id="schoolInfoTimeInput">
+              <label >Departure Time:
+                <input
+                    type="time"
+                    value={departureTime}
+                    onChange={e => {
+                      setDepartureTime(e.target.value);
+                      setRoutes(routes.map(route => ({...route,
+                          stops: route.stops.map(stop => ({...stop,
+                          dropoffTime: findNewDropOffTime(e.target.value, departureTime, stop.dropoffTime)
+                      }))
+                      })));
+                    }}
+                    readOnly={!isEdit}
+                    required
+                />
+              </label>
+            </div>
+          {isEdit && (
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={(e) => checkMap()}
+              style={{ padding: ".2em" }}
+            >
+              Validate Address
+            </button>
+          )}
+          {isEdit && (
+            <button type="submit" class="btn btn-primary" value="submit">
+              Submit
+            </button>
+          )}
         </div>
-
-     
-
-        <div id = 'tables-container'> 
-
-            <p> </p>
-            <p> </p>
-            <p> </p>
-            <p> </p>
-            <h5 id = "sub-header"> Students </h5>
-            <p> </p>
-            <p> </p>
-            <p> </p>
-
-            {editable &&
-                <div>
-                    <div> You can Add Students in the Students Tab </div>
-                </div>
-            }
-
-             
-            {((school) && (school.students) && (school.students.length !== 0)) && <SchoolStudents data={school.students} /> 
-            }
-        
-            {(school.students.length ===0) && 
-                <div>
-                    <div> There are no students associated with this school.  </div>
-                </div>
-            }
-                    
-            <p> </p>
-            <p> </p>
-            <p> </p>
-            <p> </p>
-            <h5 id = "sub-header"> Routes </h5>
-            <p> </p>
-            <p> </p>
-            <p> </p>
-
-            {editable && 
-                <div>
-                    <div> You can Add Routes in the Routes Tab </div>
-                </div>
-            }
-            
-            {( (school) && (school.routes) && (school.routes.length !== 0)) && <SchoolRoutes data={school.routes} />
-            }
-            {(school.routes && school.routes.length ===0) && 
-                <div>
-                    <div> There are no routes associated with this school. You can make routes in the Routes tab.  </div>
-                </div>
-            }
-                
-        </div>     
-    </div>
-
-}
+      </form>
+      {error && <div>{error}</div>}
+      {showMap && (
+        <div style={{ height: "50vh", width: "50%", display: "inline-block" }}>
+          <GoogleMapReact
+            bootstrapURLKeys={{
+              key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`,
+            }}
+            defaultCenter={defaultProps.center}
+            defaultZoom={defaultProps.zoom}
+            yesIWantToUseGoogleMapApiInternals
+            onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+          >
+            <Marker
+                text="You're Address"
+                lat={lat}
+                lng={lng}
+                isSchool
+            />
+          </GoogleMapReact>
+        </div>)}
+        <div style={{ display: "flex", width: "90%", marginLeft: "auto", marginRight: "auto" }}>
+          <SchoolStudents data={students} />
+          <SchoolRoutes data={routes} />
+        </div>
+      </div>
+  );
+};
