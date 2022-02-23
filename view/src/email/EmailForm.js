@@ -6,6 +6,8 @@ import {
   filterAllSchools,
   sendGeneralAnnouncementToUsersFromSchool,
   sendGeneralAnnouncementToUsersOnRoute,
+  sendRouteAnnouncementToUsersFromSchool, 
+  sendRouteAnnouncementToUsersOnRoute,
   sendRouteAnnouncementToAll,
   sendGeneralAnnouncementToAll,
   getOneSchool,
@@ -97,43 +99,46 @@ export const EmailForm = () => {
         console.log(id);
         console.log(form_results);
         if (includeRouteInfo) {
-          console.log("route annoucement to users from school");
-          // sendRouteAnnouncementToUsersFromSchool({
-          //   message: form_results,
-          //   schoolId: id,
-          // });
-        } else {
-          console.log("general annoucement to users from school");
-          // sendGeneralAnnouncementToUsersFromSchool({
-          //   message: form_results,
-          //   schoolId: id,
-          // });
+          console.log("route annoucement to users from school")
+          sendRouteAnnouncementToUsersFromSchool({
+            message: form_results,
+            schoolId: id,
+          });
+        }
+        else {
+          console.log("general annoucement to users from school")
+          sendGeneralAnnouncementToUsersFromSchool({
+            message: form_results,
+            schoolId: id,
+          });
         }
       } else if (emailType === "route") {
         let id = selectedRoute.uid;
         console.log(id);
         console.log(form_results);
         if (includeRouteInfo) {
-          console.log("route annoucement to users on route");
-          // sendRouteAnnouncementToUsersOnRoute({
-          //   message: form_results,
-          //   routeId: id,
-          // });
-        } else {
-          console.log("general annoucement to users on route");
-          // sendGeneralAnnouncementToUsersOnRoute({
-          //   message: form_results,
-          //   routeId: id,
-          // });
+          console.log("route annoucement to users on route")
+          sendRouteAnnouncementToUsersOnRoute({
+            message: form_results,
+            routeId: id,
+          });
+        }
+        else {
+          console.log("general annoucement to users on route")
+          sendGeneralAnnouncementToUsersOnRoute({
+            message: form_results,
+            routeId: id,
+          });
         }
       } else {
         console.log(form_results);
         if (includeRouteInfo) {
-          console.log("route annoucement to all users");
-          //sendRouteAnnouncementToAll({ message: form_results });
-        } else {
-          console.log("general annoucement to all ");
-          //sendGeneralAnnouncementToAll({ message: form_results });
+          console.log("route annoucement to all users")
+          sendRouteAnnouncementToAll({ message: form_results });
+        }
+        else {
+          console.log("general annoucement to all ")
+          sendGeneralAnnouncementToAll({ message: form_results });
         }
       }
     } catch (error) {
@@ -222,15 +227,20 @@ export const EmailForm = () => {
   };
 
   useEffect(() => {
-    if (schoolid) {
-      setEmailType("school");
+    
+    if ((schoolid) && (schoolid !== '-1')) {
+      console.log(schoolid)
+      setEmailType("school"); 
       try {
         const a = callGetSchool();
       } catch (e) {
         console.log(e);
       }
-    } else if (routeid) {
-      setEmailType("route");
+
+    }
+    else if (routeid && routeid !=='-1') {
+      console.log("route")
+      setEmailType("route")
       try {
         const a = callGetRoute();
       } catch (e) {
@@ -241,8 +251,7 @@ export const EmailForm = () => {
 
   return (
     <div id="content">
-      <h1 id="title-email"> {action_text} </h1>
-      <p> </p>
+      <h2 id = 'title-email'> {action_text} </h2>
       <p> </p>
       <p> </p>
 

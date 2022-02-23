@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
-export const Marker = ({ text, onRoute, stop, inRangeStop, detail, isSchool, isStop, isCurrentStop, students }) => {
+export const Marker = ({ text, onRoute, stop, inRangeStop, detail, isSchool, isStop, isCurrentStop, isUser, students }) => {
   if (isSchool) {
     return (
         <FontAwesomeIcon
@@ -44,6 +44,14 @@ export const Marker = ({ text, onRoute, stop, inRangeStop, detail, isSchool, isS
             id={isCurrentStop ? "currentStopMarker" : "stopMarker"}
         />
     );
+  } else if (isUser) {
+    return (
+      <FontAwesomeIcon
+          icon={faMapPin}
+          size="2xl"
+          id={"stopMarker"}
+      />
+    )
   }
   return (
       <>

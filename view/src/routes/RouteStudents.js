@@ -55,8 +55,7 @@ export const RouteStudents = ({ data, routes }) => {
       usePagination);
   return (
       <div id="routeStudentListing">
-        <h1>Students</h1>
-        {data.length === 0 ? <h4>There are no students attached to this route! Add some by selecting Route Planner.</h4>
+        {data.length === 0 ? <h4>This route has no students. Add some by clicking Edit Students/Stops.</h4>
             : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
           <thead>
           {headerGroups.map(headerGroup => (

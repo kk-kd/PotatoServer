@@ -14,11 +14,13 @@ import {
 import { SchoolStudents } from "./SchoolStudents";
 import { SchoolRoutes } from "./SchoolRoutes";
 
-export const SchoolInfo = () => {
+export const SchoolInfo = ({edit}) => {
+  const [editable, setEditable] = useState(edit);
+  const [addressValid, setAddressValid] = useState(false);
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [loadingMap, setLoadingMap] = useState(true);
   const [students, setStudents] = useState([]);
   const [routes, setRoutes] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
@@ -32,36 +34,42 @@ export const SchoolInfo = () => {
   const [lat, setLat] = useState();
   const [lng, setLng] = useState();
   const [showMap, setShowMap] = useState(false);
-  const [validated, setValidated] = useState(true);
   const [error, setError] = useState(false);
+  
+
+  const fetchSchoolData = async () => {
+    try {
+      const schoolData = await getOneSchool(id);
+      console.log(schoolData);
+      setSchool(schoolData.data);
+      setAddress(schoolData.data.address);
+      setName(schoolData.data.name);
+      setLat(schoolData.data.latitude);
+      setLng(schoolData.data.longitude);
+      setStudents(schoolData.data.students);
+      setRoutes(schoolData.data.routes.map(route =>
+          ({...route, stops: route.stops.map(stop =>
+                ({...stop, arrivalIndex: parseInt(stop.arrivalIndex)}))})));
+      setArrivalTime(schoolData.data.arrivalTime);
+      setDepartureTime(schoolData.data.departureTime);
+      setLoading(false);
+    } catch (e) {
+      alert(e.response.data);
+    }
+  };
+  
+  // load data on page load
   useEffect(() => {
-    if (mapApi && !validated) {
+    fetchSchoolData();
+  }, []);
+
+  
+  useEffect(() => {
+    if (mapApi && !addressValid) {
       searchLocation();
     }
   }, [mapApi]);
-  useEffect(() => {
-    const getSchool = async () => {
-      try {
-        const schoolData = await getOneSchool(id);
-        console.log(schoolData);
-        setSchool(schoolData.data);
-        setAddress(schoolData.data.address);
-        setName(schoolData.data.name);
-        setLat(schoolData.data.latitude);
-        setLng(schoolData.data.longitude);
-        setStudents(schoolData.data.students);
-        setRoutes(schoolData.data.routes.map(route =>
-            ({...route, stops: route.stops.map(stop =>
-                  ({...stop, arrivalIndex: parseInt(stop.arrivalIndex)}))})));
-        setArrivalTime(schoolData.data.arrivalTime);
-        setDepartureTime(schoolData.data.departureTime);
-        setLoading(false);
-      } catch (e) {
-        alert(e.response.data);
-      }
-    };
-    getSchool();
-  }, []);
+
   const defaultProps = {
     center: {
       lat: 10.99835602,
@@ -69,13 +77,13 @@ export const SchoolInfo = () => {
     },
     zoom: 13,
   };
-  const onSubmit = async (e) => {
+  const handleSchoolFormSubmit = async (e) => {
     e.preventDefault();
     if (!name || name.trim().length === 0) {
       alert("Please input a school name.");
     } else if (!address) {
       alert("Please input a valid address");
-    } else if (!(validated && lat && lng)) {
+    } else if (!(addressValid && lat && lng)) {
       alert(
         "Please press the validate address button to validate the entered address"
       );
@@ -93,13 +101,15 @@ export const SchoolInfo = () => {
         for (var i = 0; i < routes.length; i++) {
           await saveRoute(routes[i]);
         }
-        alert("Succesfully edit school.");
-        navigate("/Schools/list");
+        alert("School Succesfully Updated");
+        setEditable(false);
+        fetchSchoolData();
       } catch (e) {
         alert(e.response.data);
       }
     }
   }
+
   const calculateRoutes = async (newLat, newLng) => {
     try {
       console.log(routes);
@@ -181,7 +191,7 @@ export const SchoolInfo = () => {
         setLat(results[0].geometry.location.lat());
         await calculateRoutes(results[0].geometry.location.lat(), results[0].geometry.location.lng());
         setError(null);
-        setValidated(true);
+        setAddressValid(true);
       } else if (status === "ZERO_RESULTS") {
         setError("No results for that address");
         console.log(status);
@@ -194,7 +204,7 @@ export const SchoolInfo = () => {
   const checkMap = () => {
     if (mapApi) {
       searchLocation();
-    } else if (!validated) {
+    } else if (!addressValid) {
       setShowMap(true);
     }
   }
@@ -231,88 +241,49 @@ export const SchoolInfo = () => {
   }
 
   return (
-    <div>
-      <h1>School Info</h1>
-      <div>
-        <button
-          className="btn btn-outline-secondary"
-          onClick={(e) => setIsEdit(true)}
-        >
-          Edit School
-        </button>
-        <button
-          className="btn btn-outline-secondary"
-          onClick={(e) => setIsDelete(true)}
-        >
-          Delete School
-        </button>
-        <button
-          className="btn btn-outline-secondary"
-          onClick={(e) => navigate(`/Routes/planner/${id}`)}
-        >
-          Route Planner
-        </button>
-        <button
-          className="btn btn-outline-secondary"
-          onClick={(e) => navigate(`/Emails/send/${id}`)}
-        >
-          Send Email Announcement
-        </button>
-      </div>
-      <form onSubmit={(e) => onSubmit(e)}>
-        <fieldset disabled>
-          <div
-            class="input-group mb-3"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-            }}
-          >
-            <span class="input-group-text" id="basic-addon3">
-              School Name
-            </span>
-            <input
-              type="text"
-              maxLength="100"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              id="disabledTextInput"
-              class="form-control"
-              aria-describedby="basic-addon3"
-              placeholder={!isEdit}
-              style={{ maxWidth: "12em", fontWeight: "bold" }}
-            ></input>
-          </div>
-        </fieldset>
-        <div
-          class="input-group mb-3"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-          }}
-        >
-          <span class="input-group-text" id="basic-addon4">
-            Address
-          </span>
-          <input
-            type="text"
-            maxLength="100"
-            value={address}
-            id="disabledTextInput"
-            class="form-control"
-            aria-describedby="basic-addon4"
-            placeholder={!isEdit}
-            style={{ maxWidth: "12em", fontWeight: "bold" }}
-            onChange={(e) => setAddress(e.target.value)}
-          />
-          <div id="schoolInfoTimeInput">
-              <label>Arrival Time:
+    <div id="content"> 
+      <h2 id = 'title'> {school.name}</h2>
+        <div>
+          {!editable &&  
+              <button onClick={e => setEditable(true)}> Edit School </button>
+          }
+          {editable &&  
+            <button onClick={e => setEditable(false)}> Cancel Edits </button>
+          }
+          {!editable && <button onClick = {(e) => {setIsDelete(true);}}>Delete School</button>}
+          <button onClick={(e) => navigate(`/Routes/planner/${id}`)}> Route Planner </button>
+          <button onClick={(e) => navigate(`/Emails/send/${id}`)}> Send Announcement</button>
+          
+        </div>
+
+        <div id = "top-half-wrapper">
+            <div id = "main_form">
+                <h5 id = "sub-header"> Information </h5>
+            
+                <label id = 'label-user'> School Name </label> 
+                <input
+                    disabled = {!editable}
+                    id = "input-user"
+                    type="text"
+                    maxLength="100"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
+                
+                <label  id = 'label-user'> Address {addressValid} </label>
+                <input
+                    disabled = {!editable}
+                    id = "input-user"
+                    maxLength="100"
+                    type="text"
+                    value={address}
+                    onChange={(e) => {setAddress(e.target.value); setAddressValid(false); }} 
+                />
+
+                <label id='label-user'> Arrival Time:  </label>
                 <input
                     type="time"
+                    id = "input-user"
                     value={arrivalTime}
                     onChange={e => {
                       setArrivalTime(e.target.value);
@@ -325,67 +296,67 @@ export const SchoolInfo = () => {
                     readOnly={!isEdit}
                     required
                 />
-              </label>
+              
+                <label id='label-user'> Departure Time: </label>
+                  <input
+                      id = 'input-user'
+                      type="time"
+                      value={school.departureTime}
+                      onChange={e => {
+                        setDepartureTime(e.target.value);
+                        setRoutes(routes.map(route => ({...route,
+                            stops: route.stops.map(stop => ({...stop,
+                            dropoffTime: findNewDropOffTime(e.target.value, departureTime, stop.dropoffTime)
+                        }))
+                        })));
+                      }}
+                      readOnly={!isEdit}
+                      required
+                  />
+          
+                        
+                {editable && <div>
+                  <button style = {{display: 'in-line block', margin: '20px'}} onClick = {(e) => checkMap(e)}> {addressValid ? "Address Valid!": "Validate Address" } </button>  
+                  <button style = {{display: 'in-line block', margin: '20px'}} className = "button" onClick = {(e) => {handleSchoolFormSubmit(e)}} type="button"> Update School </button>
+                  </div>
+                } 
+              </div>
+
+            
+              <div id="map">
+                  {error && (<div>{error}</div>)}
+                  <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
+                      <GoogleMapReact
+                          bootstrapURLKeys={{ key: `${process.env.REACT_APP_GOOGLE_MAPS_API}` }}
+                          defaultCenter={defaultProps.center}
+                          defaultZoom={defaultProps.zoom}
+                          yesIWantToUseGoogleMapApiInternals
+                          onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+                      >
+                      <Marker
+                          text="Your Address"
+                          lat={lat}
+                          lng={lng}
+                          isSchool
+                      />
+                      </GoogleMapReact>
+                </div>
             </div>
-            <div id="schoolInfoTimeInput">
-              <label >Departure Time:
-                <input
-                    type="time"
-                    value={departureTime}
-                    onChange={e => {
-                      setDepartureTime(e.target.value);
-                      setRoutes(routes.map(route => ({...route,
-                          stops: route.stops.map(stop => ({...stop,
-                          dropoffTime: findNewDropOffTime(e.target.value, departureTime, stop.dropoffTime)
-                      }))
-                      })));
-                    }}
-                    readOnly={!isEdit}
-                    required
-                />
-              </label>
-            </div>
-          {isEdit && (
-            <button
-              type="button"
-              className="btn btn-outline-secondary"
-              onClick={(e) => checkMap()}
-              style={{ padding: ".2em" }}
-            >
-              Validate Address
-            </button>
-          )}
-          {isEdit && (
-            <button type="submit" class="btn btn-primary" value="submit">
-              Submit
-            </button>
-          )}
         </div>
-      </form>
-      {error && <div>{error}</div>}
-      {showMap && (
-        <div style={{ height: "50vh", width: "50%", display: "inline-block" }}>
-          <GoogleMapReact
-            bootstrapURLKeys={{
-              key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`,
-            }}
-            defaultCenter={defaultProps.center}
-            defaultZoom={defaultProps.zoom}
-            yesIWantToUseGoogleMapApiInternals
-            onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
-          >
-            <Marker
-                text="You're Address"
-                lat={lat}
-                lng={lng}
-                isSchool
-            />
-          </GoogleMapReact>
-        </div>)}
-        <div style={{ display: "flex", width: "90%", marginLeft: "auto", marginRight: "auto" }}>
-          <SchoolStudents data={students} />
-          <SchoolRoutes data={routes} />
+        <div id = 'tables-container'> 
+          <p> </p>
+          <p> </p>
+          <p> </p>
+          <p> </p>
+          <h5 id = "sub-header"> Students &  Routes </h5>
+          <div style={{ display: "flex", width: "90%", marginLeft: "auto", marginRight: "auto" }}>
+            <SchoolStudents data={students} />
+            <SchoolRoutes data={routes} />
+          </div> 
+
         </div>
-      </div>
-  );
-};
+
+            
+        
+        </div>
+        )};

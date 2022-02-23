@@ -94,31 +94,32 @@ export const SchoolStudents = ({ data, routes }) => {
     usePagination
   );
   return (
-    <div id="schoolStudentListing">
-      <h1>Students</h1>
-      {data.length === 0 ? (
-        <h4>
-          There are no students attached to this school! Create some by clicking{" "}
-          <Link to="/Users/create">here.</Link>
-        </h4>
-      ) : (
-        <>
-          <table {...getTableProps()} class="table table-striped">
-            <thead class="thead-dark">
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps()}>
-                      {column.render("Header")}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {page.map((row, i) => {
-                prepareRow(row);
-                return (
+  <div id="schoolStudentListing">
+    {data.length === 0 ? <h5> This school has no students. Create some by clicking <Link to="/Students/create">here.</Link></h5>
+        : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+      <thead>
+      {headerGroups.map(headerGroup => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map(column => (
+                <th
+                    {...column.getHeaderProps()}
+                    style={{
+                      borderBottom: 'solid 3px red',
+                      background: 'aliceblue',
+                      color: 'black',
+                      fontWeight: 'bold',
+                    }}
+                >
+                  {column.render('Header')}
+                </th>
+            ))}
+          </tr>
+      ))}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {page.map((row, i) => {
+          prepareRow(row)
+          return (
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell) => {
                       return (
@@ -127,9 +128,9 @@ export const SchoolStudents = ({ data, routes }) => {
                     })}
                   </tr>
                 );
-              })}
-            </tbody>
-          </table>
+            })}
+        </tbody>
+        </table>
           <div className="pagination">
             <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
               {"<<"}
@@ -177,8 +178,10 @@ export const SchoolStudents = ({ data, routes }) => {
               ))}
             </select>
           </div>
+          
         </>
-      )}
+        
+      } 
     </div>
   );
 };

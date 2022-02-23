@@ -1,23 +1,4 @@
-#schoolInfoForm {
-  display: flex;
-  width: 90%;
-  align-items: center;
-  align-text: center;
-  height: 15%;
-  padding: 10px;
+#tables-container {
+    clear: both;
 }
 
-#schoolInfoNameInput {
-  flex: 30%;
-  padding: 7px;
-}
-
-#schoolInfoAddressInput {
-  flex: 30%;
-  padding: 7px;
-}
-
-#schoolInfoTimeInput {
-  flex: 15%;
-  padding: 7px;
-}

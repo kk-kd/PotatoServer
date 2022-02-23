@@ -53,22 +53,23 @@ export const SchoolRoutes = ({ data }) => {
     usePagination
   );
   return (
-    <div id="schoolRouteListing">
-      <h1>Routes</h1>
-      {data.length === 0 ? (
-        <h4>
-          There are no routes attached to this school! Create some by clicking
-          Route Planner and selecting Create Route.
-        </h4>
-      ) : (
-        <>
-          <table {...getTableProps()} class="table table-striped">
-            <thead class="thead-dark">
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps()}>
-                      {column.render("Header")}
+      <div id="schoolRouteListing">
+        {data.length === 0 ? <h5>This school has no routes. Create some by clicking Route Planner.</h5>
+            : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
+          <thead>
+          {headerGroups.map(headerGroup => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => (
+                    <th
+                        {...column.getHeaderProps()}
+                        style={{
+                          borderBottom: 'solid 3px red',
+                          background: 'aliceblue',
+                          color: 'black',
+                          fontWeight: 'bold',
+                        }}
+                    >
+                      {column.render('Header')}
                     </th>
                   ))}
                 </tr>
@@ -156,7 +157,7 @@ export const SchoolRoutes = ({ data }) => {
             </select>
           </div>
         </>
-      )}
+      }
     </div>
   );
 };

@@ -159,8 +159,8 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-          response.locals.jwtPayload.uid +
-          " was not found adn could not be deleted."
+            response.locals.jwtPayload.uid +
+            " was not found adn could not be deleted."
         );
       return;
     }
@@ -217,45 +217,11 @@ export class UserController extends Repository<User> {
         return;
       }
 
-      var passwordValidator = require("password-validator");
-      var schema = new passwordValidator();
-      schema
-        .is()
-        .min(8) // Minimum length 8
-        .is()
-        .max(64) // Maximum length 100
-        .has()
-        .uppercase() // Must have uppercase letters
-        .has()
-        .lowercase() // Must have lowercase letters
-        .has()
-        .digits(2) // Must have at least 2 digits
-        .has()
-        .not()
-        .spaces(); // Should not have spaces
-
       if (!EmailValidator.validate(request.body.email)) {
         response.status(401).send("Update User: Email validation failed");
         return;
       }
 
-      if (!schema.validate(request.body.password)) {
-        response
-          .status(401)
-          .send(
-            "Update User: Password validation failed; Please specify a password with at least 8 characters, with at least 1 uppercase letter, 1 lowercase letter, and 2 digits. No spaces."
-          );
-        return;
-      }
-      if (
-        request.query.changePassword &&
-        request.query.changePassword == "true"
-      ) {
-        console.log("Hashing Password");
-        console.log(request.body.password);
-        request.body.password = await bcrypt.hash(request.body.password, 10);
-        console.log(request.body.password);
-      }
       const ret = await getConnection()
         .createQueryBuilder()
         .update(User)
@@ -269,11 +235,11 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User with UID " +
-          request.params.uid +
-          " and details(" +
-          request.body +
-          ") couldn't be updated with error " +
-          e
+            request.params.uid +
+            " and details(" +
+            request.body +
+            ") couldn't be updated with error " +
+            e
         );
       return;
     }
@@ -304,8 +270,8 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-          request.params.uid +
-          " was not found adn could not be deleted."
+            request.params.uid +
+            " was not found adn could not be deleted."
         );
       return;
     }

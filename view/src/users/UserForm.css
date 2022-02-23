@@ -1,6 +1,6 @@
 #map {
   float: right;
-  width: 43%;
+  width: 40%;
   padding-bottom: "20px";
   padding: 2%;
 }
@@ -22,8 +22,47 @@
   padding: 10px;
   margin-bottom: 20px;
 }
-.test-centering {
-  display: flex;
+
+#sub-header {
+  background-color: black;
+  color: white;
+  margin:auto; 
+  padding: 5px;
+  margin-bottom: 20px;
+  width: 98%;
+}
+
+#main_form {
+  float: left;
   align-items: center;
   justify-content: center;
+  width:60%;
+  padding:2%;
 }
+
+
+#label-user {
+  width: 30%;
+  color: black;
+  /* Positions the label text beside the input */
+  text-align: right;
+}
+
+#input-user{
+  width: 40%;
+  /* Large margin-right to force the next element to the new-line
+           and margin-left to create a gutter between the label and input */
+  margin: 2% 15% 0 4%;
+}
+
+#content {
+  background: #ebebeb;
+  height: auto;
+  margin: auto auto 20px;
+  overflow: auto;
+  padding-bottom: 20px;
+  width: 80%;
+}
+
+
+
