@@ -4,6 +4,9 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import { deleteStudent, getOneStudent } from "../api/axios_wrapper";
 import useBatchedState from "react-use-batched-state";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import ReactTooltip from "react-tooltip";
 
 /*
 - Look at nolan's route detail page
@@ -27,6 +30,7 @@ export const StudentDetail = () => {
         console.log(fetchedData.data);
 
         let myDict = [fetchedData.data][0].school;
+        myDict['inRangeStops'] = fetchedData.data.inRangeStops;
         if (fetchedData.data.route) {
           myDict["route_description"] = fetchedData.data.route.desciption;
           myDict["route_name"] = fetchedData.data.route.name;
@@ -101,43 +105,53 @@ export const StudentDetail = () => {
       {
         Header: "School Name",
         accessor: "schoolName",
+        Cell: props => (
+            <label><Link to={`/Schools/info/${props.row.original.schoolUid}`}>{props.value}</Link></label>
+        )
       },
       {
         Header: "School Address",
         accessor: "address",
       },
       {
-        Header: "Route Name",
+        Header: "Route",
         accessor: "route_name",
-      },
-      {
-        Header: "Route Description",
-        accessor: "route_description",
-      },
-      {
-        Header: "School Detail",
-        disableFilters: true,
-        accessor: "schoolUid",
-        Cell: ({ value }) => {
-          if (value) {
-            return <Link to={"/Schools/info/" + value}> {"View"} </Link>;
-          } else {
-            return <p> None </p>;
-          }
-        },
-      },
-      {
-        Header: "Route Detail",
-        disableFilters: true,
-        accessor: "route_uid",
-        Cell: ({ value }) => {
-          if (value) {
-            return <Link to={"/Routes/info/" + value}> {"View"} </Link>;
-          } else {
-            return <p> None </p>;
-          }
-        },
-      },
+        Cell: props => (
+            <div>
+            {props.value ?
+                  (<div>
+                    <Link to={`/Routes/info/${props.row.original.route_uid}`}>{props.value}</Link>
+                    {(props.row.original.inRangeStops && props.row.original.inRangeStops.length > 0) || <><FontAwesomeIcon
+                        icon={faCircleExclamation}
+                        size="lg"
+                        style={{ color: "red" }}
+                        data-tip
+                        data-for="noInRangeStopTip"
+                    /><ReactTooltip
+                        id="noInRangeStopTip"
+                        place="bottom"
+                        effect="solid"
+                    >
+                      This student does not have any in-range stops.
+                    </ReactTooltip></>}
+                  </div>) : (<>
+                    <FontAwesomeIcon
+                        icon={faXmark}
+                        size="lg"
+                        style={{ color: "red" }}
+                        data-tip
+                        data-for={`noRouteTip${props.row.original.route_uid}`}
+                    /><ReactTooltip
+                      id={`noRouteTip${props.row.original.route_uid}`}
+                      place="bottom"
+                      effect="solid"
+                  >
+                    This student is not on a route.
+                  </ReactTooltip>
+                  </>)}
+            </div>
+        )
+      }
     ],
     []
   );
