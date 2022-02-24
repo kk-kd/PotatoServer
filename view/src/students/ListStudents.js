@@ -283,7 +283,7 @@ export const ListStudents = () => {
           >
             {[10, 20, 30, 40, 50].map((size) => (
               <option key={size} value={size}>
-                Show up to {size} out of {total}
+                Show {size} out of {total} per page
               </option>
             ))}
           </select>
