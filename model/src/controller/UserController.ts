@@ -178,6 +178,8 @@ export class UserController extends Repository<User> {
         .createQueryBuilder("users")
         .where("users.uid = :uid", { uid: uidNumber })
         .leftJoinAndSelect("users.students", "students")
+        .leftJoinAndSelect("students.route", "route")
+        .leftJoinAndSelect("students.inRangeStops", "stops")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;

@@ -84,6 +84,10 @@ export const App = () => {
           <Routes>
             <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
             <Route
+                path="MyStudents/:id"
+                element={<ParentStudentInfo user={currentUser} />}
+            />
+            <Route
               path="MyStudents"
               element={<MyStudents user={currentUser} />}
             />

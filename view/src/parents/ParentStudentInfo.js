@@ -17,7 +17,6 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { RouteStops } from "../routes/RouteStops";
-import e from "cors";
 
 // this page is the parent view for student detail
 export const ParentStudentInfo = ({user}) => {

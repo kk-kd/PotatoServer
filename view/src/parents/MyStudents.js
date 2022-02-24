@@ -26,11 +26,7 @@ export const MyStudents = ({ user }) => {
         Cell: (props) => {
           return (
             <div>
-              {user.isAdmin ? (
-                <Link to={`/Students/info/${props.value}`}>view</Link>
-              ) : (
-                <Link to={`/MyStudents/${props.value}`}>view</Link>
-              )}
+              <Link to={`/MyStudents/${props.value}`}>view</Link>
             </div>
           );
         },
