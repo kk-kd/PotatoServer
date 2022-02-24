@@ -10,10 +10,10 @@ require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 const FROM = "noreply@potato.com";
 
 export class EmailController {
-  private getParentPage = async (parentId: number) => {
+  private getParentPage = async (parentEmail: string) => {
     const userDetail: User = await getRepository(User)
       .createQueryBuilder("users")
-      .where("users.uid = :uid", { uid: parentId })
+      .where("users.email = :email", { email: parentEmail })
       .leftJoinAndSelect("users.students", "children")
       .leftJoinAndSelect("children.school", "school")
       .leftJoinAndSelect("children.route", "route")
@@ -65,14 +65,16 @@ export class EmailController {
     if (child.route == null) {
       studentInfo +=
         "The student does not have a route yet. Please contact the school admin if you have any questions.";
+      return studentInfo;
     } else {
       studentInfo +=
         `<u>Route Name</u>: ${child.route.name}<br>` +
         `  Description: ${child.route.desciption}`;
     }
 
+    console.log(child);
     studentInfo += "<h4>Stop Information (Pickup/Dropoff Time)</h4>";
-    if (child.inRangeStops == null) {
+    if (child.inRangeStops == null || child.inRangeStops.length == 0) {
       studentInfo +=
         "The student does not have any in-range stops. Please contact the school admin if you have any questions.";
     } else {
@@ -83,9 +85,15 @@ export class EmailController {
       });
 
       for (var stop of stops) {
-        studentInfo += `<u>${stop.name}</u> (${this.to12Hours(
-          stop.pickupTime
-        )}/${this.to12Hours(stop.dropoffTime)})<br>`;
+        if (stop.name == "") {
+          studentInfo += `<u>Stop #${stop.uid}</u>`;
+        } else {
+          studentInfo += `<u>${stop.name}</u>`;
+        }
+
+        studentInfo += ` (${this.to12Hours(stop.pickupTime)}/${this.to12Hours(
+          stop.dropoffTime
+        )})<br>`;
       }
     }
 
@@ -141,7 +149,7 @@ export class EmailController {
 
     allEmails.forEach(async (user) => {
       if (!/^.*@example\.com$/i.test(user.email)) {
-        const parentDetails = await this.getParentPage(user.uid);
+        const parentDetails = await this.getParentPage(user.email);
         var myMessage = { ...message };
         myMessage.html += parentDetails;
         await publishMessage({ ...myMessage, from: FROM, to: user.email });
@@ -207,22 +215,22 @@ export class EmailController {
       return;
     }
 
-    const userSet: Set<User> = new Set();
+    const userSet: Set<string> = new Set();
     schoolSelect.students.forEach(async (s) => {
       if ("parentUser" in s) {
         if (!/^.*@example\.com$/i.test(s.parentUser.email)) {
-          userSet.add(s.parentUser);
+          userSet.add(s.parentUser.email);
         } else {
           console.log(`Skipped ${s.parentUser.email}`);
         }
       }
     });
 
-    userSet.forEach(async (user) => {
-      const parentDetails = await this.getParentPage(user.uid);
+    userSet.forEach(async (userEmail) => {
+      const parentDetails = await this.getParentPage(userEmail);
       var myMessage = { ...message };
       myMessage.html += parentDetails;
-      await publishMessage({ ...myMessage, from: FROM, to: user.email });
+      await publishMessage({ ...myMessage, from: FROM, to: userEmail });
     });
 
     response.status(201).send();
@@ -285,22 +293,22 @@ export class EmailController {
       return;
     }
 
-    const userSet: Set<User> = new Set();
+    const userSet: Set<string> = new Set();
     routeSelect.students.forEach(async (s) => {
       if ("parentUser" in s) {
         if (!/^.*@example\.com$/i.test(s.parentUser.email)) {
-          userSet.add(s.parentUser);
+          userSet.add(s.parentUser.email);
         } else {
           console.log(`Skipped ${s.parentUser.email}`);
         }
       }
     });
 
-    userSet.forEach(async (user) => {
-      const parentDetails = await this.getParentPage(user.uid);
+    userSet.forEach(async (userEmail) => {
+      const parentDetails = await this.getParentPage(userEmail);
       var myMessage = { ...message };
       myMessage.html += parentDetails;
-      await publishMessage({ ...myMessage, from: FROM, to: user.email });
+      await publishMessage({ ...myMessage, from: FROM, to: userEmail });
     });
 
     response.status(201).send();
