@@ -53,7 +53,7 @@ export class SchoolController extends Repository<School> {
         return;
       }
       const pageNum: number = +request.query.page;
-      if (pageNum <= 0) {
+      if (pageNum <= -1) {
         response.status(401).send("Please specify a positive page number to view results.");
         return;
       }
