@@ -52,16 +52,20 @@ export const PasswordForgotForm = () => {
 
     return <div id = 'content'>
        
-        <h1>  {action_text} </h1>
+        <h2 id = "title">  {action_text} </h2>
 
-        <label id = 'input-label' for = "email"> Email: </label>      
+        <label id = 'input-label-student' for = "email"> Email: </label>      
         <input
-            id = 'input-input'
+            id = 'input-input-student'
             type="text"
             maxLength="100"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
         />
+                <p> </p>
+        <p> </p>
+        <p> </p>
+        <p> </p>
 
         
         <button className = "submitbutton" type="button" onClick= {(e) => {handleForgotPasswordFormSubmit(e)}}> {action_text} </button>
