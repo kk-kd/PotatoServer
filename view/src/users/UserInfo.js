@@ -439,7 +439,7 @@ export const UserInfo = ({edit}) => {
               id = "input-user"
               type="checkbox"
               disabled = {!editable}
-              checked={user.isAdmin}
+              defaultChecked={user.isAdmin}
               onInput={(e) => setUser({...user, isAdmin : e.target.checked})}
           />
 
