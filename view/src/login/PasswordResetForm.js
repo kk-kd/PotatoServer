@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 
 export const PasswordResetForm = () => {
 
-    const action_text =  "Reset Password"
+    const action_text =  "Set Password"
 
     // get token
     const {token} = useParams();
@@ -57,7 +57,7 @@ export const PasswordResetForm = () => {
             throw alert (message);
         }
     
-        alert("Password has been Reset");
+        alert("Password has been Set.");
         navigate('/Login');
       }
     
@@ -88,7 +88,7 @@ export const PasswordResetForm = () => {
         <p> </p>
         <p> </p>
         
-        <button className = "submitbutton" type="button" onClick= {(e) => {handleResetPasswordFormSubmit(e)}}> Send </button>
+        <button className = "submitbutton" type="button" onClick= {(e) => {handleResetPasswordFormSubmit(e)}}> Set </button>
        
     </div>
     }
