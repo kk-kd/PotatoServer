@@ -317,12 +317,8 @@ export const BusRoutePlanner = () => {
             !hasInRangeStop(student, school.routes[selectedRoute])));
 
   return (
-      <div id="busRouteComplete">
-        {loading ? <h3>Loading</h3> :
-            <div id="busRouteFlex">
-              <div style={{display: 'flex'}}>
-                <div id="routes">
-                  <h1>{school.name} <FontAwesomeIcon
+    <div id = "content">
+      <h2 id = "title" > {school ?  " Route Planner: " + school.name: "Route Planner"} <FontAwesomeIcon
                       icon={faCircleQuestion}
                       size="xs"
                       data-tip
@@ -348,9 +344,50 @@ export const BusRoutePlanner = () => {
                     {!validatedRoutes.includes(false) ? "All routes have been validated and can be saved." :
                         "Not all routes have been validated.  All routes must be validated before saving."
                     }
-                  </ReactTooltip></h1>
+                  </ReactTooltip> </h2>
+              <div id = "action-bar"> 
+             
+                    <button onClick={e => saveData()}>Save All Changes</button>
+               
+                    {firstSelect && <div style = {{display: "inline-flex"}}><button
+                      onClick={e => calculateRoutes()}
+                    >{validatedRoutes[selectedRoute] ? "Valid Route!" : "Validate Route"}</button>
+                      <button
+                          onClick={e => {
+                            setDeletedRoutes([...deletedRoutes, school.routes[selectedRoute]]);
+                            setSchool({...school, routes: school.routes.filter((route, index) => index !== selectedRoute)});
+                            if (polylines[selectedRoute]) {
+                              polylines[selectedRoute].forEach(polyline => polyline.setMap(null));
+                            }
+                            setPolylines(polylines.filter((p, index) => index !== selectedRoute));
+                            setFirstSelect(false);
+                            setStopSelect(false);
+                            setPlaceStopLocation(false);
+                          }}
+                          data-tip
+                          data-for="deleteRouteTip"
+                      >
+                        Delete Route
+                      </button><ReactTooltip
+                          id="deleteRouteTip"
+                          place="top"
+                          effect="solid"
+                      >
+                        Clicking this button will show the effects of deleting this route, but the route will not actually be deleted until Save All Changes is  clicked.
+                      </ReactTooltip>
+                    </div>}
+                    
+              </div>
+      <div >
+        {loading ? <h3>Loading</h3> :
+            <div >
+            
+              <div style={{display: 'flex'}}>
+                <div id="routes">
+                  
                   <div id="routeEditor">
-                    <h3>Current Route <FontAwesomeIcon
+
+                    <h5 id = "sub-header-bus">  Select A Route Or Create a New One <FontAwesomeIcon
                         icon={faCircleQuestion}
                         size="sm"
                         data-tip
@@ -379,7 +416,8 @@ export const BusRoutePlanner = () => {
                           "At least one student on this route does not have an in range bus stop."
                       }
                       </ReactTooltip></>}
-                    </h3>
+                    </h5>
+                
                     <div id="plannerSelectCreate">
                     <select
                         style={{width: "50%"}}
@@ -403,9 +441,12 @@ export const BusRoutePlanner = () => {
                         <option value={index}>{route.name || "New Route"}</option>
                     ))}
                   </select>
-                  <button onClick={e => createRoute()}>Create Route</button>
+                  <button onClick={e => createRoute()}>New Route</button>
                     </div>
-                  {firstSelect && <div style={{width: "100%"}}><label id="plannerLabelDisplay">Route Name: </label><input
+                  
+                  <h5 id = "sub-header-bus">  Route Info </h5> 
+
+                  {firstSelect && <div style={{width: "100%"}}><label id="plannerLabelDisplay"> Name: </label><input
                       type="text"
                       maxLength="100"
                       style={{width: "70%"}}
@@ -415,7 +456,7 @@ export const BusRoutePlanner = () => {
                               index === selectedRoute ? {...r, name: e.target.value} : r)});
                       }}
                   /></div>}
-                  {firstSelect && <div style={{width: "100%"}}><label id="plannerLabelDisplay">Route Description: </label><textarea
+                  {firstSelect && <div style={{width: "100%"}}><label id="plannerLabelDisplay">Description: </label><textarea
                       id="routeDesciptionBox"
                       maxLength="500"
                       value={school.routes[selectedRoute].desciption}
@@ -424,37 +465,13 @@ export const BusRoutePlanner = () => {
                               index === selectedRoute ? {...r, desciption: e.target.value} : r)});
                       }}
                   /></div>}
-                    {firstSelect && <div style={{width: "100%"}}>{`Students on route: ${school.routes[selectedRoute].students.length}`}</div>}
-                    {firstSelect && <div><button
-                      onClick={e => calculateRoutes()}
-                    >{validatedRoutes[selectedRoute] ? "Valid Route!" : "Validate Route"}</button>
-                      <button
-                          onClick={e => {
-                            setDeletedRoutes([...deletedRoutes, school.routes[selectedRoute]]);
-                            setSchool({...school, routes: school.routes.filter((route, index) => index !== selectedRoute)});
-                            if (polylines[selectedRoute]) {
-                              polylines[selectedRoute].forEach(polyline => polyline.setMap(null));
-                            }
-                            setPolylines(polylines.filter((p, index) => index !== selectedRoute));
-                            setFirstSelect(false);
-                            setStopSelect(false);
-                            setPlaceStopLocation(false);
-                          }}
-                          data-tip
-                          data-for="deleteRouteTip"
-                      >
-                        Delete Route
-                      </button><ReactTooltip
-                          id="deleteRouteTip"
-                          place="top"
-                          effect="solid"
-                      >
-                        Clicking this button will show the effects of deleting this route, but the route will not actually be deleted until Save All Changes is  clicked.
-                      </ReactTooltip>
-                    </div>}
+                  <h5 style={{width: "100%"}}>{`Students on route: ${firstSelect ? school.routes[selectedRoute].students.length: 0}`}</h5>
+                    
                   </div>
+
                   <div id="stops">
-                      {firstSelect && <h3>Current Stop <FontAwesomeIcon
+              
+                      {firstSelect && <h5 id = "sub-header-bus"> Stops <FontAwesomeIcon
                           icon={faCircleQuestion}
                           size="sm"
                           data-tip
@@ -483,8 +500,8 @@ export const BusRoutePlanner = () => {
                             "This stop has had its location set on the map." :
                             "This stop has not had its location set on the map."
                         }
-                      </ReactTooltip></>}</h3>}
-                    {firstSelect || <h5>Select a route to edit its stops.</h5>}
+                      </ReactTooltip></>}</h5>}
+                    
                     {firstSelect && <div id="plannerSelectCreate"><select
                         style={{ width: "50%" }}
                         onChange={e => {
@@ -519,10 +536,14 @@ export const BusRoutePlanner = () => {
                               index === selectedRoute ? false : bool
                           ));
                         }}
-                    >Create Stop</button></div>}
+                    >New Stop</button></div>}
+                    <p> </p>
+                    <p> </p>
+                    <h5 id = "sub-header-bus"> Stop Info </h5>
+                    {firstSelect || <h5>Select a route to edit its stops.</h5>}
                     {stopSelect && <div style={{ width: "100%" }}>
                       <div style={{ width: "100%"}}>
-                        <label id="plannerLabelDisplay">Stop Name: </label>
+                        <label id="plannerLabelDisplay">Name: </label>
                         <input
                             type="text"
                             maxLength="100"
@@ -537,7 +558,7 @@ export const BusRoutePlanner = () => {
                         />
                       </div>
                       <div style={{ width: "100%"}}>
-                        <label id="plannerLabelDisplay">Location Description: </label>
+                        <label id="plannerLabelDisplay"> Description: </label>
                         <input
                             type="text"
                             maxLength="100"
@@ -662,6 +683,7 @@ export const BusRoutePlanner = () => {
                 <div id="mapSideContainer">
                   <div id="toolbar">
                     <div id="tools">
+                      
                     <button
                         id={changeRoute ? "mapActionButtonSelected" : "mapActionButton"}
                         disabled={!firstSelect}
@@ -671,14 +693,17 @@ export const BusRoutePlanner = () => {
                         }}
                         data-tip
                         data-for="changeStudentRouteTip"
-                    ><FontAwesomeIcon
+
+                    > Select Students
+                      <FontAwesomeIcon
                         icon={faLocationPin}
                         size="xl"
-                    /></button><ReactTooltip
+                    /></button>
+                    <ReactTooltip
                       id="changeStudentRouteTip"
                       place="top"
                       effect="solid"
-                  >
+                      >
                     Add/remove student(s) to current route by clicking their icon on the map.
                   </ReactTooltip>
                     <button
@@ -690,10 +715,12 @@ export const BusRoutePlanner = () => {
                         }}
                         data-tip
                         data-for="placeStopTip"
-                    ><FontAwesomeIcon
+
+                    >Move Bus Stops <FontAwesomeIcon
                         icon={faMapPin}
                         size="xl"
-                    /></button><ReactTooltip
+                    />
+                    </button><ReactTooltip
                       id="placeStopTip"
                       place="top"
                       effect="solid"
@@ -834,11 +861,13 @@ export const BusRoutePlanner = () => {
                   </GoogleMapReact>
                   </div>
                 </div>
-                  <button onClick={e => saveData()}>Save All Changes</button>
+                
                 </div>
               </div>
             </div>
         }
       </div>
+      </div>
   );
+  
 }

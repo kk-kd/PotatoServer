@@ -20,8 +20,9 @@
   color: white;
   margin: auto;
   padding: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
+
 
 #sub-header {
   background-color: black;
@@ -29,7 +30,7 @@
   margin:auto; 
   padding: 5px;
   margin-bottom: 20px;
-  width: 98%;
+  width: 95%;
 }
 
 #main_form {
