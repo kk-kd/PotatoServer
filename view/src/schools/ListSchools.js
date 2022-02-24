@@ -216,7 +216,7 @@ export const ListSchools = () => {
               setSize(Number(e.target.value));
             }}
             class="form-select"
-            style={{ maxWidth: "14em" }}
+            style={{ maxWidth: "15em" }}
           >
             {[10, 20, 30, 40, 50].map((size) => (
               <option key={size} value={size}>
