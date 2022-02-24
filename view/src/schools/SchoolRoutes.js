@@ -167,7 +167,7 @@ export const SchoolRoutes = ({ data }) => {
             >
               {[10, 20, 30, 40, 50].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
+                  Show up to {pageSize}
                 </option>
               ))}
             </select>
