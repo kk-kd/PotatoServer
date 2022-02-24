@@ -113,7 +113,9 @@ class AuthController {
       await publishMessage({
         from: "Potato Web Service",
         subject: "[Potato] Please set your password",
-        html: `<div> Your school admin just made you an account! Please set your password <a href=${link}>here.</a></div>`,
+        html:
+          `<div>Your school admin just made you an account! Please set your password <a href=${link}>here.</a></div>` +
+          `<div>If the above link does not work, copy and paste the URL below into your browser: ${link}</div>`,
         to: user.email,
       });
     } catch (error) {
@@ -172,7 +174,9 @@ class AuthController {
       await publishMessage({
         from: "Potato Web Service",
         subject: "[Potato] Please reset your password",
-        html: `<div> We heard that you lost your password. Please reset your password <a href=${link}>here.</a></div>`,
+        html:
+          `<div> We heard that you lost your password. Please reset your password <a href=${link}>here.</a></div>` +
+          `<div>If the above link does not work, copy and paste the URL below into your browser: ${link}</div>`,
         to: user.email,
       });
     } catch (error) {
