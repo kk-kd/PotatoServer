@@ -98,7 +98,8 @@ export class RouteController extends Repository<Route> {
       var sortDirSpec;
       if (!request.query.sort || request.query.sort === "none") {
         sortSpecification = "routes.uid";
-      } else if (request.query.sort === "name") {
+      }
+      else if (request.query.sort === "name") {
         sortSpecification = "routes.name";
       } else {
         sortSpecification = "school.name";
@@ -114,7 +115,7 @@ export class RouteController extends Repository<Route> {
       }
       const nameFilter = request.query.nameFilter || "";
 
-      if (request.query.sort == "students") {
+      if (request.query.sort == "students.length") {
         const routesByStudentsCount = await this.getSortedRoutesByUserCount(
           nameFilter,
           sortDirSpec
