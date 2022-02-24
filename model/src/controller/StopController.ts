@@ -48,6 +48,10 @@ export class StopController extends Repository<Stop> {
     async filterAllStops(request: Request, response: Response, next: NextFunction) {
         try {
             const pageNum: number = +request.query.page;
+            if (pageNum <= 0) {
+                response.status(401).send("Please specify a positive page number to view results.");
+                return;
+            }
             const takeNum: number = +request.query.size;
             var skipNum = pageNum * takeNum;
 
