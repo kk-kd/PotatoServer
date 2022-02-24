@@ -9,26 +9,42 @@ import ReactTooltip from "react-tooltip";
 
 export const SchoolRoutes = ({ data }) => {
   const columns = useMemo(
-      () => [
-        {
-          Header: 'Name',
-          accessor: 'name',
-          Cell: props => (
-              <div><label><Link to={`/Routes/info/${props.row.original.uid}`}>{props.value}</Link> {!props.row.original.students.some(student => !student.inRangeStops || student.inRangeStops.length === 0) || <><FontAwesomeIcon
-                  icon={faCircleExclamation}
-                  size="lg"
-                  style={{ color: "red" }}
-                  data-tip
-                  data-for="incompleteTip"
-              /><ReactTooltip
-                  id="incompleteTip"
-                  place="bottom"
-                  effect="solid"
-              >
-                At least one student on this route does not have an in-range stop.
-              </ReactTooltip></>}</label></div>
-          )
-        },
+    () => [
+      {
+        Header: "Name",
+        accessor: "name",
+        Cell: (props) => (
+          <div>
+            <label>
+              <Link to={`/Routes/info/${props.row.original.uid}`}>
+                {props.value}
+              </Link>{" "}
+              {!props.row.original.students.some(
+                (student) =>
+                  !student.inRangeStops || student.inRangeStops.length === 0
+              ) || (
+                <>
+                  <FontAwesomeIcon
+                    icon={faCircleExclamation}
+                    size="lg"
+                    style={{ color: "red" }}
+                    data-tip
+                    data-for="incompleteTip"
+                  />
+                  <ReactTooltip
+                    id="incompleteTip"
+                    place="bottom"
+                    effect="solid"
+                  >
+                    At least one student on this route does not have an in-range
+                    stop.
+                  </ReactTooltip>
+                </>
+              )}
+            </label>
+          </div>
+        ),
+      },
     ],
     []
   );
@@ -53,23 +69,23 @@ export const SchoolRoutes = ({ data }) => {
     usePagination
   );
   return (
-      <div id="schoolRouteListing">
-        {data.length === 0 ? <h5>This school has no routes. Create some by clicking Route Planner.</h5>
-            : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
-          <thead>
-          {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column => (
-                    <th
-                        {...column.getHeaderProps()}
-                        style={{
-                          borderBottom: 'solid 3px red',
-                          background: 'aliceblue',
-                          color: 'black',
-                          fontWeight: 'bold',
-                        }}
-                    >
-                      {column.render('Header')}
+    <div id="schoolRouteListing">
+      {data.length === 0 ? (
+        <h5>
+          This school has no routes. Create some by clicking Route Planner.
+        </h5>
+      ) : (
+        <>
+          <table
+            {...getTableProps()}
+            class="table table-striped table-bordered border-success rounded"
+          >
+            <thead>
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps()}>
+                      {column.render("Header")}
                     </th>
                   ))}
                 </tr>
@@ -157,7 +173,7 @@ export const SchoolRoutes = ({ data }) => {
             </select>
           </div>
         </>
-      }
+      )}
     </div>
   );
 };

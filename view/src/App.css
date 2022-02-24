@@ -1,7 +1,7 @@
 .App {
   text-align: center;
   height: -webkit-fill-available;
-  background-color: #34815c; 
+  background-color: #34815c;
   overflow-y: auto;
 }
 
@@ -20,8 +20,13 @@ a {
 }
 
 .btn-outline-primary {
-border-color: #fff;
-color: white;
+  border-color: #fff;
+  color: white;
+}
+.btn-outline-primary:hover {
+  border-color: #fff;
+  color: white;
+  background-color: #638574;
 }
 
 .App-header {
@@ -42,7 +47,6 @@ color: white;
 .paginationButton {
   height: 40px;
   width: 40px;
-
 }
 
 .pagination {
