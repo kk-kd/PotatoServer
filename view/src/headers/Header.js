@@ -6,14 +6,19 @@ export const Header = ({ setLoggedIn, isAdmin }) => {
   return (
     <div className="Header">
       <div>
-        <h1 className="site-title-wrapper-app"> Potato Web Service. </h1>
-        <img
-          className="header-image-app"
-          src={"../cute_potato.png"}
-          alt="Cute Potato!"
-        />
+        <p className="display-4">
+          {" "}
+          Potato{" "}
+          {/* <img
+            className="header-image-app"
+            src={"../cute_potato.png"}
+            alt="Cute Potato!"
+            style={{ fontSize: "medium" }}
+          /> */}
+          Web Service
+        </p>
       </div>
-      
+
       <TableLinks hash="MyStudents" link="MyStudents" display="My Students" />
       <TableLinks
         hash="ChangeMyPassword"
@@ -23,7 +28,13 @@ export const Header = ({ setLoggedIn, isAdmin }) => {
       {isAdmin && (
         <TableLinks hash="Schools" link="Schools/list" display="Schools" />
       )}
-      {isAdmin && <TableLinks hash="Users" link="Users/list" display="Parents & Administrators " />}
+      {isAdmin && (
+        <TableLinks
+          hash="Users"
+          link="Users/list"
+          display="Parents & Administrators "
+        />
+      )}
       {isAdmin && (
         <TableLinks hash="Students" link="Students/list" display="Students" />
       )}
@@ -31,7 +42,11 @@ export const Header = ({ setLoggedIn, isAdmin }) => {
         <TableLinks hash="Routes" link="Routes/list" display="Routes" />
       )}
       {isAdmin && (
-        <TableLinks hash="Emails" link="Emails/send" display="Send Announcement" />
+        <TableLinks
+          hash="Emails"
+          link="Emails/send"
+          display="Send Announcement"
+        />
       )}
       <LogOut setLoggedIn={setLoggedIn} />
     </div>

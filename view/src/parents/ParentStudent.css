@@ -6,6 +6,10 @@
   width: 70%;
 }
 
-#parentStudentListing > * {
-  margin: 10px;
+#input-input-student-parent, #input-input-student-display-parent {
+  margin: 2% 20% 0 4%;
+  min-width: 150px;
+  width: 40%;
+  background:inherit;
+  border:none;
 }

@@ -54,7 +54,7 @@
 
 #mapContainer {
   height: 70vh;
-  width: 100%;
+  width: 96%;
 }
 
 #mapSideContainer {
@@ -121,9 +121,18 @@
 
 #routeDesciptionBox {
   width: 70%;
-  height: 10vh;
+  height: 5vh;
 }
 
+#action-bar {
+  background-color: #e8e8e8;
+  margin: auto;
+  padding: 10px;
+  margin-bottom: 5px;
+  width: 95%;
+  border:1px solid black;
+
+}
 #routeSelect {
   cursor: pointer;
   padding: 5px;
@@ -147,6 +156,7 @@
   padding-top: 10px;
   justify-content: space-between;
   display: flex;
+  margin-bottom:10px;
 }
 
 #descriptiveText {
@@ -159,19 +169,24 @@
 }
 
 #plannerKeys {
-  padding-top: 20px;
+  padding-top: 10px;
   display: flex;
+  margin-left:5px; 
+  margin-right:35px;
 }
 
 #plannerKey {
-  width: 100px;
   height: 60px;
   border: solid black;
   font-size: 10px;
+  width: 90px;
+  margin-bottom: 1px;
+  margin-top: 1px;
+  padding-top:2px;
 }
 
 #plannerSelectCreate {
-  padding: 10px 20px 7px 30px;
+  padding: 0px 20px 35px 30px;
   align-items: center;
   justify-content: space-between;
   display: flex;
@@ -211,7 +226,7 @@
 
 #routeEditor {
   display: inline-block;
-  height: 40vh;
+  height: 20vh;
   padding: 10px 10px 0px 10px;
   width: 100%;
 }
@@ -230,6 +245,8 @@
 
 #stops {
   padding: 7px;
+  position:relative; 
+  top:45px;
 }
 
 #routeData {
@@ -240,4 +257,12 @@
 #routeMarkerTutorial {
   flex: 33%;
   display: inline-block;
+}
+
+#sub-header-bus {
+  background-color: #000;
+  color: #fff;
+  margin: auto auto 10px;
+  padding: 5px;
+  width: 97%;
 }

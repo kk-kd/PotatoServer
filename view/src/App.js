@@ -9,7 +9,7 @@ import { Students } from "./students/Students";
 import { Users } from "./users/Users";
 import { returnUserInfoFromJWT } from "./api/axios_wrapper";
 import { MyStudents } from "./parents/MyStudents";
-import { ParentStudent } from "./parents/ParentStudent";
+import { ParentStudentInfo } from "./parents/ParentStudentInfo";
 import { ChangeMyPassword } from "./parents/ChangeMyPassword";
 import { Emails } from "./email/Email";
 import { PasswordForgotForm } from "./login/PasswordForgotForm";
@@ -67,7 +67,7 @@ export const App = () => {
             <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
             <Route
               path="MyStudents/:id"
-              element={<ParentStudent user={currentUser} />}
+              element={<ParentStudentInfo user={currentUser} />}
             />
             <Route
               path="MyStudents"
@@ -83,6 +83,10 @@ export const App = () => {
           <Header setLoggedIn={setLoggedIn} isAdmin={true} />
           <Routes>
             <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
+            <Route
+                path="MyStudents/:id"
+                element={<ParentStudentInfo user={currentUser} />}
+            />
             <Route
               path="MyStudents"
               element={<MyStudents user={currentUser} />}

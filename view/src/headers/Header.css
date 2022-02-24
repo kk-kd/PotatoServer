@@ -3,9 +3,8 @@
 }
 
 .header-image-app {
-  display:inline-flex;
   height: 3em;
-  margin-bottom: 1em; 
+  margin-bottom: 0.5em;
 }
 
 .site-title-wrapper-app {
@@ -15,5 +14,5 @@
   display: inline;
   height: 7em;
   font-family: Marker Felt, fantasy;
-  color:black;
+  color: black;
 }
