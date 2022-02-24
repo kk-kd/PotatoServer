@@ -36,6 +36,7 @@ export const StudentInfo = ({ edit }) => {
   const [user, setUser] = useState();
   const [userDefault, setUserDefault] = "";
   const [studentLoaded, setStudentLoaded] = useState(false);
+  const [removeInRangeStops, setRemoveInRangeStops] = useState(false);
 
   // filter search state
   const [filteredDataSchool, setFilteredDataSchool] = useState([]);
@@ -74,6 +75,7 @@ export const StudentInfo = ({ edit }) => {
     let valid_results = validate_student_entries();
     if (valid_results.valid) {
       let form_results = {
+        ...student,
         firstName: student.firstName,
         middleName: student.middleName,
         lastName: student.lastName,
@@ -82,6 +84,9 @@ export const StudentInfo = ({ edit }) => {
         parentUser: user,
         id: student.studentid,
       };
+      if (removeInRangeStops) {
+        form_results.inRangeStops = [];
+      }
       console.log(form_results);
       const a = modifyStudent(form_results);
     } else {
@@ -91,7 +96,7 @@ export const StudentInfo = ({ edit }) => {
 
   const modifyStudent = async (form_results) => {
     try {
-      let update_user_response = await updateStudent(id, form_results);
+      let update_user_response = await saveStudent(form_results);
       setEditable(false);
     } catch (error) {
       let message = error.response.data;
@@ -370,6 +375,8 @@ export const StudentInfo = ({ edit }) => {
           onChange={(_event, newUser) => {
             console.log(newUser);
             setUser(newUser);
+            setSelectedRoute(null);
+            setRemoveInRangeStops(true);
           }}
         />
       )}
@@ -418,6 +425,8 @@ export const StudentInfo = ({ edit }) => {
           onChange={(_event, newSchool) => {
             console.log(newSchool);
             setSelectedSchool(newSchool);
+            setSelectedRoute(null);
+            setRemoveInRangeStops(true);
           }}
         />
       )}

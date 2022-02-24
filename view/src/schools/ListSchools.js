@@ -126,7 +126,7 @@ export const ListSchools = () => {
                               <FontAwesomeIcon icon={faArrowUp} size="sm" />
                             ))}
                         </label>
-                        <DefaultColumnFilter setFilter={setNameFilter} />
+                        {column.id === "name" && <DefaultColumnFilter setFilter={setNameFilter} />}
                       </div>
                     ) : (
                       column.render("Header")
