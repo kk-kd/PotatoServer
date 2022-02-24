@@ -255,7 +255,7 @@ export const ListUsers = () => {
               setSize(Number(e.target.value));
             }}
             class="form-select"
-            style={{ maxWidth: "15em" }}
+            style={{ maxWidth: "16em" }}
           >
             {[10, 20, 30, 40, 50].map((size) => (
               <option key={size} value={size}>
