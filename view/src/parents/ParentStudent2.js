@@ -2,6 +2,7 @@ import "./ParentStudent.css";
 import { useEffect, useMemo, useState} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTable } from "react-table";
+import { RouteStops } from "../routes/RouteStops";
 
 export const ParentStudent = ({ user }) => {
   const { id } = useParams();
@@ -71,8 +72,9 @@ export const ParentStudent = ({ user }) => {
     );
   }
   return (
-      <div id="parentStudentListing">
-        <h1>My Students</h1>
+      <div id="content">
+        <h2 id = "title"> {data[0].firstName} {data[0].lastName} </h2>
+
         <table {...getTableProps()} style={{ border: "solid 1px blue" }}>
           <thead>
           {headerGroups.map((headerGroup) => (
@@ -117,6 +119,19 @@ export const ParentStudent = ({ user }) => {
           })}
           </tbody>
         </table>
+
+        {data[0] && data[0].inRangeStops && (
+        <div
+          style={{
+            display: "flex",
+            width: "90%",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+          >
+            <RouteStops data={data[0].inRangeStops} />
+          </div>
+        )}
       </div>
   );
 }

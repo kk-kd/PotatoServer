@@ -13,15 +13,15 @@ export const MyStudents = ({ user }) => {
         accessor: "firstName",
       },
       {
-        Header: "Middle Name",
-        accessor: "middleName",
-      },
-      {
         Header: "Last Name",
         accessor: "lastName",
       },
       {
-        Header: "Detail Page",
+        Header: "School",
+        accessor: "school.name",
+      },
+      {
+        Header: "Bus Route Info",
         accessor: "uid",
         Cell: (props) => {
           return (
@@ -45,9 +45,10 @@ export const MyStudents = ({ user }) => {
     return <label>Loading</label>;
   } else {
     return (
-      <div class="card">
-        <div class="card-body core-card-style">
+      <div id = "content">
+          <h2 id = "title"> My Students </h2>
           <div id="myStudentListing">
+
             {data.length === 0 ? (
               <h4>You have no registered child students.</h4>
             ) : (
@@ -83,7 +84,6 @@ export const MyStudents = ({ user }) => {
             )}
           </div>
         </div>
-      </div>
     );
   }
 };
