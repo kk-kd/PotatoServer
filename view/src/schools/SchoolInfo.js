@@ -96,6 +96,10 @@ export const SchoolInfo = ({ edit }) => {
       alert(
         "Please press the validate address button to validate the entered address"
       );
+    } else if (!arrivalTime) {
+      alert("Please input an arrival time.");
+    } else if (!departureTime) {
+      alert("Please input a departure time.")
     } else {
       try {
         await updateSchool(school.uid, {
