@@ -72,22 +72,10 @@ export const UserInfo = ({edit}) => {
 
 
     // functions passed to student form to update students state
-    // checks both user input and student existing before calling updateUser
     const addStudentToUser = (student) => {
       const student_candidate = {...student, parentUser : user}
       CreateStudent(student_candidate);  
     }
-
-    // functions passed to student form to update students state
-    // const addStudentToUser = (student) => {
-    //   students.forEach((stud) => {
-    //     if (stud.student.id === student.studentid) {
-    //       alert("A Student with this ID is already associated with this user.");
-    //     }
-    //   });
-    //   setStudents((students) => [...students, student]);
-    // };
-
 
     const validate_user_entries = () => {
       if (!user.firstName || !user.lastName){
@@ -451,7 +439,7 @@ export const UserInfo = ({edit}) => {
               id = "input-user"
               type="checkbox"
               disabled = {!editable}
-              value={user.isAdmin}
+              checked={user.isAdmin}
               onInput={(e) => setUser({...user, isAdmin : e.target.checked})}
           />
 
