@@ -166,6 +166,7 @@ export const StudentInfo = ({ edit }) => {
       }
 
       if (fetchedData.data.school) {
+        console.log("School Select Filled")
         setSelectedSchool(fetchedData.data.school);
       }
       if (fetchedData.data.route) {
@@ -323,7 +324,7 @@ export const StudentInfo = ({ edit }) => {
               </Link>{" "}
             </span>
           )}
-          {!user && <span id="input-input-inline-item"> None </span>}
+          {!user && <span id="input-input-inline-item"> None Parent </span>}
         </div>
       )}
 
@@ -385,7 +386,7 @@ export const StudentInfo = ({ edit }) => {
               </Link>{" "}
             </span>
           )}
-          {!selectedRoute && <span id="input-input-inline-item"> None </span>}
+          {!selectedSchool && <span id="input-input-inline-item"> None </span>}
         </div>
       )}
 
