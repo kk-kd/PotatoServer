@@ -4,9 +4,14 @@
   flex-direction: column;
   flex-wrap: wrap;
   width: 90%;
-  flex: 60%
+  flex: 60%;
 }
 
 #schoolStudentListing > * {
   margin: 10px;
+}
+.test-centering {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
