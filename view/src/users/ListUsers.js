@@ -6,7 +6,7 @@ import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { getAllUsers, deleteUser } from "../api/axios_wrapper";
 import { filterAllUsers } from "../api/axios_wrapper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowDown, faArrowUp, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export const ListUsers = () => {
   let navigate = useNavigate();
@@ -88,7 +88,7 @@ export const ListUsers = () => {
         Header: "Administrator",
         accessor: "isAdmin",
         Cell: (props) => {
-          return <label>{props.value.toString()}</label>;
+          return <FontAwesomeIcon icon={props.value ? faCheck : faXmark} size="lg" />;
         },
       },
       {
