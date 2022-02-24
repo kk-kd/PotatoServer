@@ -20,10 +20,10 @@ import { RouteStops } from "../routes/RouteStops";
 import e from "cors";
 
 // this page is the parent view for student detail
-export const ParentStudentInfo = () => {
+export const ParentStudentInfo = ({user}) => {
   const { id } = useParams();
 
-  const [student, setStudent] = useState();
+  const [student, setStudent] = useState()
 
   const [selectedRoute, setSelectedRoute] = useState();
   const [selectedSchool, setSelectedSchool] = useState();
@@ -32,12 +32,8 @@ export const ParentStudentInfo = () => {
    const [ mapReady,  setMapReady ] = useState(false);
    const [ studentLoaded,  setStudentLoaded ] = useState(false);
    const [ mapApi, setMapApi ] = useState();
-   const [ lat, setLat ] = useState();
-   const [ lng, setLng ] = useState();
-   const [ map, setMap ] = useState();
    const [ apiLoaded, setApiLoaded ] = useState(false);
    const [ geocoder, setGeocoder ] = useState();
-   const [ error, setError ] = useState(null);
    const defaultProps = {
        center: {
        lat: 0,
@@ -48,20 +44,26 @@ export const ParentStudentInfo = () => {
 
   let navigate = useNavigate();
 
- 
   const fetchStudentData = async () => {
     try {
       const fetchedData = await getOneStudent(id);
-      setStudent({ ...fetchedData.data, studentid: fetchedData.data.id });
+      const matching_student = user.students.find(student => student.uid == id);
+      if (matching_student) {
+        setStudent({ ...fetchedData.data, studentid: fetchedData.data.id });
 
-      if (fetchedData.data.school) {
-        setSelectedSchool(fetchedData.data.school);
+        if (fetchedData.data.school) {
+          setSelectedSchool(fetchedData.data.school);
+        }
+        if (fetchedData.data.route) {
+          setSelectedRoute(fetchedData.data.route);
+        }
+        console.log(fetchedData.data);
+        updateStudentLoading(fetchedData);
       }
-      if (fetchedData.data.route) {
-        setSelectedRoute(fetchedData.data.route);
-      }
-      console.log(fetchedData.data);
-      updateStudentLoading(fetchedData);
+    else{
+      setStudent()
+    }
+      
     } catch (error) {
       let message = error.response.data;
       throw alert(message);
@@ -72,6 +74,7 @@ export const ParentStudentInfo = () => {
   useEffect(() => {
     fetchStudentData();
   }, []);
+
 
   const updateStudentLoading = (data) => {
     setStudentLoaded(true);
@@ -85,9 +88,9 @@ export const ParentStudentInfo = () => {
   useEffect(() => {
     if ((apiLoaded) && (studentLoaded) && (student.inRangeStops)) {
       setMapReady(true);
-      if (student.parentUser.latitude && student.parentUser.longitude) {
-        let lat_center = student.parentUser.latitude 
-        let lng_center = student.parentUser.longitude
+      if (user.latitude && user.longitude) {
+        let lat_center = user.latitude 
+        let lng_center = user.longitude
         mapApi.map.setCenter({lat: parseFloat(lat_center) , lng: parseFloat(lng_center)});
         mapApi.map.setZoom(16);
       }
@@ -100,6 +103,7 @@ export const ParentStudentInfo = () => {
         {" "}
         {student ? student.firstName : ""} {student ? student.lastName : ""}{" "}
       </h2>
+      {!student ? "Whoops! You do not have access to this student's information. In the case of a mistake, please contact your bus administrator." : ""}
       
       <div>
           {
@@ -107,7 +111,7 @@ export const ParentStudentInfo = () => {
           }
       </div>
 
-    <div id = "main_form"> 
+    {student && <div id = "main_form"> 
     <h5 id = "sub-header"> Student Information </h5>     
       <label id="input-label-student"> First Name: </label>
       <input
@@ -223,7 +227,7 @@ export const ParentStudentInfo = () => {
           <RouteStops data={student.inRangeStops} />
         </div>
       )}
-      </div>
+      </div>}
 
       <div id="map">
             {studentLoaded && <div style={{ height: '50vh', width: '80%', display: "inline-block" }}>
@@ -237,8 +241,8 @@ export const ParentStudentInfo = () => {
                 
                 <Marker
                   text="Your Address"
-                  lat={parseFloat(student.parentUser.latitude)}
-                  lng={parseFloat(student.parentUser.longitude)}
+                  lat={parseFloat(user.latitude)}
+                  lng={parseFloat(user.longitude)}
                   isHome
                 />
                 

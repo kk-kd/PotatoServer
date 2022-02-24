@@ -67,7 +67,7 @@ export const App = () => {
             <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
             <Route
               path="MyStudents/:id"
-              element={<ParentStudentInfo />}
+              element={<ParentStudentInfo user={currentUser} />}
             />
             <Route
               path="MyStudents"
