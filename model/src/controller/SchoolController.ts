@@ -53,6 +53,10 @@ export class SchoolController extends Repository<School> {
         return;
       }
       const pageNum: number = +request.query.page;
+      if (pageNum <= 0) {
+        response.status(401).send("Please specify a positive page number to view results.");
+        return;
+      }
       const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
 
@@ -174,6 +178,16 @@ export class SchoolController extends Repository<School> {
       }
       var queryData = request.body;
       queryData["uniqueName"] = request.body.name.toLowerCase().trim();
+      const reptitiveEntry = await getRepository(School)
+        .createQueryBuilder("schools")
+        .select()
+        .where("schools.uniqueName = :uniqueName", { uniqueName: queryData["uniqueName"] })
+        .getOne();
+
+      if (reptitiveEntry != null) {
+        response.status(401).send("School Name is already taken.");
+        return;
+      }
       return await this.schoolRepository.save(queryData);
     }
     catch (e) {
@@ -190,6 +204,16 @@ export class SchoolController extends Repository<School> {
       const uidNumber = request.params.uid;
       var queryData = request.body;
       queryData["uniqueName"] = request.body.name.toLowerCase().trim();
+      const reptitiveEntry = await getRepository(School)
+        .createQueryBuilder("schools")
+        .select()
+        .where("schools.uniqueName = :uniqueName", { uniqueName: queryData["uniqueName"] })
+        .getOne();
+
+      if (reptitiveEntry != null) {
+        response.status(401).send("School Name is already taken.");
+        return;
+      }
       return await this.schoolRepository.save(queryData);
     }
     catch (e) {
