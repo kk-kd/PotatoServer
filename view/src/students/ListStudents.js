@@ -279,11 +279,11 @@ export const ListStudents = () => {
               setSize(Number(e.target.value));
             }}
             class="form-select"
-            style={{ maxWidth: "13em" }}
+            style={{ maxWidth: "14em" }}
           >
             {[10, 20, 30, 40, 50].map((size) => (
               <option key={size} value={size}>
-                Show {size} out of {total}
+                Show up to {size} out of {total}
               </option>
             ))}
           </select>
