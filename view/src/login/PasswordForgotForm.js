@@ -69,6 +69,6 @@ export const PasswordForgotForm = () => {
 
         
         <button className = "submitbutton" type="button" onClick= {(e) => {handleForgotPasswordFormSubmit(e)}}> {action_text} </button>
-        <button className = "submitbutton" type="button" onClick= {(e) => {navigate('/LogIn');}}> {"Back to Login"} </button>
+       
     </div>
     }

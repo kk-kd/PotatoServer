@@ -88,7 +88,8 @@ export const PasswordResetForm = () => {
         <p> </p>
         <p> </p>
         
-        <button className = "submitbutton" type="button" onClick= {(e) => {handleResetPasswordFormSubmit(e)}}> Send </button>
+        <button className = "submitbutton" type="button" onClick= {(e) => {handleResetPasswordFormSubmit(e)}}> Reset </button>
+        <button className = "submitbutton" type="button" onClick= {(e) => {navigate('/LogIn');}}> {"Back to Login"} </button>
        
     </div>
     }
