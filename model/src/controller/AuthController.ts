@@ -114,7 +114,7 @@ class AuthController {
         from: "Potato Web Service",
         subject: "[Potato] Please set your password",
         html:
-          `<div>Your school admin just made you an account! Please set your password <a href=${link}>here.</a></div>` +
+          `<div>Your school admin just made you an account! Please set your password <a href=${link}>here.</a></div><br>` +
           `<div>If the above link does not work, copy and paste the URL below into your browser:<br>${link}</div>`,
         to: user.email,
       });
@@ -175,7 +175,7 @@ class AuthController {
         from: "Potato Web Service",
         subject: "[Potato] Please reset your password",
         html:
-          `<div> We heard that you lost your password. Please reset your password <a href=${link}>here.</a></div>` +
+          `<div> We heard that you lost your password. Please reset your password <a href=${link}>here.</a></div><br>` +
           `<div>If the above link does not work, copy and paste the URL below into your browser:<br>${link}</div>`,
         to: user.email,
       });
