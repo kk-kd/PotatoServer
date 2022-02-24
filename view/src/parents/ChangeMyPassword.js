@@ -38,9 +38,10 @@ export const ChangeMyPassword = () => {
   };
 
   return (
-    <div className="pass-wrapper">
+    <div id="content" className="core-login-forms-pass">
+      <h2 id="title">Change Password</h2>
       <div className="card border-dark core-login-forms-pass">
-        <div class="card-body">
+        <div class="card-body core-login-forms-pass">
           <form onSubmit={(e) => submitChange(e)}>
             <div class="mb-3">
               <label
@@ -53,7 +54,7 @@ export const ChangeMyPassword = () => {
 
               <input
                 type="password"
-                class="form-control login-input-core"
+                class="form-control"
                 id="exampleInputPassword2"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
@@ -73,7 +74,7 @@ export const ChangeMyPassword = () => {
               </label>
               <input
                 type="password"
-                class="form-control login-input-core"
+                class="form-control"
                 id="exampleInputPassword3"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
@@ -94,7 +95,7 @@ export const ChangeMyPassword = () => {
               </label>
               <input
                 type="password"
-                class="form-control login-input-core"
+                class="form-control"
                 id="exampleInputPassword4"
                 value={newPasswordMatch}
                 onChange={(e) => setNewPasswordMatch(e.target.value)}
@@ -105,7 +106,7 @@ export const ChangeMyPassword = () => {
               </div>
             </div>
             <input
-              className="btn btn-outline-primary"
+              className="btn btn-outline-secondary"
               type="submit"
               value="Submit"
             />

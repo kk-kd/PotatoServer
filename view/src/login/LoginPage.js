@@ -46,10 +46,8 @@ export default function Login({ setLoggedIn }) {
         src={"./cute_potato.png"}
         alt="Cute Potato!"
       />
-      <h2 className="site-title-wrapper">Welcome to Potato Web Service.</h2>
-      <h5 className="site-title-wrapper">
-        Your Premier School Bus Logistics Platform
-      </h5>
+      <h2 className="display-4">Welcome to Potato Web Service.</h2>
+      <h5 className="lead">Your Premier School Bus Logistics Platform</h5>
       <div class="card border-dark core-login-forms">
         <div class="card-body">
           <form onSubmit={handleLoginSubmit}>
@@ -59,7 +57,7 @@ export default function Login({ setLoggedIn }) {
               </label>
               <input
                 type="email"
-                class="form-control login-input-core"
+                class="form-control"
                 id="exampleInputEmail1"
                 aria-describedby="emailHelp"
                 onChange={(e) => setUserName(e.target.value)}
@@ -76,17 +74,17 @@ export default function Login({ setLoggedIn }) {
               </label>
               <input
                 type="password"
-                class="form-control login-Welinput-core"
+                class="form-control"
                 id="exampleInputPassword1"
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <div className="center">
-              <button className="btn btn-outline-primary" type="submit">
+              <button className="btn btn-outline-secondary" type="submit">
                 Submit
               </button>
               <button
-                className="btn btn-outline-primary"
+                className="btn btn-outline-secondary"
                 type="button"
                 onClick={(e) => {
                   navigate("/PasswordForgot/");
