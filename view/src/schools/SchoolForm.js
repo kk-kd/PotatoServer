@@ -51,6 +51,10 @@ export const SchoolForm = () => {
       }
       else if (!addressValid) {
         return {valid: false, error: "Please Validate Address."}
+      } else if (!school.arrivalTime) {
+        return {valid: false, error: "Please provide an arrival time."}
+      } else if (!school.departureTime) {
+        return {valid: false, error: "Please provide a departure time."}
       }
       return {valid: true, error: ''}
   }

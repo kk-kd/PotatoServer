@@ -51,7 +51,10 @@ export const MyStudents = ({ user }) => {
             {data.length === 0 ? (
               <h4>You have no registered child students.</h4>
             ) : (
-              <table {...getTableProps()} class="table table-striped">
+              <table
+                {...getTableProps()}
+                class="table table-striped table-bordered border-success rounded"
+              >
                 <thead class="thead-dark">
                   {headerGroups.map((headerGroup) => (
                     <tr {...headerGroup.getHeaderGroupProps()}>

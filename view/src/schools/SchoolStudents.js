@@ -4,74 +4,83 @@ import { Link } from "react-router-dom";
 import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleExclamation, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleExclamation,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
 export const SchoolStudents = ({ data, routes }) => {
   const columns = useMemo(
-      () => [
-        {
-          Header: 'Name',
-          accessor: 'firstName',
-          Cell: props => (
-              <div>
-                {`${props.value} ${props.row.original.lastName}`}
-              </div>
-          )
-        },
-        {
-          Header: 'ID',
-          accessor: 'id'
-        },
-        {
-          Header: 'Route',
-          accessor: 'route',
-          Cell: (props) => (
-              <div>
-                {props.value ?
-                    <label>
-                      {props.value.name} {props.row.original.inRangeStops.length > 0 || <><FontAwesomeIcon
-                        icon={faCircleExclamation}
-                        size="lg"
-                        style={{ color: "red" }}
-                        data-tip
-                        data-for={`noStopTip${props.row.original.uid}`}
-                    /><ReactTooltip
-                        id={`noStopTip${props.row.original.uid}`}
-                        place="bottom"
-                        effect="solid"
+    () => [
+      {
+        Header: "Name",
+        accessor: "firstName",
+        Cell: (props) => (
+          <div>{`${props.value} ${props.row.original.lastName}`}</div>
+        ),
+      },
+      {
+        Header: "ID",
+        accessor: "id",
+      },
+      {
+        Header: "Route",
+        accessor: "route",
+        Cell: (props) => (
+          <div>
+            {props.value ? (
+              <label>
+                {props.value.name}{" "}
+                {props.row.original.inRangeStops.length > 0 || (
+                  <>
+                    <FontAwesomeIcon
+                      icon={faCircleExclamation}
+                      size="lg"
+                      style={{ color: "red" }}
+                      data-tip
+                      data-for={`noStopTip${props.row.original.uid}`}
+                    />
+                    <ReactTooltip
+                      id={`noStopTip${props.row.original.uid}`}
+                      place="bottom"
+                      effect="solid"
                     >
                       This student does not have an in-range stop.
-                    </ReactTooltip></>}
-                    </label> :
-                    <>
-                    <FontAwesomeIcon
-                        icon={faXmark}
-                        size="lg"
-                        style={{ color: "red" }}
-                        data-tip
-                        data-for={`noRouteTip${props.row.original.uid}`}
-                        /><ReactTooltip
-                            id={`noRouteTip${props.row.original.uid}`}
-                            place="bottom"
-                            effect="solid"
-                        >
-                    This student is not on a route.
                     </ReactTooltip>
-                    </>
-                  }
-              </div>
-          )
+                  </>
+                )}
+              </label>
+            ) : (
+              <>
+                <FontAwesomeIcon
+                  icon={faXmark}
+                  size="lg"
+                  style={{ color: "red" }}
+                  data-tip
+                  data-for={`noRouteTip${props.row.original.uid}`}
+                />
+                <ReactTooltip
+                  id={`noRouteTip${props.row.original.uid}`}
+                  place="bottom"
+                  effect="solid"
+                >
+                  This student is not on a route.
+                </ReactTooltip>
+              </>
+            )}
+          </div>
+        ),
+      },
+      {
+        Header: "Detail Page",
+        accessor: "uid",
+        Cell: (props) => {
+          return <Link to={`/Students/info/${props.value}`}>view</Link>;
         },
-        {
-          Header: "Detail Page",
-          accessor: "uid",
-          Cell: (props) => {
-            return <Link to={`/Students/info/${props.value}`}>view</Link>
-          }
-        }
-      ],
-      []
+      },
+    ],
+    []
   );
 
   const {
@@ -94,32 +103,34 @@ export const SchoolStudents = ({ data, routes }) => {
     usePagination
   );
   return (
-  <div id="schoolStudentListing">
-    {data.length === 0 ? <h5> This school has no students. Create some by clicking <Link to="/Students/create">here.</Link></h5>
-        : <><table {...getTableProps()} style={{ border: 'solid 1px blue' }}>
-      <thead>
-      {headerGroups.map(headerGroup => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map(column => (
-                <th
-                    {...column.getHeaderProps()}
-                    style={{
-                      borderBottom: 'solid 3px red',
-                      background: 'aliceblue',
-                      color: 'black',
-                      fontWeight: 'bold',
-                    }}
-                >
-                  {column.render('Header')}
-                </th>
-            ))}
-          </tr>
-      ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {page.map((row, i) => {
-          prepareRow(row)
-          return (
+    <div id="schoolStudentListing">
+      {data.length === 0 ? (
+        <h5>
+          {" "}
+          This school has no students. Create some by clicking{" "}
+          <Link to="/Students/create">here.</Link>
+        </h5>
+      ) : (
+        <>
+          <table
+            {...getTableProps()}
+            class="table table-striped table-bordered border-success rounded"
+          >
+            <thead>
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps()}>
+                      {column.render("Header")}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {page.map((row, i) => {
+                prepareRow(row);
+                return (
                   <tr {...row.getRowProps()}>
                     {row.cells.map((cell) => {
                       return (
@@ -128,25 +139,44 @@ export const SchoolStudents = ({ data, routes }) => {
                     })}
                   </tr>
                 );
-            })}
-        </tbody>
-        </table>
-          <div className="pagination">
-            <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-              {"<<"}
-            </button>{" "}
-            <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-              {"<"}
-            </button>{" "}
-            <button onClick={() => nextPage()} disabled={!canNextPage}>
-              {">"}
-            </button>{" "}
-            <button
-              onClick={() => gotoPage(pageCount - 1)}
-              disabled={!canNextPage}
-            >
-              {">>"}
-            </button>{" "}
+              })}
+            </tbody>
+          </table>
+          <div className="test-centering">
+            <div class="btn-group" role="group" aria-label="Basic example">
+              <button
+                class="btn btn-secondary"
+                style={{ maxWidth: "5em" }}
+                onClick={() => gotoPage(0)}
+                disabled={!canPreviousPage}
+              >
+                {"<<"}
+              </button>{" "}
+              <button
+                onClick={() => previousPage()}
+                disabled={!canPreviousPage}
+                class="btn btn-secondary"
+                style={{ maxWidth: "5em" }}
+              >
+                {"<"}
+              </button>{" "}
+              <button
+                class="btn btn-secondary"
+                style={{ maxWidth: "5em" }}
+                onClick={() => nextPage()}
+                disabled={!canNextPage}
+              >
+                {">"}
+              </button>{" "}
+              <button
+                class="btn btn-secondary"
+                style={{ maxWidth: "5em" }}
+                onClick={() => gotoPage(pageCount - 1)}
+                disabled={!canNextPage}
+              >
+                {">>"}
+              </button>{" "}
+            </div>
             <span>
               Page{" "}
               <strong>
@@ -173,15 +203,13 @@ export const SchoolStudents = ({ data, routes }) => {
             >
               {[10, 20, 30, 40, 50].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
+                  Show up to {pageSize}
                 </option>
               ))}
             </select>
           </div>
-          
         </>
-        
-      } 
+      )}
     </div>
   );
 };
