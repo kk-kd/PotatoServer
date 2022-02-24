@@ -265,8 +265,9 @@ export const ListStudents = () => {
                 aria-label="Input group example"
                 aria-describedby="btnGroupAddon"
                 defaultValue={page + 1}
+                value={page + 1}
                 onChange={(e) => {
-                  const pagee = e.target.value ? Number(e.target.value) - 1 : 0;
+                  const pagee = e.target.value && Number(e.target.value) > 0 ? Number(e.target.value) - 1 : 0;
                   setPage(pagee);
                 }}
                 style={{ maxWidth: "3em", minWidth: "2em" }}
