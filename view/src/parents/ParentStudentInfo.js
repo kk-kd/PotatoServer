@@ -17,6 +17,7 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { RouteStops } from "../routes/RouteStops";
+import e from "cors";
 
 // this page is the parent view for student detail
 export const ParentStudentInfo = () => {
@@ -84,9 +85,9 @@ export const ParentStudentInfo = () => {
   useEffect(() => {
     if ((apiLoaded) && (studentLoaded) && (student.inRangeStops)) {
       setMapReady(true);
-      if (student.inRangeStops.length !==0) {
-        let lat_center = student.inRangeStops[0].latitude
-        let lng_center = student.inRangeStops[0].longitude
+      if (student.parentUser.latitude && student.parentUser.longitude) {
+        let lat_center = student.parentUser.latitude 
+        let lng_center = student.parentUser.longitude
         mapApi.map.setCenter({lat: parseFloat(lat_center) , lng: parseFloat(lng_center)});
         mapApi.map.setZoom(16);
       }
@@ -233,6 +234,14 @@ export const ParentStudentInfo = () => {
                     yesIWantToUseGoogleMapApiInternals
                     onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
                 >
+                
+                <Marker
+                  text="Your Address"
+                  lat={parseFloat(student.parentUser.latitude)}
+                  lng={parseFloat(student.parentUser.longitude)}
+                  isHome
+                />
+                
                 {
                 student.inRangeStops.map(stop => (
                     <Marker
