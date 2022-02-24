@@ -88,6 +88,10 @@ export class RouteController extends Repository<Route> {
   ) {
     try {
       const pageNum: number = +request.query.page || 0;
+      if (pageNum <= 0) {
+        response.status(401).send("Please specify a positive page number to view results.");
+        return;
+      }
       const takeNum: number = +request.query.size || 10;
       var skipNum = pageNum * takeNum;
       var sortSpecification;

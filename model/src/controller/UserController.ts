@@ -71,6 +71,10 @@ export class UserController extends Repository<User> {
         return;
       }
       const pageNum: number = +request.query.page;
+      if (pageNum <= 0) {
+        response.status(401).send("Please specify a positive page number to view results.");
+        return;
+      }
       const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
 
@@ -159,8 +163,8 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-            response.locals.jwtPayload.uid +
-            " was not found adn could not be deleted."
+          response.locals.jwtPayload.uid +
+          " was not found adn could not be deleted."
         );
       return;
     }
@@ -235,11 +239,11 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User with UID " +
-            request.params.uid +
-            " and details(" +
-            request.body +
-            ") couldn't be updated with error " +
-            e
+          request.params.uid +
+          " and details(" +
+          request.body +
+          ") couldn't be updated with error " +
+          e
         );
       return;
     }
@@ -270,8 +274,8 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-            request.params.uid +
-            " was not found adn could not be deleted."
+          request.params.uid +
+          " was not found adn could not be deleted."
         );
       return;
     }

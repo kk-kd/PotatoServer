@@ -50,6 +50,10 @@ export class StudentController extends Repository<Student> {
   ) {
     try {
       const pageNum: number = +request.query.page;
+      if (pageNum <= 0) {
+        response.status(401).send("Please specify a positive page number to view results.");
+        return;
+      }
       const takeNum: number = +request.query.size;
       var skipNum = pageNum * takeNum;
 
@@ -243,11 +247,11 @@ export class StudentController extends Repository<Student> {
         .status(401)
         .send(
           "Student with UID " +
-            request.params.uid +
-            " and details(" +
-            request.body +
-            ") couldn't be updated with error " +
-            e
+          request.params.uid +
+          " and details(" +
+          request.body +
+          ") couldn't be updated with error " +
+          e
         );
       return;
     }
@@ -272,8 +276,8 @@ export class StudentController extends Repository<Student> {
         .status(401)
         .send(
           "Student UID: " +
-            request.params.uid +
-            " was not found adn could not be deleted."
+          request.params.uid +
+          " was not found adn could not be deleted."
         );
       return;
     }
