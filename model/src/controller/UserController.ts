@@ -225,6 +225,20 @@ export class UserController extends Repository<User> {
         response.status(401).send("Update User: Email validation failed");
         return;
       }
+      const userEmail = request.params.email;
+
+      const reptitiveEntry = await getRepository(User)
+        .createQueryBuilder("users")
+        .select()
+        .where("users.email = :email", { email: userEmail })
+        .getOne();
+
+      console.log(reptitiveEntry);
+
+      if (reptitiveEntry != null) {
+        response.status(401).send("Email is already taken for User.");
+        return;
+      }
 
       const ret = await getConnection()
         .createQueryBuilder()
