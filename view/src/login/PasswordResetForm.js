@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 
 export const PasswordResetForm = () => {
 
-    const action_text =  "Reset Password"
+    const action_text =  "Set Password"
 
     // get token
     const {token} = useParams();
@@ -57,36 +57,39 @@ export const PasswordResetForm = () => {
             throw alert (message);
         }
     
-        alert("Password has been Reset");
+        alert("Password has been Set.");
         navigate('/Login');
       }
     
 
-    return <div id = 'content-reset'>
+    return <div id = 'content'>
        
-        <h1>  {action_text} </h1>
+        <h2 id = "title">  {action_text} </h2>
 
-        <label id = 'input-label-reset' for = "email"> New Password: </label>      
+        <label id = 'input-label-student' for = "email"> New Password: </label>      
         <input
-            id = 'input-input-reset'
+            id = 'input-input-student'
             type="password"
             maxLength="100"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
         />
 
-        <label id = 'input-label-reset' for = "email"> Re-enter Password: </label>      
+        <label id = 'input-label-student' for = "email"> Re-enter Password: </label>      
         <input
-            id = 'input-input-reset'
+            id = 'input-input-student'
             type="password"
             maxLength="100"
             value={passwordValidate}
             onChange={(e) => setPasswordValidate(e.target.value)}
         />
-
-
+        <p> </p>
+        <p> </p>
+        <p> </p>
+        <p> </p>
         
-        <button className = "submitbutton" type="button" onClick= {(e) => {handleResetPasswordFormSubmit(e)}}> {action_text} </button>
+        <button className = "submitbutton" type="button" onClick= {(e) => {handleResetPasswordFormSubmit(e)}}> Set </button>
         <button className = "submitbutton" type="button" onClick= {(e) => {navigate('/LogIn');}}> {"Back to Login"} </button>
+       
     </div>
     }

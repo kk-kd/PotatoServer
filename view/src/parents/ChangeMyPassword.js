@@ -38,10 +38,10 @@ export const ChangeMyPassword = () => {
   };
 
   return (
-    <div id="content" className="core-login-forms-pass">
+    <div id="content">
       <h2 id="title">Change Password</h2>
-      <div className="card border-dark core-login-forms-pass">
-        <div class="card-body core-login-forms-pass">
+      <div >
+        <div style = {{margin: 'auto', width: '70%'}}>
           <form onSubmit={(e) => submitChange(e)}>
             <div class="mb-3">
               <label
@@ -105,11 +105,9 @@ export const ChangeMyPassword = () => {
                 forget it!
               </div>
             </div>
-            <input
-              className="btn btn-outline-secondary"
-              type="submit"
-              value="Submit"
-            />
+            <button
+              type= "submit"
+            > Submit </button>
           </form>
         </div>
       </div>
