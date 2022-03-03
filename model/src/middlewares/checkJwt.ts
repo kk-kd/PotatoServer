@@ -24,7 +24,7 @@ export const checkJwt = (req: Request, res: Response, next: NextFunction) => {
   var newPayload = {
     uid: jwtPayload.uid,
     email: jwtPayload.email,
-    isAdmin: jwtPayload.isAdmin,
+    role: jwtPayload.role,
   };
   var signOptions = {
     issuer: "Potato",

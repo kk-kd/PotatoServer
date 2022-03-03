@@ -4,10 +4,13 @@ import {
   Column,
   OneToOne,
   JoinColumn,
+  JoinTable,
   OneToMany,
+  ManyToMany
 } from "typeorm";
 import { Route } from "./Route";
 import { Student } from "./Student";
+import { User } from "./User";
 
 @Entity({ name: "schools" })
 export class School {
@@ -17,7 +20,7 @@ export class School {
   @Column()
   name: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ unique: true })
   uniqueName: string;
 
   @Column()
@@ -30,22 +33,30 @@ export class School {
   latitude: number;
 
   @OneToMany(() => Student, (student) => student.school, {
-    nullable: true,
     cascade: true,
     eager: true,
   })
   students: Student[];
 
   @OneToMany(() => Route, (route) => route.school, {
-    nullable: true,
     cascade: true,
     eager: true,
   })
   routes: Route[];
 
-  @Column({ type: "time", nullable: true })
+  @ManyToMany(() => User, user => user.attachedSchools, {
+    cascade: true
+  })
+  @JoinTable()
+  staff: User[];
+
+  @Column({
+    type: "time"
+  })
   arrivalTime: string;
 
-  @Column({ type: "time", nullable: true })
+  @Column({
+    type: "time"
+  })
   departureTime: string;
 }
