@@ -24,14 +24,12 @@ export class Route {
   desciption: string;
 
   @Column("text", {
-    nullable: true,
     array: true
   })
   polyline: string[];
 
   @OneToMany(() => Student, (student) => student.route, {
-    cascade: true,
-    nullable: true,
+    cascade: true
   })
   students: Student[];
 
@@ -43,7 +41,6 @@ export class Route {
 
   @OneToMany(() => Stop, (stop) => stop.route, {
     cascade: true,
-    nullable: true,
     eager: true,
   })
   stops: Stop[];

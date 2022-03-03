@@ -34,13 +34,13 @@ class AuthController {
       address,
       longitude,
       latitude,
-      isAdmin,
+      role,
     } = request.body;
-    if (!(email && firstName && lastName && isAdmin != null)) {
+    if (!(email && firstName && lastName && role != null)) {
       response
         .status(401)
         .send(
-          "User Register: email/isAdmin/firstName/lastName is not provided."
+          "User Register: email/role/firstName/lastName is not provided."
         );
       return;
     }
@@ -73,7 +73,7 @@ class AuthController {
     user.address = address;
     user.longitude = longitude;
     user.latitude = latitude;
-    user.isAdmin = isAdmin;
+    user.role = role;
 
     try {
       await userRepository.save(user);
@@ -84,7 +84,7 @@ class AuthController {
     var payload = {
       uid: user.uid,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     };
     var signOptions = {
       issuer: "Potato",
@@ -152,7 +152,7 @@ class AuthController {
     var payload = {
       uid: user.uid,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     };
     var signOptions = {
       issuer: "Potato",
@@ -251,7 +251,7 @@ class AuthController {
     var payload = {
       uid: user.uid,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     };
     var signOptions = {
       issuer: "Potato",
