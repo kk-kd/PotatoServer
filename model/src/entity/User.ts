@@ -17,15 +17,7 @@ export class User {
   email: string;
 
   @Column()
-  firstName: string;
-
-  @Column({
-    nullable: true,
-  })
-  middleName: string;
-
-  @Column()
-  lastName: string;
+  fullName: string;
 
   @Column({
     nullable: true,

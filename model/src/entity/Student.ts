@@ -6,7 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   ManyToMany,
-  JoinTable
+  JoinTable,
 } from "typeorm";
 import { Route } from "./Route";
 import { School } from "./School";
@@ -24,26 +24,24 @@ export class Student {
   id: string;
 
   @Column()
-  firstName: string;
+  fullName: string;
 
-  @Column({
-    nullable: true,
-  })
-  middleName: string;
-
-  @Column()
-  lastName: string;
-
-  @ManyToOne(() => School, school => school.students, { onDelete: "CASCADE" })
+  @ManyToOne(() => School, (school) => school.students, { onDelete: "CASCADE" })
   school: School;
 
-  @ManyToOne(() => Route, route => route.students, { onDelete: "SET NULL", nullable: true, })
+  @ManyToOne(() => Route, (route) => route.students, {
+    onDelete: "SET NULL",
+    nullable: true,
+  })
   route: Route;
 
-  @ManyToOne(() => User, user => user.students, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.students, { onDelete: "CASCADE" })
   parentUser: User;
 
-  @ManyToMany(() => Stop, stop => stop.inRangeStudents, { cascade: true, nullable: true })
+  @ManyToMany(() => Stop, (stop) => stop.inRangeStudents, {
+    cascade: true,
+    nullable: true,
+  })
   @JoinTable()
   inRangeStops: Stop[];
 }

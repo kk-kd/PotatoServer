@@ -26,22 +26,12 @@ var fs = require("fs");
 
 class AuthController {
   static register = async (request: Request, response: Response) => {
-    let {
-      email,
-      firstName,
-      middleName,
-      lastName,
-      address,
-      longitude,
-      latitude,
-      isAdmin,
-    } = request.body;
-    if (!(email && firstName && lastName && isAdmin != null)) {
+    let { email, fullName, address, longitude, latitude, isAdmin } =
+      request.body;
+    if (!(email && fullName && isAdmin != null)) {
       response
         .status(401)
-        .send(
-          "User Register: email/isAdmin/firstName/lastName is not provided."
-        );
+        .send("User Register: email/isAdmin/fullName is not provided.");
       return;
     }
 
@@ -67,9 +57,7 @@ class AuthController {
     const userRepository = getRepository(User);
     user.email = email.toLowerCase();
     user.password = null;
-    user.firstName = firstName;
-    user.middleName = middleName;
-    user.lastName = lastName;
+    user.fullName = fullName;
     user.address = address;
     user.longitude = longitude;
     user.latitude = latitude;

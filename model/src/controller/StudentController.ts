@@ -62,7 +62,7 @@ export class StudentController extends Repository<Student> {
       var sortSpecification;
       var sortDirSpec;
       if (request.query.sort == "none") {
-        sortSpecification = "students.lastName";
+        sortSpecification = "students.fullName";
       } else if (request.query.sort == "school.name") {
         sortSpecification = "school.name";
       } else {
@@ -81,20 +81,20 @@ export class StudentController extends Repository<Student> {
         sortDirSpec = "DESC";
       } else {
         sortDirSpec = "ASC";
-        sortSpecification = "students.lastName";
+        sortSpecification = "students.fullName";
       }
       var filterSpecification;
       filterSpecification = "students." + request.query.sort;
       const queryIdFilter = request.query.idFilter;
-      const queryLastNameFilter = request.query.lastNameFilter;
+      const queryFullNameFilter = request.query.fullNameFilter;
       if (queryIdFilter) {
         if (request.query.showAll && request.query.showAll === "true") {
           var [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
             .orderBy(sortSpecification, sortDirSpec)
             .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
-            .andWhere("students.lastName ilike '%' || :lastName || '%'", {
-              lastName: queryLastNameFilter,
+            .andWhere("students.fullName ilike '%' || :fullName || '%'", {
+              fullName: queryFullNameFilter,
             })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
@@ -110,8 +110,8 @@ export class StudentController extends Repository<Student> {
             .createQueryBuilder("students")
             .orderBy(sortSpecification, sortDirSpec)
             .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
-            .andWhere("students.lastName ilike '%' || :lastName || '%'", {
-              lastName: queryLastNameFilter,
+            .andWhere("students.fullName ilike '%' || :fullName || '%'", {
+              fullName: queryFullNameFilter,
             })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
@@ -130,8 +130,8 @@ export class StudentController extends Repository<Student> {
           const [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
             .orderBy(sortSpecification, sortDirSpec)
-            .where("students.lastName ilike '%' || :lastName || '%'", {
-              lastName: queryLastNameFilter,
+            .where("students.fullName ilike '%' || :fullName || '%'", {
+              fullName: queryFullNameFilter,
             })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
@@ -147,8 +147,8 @@ export class StudentController extends Repository<Student> {
             .createQueryBuilder("students")
             .orderBy(sortSpecification, sortDirSpec)
 
-            .where("students.lastName ilike '%' || :lastName || '%'", {
-              lastName: queryLastNameFilter,
+            .where("students.fullName ilike '%' || :fullName || '%'", {
+              fullName: queryFullNameFilter,
             })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
@@ -290,20 +290,15 @@ export class StudentController extends Repository<Student> {
       .leftJoinAndSelect("students.route", "route")
       .getOne();
   }
-  findByStudentName(firstName: string) {
+  findByStudentName(fullName: string) {
     return this.createQueryBuilder("students")
-      .where("students.firstName = :firstName", { firstName })
+      .where("students.fullName = :fullName", { fullName })
       .getOne();
   }
-  updateStudentName(
-    studentId: number,
-    firstName: string,
-    middleName: string,
-    lastName: string
-  ) {
+  updateStudentName(studentId: number, fullName: string) {
     return this.createQueryBuilder("students")
       .update()
-      .set({ firstName: firstName, middleName: middleName, lastName: lastName })
+      .set({ fullName: fullName })
       .where("students.uid = :uid", { studentId })
       .execute();
   }
