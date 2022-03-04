@@ -26,12 +26,20 @@ var fs = require("fs");
 
 class AuthController {
   static register = async (request: Request, response: Response) => {
-    let { email, fullName, address, longitude, latitude, isAdmin } =
-      request.body;
-    if (!(email && fullName && isAdmin != null)) {
+    let {
+      email,
+      fullName,
+      address,
+      longitude,
+      latitude,
+      role,
+    } = request.body;
+    if (!(email && fullName && role != null)) {
       response
         .status(401)
-        .send("User Register: email/isAdmin/fullName is not provided.");
+        .send(
+          "User Register: email/role/firstName/lastName is not provided."
+        );
       return;
     }
 
@@ -61,7 +69,7 @@ class AuthController {
     user.address = address;
     user.longitude = longitude;
     user.latitude = latitude;
-    user.isAdmin = isAdmin;
+    user.role = role;
 
     try {
       await userRepository.save(user);
@@ -72,7 +80,7 @@ class AuthController {
     var payload = {
       uid: user.uid,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     };
     var signOptions = {
       issuer: "Potato",
@@ -140,7 +148,7 @@ class AuthController {
     var payload = {
       uid: user.uid,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     };
     var signOptions = {
       issuer: "Potato",
@@ -239,7 +247,7 @@ class AuthController {
     var payload = {
       uid: user.uid,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     };
     var signOptions = {
       issuer: "Potato",

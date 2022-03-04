@@ -241,8 +241,8 @@ export class RouteController extends Repository<Route> {
   async saveNewRoute(request: Request, response: Response, next: NextFunction) {
 
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -260,8 +260,8 @@ export class RouteController extends Repository<Route> {
   async updateRoute(request: Request, response: Response, next: NextFunction) {
 
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -283,8 +283,8 @@ export class RouteController extends Repository<Route> {
   async deleteRoute(request: Request, response: Response, next: NextFunction) {
 
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.")
         return;
       }

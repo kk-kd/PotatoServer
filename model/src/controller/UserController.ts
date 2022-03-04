@@ -19,8 +19,8 @@ export class UserController extends Repository<User> {
       // const users = this.userRepository.find();
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -65,8 +65,8 @@ export class UserController extends Repository<User> {
       // const numberOfUsersToSkip = pagesToSkip * pageSize;
       // PAGE STARTS AT 0
 
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -173,8 +173,8 @@ export class UserController extends Repository<User> {
   async oneUser(request: Request, response: Response, next: NextFunction) {
     try {
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -196,8 +196,8 @@ export class UserController extends Repository<User> {
   }
   async saveNewUser(request: Request, response: Response, next: NextFunction) {
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -217,8 +217,8 @@ export class UserController extends Repository<User> {
   async updateUser(request: Request, response: Response, next: NextFunction) {
     try {
       const uidNumber = request.params.uid;
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -273,8 +273,8 @@ export class UserController extends Repository<User> {
       //   return;
       // }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -308,10 +308,10 @@ export class UserController extends Repository<User> {
       .where("users.firstName = :firstName", { firstName })
       .getOne();
   }
-  updateUserName(uid: number, isAdmin: boolean) {
+  updateUserName(uid: number, role: string) {
     return this.createQueryBuilder("users")
       .update()
-      .set({ isAdmin: isAdmin })
+      .set({ role: role })
       .where("users.uid = :uid", { uid })
       .execute();
   }
@@ -326,8 +326,8 @@ export class UserController extends Repository<User> {
 }
 
 function checkIfAdminForPrivileges(response) {
-  const isAdmin = response.locals.jwtPayload.isAdmin;
-  if (!isAdmin) {
+  const role = response.locals.jwtPayload.role;
+  if (!role || role != "Admininstrator") {
     response.status(409).send("User is not an admin.");
     return;
   }

@@ -29,12 +29,12 @@ export class Stop {
   @Column({ type: "time" })
   dropoffTime: string;
 
-  @Column({ type: "decimal", nullable: true })
+  @Column({ type: "decimal" })
   arrivalIndex: number;
 
   @ManyToOne(() => Route, (route) => route.stops, { onDelete: "CASCADE", orphanedRowAction: "delete" })
   route: Route;
 
-  @ManyToMany(() => Student, student => student.inRangeStops, { nullable: true })
+  @ManyToMany(() => Student, student => student.inRangeStops)
   inRangeStudents: Student[];
 }

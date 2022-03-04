@@ -182,9 +182,10 @@ createConnection()
     // newUser.firstName = "Ad";
     // newUser.middleName = "M";
     // newUser.lastName = "in";
+    // newUser.address = "Funky Address";
     // newUser.latitude = 3.28459;
     // newUser.longitude = 171.72426;
-    // newUser.isAdmin = true;
+    // newUser.role = "Admin";
     // await userRepository.save(newUser);
 
     // // Construct basic users and students.
