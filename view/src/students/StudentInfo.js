@@ -53,10 +53,8 @@ export const StudentInfo = ({ edit }) => {
   let navigate = useNavigate();
 
   const validate_student_entries = () => {
-    if (!student.firstName || !student.firstName.trim().length === 0) {
-      return { valid: false, error: "Student First Name Required" };
-    } else if (!student.lastName || !student.lastName.trim().length === 0) {
-      return { valid: false, error: "Student Last Name Required" };
+    if (!student.fullName || !student.fullName.trim().length === 0) {
+      return { valid: false, error: "Student Name Required" };
     } else if (student.studentid && !(Number(student.studentid) > 0)) {
       return { valid: false, error: "Student ID must be a positive number" };
     }
@@ -76,9 +74,7 @@ export const StudentInfo = ({ edit }) => {
     if (valid_results.valid) {
       let form_results = {
         ...student,
-        firstName: student.firstName,
-        middleName: student.middleName,
-        lastName: student.lastName,
+        fullName: student.fullName,
         route: selectedRoute,
         school: selectedSchool,
         parentUser: user,
@@ -135,9 +131,7 @@ export const StudentInfo = ({ edit }) => {
 
   async function UpdateStudent(e) {
     let form_results = {
-      firstName: student.firstName,
-      middleName: student.middleName,
-      lastName: student.lastName,
+      fullName: student.fullName,
       school: selectedSchool,
       id: student.studentid,
       parentUser: user,
@@ -272,34 +266,14 @@ export const StudentInfo = ({ edit }) => {
         )}
       </div>
 
-      <label id="input-label-student"> First Name: </label>
+      <label id="input-label-student"> Name: </label>
       <input
         id="input-input-student"
         disabled={!editable}
         type="text"
         maxLength="100"
-        value={student ? student.firstName : ""}
-        onChange={(e) => setStudent({ ...student, firstName: e.target.value })}
-      />
-
-      <label id="input-label-student"> Middle Name: </label>
-      <input
-        id="input-input-student"
-        disabled={!editable}
-        type="text"
-        maxLength="100"
-        value={student ? student.middleName : ""}
-        onChange={(e) => setStudent({ ...student, middleName: e.target.value })}
-      />
-
-      <label id="input-label-student"> Last Name: </label>
-      <input
-        id="input-input-student"
-        disabled={!editable}
-        type="text"
-        maxLength="100"
-        value={student ? student.lastName : ""}
-        onChange={(e) => setStudent({ ...student, lastName: e.target.value })}
+        value={student ? student.fullName : ""}
+        onChange={(e) => setStudent({ ...student, fullName: e.target.value })}
       />
 
       <label id="input-label-student" for="lastName">
@@ -325,7 +299,7 @@ export const StudentInfo = ({ edit }) => {
               {" "}
               <Link to={"/Users/info/" + user.uid}>
                 {" "}
-                {user.firstName} {user.lastName}
+                {user.fullName}
               </Link>{" "}
             </span>
           )}

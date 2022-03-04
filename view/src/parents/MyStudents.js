@@ -9,12 +9,8 @@ export const MyStudents = ({ user }) => {
   const columns = useMemo(
     () => [
       {
-        Header: "First Name",
-        accessor: "firstName",
-      },
-      {
-        Header: "Last Name",
-        accessor: "lastName",
+        Header: "Name",
+        accessor: "fullName",
       },
       {
         Header: "School",

@@ -106,8 +106,8 @@ export class UserController extends Repository<User> {
           .where("users.email ilike '%' || :email || '%'", {
             email: queryFilterData,
           })
-          .andWhere("users.lastName ilike '%' || :lastName || '%'", {
-            lastName: queryFilterType,
+          .andWhere("users.fullName ilike '%' || :fullName || '%'", {
+            fullName: queryFilterType,
           })
           .leftJoinAndSelect("users.students", "student")
           .getManyAndCount();
@@ -125,8 +125,8 @@ export class UserController extends Repository<User> {
           .where("users.email ilike '%' || :email || '%'", {
             email: queryFilterData,
           })
-          .andWhere("users.lastName ilike '%' || :lastName || '%'", {
-            lastName: queryFilterType,
+          .andWhere("users.fullName ilike '%' || :fullName || '%'", {
+            fullName: queryFilterType,
           })
           .leftJoinAndSelect("users.students", "student")
           .getManyAndCount();
@@ -184,6 +184,7 @@ export class UserController extends Repository<User> {
         .leftJoinAndSelect("users.students", "students")
         .leftJoinAndSelect("students.route", "route")
         .leftJoinAndSelect("students.inRangeStops", "stops")
+        .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;

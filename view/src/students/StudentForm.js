@@ -38,8 +38,8 @@ export const StudentForm = ({addStudentToUser}) => {
     let navigate = useNavigate(); 
 
     const validate_student_entries = () => {
-        if (!student.firstName || !student.lastName){
-            return {valid: false, error: 'Student First and Last Name Required'}
+        if (!student.fullName){
+            return {valid: false, error: 'Student Name Required'}
         }
         else if (student.studentid && !(Number(student.studentid) > 0)) {
           return {valid: false, error: "Student ID must be a positive number"}
@@ -60,9 +60,7 @@ export const StudentForm = ({addStudentToUser}) => {
             if (addStudentToUser) {
                 console.log("Adding Student to User");
                 let form_results = {
-                  firstName: student.firstName,
-                  middleName: student.middleName,
-                  lastName: student.lastName,
+                  fullName: student.fullName,
                   school: selectedSchool, 
                   id: student.studentid,
                   // route: selectedRoute
@@ -82,9 +80,7 @@ export const StudentForm = ({addStudentToUser}) => {
     
     async function CreateStudent (e) {
         let form_results = {
-          firstName: student.firstName,
-          middleName: student.middleName,
-          lastName: student.lastName,
+          fullName: student.fullName,
           school: selectedSchool, 
           id: student.studentid,
           parentUser: user
@@ -158,32 +154,14 @@ export const StudentForm = ({addStudentToUser}) => {
         {addStudentToUser && <h4 id = 'subtitle'> {action_text} </h4>}
         {!addStudentToUser && <h2 id = 'title'>  {action_text} </h2>}
 
-        <label id = 'input-label-student'> First Name: </label>      
+        <label id = 'input-label-student'> Name: </label>
         <input
             id = 'input-input-student'
             type="text"
             maxLength="100"
-            value={student.firstName}
-            onChange={(e) => setStudent({...student, firstName : e.target.value})}
+            value={student.fullName}
+            onChange={(e) => setStudent({...student, fullName : e.target.value})}
         />
-
-        <label id = 'input-label-student'> Middle Name: </label>      
-        <input
-            id = 'input-input-student'
-            type="text"
-            maxLength="100"
-            value={student.middleName}
-            onChange={(e) => setStudent({...student, middleName : e.target.value})}
-        />
-
-        <label id = 'input-label-student' > Last Name: </label>      
-        <input
-            id = 'input-input-student'
-            type="text"
-            maxLength="100"
-            value={student.lastName}
-            onChange={(e) => setStudent({...student, lastName : e.target.value})}
-        /> 
 
         <label id = 'input-label-student' for = "lastName"> Student ID: </label>     
         <input 
