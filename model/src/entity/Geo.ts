@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm";
 
 @Entity({ name: "geo" })
 @Unique(["address"])
-export class User {
+export class Geo {
   @PrimaryGeneratedColumn()
   uid: number;
 
@@ -19,6 +19,6 @@ export class User {
   })
   latitude: number;
 
-  @Column({ type: "time" })
+  @Column({ type: "timestamptz" })
   timeCreated: string;
 }
