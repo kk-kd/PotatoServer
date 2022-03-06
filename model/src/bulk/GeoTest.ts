@@ -1,6 +1,7 @@
 import { createConnection, getConnection, getRepository } from "typeorm";
 import { Geo } from "../entity/Geo";
 import { getLngLat } from "./GeoHelper";
+import PQueue from "p-queue";
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
 const databaseTest = async () => {
@@ -54,9 +55,22 @@ const bulkCalling = async () => {
     "3027 Badger Drive, Pleasanton, CA 94566",
   ];
 
-  addressIter.map(async (addr) => {
-    console.log(await getLngLat(addr));
-  });
+  var res: Array<object> = [];
+
+  console.log("Start: " + Date.now());
+  const q = new PQueue({ intervalCap: 2, interval: 1000 });
+  for (const addr of addressIter) {
+    await q.add(async () => {
+      res.push(await getLngLat(addr));
+    });
+  }
+  console.log("End: " + Date.now());
+
+  // addressIter.map(async (addr) => {
+  //   console.log(await getLngLat(addr));
+  // });
+  console.log(res);
+  console.log("Return: " + Date.now());
 };
 
 bulkCalling().then(() => {
