@@ -1,8 +1,9 @@
 import { createConnection, getConnection, getRepository } from "typeorm";
 import { Geo } from "../entity/Geo";
-require("dotenv").config({ path: `../.env.${process.env.NODE_ENV}` });
+import { getLngLat } from "./GeoHelper";
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
-const test = async () => {
+const databaseTest = async () => {
   const getLoc = async (timeCreated: string) => {
     return await getRepository(Geo).findOne({
       where: { timeCreated: timeCreated },
@@ -36,9 +37,28 @@ const test = async () => {
   // const timeC = await saveNewLoc();
   // console.log("NewLoc: " + timeC);
   // console.log("getLoc: " + (await getLoc(timeC)));
-  getTimeDiff();
+  // getTimeDiff();
 };
 
-test().then(() => {
+const bulkCalling = async () => {
+  await createConnection();
+  const addressIter: string[] = [
+    "4500 Margalo Avenue, Bakersfield, CA 93313",
+    "7800 River Mist Avenue, Bakersfield, CA 93313",
+    "21950 Arnold Center Road, Carson, CA 90810",
+    "10202 Vista Drive, Cupertino, CA 95014",
+    "5397 Wentworth Avenue, Oakland, CA 94601",
+    "2708 Mabel Street, Berkeley, CA 94702",
+    "26466 Mockingbird Lane, Hayward, CA 94544",
+    "2443 Sierra Nevada Road, Mammoth Lakes, CA 93546",
+    "3027 Badger Drive, Pleasanton, CA 94566",
+  ];
+
+  addressIter.map(async (addr) => {
+    console.log(await getLngLat(addr));
+  });
+};
+
+bulkCalling().then(() => {
   console.log("done");
 });
