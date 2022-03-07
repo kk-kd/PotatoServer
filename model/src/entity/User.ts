@@ -33,12 +33,12 @@ export class User {
   address: string;
 
   @Column({
-    type: "decimal"
+    type: "decimal",
   })
   longitude: number;
 
   @Column({
-    type: "decimal"
+    type: "decimal",
   })
   latitude: number;
 
@@ -54,11 +54,14 @@ export class User {
   })
   students: Student[];
 
-  @ManyToMany(() => School, school => school.staff)
+  @ManyToMany(() => School, (school) => school.staff)
   attachedSchools: School[];
 
   @Column({
     nullable: true,
   })
   confirmationCode: string;
+
+  @Column({ nullable: true })
+  phoneNumber: string;
 }
