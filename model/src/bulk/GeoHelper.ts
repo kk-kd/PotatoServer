@@ -2,7 +2,7 @@ import { getConnection, getRepository } from "typeorm";
 import { Geo } from "../entity/Geo";
 import fetch from "node-fetch";
 
-const EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+const EXPIRATION_TIME = 3 * 24 * 60 * 60 * 1000;
 
 export const getLngLat = async (address: string) => {
   const geoRepository = getRepository(Geo);
