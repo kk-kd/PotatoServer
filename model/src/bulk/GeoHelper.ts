@@ -13,35 +13,46 @@ export const getLngLat = async (address: string) => {
 
   const currentTime = new Date();
 
-  if (existingEntry != undefined) {
-    if (
-      currentTime.getTime() - new Date(existingEntry.timeCreated).getTime() <
-      EXPIRATION_TIME
-    ) {
-      console.log("Fetched from database.");
-      return {
-        longitude: existingEntry.longitude,
-        latitude: existingEntry.latitude,
-      };
-    } else {
-      await geoRepository.delete(existingEntry.uid);
+  try {
+    if (existingEntry != undefined) {
+      if (
+        currentTime.getTime() - new Date(existingEntry.timeCreated).getTime() <
+        EXPIRATION_TIME
+      ) {
+        console.log("Fetched from database.");
+        return {
+          longitude: existingEntry.longitude,
+          latitude: existingEntry.latitude,
+        };
+      } else {
+        await geoRepository.delete(existingEntry.uid);
+      }
     }
+  } catch (error) {
+    console.log(error);
+    throw "Failed to fetch address from cache.";
   }
-
   var newLoc = new Geo();
   newLoc.address = address;
   newLoc.timeCreated = currentTime.toISOString();
 
-  const response = await fetch(
-    `https://maps.googleapis.com/maps/api/geocode/json?address=${address
-      .split(" ")
-      .join("+")}&key=${process.env.GOOGLE_MAP_API_KEY}`
-  );
-  const data = await response.json();
-  // console.log(data);
-  newLoc.longitude = data.results[0].geometry.location.lng;
-  newLoc.latitude = data.results[0].geometry.location.lat;
-  await getConnection().manager.save(newLoc);
+  try {
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${address
+        .split(" ")
+        .join("+")}&key=${process.env.GOOGLE_MAP_API_KEY}`
+    );
+    const data = await response.json();
+    // console.log(data);
+    newLoc.longitude = data.results[0].geometry.location.lng;
+    newLoc.latitude = data.results[0].geometry.location.lat;
+    await getConnection().manager.save(newLoc);
+  } catch (error) {
+    console.log(
+      `Google Map Address Fetch Failed: ${error.name}, ${error.message}`
+    );
+    throw "Failed to fetch address from google api";
+  }
 
   console.log("Called Google.");
   return {
