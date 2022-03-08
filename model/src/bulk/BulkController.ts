@@ -23,7 +23,7 @@ import { getLngLat } from "./GeoHelper";
  * {
  * index: ...,
  * email: ...,
- * name:  ...,
+ * fullName:  ...,
  * address: ...,
  * phone_number: ... },
  * {},
@@ -33,7 +33,7 @@ import { getLngLat } from "./GeoHelper";
  * {
  * index: ...,
  * email: ...,
- * name:  ...,
+ * fullName:  ...,
  * address: ...,
  * phone_number: ...,
  * error_code: [..., ...],
@@ -85,9 +85,9 @@ export class BulkController {
 
       // 2 - Name Validation
       if (
-        user.name == null ||
-        user.name == undefined ||
-        user.name.trim() == ""
+        user.fullName == null ||
+        user.fullName == undefined ||
+        user.fullName.trim() == ""
       ) {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           2
