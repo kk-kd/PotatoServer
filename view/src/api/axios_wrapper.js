@@ -338,6 +338,15 @@ export async function forgetPassword(specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+
+export async function validateBulkParents(specifications) {
+  return (
+    await axios.post("/api/bulk/users/validate", specifications),
+    {
+      headers: getHeaderWithAuthToken(),
+    }
+  );
+}
 // Helpers
 function convertMapToURL(map) {
   return Object.keys(map)

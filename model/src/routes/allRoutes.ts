@@ -4,6 +4,7 @@ import { RouteController } from "../controller/RouteController";
 import { SchoolController } from "../controller/SchoolController";
 import { EmailController } from "../mailer/EmailController";
 import { StopController } from "../controller/StopController";
+import { BulkController } from "../bulk/BulkController";
 
 /*
 
@@ -391,5 +392,13 @@ export const allRoutes = [
     route: "/api/email/route/route",
     controller: EmailController,
     action: "sendRouteAnnouncementToUsersOnRoute",
+  },
+
+  // Bulk
+  {
+    method: "post",
+    route: "/api/bulk/users/validate",
+    controller: BulkController,
+    action: "validateUsers",
   },
 ];
