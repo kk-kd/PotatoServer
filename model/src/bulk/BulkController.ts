@@ -58,7 +58,7 @@ export class BulkController {
 
     let locationPromises = [];
     let existingEmailsInRequest = new Set<string>();
-    let reptitieEmailsInRequest = new Set<string>();
+    let reptitiveEmailsInRequest = new Set<string>();
     let emailIdxPair = {};
 
     let returnedUsers = { users: [] };
@@ -105,7 +105,7 @@ export class BulkController {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           3
         );
-        userToReturn = { ...userToReturn, hint_uids: [reptitiveEntry.uid] };
+        userToReturn.hint_uids = [reptitiveEntry.uid];
       }
 
       // 4 - repetitive emails in the form, details added later
@@ -113,7 +113,7 @@ export class BulkController {
         user.index
       );
       if (existingEmailsInRequest.has(user.email)) {
-        reptitieEmailsInRequest.add(user.email);
+        reptitiveEmailsInRequest.add(user.email);
       } else {
         existingEmailsInRequest.add(user.email);
       }
@@ -155,12 +155,23 @@ export class BulkController {
         );
       }
 
-      // 0 - Success
-      if (userToReturn["error_code"] == null) {
-        userToReturn["error_code"] = [0];
-      }
       returnedUsers.users.push(userToReturn);
     }
+
+    returnedUsers.users.forEach((user) => {
+      if (reptitiveEmailsInRequest.has(user.email)) {
+        (user["error_code"] ?? (user["error_code"] = [])).push(4);
+        user.hint_indices = [...emailIdxPair[user.email]];
+        console.log(user.hint_indices);
+        user.hint_indices.splice(user.hint_indices.indexOf(user.index), 1);
+        console.log(user.hint_indices);
+      }
+
+      // 0 - Success
+      if (user["error_code"] == null) {
+        user["error_code"] = [0];
+      }
+    });
 
     response.status(200).send(returnedUsers);
   };
