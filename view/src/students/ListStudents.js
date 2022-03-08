@@ -19,10 +19,10 @@ export const ListStudents = () => {
   const [total, setTotal] = useState(1);
   const [size, setSize] = useState(10);
   const [showAll, setShowAll] = useState(false);
-  const [sortBy, setSortBy] = useState("none");
-  const [sortDirec, setSortDirec] = useState("none");
+  const [sortBy, setSortBy] = useState("fullName");
+  const [sortDirec, setSortDirec] = useState("ASC");
   const [idFilter, setIdFilter] = useState("");
-  const [lastNameFilter, setLastNameFilter] = useState("");
+  const [fullNameFilter, setFullNameFilter] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,7 +31,7 @@ export const ListStudents = () => {
           size: size,
           sort: sortBy,
           sortDir: sortDirec,
-          lastNameFilter: lastNameFilter,
+          fullNameFilter: fullNameFilter,
           idFilter: idFilter,
           showAll: showAll,
         });
@@ -43,20 +43,18 @@ export const ListStudents = () => {
       }
     };
     fetchData();
-  }, [page, size, sortDirec, idFilter, lastNameFilter, showAll]);
+  }, [page, size, sortDirec, idFilter, fullNameFilter, showAll]);
 
   const nextSort = (id) => {
     if (sortBy !== id) {
       setSortBy(id);
-      if (sortDirec === "none" || sortDirec === "DESC") {
+      if (sortDirec === "DESC") {
         setSortDirec("ASC");
       } else {
         setSortDirec("DESC");
       }
     } else if (sortDirec === "ASC") {
       setSortDirec("DESC");
-    } else if (sortDirec === "DESC") {
-      setSortDirec("none");
     } else {
       setSortDirec("ASC");
     }
@@ -65,16 +63,8 @@ export const ListStudents = () => {
   const columns = useMemo(
     () => [
       {
-        Header: "First Name",
-        accessor: "firstName",
-      },
-      {
-        Header: "Middle Name",
-        accessor: "middleName",
-      },
-      {
-        HeaderName: "Last Name",
-        accessor: "lastName",
+        HeaderName: "Name",
+        accessor: "fullName",
       },
       {
         HeaderName: "ID",
@@ -162,7 +152,7 @@ export const ListStudents = () => {
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th {...column.getHeaderProps()}>
-                    {column.id === "lastName" ||
+                    {column.id === "fullName" ||
                     column.id === "id" ||
                     column.id === "school.name" ? (
                       <div>
@@ -186,7 +176,7 @@ export const ListStudents = () => {
                             setFilter={
                               column.id === "id"
                                 ? setIdFilter
-                                : setLastNameFilter
+                                : setFullNameFilter
                             }
                           />
                         )}

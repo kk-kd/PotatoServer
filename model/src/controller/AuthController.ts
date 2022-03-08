@@ -18,7 +18,7 @@ schema
   .has()
   .lowercase() // Must have lowercase letters
   .has()
-  .digits(2) // Must have at least 2 digits
+  .digits(1) // Must have at least 2 digits
   .has()
   .not()
   .spaces(); // Should not have spaces
@@ -28,15 +28,14 @@ class AuthController {
   static register = async (request: Request, response: Response) => {
     let {
       email,
-      firstName,
-      middleName,
-      lastName,
+      fullName,
       address,
       longitude,
       latitude,
       role,
+      attachedSchools
     } = request.body;
-    if (!(email && firstName && lastName && role != null)) {
+    if (!(email && fullName && role != null)) {
       response
         .status(401)
         .send(
@@ -67,13 +66,12 @@ class AuthController {
     const userRepository = getRepository(User);
     user.email = email.toLowerCase();
     user.password = null;
-    user.firstName = firstName;
-    user.middleName = middleName;
-    user.lastName = lastName;
+    user.fullName = fullName;
     user.address = address;
     user.longitude = longitude;
     user.latitude = latitude;
     user.role = role;
+    user.attachedSchools = attachedSchools;
 
     try {
       await userRepository.save(user);

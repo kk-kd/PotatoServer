@@ -30,7 +30,7 @@ export const SelectableMarker = ({ students, onCurrentRoute, notOnRoute, selectR
         >
           <p>Students at this location:</p>
           {students.map(student => (
-              <p>{`${student.firstName} ${student.lastName}`}</p>
+              <p>{student.fullName}</p>
           ))}
         </ReactTooltip>
       </>

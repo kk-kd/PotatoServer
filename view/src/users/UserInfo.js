@@ -40,9 +40,7 @@ export const UserInfo = ({edit}) => {
 
     // user 
     const [user, setUser] = useState({
-      firstName: '', 
-      middleName: '', 
-      lastName:'',
+      fullName: '',
       isAdmin: false, 
       address: '', 
     });
@@ -78,7 +76,7 @@ export const UserInfo = ({edit}) => {
     }
 
     const validate_user_entries = () => {
-      if (!user.firstName || !user.lastName){
+      if (!user.fullName){
           return {valid: false, error: 'User First Name and Last Name Required'}
       }
       else if (!user.email) {
@@ -111,9 +109,7 @@ export const UserInfo = ({edit}) => {
        
         let form_results = {
           email: user.email.toLowerCase(),
-          firstName: user.firstName,
-          middleName: user.middleName,
-          lastName: user.lastName,
+          fullName: user.fullName,
           address: user.address,
           isAdmin: user.isAdmin,
           latitude: lat,
@@ -279,16 +275,8 @@ export const UserInfo = ({edit}) => {
     const columns = useMemo(
       () => [
         {
-          Header: "First Name",
-          accessor: "firstName",
-        },
-        {
-          Header: "Middle Name",
-          accessor: "middleName",
-        },
-        {
-          Header: "Last Name",
-          accessor: "lastName",
+          Header: "Name",
+          accessor: "fullName",
         },
         {
           Header: "ID",
@@ -383,34 +371,14 @@ export const UserInfo = ({edit}) => {
         {/* <Divider id = 'divider'>Information {editable}</Divider> */}
         <h5 id = "sub-header"> Information </h5>
 
-          <label id = "label-user"> First Name </label> 
+          <label id = "label-user"> Name </label>
           <input
               id = "input-user"
               type="text"
               maxLength="100"
               disabled = {!editable}
-              value={user.firstName}
-              onChange={(e) => setUser({...user, firstName : e.target.value})}
-          />
-              
-          <label id = "label-user"> Middle Name </label>
-          <input
-              id = "input-user"
-              maxLength="100"
-              disabled = {!editable}
-              type="text"
-              value={user.middleName}
-              onChange={(e) => setUser({...user, middleName : e.target.value})}
-          />
-  
-          <label id = "label-user"> Last Name </label>
-          <input
-              id = "input-user"
-              maxLength="100"
-              disabled = {!editable}
-              type="text"
-              value={user.lastName}
-              onChange={(e) => setUser({...user, lastName : e.target.value})}
+              value={user.fullName}
+              onChange={(e) => setUser({...user, fullName : e.target.value})}
           />
     
           <label id = "label-user"> Email </label>
@@ -434,13 +402,13 @@ export const UserInfo = ({edit}) => {
               onChange={(e) => {setUser({...user, address: e.target.value}); setAddressValid(false); }} 
           />
           
-          <label id = "label-user"> Admin </label>
+          <label id = "label-user"> Role </label>
           <input
               id = "input-user"
-              type="checkbox"
-              disabled = {!editable}
-              defaultChecked={user.isAdmin}
-              onInput={(e) => setUser({...user, isAdmin : e.target.checked})}
+              maxLength="100"
+              disabled = {true}
+              type="text"
+              value={user.role}
           />
 
           <p> </p>
