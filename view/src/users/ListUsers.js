@@ -19,8 +19,8 @@ export const ListUsers = () => {
   const [total, setTotal] = useState(1);
   const [size, setSize] = useState(10);
   const [showAll, setShowAll] = useState(false);
-  const [sortBy, setSortBy] = useState("none");
-  const [sortDirec, setSortDirec] = useState("none");
+  const [sortBy, setSortBy] = useState("email");
+  const [sortDirec, setSortDirec] = useState("ASC");
   const [emailFilter, setEmailFilter] = useState("");
   const [lastNameFilter, setLastNameFilter] = useState("");
 
@@ -48,15 +48,13 @@ export const ListUsers = () => {
   const nextSort = (id) => {
     if (sortBy !== id) {
       setSortBy(id);
-      if (sortDirec === "none" || sortDirec === "DESC") {
-        setSortDirec("ASC");
-      } else {
+      if (sortDirec === "ASC") {
         setSortDirec("DESC");
+      } else {
+        setSortDirec("ASC");
       }
     } else if (sortDirec === "ASC") {
       setSortDirec("DESC");
-    } else if (sortDirec === "DESC") {
-      setSortDirec("none");
     } else {
       setSortDirec("ASC");
     }
@@ -69,27 +67,16 @@ export const ListUsers = () => {
         accessor: "email",
       },
       {
-        Header: "First Name",
-        accessor: "firstName",
-      },
-      {
-        Header: "Middle Name",
-        accessor: "middleName",
-      },
-      {
-        HeaderName: "Last Name",
-        accessor: "lastName",
+        HeaderName: "Name",
+        accessor: "fullName",
       },
       {
         Header: "Address",
         accessor: "address",
       },
       {
-        Header: "Administrator",
-        accessor: "isAdmin",
-        Cell: (props) => {
-          return <FontAwesomeIcon icon={props.value ? faCheck : faXmark} size="lg" />;
-        },
+        Header: "Role",
+        accessor: "role",
       },
       {
         Header: "Students",
@@ -142,7 +129,7 @@ export const ListUsers = () => {
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th {...column.getHeaderProps()}>
-                    {column.id === "email" || column.id === "lastName" ? (
+                    {column.id === "email" || column.id === "fullName" ? (
                       <div>
                         <label
                           onClick={() => {

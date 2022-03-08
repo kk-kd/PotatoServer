@@ -10,6 +10,8 @@ import { StudentForm } from "../students/StudentForm";
 
 
 import * as React from 'react';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -33,15 +35,19 @@ export const UserForm = () => {
 
     // user 
     const [user, setUser] = useState({
-      firstName: '', 
-      middleName: '', 
-      lastName:'',
+      name: '',
       isAdmin: false, 
-      address: '', 
+      address: '',
+      role: "None",
+      attachedSchools: []
     });
 
     const [students, setStudents] = useState([]); 
     const [addressValid, setAddressValid] = useState(false);
+
+    const [addSchool, setAddSchool] = useState(false);
+    const [schoolFilter, setSchoolFilter] = useState("");
+    const [filteredDataSchool, setFilteredDataSchool] = useState([]);
 
     // show student form 
     const [makeStudent, setMakeStudent] = useState(false);
@@ -69,8 +75,8 @@ export const UserForm = () => {
     }
 
     const validate_user_entries = () => {
-      if (!user.firstName || !user.lastName){
-          return {valid: false, error: 'User First Name and Last Name Required'}
+      if (!user.fullName){
+          return {valid: false, error: 'User Name Required'}
       }
       else if (!user.email) {
         return {valid: false, error:"Please provide a user email"}
@@ -83,6 +89,30 @@ export const UserForm = () => {
       }
       return {valid: true, error: ''}
   }
+
+  useEffect(() => {
+    const fetchFilteredDataSchool = async () => {
+
+      try {
+        const fetchedDataSchool = await filterAllSchools({
+          page: 0,
+          size: 10,
+          sort: 'name',
+          sortDir: "ASC",
+          filterType: '',
+          filterData: schoolFilter
+        });
+        setFilteredDataSchool(fetchedDataSchool.data.schools);
+
+      } catch (error) {
+        alert(error.response.data);
+      }
+    }
+    if (schoolFilter) {
+      fetchFilteredDataSchool();
+    }
+
+  }, [schoolFilter])
   
 
     const handleUserFormSubmit = (e) => {
@@ -101,11 +131,10 @@ export const UserForm = () => {
        
         let form_results = {
           email: user.email.toLowerCase(),
-          firstName: user.firstName,
-          middleName: user.middleName,
-          lastName: user.lastName,
+          fullName: user.fullName,
           address: user.address,
-          isAdmin: user.isAdmin,
+          role: user.role,
+          attachedSchools: user.attachedSchools,
           latitude: lat,
           longitude: lng
         }
@@ -201,31 +230,13 @@ export const UserForm = () => {
               
           <h5 id = "sub-header"> Information </h5>
 
-          <label id = 'label-user'> First Name </label> 
+          <label id = 'label-user'> Name </label>
           <input
               id = "input-user"
               type="text"
               maxLength="100"
-              value={user.firstName}
-              onChange={(e) => setUser({...user, firstName : e.target.value})}
-          />
-              
-          <label  id = 'label-user' > Middle Name </label>
-          <input
-              id = "input-user"
-              maxLength="100"
-              type="text"
-              value={user.middleName}
-              onChange={(e) => setUser({...user, middleName : e.target.value})}
-          />
-  
-          <label  id = 'label-user'> Last Name </label>
-          <input
-              id = "input-user"
-              maxLength="100"
-              type="text"
-              value={user.lastName}
-              onChange={(e) => setUser({...user, lastName : e.target.value})}
+              value={user.fullName}
+              onChange={(e) => setUser({...user, fullName : e.target.value})}
           />
     
           <label  id = 'label-user'> Email </label>
@@ -247,13 +258,80 @@ export const UserForm = () => {
               onChange={(e) => {setUser({...user, address: e.target.value}); setAddressValid(false); }} 
           />
           
-          <label  id = 'label-user'> Admin </label>
-          <input
+          <label  id = 'label-user'> Role </label>
+          <select
               id = "input-user"
-              type="checkbox"
-              value={user.isAdmin}
-              onInput={(e) => setUser({...user, isAdmin : e.target.checked})}
-          />
+              value={user.role}
+              onChange={(e) => setUser({...user, role : e.target.value})}
+          >
+            <option value="None">None</option>
+            <option value="Driver">Driver</option>
+            <option value="School Staff">School Staff</option>
+            <option value="Admin">Admin</option>
+          </select>
+
+          {user.role === "School Staff" && <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto', marginTop: '10px'}}>
+            <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}
+            >
+              {user.attachedSchools.map(school => {
+                const labelId = `checkbox-list-secondary-label-${school.uid}`;
+                return (
+                    <ListItem
+                        key={school.uid}
+
+                        secondaryAction={
+                          <IconButton aria-label="delete" style={{backgroundColor: 'transparent'}}>
+                            <DeleteIcon onClick = {(e) => {
+                              setUser({...user, attachedSchools: user.attachedSchools.filter(s => s.uid !== school.uid)});
+                            }}/>
+                          </IconButton>
+                        }
+                        disablePadding
+                    >
+                      <ListItemText id={labelId} primary={school.name} />
+                    </ListItem>
+                );
+              })}
+
+              <ListItem
+                  key={'-1'}
+                  disablePadding
+              >
+                <ListItemButton
+                    onClick = {(e) => {setAddSchool(true);}}>
+                  <PersonAddIcon />
+                  <ListItemText primary={"Add New School"} />
+                </ListItemButton>
+              </ListItem>
+
+            </List>
+          </Box>}
+
+          {addSchool && <Autocomplete
+              sx = {{paddingTop: '20px', paddingBottom: '10px', width: '49%', margin: 'auto', marginRight: '23%',}}
+              options={filteredDataSchool}
+              freeSolo
+              renderInput={params => (
+                  <TextField {...params} label="School"  variant="standard"
+
+                  />
+              )}
+              getOptionLabel={option => option.name}
+
+              noOptionsText = {"Type to Search"}
+              onInputChange = {(e) => {
+                setSchoolFilter(e.target.value);}
+              }
+
+              onChange={(_event, newSchool) => {
+                if (!user.attachedSchools.some(school => school.uid === newSchool.uid)) {
+                  setUser({...user, attachedSchools: [...user.attachedSchools, newSchool]});
+                }
+                setAddSchool(false);
+                setSchoolFilter("");
+              }}
+
+          />}
 
 
           <p> </p>
@@ -281,7 +359,7 @@ export const UserForm = () => {
                     >
                     <ListItemButton onClick = {(e) => {setSelectedStudent(student)}}>
                         <PersonIcon> </PersonIcon>
-                        <ListItemText id={labelId} primary={student.firstName + " " + student.lastName} />
+                        <ListItemText id={labelId} primary={student.fullName} />
                     </ListItemButton>
                     </ListItem>
                     );

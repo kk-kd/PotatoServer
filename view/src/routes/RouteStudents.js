@@ -12,10 +12,10 @@ export const RouteStudents = ({ data, routes }) => {
       () => [
         {
           Header: 'Name',
-          accessor: 'firstName',
+          accessor: 'fullName',
           Cell: props => (
               <label>
-                <Link to={`/Students/info/${props.row.original.uid}`}>{`${props.value} ${props.row.original.lastName}`}</Link>
+                <Link to={`/Students/info/${props.row.original.uid}`}>{props.value}</Link>
                 {(props.row.original.inRangeStops && props.row.original.inRangeStops.length > 0) || <><FontAwesomeIcon
                     icon={faCircleExclamation}
                     size="lg"

@@ -15,10 +15,7 @@ export const SchoolStudents = ({ data, routes }) => {
     () => [
       {
         Header: "Name",
-        accessor: "firstName",
-        Cell: (props) => (
-          <div>{`${props.value} ${props.row.original.lastName}`}</div>
-        ),
+        accessor: "fullName",
       },
       {
         Header: "ID",
