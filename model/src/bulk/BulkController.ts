@@ -214,10 +214,10 @@ export class BulkController {
       }
 
       if (
-        user.longitude == null ||
-        user.longitude == undefined ||
-        user.latitude == null ||
-        user.latitude == undefined
+        user.loc.longitude == null ||
+        user.loc.longitude == undefined ||
+        user.loc.latitude == null ||
+        user.loc.latitude == undefined
       ) {
         response
           .status(401)
@@ -231,8 +231,8 @@ export class BulkController {
         newUser.email = user.email;
         newUser.fullName = user.fullName;
         newUser.address = user.address;
-        newUser.longitude = user.longitude;
-        newUser.latitude = user.latitude;
+        newUser.longitude = user.loc.longitude;
+        newUser.latitude = user.loc.latitude;
         newUser.role = "Parent";
         if (user.phone_number != null && user.phone_number != undefined) {
           newUser.phoneNumber = user.phone_number;
