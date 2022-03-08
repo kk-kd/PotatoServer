@@ -47,7 +47,7 @@ import { getLngLat } from "./GeoHelper";
 // const q = new PQueue({ intervalCap: 40, interval: 1000 });
 
 export class BulkController {
-  static validateUsers = async (request: Request, response: Response) => {
+  async validateUsers(request: Request, response: Response) {
     const { users } = request.body;
     if (users == null || !Array.isArray(users)) {
       response
@@ -174,5 +174,5 @@ export class BulkController {
     });
 
     response.status(200).send(returnedUsers);
-  };
+  }
 }
