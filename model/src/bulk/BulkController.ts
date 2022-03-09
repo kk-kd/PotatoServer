@@ -5,6 +5,7 @@ import { User } from "../entity/User";
 // import PQueue from "p-queue";
 import { getLngLat } from "./GeoHelper";
 import { School } from "../entity/School";
+import { Student } from "../entity/Student";
 
 /**
  * Validation error codes:
@@ -168,6 +169,114 @@ export class BulkController {
       returnedStudents.students.push(studentToReturn);
     }
     response.status(200).send(returnedStudents);
+  }
+
+  async saveStudents(request: Request, response: Response) {
+    const { students } = request.body;
+    if (students == null || !Array.isArray(students)) {
+      response
+        .status(401)
+        .send("No users sent or users not sent in the accepted format.");
+      return;
+    }
+
+    for (var student of students) {
+      const newStudent = new Student();
+
+      // Validations
+      if (
+        student.fullName == null ||
+        student.fullName == undefined ||
+        student.fullName.trim() == ""
+      ) {
+        response.status(401).send(`Empty name for student ${student.fullName}`);
+        return;
+      }
+      newStudent.fullName = student.fullName;
+
+      if (student.id != null && student.id != undefined) {
+        if (!this.isValidId(student.id)) {
+          response
+            .status(401)
+            .send(
+              `Student ${student.fullName} has invalid id. Id needs to be a positive integer.`
+            );
+          return;
+        }
+        newStudent.id = student.id;
+      }
+
+      if (
+        student.school == null ||
+        student.school == undefined ||
+        student.school.trim() == ""
+      ) {
+        response
+          .status(401)
+          .send(`No school provided for student ${student.fullName}`);
+        return;
+      }
+
+      const schoolEntry = await getRepository(School)
+        .createQueryBuilder("schools")
+        .select()
+        .where("schools.uniqueName = :uniqueName", {
+          uniqueName: student.school.toLowerCase().trim(),
+        })
+        .getOne();
+
+      if (schoolEntry == null) {
+        response
+          .status(401)
+          .send(
+            `Student ${student.fullName}'s school does not exist in the database. Please create the school before adding the student.`
+          );
+        return;
+      }
+      newStudent.school = schoolEntry;
+
+      if (
+        student.parent == null ||
+        student.parent == undefined ||
+        student.parent.trim() == ""
+      ) {
+        response
+          .status(401)
+          .send(`No parent email provided for student ${student.fullName}`);
+        return;
+      }
+
+      const parentEntry = await getRepository(User)
+        .createQueryBuilder("users")
+        .select()
+        .where("users.email = :email", {
+          email: student.parent,
+        })
+        .getOne();
+
+      if (parentEntry == null) {
+        response
+          .status(401)
+          .send(
+            `Student ${student.fullName}'s parent does not exist in the database. Please create the parent before adding the student.`
+          );
+        return;
+      }
+      newStudent.parentUser = parentEntry;
+
+      // Save
+      try {
+        await getRepository(Student).save(newStudent);
+      } catch (error) {
+        response
+          .status(401)
+          .send(
+            `Failed saving student ${newStudent.fullName} to the database: ${error.message}`
+          );
+      }
+    }
+
+    response.status(200).send();
   }
 
   /**
@@ -372,9 +481,9 @@ export class BulkController {
         return;
       }
 
+      const newUser = new User();
       // Save
       try {
-        const newUser = new User();
         newUser.email = user.email;
         newUser.fullName = user.fullName;
         newUser.address = user.address;
@@ -388,7 +497,9 @@ export class BulkController {
       } catch (error) {
         response
           .status(401)
-          .send(`Failed saving user to the database: ${error.message}`);
+          .send(
+            `Failed saving user ${newUser.email} to the database: ${error.message}`
+          );
       }
     }
 
