@@ -54,8 +54,6 @@ export class BulkController {
    * fullName:  ...,
    * school: ...,
    * parent: ...,
-   * school_uid: ...,
-   * parent_uid: ...,
    * error_code: [..., ...],
    * {},
    * ...]};
@@ -126,9 +124,10 @@ export class BulkController {
             studentToReturn["error_code"] ??
             (studentToReturn["error_code"] = [])
           ).push(11);
-        } else {
-          studentToReturn.school_uid = schoolEntry.uid;
         }
+        // else {
+        //   studentToReturn.school_uid = schoolEntry.uid;
+        // }
       }
 
       // 10
@@ -155,9 +154,10 @@ export class BulkController {
             studentToReturn["error_code"] ??
             (studentToReturn["error_code"] = [])
           ).push(12);
-        } else {
-          studentToReturn.parent_uid = parentEntry.uid;
         }
+        // else {
+        //   studentToReturn.parent_uid = parentEntry.uid;
+        // }
       }
 
       // 0
