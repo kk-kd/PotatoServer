@@ -414,4 +414,10 @@ export const allRoutes = [
     controller: BulkController,
     action: "validateStudents",
   },
+  {
+    method: "post",
+    route: "/api/bulk/students/save",
+    controller: BulkController,
+    action: "saveStudents",
+  },
 ];
