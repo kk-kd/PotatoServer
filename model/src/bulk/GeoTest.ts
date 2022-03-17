@@ -3,6 +3,7 @@ import { Geo } from "../entity/Geo";
 import { getLngLat } from "./GeoHelper";
 import PQueue from "p-queue";
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
+console.log(process.env.TYPEORM_ENTITIES);
 
 const databaseTest = async () => {
   const getLoc = async (timeCreated: string) => {
@@ -73,6 +74,18 @@ const bulkCalling = async () => {
   console.log("Return: " + Date.now());
 };
 
-bulkCalling().then(() => {
-  console.log("done");
-});
+const callWithInvalidAddr = async () => {
+  await createConnection();
+  try {
+    const loc = await getLngLat("X");
+    console.log(loc);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// bulkCalling().then(() => {
+//   console.log("done");
+// });
+
+callWithInvalidAddr();
