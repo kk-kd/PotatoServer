@@ -59,7 +59,7 @@ export const App = () => {
   } else {
     if (!currentUser) {
       return <h1>Loading</h1>;
-    } else if (!currentUser.role || currentUser.role != "Admin") {
+    } else if (!currentUser.role || !(currentUser.role == "Admin" || currentUser.role == "Driver" || currentUser.role == "School Staff")) {
       return (
         <div className="App">
           <Header setLoggedIn={setLoggedIn} isAdmin={false} />
