@@ -14,6 +14,7 @@ import { ChangeMyPassword } from "./parents/ChangeMyPassword";
 import { Emails } from "./email/Email";
 import { PasswordForgotForm } from "./login/PasswordForgotForm";
 import { PasswordResetForm } from "./login/PasswordResetForm";
+import { Import } from "./import/Import";
 
 
 export const App = () => {
@@ -96,6 +97,7 @@ export const App = () => {
             <Route path="Students/*" element={<Students />} />
             <Route path="Routes/*" element={<BusRoutes />} />
             <Route path="Emails/*" element={<Emails />} />
+            <Route path="Import/*" element={<Import />} />
             <Route path="*" element={<Navigate to="MyStudents" />} />
           </Routes>
         </div>

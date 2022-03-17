@@ -1,0 +1,10 @@
+#stepper {
+    width: 40%;
+    margin: auto;
+}
+
+#step {
+    width: 70%;
+    border: 1px black solid;
+    margin: auto;
+}
