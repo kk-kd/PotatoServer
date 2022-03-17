@@ -254,7 +254,7 @@ export class SchoolController extends Repository<School> {
         .where("schools.uniqueName = :uniqueName", { uniqueName: queryData["uniqueName"] })
         .getOne();
 
-      if (reptitiveEntry != null) {
+      if ((reptitiveEntry != null) && (reptitiveEntry.uid == parseInt(uidNumber))) {
         response.status(401).send("School Name is already taken.");
         return;
       }

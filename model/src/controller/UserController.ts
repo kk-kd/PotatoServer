@@ -294,7 +294,7 @@ export class UserController extends Repository<User> {
 
       console.log(reptitiveEntry);
 
-      if (reptitiveEntry != null) {
+      if ((reptitiveEntry != null) && (reptitiveEntry.uid == parseInt(uidNumber))) {
         response.status(401).send("Email is already taken for User.");
         return;
       }
