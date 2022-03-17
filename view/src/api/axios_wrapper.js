@@ -365,6 +365,15 @@ export async function validateBulkStudents(specifications) {
     }
   );
 }
+
+export async function saveBulkStudents(specifications) {
+  return (
+    await axios.post("/api/bulk/students/save", specifications),
+    {
+      headers: getHeaderWithAuthToken(),
+    }
+  );
+}
 // Helpers
 function convertMapToURL(map) {
   return Object.keys(map)
