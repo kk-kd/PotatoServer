@@ -66,7 +66,7 @@ export class UserController extends Repository<User> {
       // PAGE STARTS AT 0
 
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff" || role == "Driver")) {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -100,6 +100,34 @@ export class UserController extends Repository<User> {
       const queryFilterType = request.query.filterType;
       const queryFilterData = request.query.filterData;
       if (request.query.showAll && request.query.showAll === "true") {
+        if (role == "School Staff") {
+          const userId = response.locals.jwtPayload.uid;
+          const currentUser = await this.userRepository
+            .createQueryBuilder("users")
+            .where("users.uid = :uid", { uid: userId })
+            .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+            .getOneOrFail();
+          const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+          const usersQueryResult = await this.userRepository
+            .createQueryBuilder("users")
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("users.email ilike '%' || :email || '%'", {
+              email: queryFilterData,
+            })
+            .andWhere("users.fullName ilike '%' || :fullName || '%'", {
+              fullName: queryFilterType,
+            })
+            .leftJoinAndSelect("users.students", "student")
+            .leftJoinAndSelect("student.school", "schools")
+            .getMany();
+          response.status(200);
+          const filtered = usersQueryResult.filter(user => user.students.some(student => attachedSchools.some(uid => uid == student.school.uid)));
+          const total = filtered.length;
+          return {
+            users: filtered,
+            total: total,
+          };
+        }
         const [usersQueryResult, total] = await this.userRepository
           .createQueryBuilder("users")
           .orderBy(sortSpecification, sortDirSpec)
@@ -117,6 +145,34 @@ export class UserController extends Repository<User> {
           total: total,
         };
       } else {
+        if (role == "School Staff") {
+          const userId = response.locals.jwtPayload.uid;
+          const currentUser = await this.userRepository
+            .createQueryBuilder("users")
+            .where("users.uid = :uid", { uid: userId })
+            .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+            .getOneOrFail();
+          const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+          const usersQueryResult = await this.userRepository
+            .createQueryBuilder("users")
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("users.email ilike '%' || :email || '%'", {
+              email: queryFilterData,
+            })
+            .andWhere("users.fullName ilike '%' || :fullName || '%'", {
+              fullName: queryFilterType,
+            })
+            .leftJoinAndSelect("users.students", "student")
+            .leftJoinAndSelect("student.school", "schools")
+            .getMany();
+          response.status(200);
+          const filtered = usersQueryResult.filter(user => user.students.some(student => attachedSchools.some(uid => uid == student.school.uid)));
+          const total = filtered.length;
+          return {
+            users: filtered.splice(skipNum, skipNum + takeNum),
+            total: total,
+          };
+        }
         const [usersQueryResult, total] = await this.userRepository
           .createQueryBuilder("users")
           .skip(skipNum)
@@ -174,7 +230,7 @@ export class UserController extends Repository<User> {
     try {
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff" || role == "Driver")) {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -198,7 +254,7 @@ export class UserController extends Repository<User> {
   async saveNewUser(request: Request, response: Response, next: NextFunction) {
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -219,7 +275,7 @@ export class UserController extends Repository<User> {
     try {
       const uidNumber = request.params.uid;
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -275,7 +331,7 @@ export class UserController extends Repository<User> {
       // }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.");
         return;
       }
