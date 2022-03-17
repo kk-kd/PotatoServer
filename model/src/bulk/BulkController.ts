@@ -56,7 +56,6 @@ export class BulkController {
       return;
     }
 
-    let locationPromises = [];
     let existingEmailsInRequest = new Set<string>();
     let reptitiveEmailsInRequest = new Set<string>();
     let emailIdxPair = {};
@@ -162,9 +161,7 @@ export class BulkController {
       if (reptitiveEmailsInRequest.has(user.email)) {
         (user["error_code"] ?? (user["error_code"] = [])).push(4);
         user.hint_indices = [...emailIdxPair[user.email]];
-        console.log(user.hint_indices);
         user.hint_indices.splice(user.hint_indices.indexOf(user.index), 1);
-        console.log(user.hint_indices);
       }
 
       // 0 - Success
@@ -174,5 +171,80 @@ export class BulkController {
     });
 
     response.status(200).send(returnedUsers);
+  }
+
+  async saveUsers(request: Request, response: Response) {
+    const { users } = request.body;
+    if (users == null || !Array.isArray(users)) {
+      response
+        .status(401)
+        .send("No users sent or users not sent in the accepted format.");
+      return;
+    }
+
+    for (var user of users) {
+      // Validations
+      if (
+        user.email == null ||
+        user.email == undefined ||
+        !EmailValidator.validate(user.email)
+      ) {
+        response
+          .status(401)
+          .send(`Incorrect email format for user ${user.email}`);
+        return;
+      }
+
+      if (
+        user.fullName == null ||
+        user.fullName == undefined ||
+        user.fullName.trim() == ""
+      ) {
+        response.status(401).send(`Empty name for user ${user.email}`);
+        return;
+      }
+
+      if (
+        user.address == null ||
+        user.address == undefined ||
+        user.address.trim() == ""
+      ) {
+        response.status(401).send(`Empty address for user ${user.email}`);
+        return;
+      }
+
+      if (
+        user.loc.longitude == null ||
+        user.loc.longitude == undefined ||
+        user.loc.latitude == null ||
+        user.loc.latitude == undefined
+      ) {
+        response
+          .status(401)
+          .send(`Longitude or latitude missing for user ${user.email}`);
+        return;
+      }
+
+      // Save
+      try {
+        const newUser = new User();
+        newUser.email = user.email;
+        newUser.fullName = user.fullName;
+        newUser.address = user.address;
+        newUser.longitude = user.loc.longitude;
+        newUser.latitude = user.loc.latitude;
+        newUser.role = "Parent";
+        if (user.phone_number != null && user.phone_number != undefined) {
+          newUser.phoneNumber = user.phone_number;
+        }
+        await getRepository(User).save(newUser);
+      } catch (error) {
+        response
+          .status(401)
+          .send(`Failed saving user to the database: ${error.message}`);
+      }
+    }
+
+    response.status(200).send();
   }
 }

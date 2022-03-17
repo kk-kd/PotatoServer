@@ -347,6 +347,15 @@ export async function validateBulkParents(specifications) {
     }
   );
 }
+
+export async function saveBulkParents(specifications) {
+  return (
+    await axios.post("/api/bulk/users/save", specifications),
+    {
+      headers: getHeaderWithAuthToken(),
+    }
+  );
+}
 // Helpers
 function convertMapToURL(map) {
   return Object.keys(map)

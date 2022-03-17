@@ -401,4 +401,11 @@ export const allRoutes = [
     controller: BulkController,
     action: "validateUsers",
   },
+
+  {
+    method: "post",
+    route: "/api/bulk/users/save",
+    controller: BulkController,
+    action: "saveUsers",
+  },
 ];
