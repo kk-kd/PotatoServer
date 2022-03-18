@@ -23,6 +23,7 @@ export const ListUsers = ({ role }) => {
   const [sortDirec, setSortDirec] = useState("ASC");
   const [emailFilter, setEmailFilter] = useState("");
   const [lastNameFilter, setLastNameFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +35,7 @@ export const ListUsers = ({ role }) => {
           sortDir: sortDirec,
           filterType: lastNameFilter,
           filterData: emailFilter,
+          roleFilter: roleFilter,
           showAll: showAll,
         });
         setData(fetchedData.data.users);
@@ -43,7 +45,7 @@ export const ListUsers = ({ role }) => {
       }
     };
     fetchData();
-  }, [page, size, sortDirec, emailFilter, lastNameFilter, showAll]);
+  }, [page, size, sortDirec, emailFilter, lastNameFilter, roleFilter, showAll]);
 
   const nextSort = (id) => {
     if (sortBy !== id) {
@@ -75,7 +77,7 @@ export const ListUsers = ({ role }) => {
         accessor: "address",
       },
       {
-        Header: "Role",
+        HeaderName: "Role",
         accessor: "role",
       },
       {
@@ -129,9 +131,9 @@ export const ListUsers = ({ role }) => {
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th {...column.getHeaderProps()}>
-                    {column.id === "email" || column.id === "fullName" ? (
+                    {column.id === "email" || column.id === "fullName" || column.id === "role" ? (
                       <div>
-                        <label
+                        {column.id !== "role" ? <><label
                           onClick={() => {
                             nextSort(column.id);
                           }}
@@ -152,7 +154,20 @@ export const ListUsers = ({ role }) => {
                               ? setEmailFilter
                               : setLastNameFilter
                           }
-                        />
+                        /></> :
+                        <><label>
+                          {column.HeaderName}{" "}
+                        </label>
+                        <select
+                            value={roleFilter}
+                            onChange={e => setRoleFilter(e.target.value)}
+                        >
+                          <option value="">--</option>
+                          <option value="None">None</option>
+                          <option value="Admin">Admin</option>
+                          <option value="School Staff">School Staff</option>
+                          <option value="Driver">Driver</option>
+                        </select></>}
                       </div>
                     ) : (
                       column.render("Header")
