@@ -8,7 +8,7 @@ import { filterAllUsers } from "../api/axios_wrapper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 
-export const ListUsers = () => {
+export const ListUsers = ({ role }) => {
   let navigate = useNavigate();
   function generateUserDetailLink(uid) {
     return "/Users/info/" + uid;
@@ -117,9 +117,9 @@ export const ListUsers = () => {
     <div id="content">
       <h2 id="title"> Parents and Administrators </h2>
       <div id="userListing">
-        <Link to="/Users/create">
+        {(role === "Admin" || role === "School Staff") && <Link to="/Users/create">
           <button>Create Parent or Administrator</button>
-        </Link>
+        </Link>}
         <table
           {...getTableProps()}
           class="table table-striped table-bordered border-success rounded"

@@ -28,7 +28,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { fontSize } from "@mui/system";
 
 
-export const UserForm = () => {
+export const UserForm = ({ role }) => {
     let navigate = useNavigate(); 
 
     const action_text = "Make New Parent or Adminstrator" 
@@ -77,15 +77,14 @@ export const UserForm = () => {
     const validate_user_entries = () => {
       if (!user.fullName){
           return {valid: false, error: 'User Name Required'}
-      }
-      else if (!user.email) {
+      } else if (!user.email) {
         return {valid: false, error:"Please provide a user email"}
-      }
-      else if (!user.address) {
+      } else if (!user.address) {
         return {valid: false, error:"Please provide a user address"}
-      }
-      else if (!addressValid) {
+      } else if (!addressValid) {
         return {valid: false, error: "Please Validate User Address."}
+      } else if (!user.phoneNumber) {
+        return {valid: false, error: "Please provide a phone number"}
       }
       return {valid: true, error: ''}
   }
@@ -131,6 +130,7 @@ export const UserForm = () => {
        
         let form_results = {
           email: user.email.toLowerCase(),
+          phoneNumber: user.phoneNumber,
           fullName: user.fullName,
           address: user.address,
           role: user.role,
@@ -248,6 +248,15 @@ export const UserForm = () => {
               onChange={(e) => setUser({...user, email : e.target.value})}
           />
 
+          <label  id = 'label-user'> Phone Number </label>
+          <input
+              id = "input-user"
+              maxLength="100"
+              type="text"
+              value={user.phoneNumber}
+              onChange={(e) => setUser({...user, phoneNumber : e.target.value})}
+          />
+
          
           <label  id = 'label-user'> Address {addressValid} </label>
           <input
@@ -257,8 +266,8 @@ export const UserForm = () => {
               value={user.address}
               onChange={(e) => {setUser({...user, address: e.target.value}); setAddressValid(false); }} 
           />
-          
-          <label  id = 'label-user'> Role </label>
+
+          {role === "Admin" && <><label  id = 'label-user'> Role </label>
           <select
               id = "input-user"
               value={user.role}
@@ -268,7 +277,7 @@ export const UserForm = () => {
             <option value="Driver">Driver</option>
             <option value="School Staff">School Staff</option>
             <option value="Admin">Admin</option>
-          </select>
+          </select></>}
 
           {user.role === "School Staff" && <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto', marginTop: '10px'}}>
             <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}

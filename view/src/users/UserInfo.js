@@ -5,11 +5,13 @@ import { Marker } from "../map/Marker";
 import {registerUser, saveStudent} from "../api/axios_wrapper";
 import { Link, use, useNavigate, useParams } from "react-router-dom";
 import { Users } from "./Users";
-import { filterAllUsers, filterAllSchools, getOneUser , createUser, updateUser, deleteUser} from "../api/axios_wrapper";
+import { filterAllUsers, filterAllSchools, getOneUser , createUser, saveUser, deleteUser} from "../api/axios_wrapper";
 import { StudentForm } from "../students/StudentForm";
 import {useTable} from "react-table";
 
 import * as React from 'react';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -30,10 +32,10 @@ import ReactTooltip from "react-tooltip";
 
 // this functions as the user edit and detail pages. 
 
-export const UserInfo = ({edit}) => {
+export const UserInfo = ({ edit, role, uid }) => {
 
     const { id } = useParams();
-    let navigate = useNavigate(); 
+    let navigate = useNavigate();
 
     const [editable, setEditable] = useState(edit);
     const action_text = editable ? "Edit" : "View" 
@@ -48,6 +50,34 @@ export const UserInfo = ({edit}) => {
     const [students, setStudents] = useState([]); 
     const [addressValid, setAddressValid] = useState(false);
     const [ userLoaded,  setUserLoaded ] = useState(false);
+    const [addSchool, setAddSchool] = useState(false);
+    const [schoolFilter, setSchoolFilter] = useState("");
+    const [filteredDataSchool, setFilteredDataSchool] = useState([]);
+    const [staffSchools, setStaffSchools] = useState([]);
+
+  useEffect(() => {
+    const fetchFilteredDataSchool = async () => {
+
+      try {
+        const fetchedDataSchool = await filterAllSchools({
+          page: 0,
+          size: 10,
+          sort: 'name',
+          sortDir: "ASC",
+          filterType: '',
+          filterData: schoolFilter
+        });
+        setFilteredDataSchool(fetchedDataSchool.data.schools);
+
+      } catch (error) {
+        alert(error.response.data);
+      }
+    }
+    if (schoolFilter) {
+      fetchFilteredDataSchool();
+    }
+
+  }, [schoolFilter])
 
     // show student form 
     const [makeStudent, setMakeStudent] = useState(false);
@@ -78,15 +108,14 @@ export const UserInfo = ({edit}) => {
     const validate_user_entries = () => {
       if (!user.fullName){
           return {valid: false, error: 'User First Name and Last Name Required'}
-      }
-      else if (!user.email) {
+      } else if (!user.email) {
         return {valid: false, error:"Please provide a user email"}
-      }
-      else if (!user.address) {
+      } else if (!user.address) {
         return {valid: false, error:"Please provide a user address"}
-      }
-      else if (!addressValid) {
+      } else if (!addressValid) {
         return {valid: false, error: "Please Validate User Address."}
+      } else if (!user.phoneNumber) {
+        return {valid: false, error: "Please provide a phone number"}
       }
       return {valid: true, error: ''}
    }
@@ -109,6 +138,10 @@ export const UserInfo = ({edit}) => {
        
         let form_results = {
           email: user.email.toLowerCase(),
+          phoneNumber: user.phoneNumber,
+          attachedSchools: user.attachedSchools,
+          students: students,
+          role: user.role,
           fullName: user.fullName,
           address: user.address,
           isAdmin: user.isAdmin,
@@ -125,7 +158,7 @@ export const UserInfo = ({edit}) => {
         try {
           console.log(id)
           
-          const response = await updateUser(id, form_results, false); //false shouldn't be in the call anymore!
+          const response = await saveUser(form_results); //false shouldn't be in the call anymore!
           const madeUser = await getOneUser(id);
           console.log(madeUser)
           setUser(madeUser.data);
@@ -174,6 +207,24 @@ export const UserInfo = ({edit}) => {
     }
     const deleteUserCall = async (user_id) => {  
       try {
+        if (user.role === "School Staff" && user.attachedSchools.length > 0) {
+          let form_results = {
+            email: user.email.toLowerCase(),
+            phoneNumber: user.phoneNumber,
+            attachedSchools: [],
+            students: students,
+            role: user.role,
+            fullName: user.fullName,
+            address: user.address,
+            isAdmin: user.isAdmin,
+            latitude: lat,
+            longitude: lng,
+            password: user.password,
+            uid: user.uid,
+            confirmationCode: user.confirmationCode,
+          }
+          await saveUser(form_results);
+        }
         await deleteUser(parseInt(user_id)); 
         alert ("User Deletion Successful");
         navigate('/Users/list');
@@ -194,6 +245,13 @@ export const UserInfo = ({edit}) => {
           let message = error.response.data;
           throw alert (message);
         });
+        if (role === "School Staff") {
+          const staffData = await getOneUser(uid).catch(error => {
+            let message = error.response.data;
+            throw alert(message);
+          });
+          setStaffSchools(staffData.data.attachedSchools);
+        }
         setUser(fetchedData.data);
         setStudents([fetchedData.data][0].students);
         updateUserLoading(fetchedData.data);
@@ -203,6 +261,12 @@ export const UserInfo = ({edit}) => {
         console.log(error);
       }
     }
+
+    const deleteable = role === "Admin" || (
+        role === "School Staff" &&
+        user.role === "None" &&
+        !students.some(student => !staffSchools.some(school => school.uid === student.school.uid))
+    );
 
     // load data on page load 
     useEffect(() => {
@@ -348,23 +412,26 @@ export const UserInfo = ({edit}) => {
       headerGroups,
       rows,
       prepareRow
-    } = useTable({columns, data: students});
+    } = useTable({columns, data: role === "School Staff" ?
+          students.filter(student => staffSchools.some(school => school.uid === student.school.uid)) :
+          students
+    });
 
     
 
     return <div id="content"> 
  
         <h2 id = 'title'> {user.firstName}  {user.lastName}  </h2>
-        <div>
+      {(role === "Admin" || role === "School Staff") && <div>
           {!editable &&  
               <button onClick={e => setEditable(true)}> Edit Details </button>
           }
           {editable &&  
             <button onClick={e => setEditable(false)}> Cancel Edits </button>
           }
-          {!editable && <button onClick = {(e) => {handleDeleteUser(id, e);}}>Delete Account </button>}
+          {(!editable && deleteable) && <button onClick = {(e) => {handleDeleteUser(id, e);}}>Delete Account </button>}
           
-        </div>
+        </div>}
         
         <div id = "main_form">
               
@@ -391,6 +458,15 @@ export const UserInfo = ({edit}) => {
               onChange={(e) => setUser({...user, email : e.target.value})}
           />
 
+          <label id = "label-user"> Phone Number </label>
+          <input
+              id = "input-user"
+              maxLength="100"
+              disabled = {!editable}
+              type="text"
+              value={user.phoneNumber}
+              onChange={(e) => setUser({...user, phoneNumber : e.target.value})}
+          />
          
           <label id = "label-user"> Address {addressValid} </label>
           <input
@@ -401,15 +477,82 @@ export const UserInfo = ({edit}) => {
               value={user.address}
               onChange={(e) => {setUser({...user, address: e.target.value}); setAddressValid(false); }} 
           />
-          
-          <label id = "label-user"> Role </label>
-          <input
+
+          <label  id = 'label-user'> Role </label>
+          <select
               id = "input-user"
-              maxLength="100"
-              disabled = {true}
-              type="text"
               value={user.role}
-          />
+              onChange={(e) => setUser({...user, role : e.target.value})}
+              disabled={!editable || role !== "Admin" || user.uid === uid}
+          >
+            <option value="None">None</option>
+            <option value="Driver">Driver</option>
+            <option value="School Staff">School Staff</option>
+            <option value="Admin">Admin</option>
+          </select>
+
+          {user.role === "School Staff" && <Box sx={{width: '100%', maxWidth: 360, bgcolor: 'background.paper', margin: 'auto', marginTop: '10px'}}>
+            <List dense sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}
+            >
+              {user.attachedSchools.map(school => {
+                const labelId = `checkbox-list-secondary-label-${school.uid}`;
+                return (
+                    <ListItem
+                        key={school.uid}
+
+                        secondaryAction={editable &&
+                          <IconButton aria-label="delete" style={{backgroundColor: 'transparent'}}>
+                            <DeleteIcon onClick = {(e) => {
+                              setUser({...user, attachedSchools: user.attachedSchools.filter(s => s.uid !== school.uid)});
+                            }}/>
+                          </IconButton>
+                        }
+                        disablePadding
+                    >
+                      <ListItemText id={labelId} primary={school.name} />
+                    </ListItem>
+                );
+              })}
+
+              {editable && <ListItem
+                  key={'-1'}
+                  disablePadding
+              >
+                <ListItemButton
+                    onClick = {(e) => {setAddSchool(true);}}>
+                  <PersonAddIcon />
+                  <ListItemText primary={"Add New School"} />
+                </ListItemButton>
+              </ListItem>}
+
+            </List>
+          </Box>}
+
+          {addSchool && <Autocomplete
+              sx = {{paddingTop: '20px', paddingBottom: '10px', width: '49%', margin: 'auto', marginRight: '23%',}}
+              options={filteredDataSchool}
+              freeSolo
+              renderInput={params => (
+                  <TextField {...params} label="School"  variant="standard"
+
+                  />
+              )}
+              getOptionLabel={option => option.name}
+
+              noOptionsText = {"Type to Search"}
+              onInputChange = {(e) => {
+                setSchoolFilter(e.target.value);}
+              }
+
+              onChange={(_event, newSchool) => {
+                if (!user.attachedSchools.some(school => school.uid === newSchool.uid)) {
+                  setUser({...user, attachedSchools: [...user.attachedSchools, newSchool]});
+                }
+                setAddSchool(false);
+                setSchoolFilter("");
+              }}
+
+          />}
 
           <p> </p>
           {editable && <div>
