@@ -54,6 +54,6 @@ export class User {
   })
   confirmationCode: string;
 
-  @Column({ nullable: true })
+  @Column()
   phoneNumber: string;
 }

@@ -240,6 +240,7 @@ export class UserController extends Repository<User> {
         .leftJoinAndSelect("users.students", "students")
         .leftJoinAndSelect("students.route", "route")
         .leftJoinAndSelect("students.inRangeStops", "stops")
+        .leftJoinAndSelect("students.school", "school")
         .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
         .getOneOrFail();
       response.status(200);

@@ -244,6 +244,12 @@ export async function loginUser(specifications) {
             }
 */
 
+export async function saveUser(specifications) {
+  return await axios.post("/api/users", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+
 export async function saveStudent(specifications) {
   return await axios.post("/api/students", specifications, {
     headers: getHeaderWithAuthToken(),

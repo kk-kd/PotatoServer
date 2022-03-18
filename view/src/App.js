@@ -92,8 +92,9 @@ export const App = () => {
               element={<MyStudents user={currentUser} />}
             />
             <Route path="Schools/*" element={<Schools role={currentUser.role} />} />
-            <Route path="Users/*" element={<Users />} />
+            <Route path="Users/*" element={<Users role={currentUser.role} uid={currentUser.uid} />} />
             <Route path="Students/*" element={<Students role={currentUser.role} />} />
+
             <Route path="Routes/*" element={<BusRoutes />} />
             <Route path="Emails/*" element={<Emails />} />
             <Route path="*" element={<Navigate to="MyStudents" />} />
