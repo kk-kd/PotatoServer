@@ -8,7 +8,7 @@ import { getDisplayTime } from "./../api/time";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
-export const ListSchools = () => {
+export const ListSchools = ({ role }) => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(1);
@@ -95,9 +95,9 @@ export const ListSchools = () => {
     <div id="content">
       <h2 id="title"> Schools </h2>
       <div id="schoolListing">
-        <Link to="/Schools/create">
+        {role === "Admin" && <Link to="/Schools/create">
           <button>Create School</button>
-        </Link>
+        </Link>}
         <table
           {...getTableProps()}
           class="table table-striped table-bordered border-success rounded"

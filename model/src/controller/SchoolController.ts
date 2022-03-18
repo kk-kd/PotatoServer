@@ -163,7 +163,7 @@ export class SchoolController extends Repository<School> {
 
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff" || role == "Driver")) {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -216,7 +216,7 @@ export class SchoolController extends Repository<School> {
   async saveNewSchool(request: Request, response: Response, next: NextFunction) {
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.")
         return;
       }

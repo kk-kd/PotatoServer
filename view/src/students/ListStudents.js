@@ -13,7 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
-export const ListStudents = () => {
+export const ListStudents = ({ role }) => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(1);
@@ -140,9 +140,9 @@ export const ListStudents = () => {
     <div id="content">
       <h2 id="title"> Students </h2>
       <div id="userListing">
-        <Link to="/Students/create">
+        {(role === "Admin" || role === "School Staff") && <Link to="/Students/create">
           <button>Create Student</button>
-        </Link>
+        </Link>}
         <table
           {...getTableProps()}
           class="table table-striped table-bordered border-success rounded"
