@@ -19,7 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
-export const BusRouteInfo = () => {
+export const BusRouteInfo = ({ role }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -139,13 +139,13 @@ export const BusRouteInfo = () => {
           }
         </ReactTooltip></h2>
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}>
+        {(role === "Admin" || role === "School Staff") && <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}>
           {!isEdit && <button onClick={e => setIsEdit(true)}>Edit Route Details </button>}
           {isEdit && <button onClick={e => setIsEdit(false)}>Cancel Changes</button>}
           <button onClick={e => setIsDelete(true)}>Delete Route</button>
           <button onClick={e => {if (school.uid) {navigate(`/Routes/planner/${school.uid}`)}}}>Edit Students/Stops</button>
           <button onClick={e => navigate(`/Emails/send/-1/${id}`)}>Send Announcement</button>
-        </div>
+        </div>}
 
         <div id = "main_form">
           <h5 id = "sub-header"> Details </h5>         

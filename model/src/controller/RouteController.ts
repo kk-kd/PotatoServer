@@ -317,7 +317,7 @@ export class RouteController extends Repository<Route> {
 
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -336,7 +336,7 @@ export class RouteController extends Repository<Route> {
 
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -359,7 +359,7 @@ export class RouteController extends Repository<Route> {
 
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.")
         return;
       }
