@@ -163,7 +163,7 @@ export class SchoolController extends Repository<School> {
 
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || !(role == "Admin" || role == "School Staff" || role == "Driver")) {
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -216,18 +216,17 @@ export class SchoolController extends Repository<School> {
   async saveNewSchool(request: Request, response: Response, next: NextFunction) {
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || !(role == "Admin" || role == "School Staff")) {
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.")
         return;
       }
       var queryData = request.body;
-      queryData["uniqueName"] = request.body.name.toLowerCase().trim();
+      queryData["uniqueName"] = request.body.name.toLowerCase().trim().replace(/\s\s+/g, ' ');
       const reptitiveEntry = await getRepository(School)
         .createQueryBuilder("schools")
         .select()
         .where("schools.uniqueName = :uniqueName", { uniqueName: queryData["uniqueName"] })
         .getOne();
-
       if (reptitiveEntry != null) {
         response.status(401).send("School Name is already taken.");
         return;
@@ -247,7 +246,7 @@ export class SchoolController extends Repository<School> {
     try {
       const uidNumber = request.params.uid;
       var queryData = request.body;
-      queryData["uniqueName"] = request.body.name.toLowerCase().trim();
+      queryData["uniqueName"] = request.body.name.toLowerCase().trim().replace(/\s\s+/g, ' ');
       const reptitiveEntry = await getRepository(School)
         .createQueryBuilder("schools")
         .select()
