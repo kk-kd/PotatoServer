@@ -8,6 +8,10 @@ import { School } from "../entity/School";
 import { Student } from "../entity/Student";
 
 /**
+ * Note - validations while saving shouldn't be necessary. Just leave it there in case.
+ */
+
+/**
  * Validation error codes:
  * GENERAL
  * 99 - Missing index
@@ -103,10 +107,6 @@ export class BulkController {
       let studentToReturn = { ...student };
       // 99
       if (student.index == null || student.index == undefined) {
-        // If not an API request, just wanna check if there's ANY error. Don't care about what the error is.
-        // Similar below
-        if (!isAPIRequest) return false;
-
         (
           studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
         ).push(99);
@@ -120,8 +120,9 @@ export class BulkController {
         student.fullName == undefined ||
         student.fullName.trim() == ""
       ) {
+        // If not an API request, just wanna check if there's ANY error. Don't care about what the error is.
+        // Similar below
         if (!isAPIRequest) return false;
-
         (
           studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
         ).push(2);
@@ -396,6 +397,8 @@ export class BulkController {
    */
   async validateUsers(request: Request, response: Response) {
     const { users } = request.body;
+    const role = response.locals.jwtPayload.role;
+
     if (users == null || !Array.isArray(users)) {
       response
         .status(401)
@@ -403,6 +406,20 @@ export class BulkController {
       return;
     }
 
+    if (!(role === ROLE_SCHOOL_STAFF || role === ROLE_ADMIN)) {
+      response
+        .status(401)
+        .send("You don't have enough permission for this action.");
+      return;
+    }
+
+    let returnedUsers = this.usersValidationHelper(users);
+    response.status(200).send(returnedUsers);
+  }
+
+  // return a boolean indicating if there's an error in @code{users} if @code{isAPIRequest}=false
+  // return a json of potential problems of @code{users} if @code{isAPIRequest}=true
+  usersValidationHelper(users, isAPIRequest = true) {
     let existingEmailsInRequest = new Set<string>();
     let reptitiveEmailsInRequest = new Set<string>();
     let emailIdxPair = {};
@@ -423,7 +440,9 @@ export class BulkController {
         user.email == null ||
         user.email == undefined ||
         !EmailValidator.validate(user.email)
-      ) {
+      )
+        if (!isAPIRequest) return false;
+      {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           1
         );
@@ -434,7 +453,9 @@ export class BulkController {
         user.fullName == null ||
         user.fullName == undefined ||
         user.fullName.trim() == ""
-      ) {
+      )
+        if (!isAPIRequest) return false;
+      {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           2
         );
@@ -448,6 +469,7 @@ export class BulkController {
         .getOne();
 
       if (reptitiveEntry != null) {
+        if (!isAPIRequest) return false;
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           3
         );
@@ -459,6 +481,8 @@ export class BulkController {
         user.index
       );
       if (existingEmailsInRequest.has(user.email)) {
+        if (!isAPIRequest) return false;
+
         reptitiveEmailsInRequest.add(user.email);
       } else {
         existingEmailsInRequest.add(user.email);
@@ -470,6 +494,8 @@ export class BulkController {
         user.address == undefined ||
         user.address.trim() == ""
       ) {
+        if (!isAPIRequest) return false;
+
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           5
         );
@@ -484,6 +510,7 @@ export class BulkController {
         userToReturn = { ...userToReturn, loc };
       } catch (error) {
         console.log(`${user.email} failed to fetch location, error - ${error}`);
+        if (!isAPIRequest) return false;
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           6
         );
@@ -495,17 +522,19 @@ export class BulkController {
         user.phone_number == null ||
         user.phone_number == undefined ||
         user.phone_number.trim() == ""
-      ) {
+      )
+        if (!isAPIRequest) return false;
+      {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           7
         );
       }
-
       returnedUsers.users.push(userToReturn);
     }
 
     returnedUsers.users.forEach((user) => {
       if (reptitiveEmailsInRequest.has(user.email)) {
+        if (!isAPIRequest) return false;
         (user["error_code"] ?? (user["error_code"] = [])).push(4);
         user.hint_indices = [...emailIdxPair[user.email]];
         user.hint_indices.splice(user.hint_indices.indexOf(user.index), 1);
@@ -517,15 +546,36 @@ export class BulkController {
       }
     });
 
-    response.status(200).send(returnedUsers);
+    if (isAPIRequest) {
+      return returnedUsers;
+    } else {
+      return true;
+    }
   }
 
   async saveUsers(request: Request, response: Response) {
     const { users } = request.body;
+
+    const role = response.locals.jwtPayload.role;
+
     if (users == null || !Array.isArray(users)) {
       response
         .status(401)
         .send("No users sent or users not sent in the accepted format.");
+      return;
+    }
+
+    if (!(role === ROLE_SCHOOL_STAFF || role === ROLE_ADMIN)) {
+      response
+        .status(401)
+        .send("You don't have enough permission for this action.");
+      return;
+    }
+
+    if (!this.usersValidationHelper(users, false)) {
+      response
+        .status(401)
+        .send("There's error with the data. Please validate first.");
       return;
     }
 
