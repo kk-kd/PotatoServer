@@ -395,13 +395,6 @@ export const UserInfo = ({ edit, role, uid }) => {
             </div>
           ),
         },
-        {
-          Header: "Detail Page",
-          accessor: "uid",
-          Cell: (props) => {
-            return <Link to={`/Students/info/${props.value}`}>view</Link>;
-          },
-        },
       ],
       []
     );
@@ -592,10 +585,10 @@ export const UserInfo = ({ edit, role, uid }) => {
                     {rows.map((row) => {
                       prepareRow(row);
                       return (
-                        <tr {...row.getRowProps()}>
+                        <tr {...row.getRowProps()} onClick={() => navigate(`/Students/info/${row.original.uid}`)}>
                           {row.cells.map((cell) => {
                             return (
-                              <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                              <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
                             );
                           })}
                         </tr>

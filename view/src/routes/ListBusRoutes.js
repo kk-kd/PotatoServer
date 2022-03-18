@@ -1,6 +1,6 @@
 import "./ListBusRoutes.css";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllRoutes } from "./../api/axios_wrapper";
@@ -14,6 +14,7 @@ import {
 import ReactTooltip from "react-tooltip";
 
 export const ListBusRoutes = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(1);
@@ -111,13 +112,6 @@ export const ListBusRoutes = () => {
           </div>
         ),
       },
-      {
-        Header: "Detail Page",
-        accessor: "uid",
-        Cell: (props) => {
-          return <Link to={`/Routes/info/${props.value}`}>view</Link>;
-        },
-      },
     ],
     []
   );
@@ -170,10 +164,10 @@ export const ListBusRoutes = () => {
             {rows.map((row) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
+                <tr {...row.getRowProps()} onClick={() => navigate(`/Routes/info/${row.original.uid}`)}>
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
                     );
                   })}
                 </tr>
