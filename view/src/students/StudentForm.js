@@ -135,7 +135,8 @@ export const StudentForm = ({addStudentToUser}) => {
               sort: 'email',
               sortDir: "ASC",
               filterType: '',
-              filterData: userFilter
+              filterData: userFilter,
+              isCreate: true
             });
             setFilteredDataUser(fetchedData.data.users);
             console.log(fetchedData.data)
