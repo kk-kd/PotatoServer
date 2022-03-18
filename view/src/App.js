@@ -93,8 +93,8 @@ export const App = () => {
             />
             <Route path="Schools/*" element={<Schools role={currentUser.role} />} />
             <Route path="Users/*" element={<Users />} />
-            <Route path="Students/*" element={<Students />} />
-            <Route path="Routes/*" element={<BusRoutes role={currentUser.role} />} />
+            <Route path="Students/*" element={<Students role={currentUser.role} />} />
+            <Route path="Routes/*" element={<BusRoutes />} />
             <Route path="Emails/*" element={<Emails />} />
             <Route path="*" element={<Navigate to="MyStudents" />} />
           </Routes>

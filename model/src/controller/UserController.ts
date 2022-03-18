@@ -100,7 +100,7 @@ export class UserController extends Repository<User> {
       const queryFilterType = request.query.filterType;
       const queryFilterData = request.query.filterData;
       if (request.query.showAll && request.query.showAll === "true") {
-        if (role == "School Staff") {
+        if (role == "School Staff" && !request.query.isCreate) {
           const userId = response.locals.jwtPayload.uid;
           const currentUser = await this.userRepository
             .createQueryBuilder("users")
@@ -145,7 +145,7 @@ export class UserController extends Repository<User> {
           total: total,
         };
       } else {
-        if (role == "School Staff") {
+        if (role == "School Staff" && !request.query.isCreate) {
           const userId = response.locals.jwtPayload.uid;
           const currentUser = await this.userRepository
             .createQueryBuilder("users")
