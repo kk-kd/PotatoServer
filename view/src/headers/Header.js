@@ -2,7 +2,9 @@ import "./Header.css";
 import { LogOut } from "./../login/LogOut";
 import { TableLinks } from "./TableLinks";
 
-export const Header = ({ setLoggedIn, isAdmin }) => {
+export const Header = ({ setLoggedIn, role }) => {
+  const anyRights = role === "School Staff" || role === "Admin" || role === "Driver";
+  const emailRights = role === "School Staff" || role === "Admin";
   return (
     <div className="Header">
       <div>
@@ -25,23 +27,23 @@ export const Header = ({ setLoggedIn, isAdmin }) => {
         link="ChangeMyPassword"
         display="Change Password"
       />
-      {isAdmin && (
+      {anyRights && (
         <TableLinks hash="Schools" link="Schools/list" display="Schools" />
       )}
-      {isAdmin && (
+      {anyRights && (
         <TableLinks
           hash="Users"
           link="Users/list"
           display="Parents & Administrators "
         />
       )}
-      {isAdmin && (
+      {anyRights && (
         <TableLinks hash="Students" link="Students/list" display="Students" />
       )}
-      {isAdmin && (
+      {anyRights && (
         <TableLinks hash="Routes" link="Routes/list" display="Routes" />
       )}
-      {isAdmin && (
+      {emailRights && (
         <TableLinks
           hash="Emails"
           link="Emails/send"
