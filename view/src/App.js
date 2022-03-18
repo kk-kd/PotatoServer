@@ -62,7 +62,7 @@ export const App = () => {
     } else if (!currentUser.role || !(currentUser.role == "Admin" || currentUser.role == "Driver" || currentUser.role == "School Staff")) {
       return (
         <div className="App">
-          <Header setLoggedIn={setLoggedIn} isAdmin={false} />
+          <Header setLoggedIn={setLoggedIn} role={currentUser.role} />
           <Routes>
             <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
             <Route
@@ -80,7 +80,7 @@ export const App = () => {
     } else {
       return (
         <div className="App">
-          <Header setLoggedIn={setLoggedIn} isAdmin={true} />
+          <Header setLoggedIn={setLoggedIn} role={currentUser.role} />
           <Routes>
             <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
             <Route
@@ -96,7 +96,7 @@ export const App = () => {
             <Route path="Students/*" element={<Students role={currentUser.role} />} />
 
             <Route path="Routes/*" element={<BusRoutes />} />
-            <Route path="Emails/*" element={<Emails />} />
+            {currentUser.role !== "Driver" && <Route path="Emails/*" element={<Emails role={currentUser.role} />} />}
             <Route path="*" element={<Navigate to="MyStudents" />} />
           </Routes>
         </div>
