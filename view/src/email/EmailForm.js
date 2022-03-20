@@ -24,7 +24,7 @@ import {
   StyledOption,
 } from "@mui/material";
 
-export const EmailForm = () => {
+export const EmailForm = ({ role }) => {
   const { schoolid, routeid } = useParams();
   const action_text = "Send Email";
   const [schoolLoading, setSchoolLoading] = useState(true);
@@ -59,7 +59,7 @@ export const EmailForm = () => {
 
   const validate_entries = () => {
     if (!emailType) {
-      return { valid: false, error: "Please Select A Receipient Group" };
+      return { valid: false, error: "Please Select A Recipient Group" };
     }
     if (!message.subject || !message.body) {
       return { valid: false, error: "Subject and Body Required" };
@@ -267,7 +267,7 @@ export const EmailForm = () => {
             setEmailType(e.target.value);
           }}
         >
-          <MenuItem value={"all"}> All Parents </MenuItem>
+          {role === "Admin" && <MenuItem value={"all"}> All Parents </MenuItem>}
           <MenuItem value={"school"}>Parents of a Given School </MenuItem>
           <MenuItem value={"route"}>Parents of a Given Route</MenuItem>
         </Select>

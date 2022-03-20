@@ -6,9 +6,14 @@ import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { getAllUsers, deleteUser } from "../api/axios_wrapper";
 import { filterAllUsers } from "../api/axios_wrapper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faArrowUp, faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowDown,
+  faArrowUp,
+  faCheck,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 
-export const ListUsers = () => {
+export const ListUsers = ({ role }) => {
   let navigate = useNavigate();
   function generateUserDetailLink(uid) {
     return "/Users/info/" + uid;
@@ -23,6 +28,7 @@ export const ListUsers = () => {
   const [sortDirec, setSortDirec] = useState("ASC");
   const [emailFilter, setEmailFilter] = useState("");
   const [lastNameFilter, setLastNameFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,6 +40,7 @@ export const ListUsers = () => {
           sortDir: sortDirec,
           filterType: lastNameFilter,
           filterData: emailFilter,
+          roleFilter: roleFilter,
           showAll: showAll,
         });
         setData(fetchedData.data.users);
@@ -43,7 +50,7 @@ export const ListUsers = () => {
       }
     };
     fetchData();
-  }, [page, size, sortDirec, emailFilter, lastNameFilter, showAll]);
+  }, [page, size, sortDirec, emailFilter, lastNameFilter, roleFilter, showAll]);
 
   const nextSort = (id) => {
     if (sortBy !== id) {
@@ -75,7 +82,7 @@ export const ListUsers = () => {
         accessor: "address",
       },
       {
-        Header: "Role",
+        HeaderName: "Role",
         accessor: "role",
       },
       {
@@ -92,20 +99,12 @@ export const ListUsers = () => {
         },
       },
       {
-        Header: " ",
-        disableFilters: true,
-        accessor: "uid",
-        Cell: ({ value }) => {
-          return (
-            <div>
-              <Link to={generateUserDetailLink(value)}>
-                {" "}
-                {"View User Detail"}{" "}
-              </Link>
-              {/* <button onClick = {(e) => {handleDeleteUser(value, e)}}> Delete User </button> */}
-            </div>
-          );
-        },
+        Header: "Phone Number",
+        accessor: "phoneNumber",
+      },
+      {
+        Header: "Role",
+        accessor: "role",
       },
     ],
     []
@@ -117,9 +116,11 @@ export const ListUsers = () => {
     <div id="content">
       <h2 id="title"> Parents and Administrators </h2>
       <div id="userListing">
-        <Link to="/Users/create">
-          <button>Create Parent or Administrator</button>
-        </Link>
+        {(role === "Admin" || role === "School Staff") && (
+          <Link to="/Users/create">
+            <button>Create Parent or Administrator</button>
+          </Link>
+        )}
         <table
           {...getTableProps()}
           class="table table-striped table-bordered border-success rounded"
@@ -129,30 +130,53 @@ export const ListUsers = () => {
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th {...column.getHeaderProps()}>
-                    {column.id === "email" || column.id === "fullName" ? (
+                    {column.id === "email" ||
+                    column.id === "fullName" ||
+                    column.id === "role" ? (
                       <div>
-                        <label
-                          onClick={() => {
-                            nextSort(column.id);
-                          }}
-                          style={{ cursor: "pointer" }}
-                        >
-                          {column.HeaderName}{" "}
-                          {sortBy === column.id &&
-                            sortDirec !== "none" &&
-                            (sortDirec === "DESC" ? (
-                              <FontAwesomeIcon icon={faArrowDown} size="sm" />
-                            ) : (
-                              <FontAwesomeIcon icon={faArrowUp} size="sm" />
-                            ))}
-                        </label>
-                        <DefaultColumnFilter
-                          setFilter={
-                            column.id === "email"
-                              ? setEmailFilter
-                              : setLastNameFilter
-                          }
-                        />
+                        {column.id !== "role" ? (
+                          <>
+                            <label
+                              onClick={() => {
+                                nextSort(column.id);
+                              }}
+                              style={{ cursor: "pointer" }}
+                            >
+                              {column.HeaderName}{" "}
+                              {sortBy === column.id &&
+                                sortDirec !== "none" &&
+                                (sortDirec === "DESC" ? (
+                                  <FontAwesomeIcon
+                                    icon={faArrowDown}
+                                    size="sm"
+                                  />
+                                ) : (
+                                  <FontAwesomeIcon icon={faArrowUp} size="sm" />
+                                ))}
+                            </label>
+                            <DefaultColumnFilter
+                              setFilter={
+                                column.id === "email"
+                                  ? setEmailFilter
+                                  : setLastNameFilter
+                              }
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <label>{column.HeaderName} </label>
+                            <select
+                              value={roleFilter}
+                              onChange={(e) => setRoleFilter(e.target.value)}
+                            >
+                              <option value="">--</option>
+                              <option value="None">None</option>
+                              <option value="Admin">Admin</option>
+                              <option value="School Staff">School Staff</option>
+                              <option value="Driver">Driver</option>
+                            </select>
+                          </>
+                        )}
                       </div>
                     ) : (
                       column.render("Header")
@@ -166,10 +190,18 @@ export const ListUsers = () => {
             {rows.map((row) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
+                <tr
+                  {...row.getRowProps()}
+                  onClick={() => navigate(`/Users/info/${row.original.uid}`)}
+                >
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td
+                        {...cell.getCellProps()}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {cell.render("Cell")}
+                      </td>
                     );
                   })}
                 </tr>

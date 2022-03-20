@@ -28,6 +28,7 @@ class AuthController {
   static register = async (request: Request, response: Response) => {
     let {
       email,
+      phoneNumber,
       fullName,
       address,
       longitude,
@@ -65,6 +66,7 @@ class AuthController {
     let user = new User();
     const userRepository = getRepository(User);
     user.email = email.toLowerCase();
+    user.phoneNumber = phoneNumber;
     user.password = null;
     user.fullName = fullName;
     user.address = address;

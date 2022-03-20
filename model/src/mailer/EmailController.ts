@@ -102,12 +102,9 @@ export class EmailController {
 
   private extractName = (user) => {
     return (
-      user.firstName +
-      ("middlename" in user ? user.middleName : "") +
-      " " +
-      user.lastName
+      user.fullName
     );
-  };
+  }
 
   sendGeneralAnnouncementToAll = async (
     request: Request,

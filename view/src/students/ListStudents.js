@@ -1,6 +1,6 @@
 import "./ListStudent.css";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllStudents } from "../api/axios_wrapper";
@@ -13,7 +13,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
-export const ListStudents = () => {
+export const ListStudents = ({ role }) => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(1);
@@ -75,6 +76,16 @@ export const ListStudents = () => {
         accessor: "school.name",
       },
       {
+        Header: "Parent",
+        accessor: "parentUser",
+        Cell: props => (
+            <div>
+              <div>{props.value.fullName}</div>
+              <div>{props.value.phoneNumber}</div>
+            </div>
+        )
+      },
+      {
         Header: "Route",
         accessor: "route",
         Cell: (props) => (
@@ -123,13 +134,6 @@ export const ListStudents = () => {
           </div>
         ),
       },
-      {
-        Header: "Detail Page",
-        accessor: "uid",
-        Cell: (props) => {
-          return <Link to={`/Students/info/${props.value}`}>view</Link>;
-        },
-      },
     ],
     []
   );
@@ -140,9 +144,9 @@ export const ListStudents = () => {
     <div id="content">
       <h2 id="title"> Students </h2>
       <div id="userListing">
-        <Link to="/Students/create">
+        {(role === "Admin" || role === "School Staff") && <Link to="/Students/create">
           <button>Create Student</button>
-        </Link>
+        </Link>}
         <table
           {...getTableProps()}
           class="table table-striped table-bordered border-success rounded"
@@ -193,10 +197,10 @@ export const ListStudents = () => {
             {rows.map((row) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
+                <tr {...row.getRowProps()} onClick={() => navigate(`/Students/info/${row.original.uid}`)}>
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
                     );
                   })}
                 </tr>

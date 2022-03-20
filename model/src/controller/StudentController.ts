@@ -6,10 +6,12 @@ import {
 } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { Student } from "../entity/Student";
+import { User } from "../entity/User";
 
 @EntityRepository(Student)
 export class StudentController extends Repository<Student> {
   private studentRepository = getRepository(Student);
+  private userRepository = getRepository(User);
 
   async allStudents(request: Request, response: Response, next: NextFunction) {
     try {
@@ -61,6 +63,7 @@ export class StudentController extends Repository<Student> {
 
       var sortSpecification;
       var sortDirSpec;
+      const role = response.locals.jwtPayload.role;
       if (request.query.sort == "none") {
         sortSpecification = "students.fullName";
       } else if (request.query.sort == "school.name") {
@@ -89,6 +92,33 @@ export class StudentController extends Repository<Student> {
       const queryFullNameFilter = request.query.fullNameFilter;
       if (queryIdFilter) {
         if (request.query.showAll && request.query.showAll === "true") {
+          if (role == "School Staff") {
+            const userId = response.locals.jwtPayload.uid;
+            const currentUser = await this.userRepository
+              .createQueryBuilder("users")
+              .where("users.uid = :uid", { uid: userId })
+              .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+              .getOneOrFail();
+            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const [studentsQueryResult, total] = await this.studentRepository
+              .createQueryBuilder("students")
+              .orderBy(sortSpecification, sortDirSpec)
+              .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
+              .andWhere("students.fullName ilike '%' || :fullName || '%'", {
+                fullName: queryFullNameFilter,
+              })
+              .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
+              .leftJoinAndSelect("students.route", "route")
+              .leftJoinAndSelect("students.school", "school")
+              .leftJoinAndSelect("students.inRangeStops", "stops")
+              .leftJoinAndSelect("students.parentUser", "parentUser")
+              .getManyAndCount();
+            response.status(200);
+            return {
+              students: studentsQueryResult,
+              total: total,
+            };
+          }
           var [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
             .orderBy(sortSpecification, sortDirSpec)
@@ -99,6 +129,7 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .leftJoinAndSelect("students.parentUser", "parentUser")
             .getManyAndCount();
           response.status(200);
           return {
@@ -106,6 +137,35 @@ export class StudentController extends Repository<Student> {
             total: total,
           };
         } else {
+          if (role == "School Staff") {
+            const userId = response.locals.jwtPayload.uid;
+            const currentUser = await this.userRepository
+              .createQueryBuilder("users")
+              .where("users.uid = :uid", { uid: userId })
+              .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+              .getOneOrFail();
+            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const [studentsQueryResult, total] = await this.studentRepository
+              .createQueryBuilder("students")
+              .orderBy(sortSpecification, sortDirSpec)
+              .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
+              .andWhere("students.fullName ilike '%' || :fullName || '%'", {
+                fullName: queryFullNameFilter,
+              })
+              .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
+              .leftJoinAndSelect("students.route", "route")
+              .leftJoinAndSelect("students.school", "school")
+              .leftJoinAndSelect("students.inRangeStops", "stops")
+              .leftJoinAndSelect("students.parentUser", "parentUser")
+              .offset(skipNum)
+              .limit(takeNum)
+              .getManyAndCount();
+            response.status(200);
+            return {
+              students: studentsQueryResult,
+              total: total,
+            };
+          }
           const [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
             .orderBy(sortSpecification, sortDirSpec)
@@ -116,6 +176,7 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .leftJoinAndSelect("students.parentUser", "parentUser")
             .offset(skipNum)
             .limit(takeNum)
             .getManyAndCount();
@@ -127,6 +188,32 @@ export class StudentController extends Repository<Student> {
         }
       } else {
         if (request.query.showAll && request.query.showAll === "true") {
+          if (role == "School Staff") {
+            const userId = response.locals.jwtPayload.uid;
+            const currentUser = await this.userRepository
+              .createQueryBuilder("users")
+              .where("users.uid = :uid", { uid: userId })
+              .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+              .getOneOrFail();
+            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const [studentsQueryResult, total] = await this.studentRepository
+              .createQueryBuilder("students")
+              .orderBy(sortSpecification, sortDirSpec)
+              .where("students.fullName ilike '%' || :fullName || '%'", {
+                fullName: queryFullNameFilter,
+              })
+              .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
+              .leftJoinAndSelect("students.route", "route")
+              .leftJoinAndSelect("students.school", "school")
+              .leftJoinAndSelect("students.inRangeStops", "stops")
+              .leftJoinAndSelect("students.parentUser", "parentUser")
+              .getManyAndCount();
+            response.status(200);
+            return {
+              students: studentsQueryResult,
+              total: total,
+            };
+          }
           const [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
             .orderBy(sortSpecification, sortDirSpec)
@@ -136,6 +223,7 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .leftJoinAndSelect("students.parentUser", "parentUser")
             .getManyAndCount();
           response.status(200);
           return {
@@ -143,16 +231,44 @@ export class StudentController extends Repository<Student> {
             total: total,
           };
         } else {
+          if (role == "School Staff") {
+            const userId = response.locals.jwtPayload.uid;
+            const currentUser = await this.userRepository
+              .createQueryBuilder("users")
+              .where("users.uid = :uid", { uid: userId })
+              .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+              .getOneOrFail();
+            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const [studentsQueryResult, total] = await this.studentRepository
+              .createQueryBuilder("students")
+              .orderBy(sortSpecification, sortDirSpec)
+              .where("students.fullName ilike '%' || :fullName || '%'", {
+                fullName: queryFullNameFilter,
+              })
+              .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
+              .leftJoinAndSelect("students.route", "route")
+              .leftJoinAndSelect("students.school", "school")
+              .leftJoinAndSelect("students.inRangeStops", "stops")
+              .leftJoinAndSelect("students.parentUser", "parentUser")
+              .offset(skipNum)
+              .limit(takeNum)
+              .getManyAndCount();
+            response.status(200);
+            return {
+              students: studentsQueryResult,
+              total: total,
+            };
+          }
           const [studentsQueryResult, total] = await this.studentRepository
             .createQueryBuilder("students")
             .orderBy(sortSpecification, sortDirSpec)
-
             .where("students.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFullNameFilter,
             })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .leftJoinAndSelect("students.parentUser", "parentUser")
             .offset(skipNum)
             .limit(takeNum)
             .getManyAndCount();

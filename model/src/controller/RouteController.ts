@@ -7,10 +7,12 @@ import {
 import { NextFunction, Request, Response } from "express";
 import { Route } from "../entity/Route";
 import { Student } from "../entity/Student";
+import { User } from "../entity/User";
 
 @EntityRepository(Route)
 export class RouteController extends Repository<Route> {
   private routeRepository = getRepository(Route);
+  private userRepository = getRepository(User);
 
   async allRoutes(request: Request, response: Response, next: NextFunction) {
     try {
@@ -87,6 +89,7 @@ export class RouteController extends Repository<Route> {
     next: NextFunction
   ) {
     try {
+      const role = response.locals.jwtPayload.role;
       const pageNum: number = +request.query.page || 0;
       if (pageNum <= -1) {
         response.status(401).send("Please specify a positive page number to view results.");
@@ -117,8 +120,10 @@ export class RouteController extends Repository<Route> {
 
       if (request.query.sort == "students.length") {
         const routesByStudentsCount = await this.getSortedRoutesByUserCount(
-          nameFilter,
-          sortDirSpec
+            nameFilter,
+            sortDirSpec,
+            response,
+            role
         );
         const total = routesByStudentsCount.length;
         response.status(200);
@@ -147,6 +152,30 @@ export class RouteController extends Repository<Route> {
         }
       } else {
         if (request.query.showAll && request.query.showAll === "true") {
+          if (role == "School Staff") {
+            const userId = response.locals.jwtPayload.uid;
+            const currentUser = await this.userRepository
+              .createQueryBuilder("users")
+              .where("users.uid = :uid", { uid: userId })
+              .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+              .getOneOrFail();
+            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const [routeQueryResult, total] = await this.routeRepository
+              .createQueryBuilder("routes")
+              .leftJoinAndSelect("routes.school", "school")
+              .leftJoinAndSelect("routes.students", "students")
+              .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+              .leftJoinAndSelect("routes.stops", "stops")
+              .orderBy(sortSpecification, sortDirSpec)
+              .where("routes.name ilike '%' || :name || '%'", { name: nameFilter})
+              .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
+              .getManyAndCount();
+            response.status(200);
+            return {
+              routes: routeQueryResult,
+              total: total
+            };
+          }
           const [routeQueryResult, total] = await this.routeRepository
             .createQueryBuilder("routes")
             .leftJoinAndSelect("routes.school", "school")
@@ -162,6 +191,32 @@ export class RouteController extends Repository<Route> {
             total: total
           };
         } else {
+          if (role == "School Staff") {
+            const userId = response.locals.jwtPayload.uid;
+            const currentUser = await this.userRepository
+              .createQueryBuilder("users")
+              .where("users.uid = :uid", { uid: userId })
+              .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+              .getOneOrFail();
+            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const [routeQueryResult, total] = await this.routeRepository
+              .createQueryBuilder("routes")
+              .skip(skipNum)
+              .take(takeNum)
+              .leftJoinAndSelect("routes.school", "school")
+              .leftJoinAndSelect("routes.students", "students")
+              .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+              .leftJoinAndSelect("routes.stops", "stops")
+              .orderBy(sortSpecification, sortDirSpec)
+              .where("routes.name ilike '%' || :name || '%'", { name: nameFilter})
+              .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
+              .getManyAndCount();
+            response.status(200);
+            return {
+              routes: routeQueryResult,
+              total: total
+            };
+          }
           const [routeQueryResult, total] = await this.routeRepository
             .createQueryBuilder("routes")
             .skip(skipNum)
@@ -188,8 +243,28 @@ export class RouteController extends Repository<Route> {
 
   private async getSortedRoutesByUserCount(
     nameFilter,
-    sortDirSpec
+    sortDirSpec,
+    response,
+    role
   ) {
+    if (role == "School Staff") {
+      const userId = response.locals.jwtPayload.uid;
+      const currentUser = await this.userRepository
+        .createQueryBuilder("users")
+        .where("users.uid = :uid", { uid: userId })
+        .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+        .getOneOrFail();
+      const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+      return await this.routeRepository
+        .createQueryBuilder("routes")
+        .leftJoinAndSelect("routes.school", "school")
+        .leftJoinAndSelect("routes.students", "students")
+        .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+        .leftJoinAndSelect("routes.stops", "stops")
+        .where("routes.name ilike '%' || :name || '%'", { name: nameFilter})
+        .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
+        .getMany();
+    }
     return await this.routeRepository
       .createQueryBuilder("routes")
       .leftJoinAndSelect("routes.school", "school")
@@ -242,7 +317,7 @@ export class RouteController extends Repository<Route> {
 
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -261,7 +336,7 @@ export class RouteController extends Repository<Route> {
 
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -284,7 +359,7 @@ export class RouteController extends Repository<Route> {
 
     try {
       const role = response.locals.jwtPayload.role;
-      if (!role || role != "Admin") {
+      if (!role || !(role == "Admin" || role == "School Staff")) {
         response.status(409).send("User is not an admin.")
         return;
       }

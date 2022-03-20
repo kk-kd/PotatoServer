@@ -1,10 +1,12 @@
 import "./BusRouteInfo.css";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useReactToPrint } from 'react-to-print';
 import { Link, useNavigate } from "react-router-dom";
 import GoogleMapReact from "google-map-react";
 import { Marker } from "./../map/Marker";
 import { deleteRoute, saveRoute, getOneRoute, updateRoute } from "./../api/axios_wrapper";
+import { PrintableRoster } from "./PrintableRoster";
 import { RouteStops } from "./RouteStops";
 import { RouteStudents } from "./RouteStudents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +21,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
-export const BusRouteInfo = () => {
+export const BusRouteInfo = ({ role }) => {
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -138,13 +144,17 @@ export const BusRouteInfo = () => {
               "At least one student on this route does not have an in range bus stop."
           }
         </ReactTooltip></h2>
+        <div style={{ display: "none" }}>
+          <PrintableRoster data={students.splice(0).sort((a, b) => a.fullName.localeCompare(b.fullName))} route={route} ref={componentRef} />
+        </div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}>
-          {!isEdit && <button onClick={e => setIsEdit(true)}>Edit Route Details </button>}
+          {(!isEdit && (role === "Admin" || role === "School Staff")) && <button onClick={e => setIsEdit(true)}>Edit Route Details </button>}
           {isEdit && <button onClick={e => setIsEdit(false)}>Cancel Changes</button>}
-          <button onClick={e => setIsDelete(true)}>Delete Route</button>
-          <button onClick={e => {if (school.uid) {navigate(`/Routes/planner/${school.uid}`)}}}>Edit Students/Stops</button>
-          <button onClick={e => navigate(`/Emails/send/-1/${id}`)}>Send Announcement</button>
+          {(role === "Admin" || role === "School Staff") && <button onClick={e => setIsDelete(true)}>Delete Route</button>}
+          {(role === "Admin" || role === "School Staff") && <button onClick={e => {if (school.uid) {navigate(`/Routes/planner/${school.uid}`)}}}>Edit Students/Stops</button>}
+          {(role === "Admin" || role === "School Staff") && <button onClick={e => navigate(`/Emails/send/-1/${id}`)}>Send Announcement</button>}
+          <button onClick={handlePrint}>Print Roster</button>
         </div>
 
         <div id = "main_form">

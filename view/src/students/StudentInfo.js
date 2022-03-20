@@ -26,7 +26,7 @@ import {
 import { RouteStops } from "../routes/RouteStops";
 
 // this page is the student detail and edit page
-export const StudentInfo = ({ edit }) => {
+export const StudentInfo = ({ edit, role }) => {
   const { id } = useParams();
   const [editable, setEditable] = useState(edit);
   const action_text = editable ? "Edit" : "View";
@@ -101,18 +101,8 @@ export const StudentInfo = ({ edit }) => {
   };
   const handleDeleteStudent = (student_id, e) => {
     e.preventDefault();
-
-    let sName = prompt(
-      "Do you want to delete?  If so, enter student's last name:"
-    );
-    if (!sName) {
-      return;
-    } else if (
-      sName.toLowerCase().trim() !== student.lastName.toLowerCase().trim()
-    ) {
-      alert("Entered Student Last Name Does Not Match.");
-      return;
-    } else {
+    let deleteThisRoute = window.confirm("Do you want to delete this student?");
+    if (deleteThisRoute) {
       const a = callDeleteStudentAPI(student_id);
     }
   };
@@ -120,7 +110,7 @@ export const StudentInfo = ({ edit }) => {
   const callDeleteStudentAPI = async (student_id) => {
     try {
       const resp = await deleteStudent(student_id);
-      alert("User Delete Successful");
+      alert("Student Delete Successful");
       navigate("/Students/list");
     } catch (error) {
       console.log(error);
@@ -165,7 +155,7 @@ export const StudentInfo = ({ edit }) => {
       }
 
       if (fetchedData.data.school) {
-        console.log("School Select Filled")
+        console.log("School Select Filled");
         setSelectedSchool(fetchedData.data.school);
       }
       if (fetchedData.data.route) {
@@ -219,6 +209,7 @@ export const StudentInfo = ({ edit }) => {
           sortDir: "ASC",
           filterType: "",
           filterData: userFilter,
+          isCreate: true,
         });
         setFilteredDataUser(fetchedData.data.users);
         console.log(fetchedData.data);
@@ -235,12 +226,9 @@ export const StudentInfo = ({ edit }) => {
     <div id="student-content">
       <ex> </ex>
 
-      <h2 id="title">
-        {" "}
-        {student ? student.firstName : ""} {student ? student.lastName : ""}{" "}
-      </h2>
+      <h2 id="title"> {student ? student.fullName : ""} </h2>
       <div>
-        {!editable && (
+        {!editable && (role === "Admin" || role === "School Staff") && (
           <button
             onClick={(e) => {
               setEditable(true);
@@ -252,7 +240,7 @@ export const StudentInfo = ({ edit }) => {
             Edit Student{" "}
           </button>
         )}
-        {!editable && (
+        {!editable && (role === "Admin" || role === "School Staff") && (
           <button
             onClick={(e) => {
               handleDeleteStudent(id, e);
@@ -293,18 +281,54 @@ export const StudentInfo = ({ edit }) => {
 
       {!editable && (
         <div>
-          <label id="input-label-student"> Parent: </label>
+          <label id="input-label-student"> Parent Name: </label>
           {user && (
             <span id="input-input-inline-item">
               {" "}
-              <Link to={"/Users/info/" + user.uid}>
-                {" "}
-                {user.fullName}
-              </Link>{" "}
+              <Link to={"/Users/info/" + user.uid}> {user.fullName}</Link>{" "}
             </span>
           )}
           {!user && <span id="input-input-inline-item"> None Parent </span>}
         </div>
+      )}
+
+      {!editable && (
+          <div>
+            <label id="input-label-student"> Parent Email: </label>
+            {user && (
+                <span id="input-input-inline-item">
+              {" "}
+                {" "}
+                    {user.email}{" "}
+            </span>
+            )}
+          </div>
+      )}
+
+      {!editable && (
+          <div>
+            <label id="input-label-student"> Parent Phone Number: </label>
+            {user && (
+                <span id="input-input-inline-item">
+              {" "}
+                {" "}
+                    {user.phoneNumber}{" "}
+            </span>
+            )}
+          </div>
+      )}
+
+      {!editable && (
+          <div>
+            <label id="input-label-student"> Parent Address: </label>
+            {user && (
+                <span id="input-input-inline-item">
+              {" "}
+                {" "}
+                    {user.address}{" "}
+            </span>
+            )}
+          </div>
       )}
 
       {editable && (
@@ -318,6 +342,7 @@ export const StudentInfo = ({ edit }) => {
           }}
           options={filteredDataUser}
           freeSolo
+          disableClearable
           renderInput={(params) => (
             <TextField
               {...params}
@@ -382,6 +407,7 @@ export const StudentInfo = ({ edit }) => {
           }}
           options={filteredDataSchool}
           freeSolo
+          disableClearable
           renderInput={(params) => (
             <TextField {...params} label="School" variant="standard" />
           )}
