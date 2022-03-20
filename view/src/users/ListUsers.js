@@ -82,22 +82,6 @@ export const ListUsers = ({ role }) => {
         Header: "Role",
         accessor: "role",
       },
-      {
-        Header: " ",
-        disableFilters: true,
-        accessor: "uid",
-        Cell: ({ value }) => {
-          return (
-            <div>
-              <Link to={generateUserDetailLink(value)}>
-                {" "}
-                {"View User Detail"}{" "}
-              </Link>
-              {/* <button onClick = {(e) => {handleDeleteUser(value, e)}}> Delete User </button> */}
-            </div>
-          );
-        },
-      },
     ],
     []
   );
@@ -157,10 +141,10 @@ export const ListUsers = ({ role }) => {
             {rows.map((row) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
+                <tr {...row.getRowProps()} onClick={() => navigate(`/Users/info/${row.original.uid}`)}>
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
                     );
                   })}
                 </tr>

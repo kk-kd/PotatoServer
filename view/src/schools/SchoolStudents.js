@@ -1,6 +1,6 @@
 import "./SchoolStudents.css";
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +11,7 @@ import {
 import ReactTooltip from "react-tooltip";
 
 export const SchoolStudents = ({ data, routes }) => {
+  const navigate = useNavigate();
   const columns = useMemo(
     () => [
       {
@@ -69,13 +70,6 @@ export const SchoolStudents = ({ data, routes }) => {
           </div>
         ),
       },
-      {
-        Header: "Detail Page",
-        accessor: "uid",
-        Cell: (props) => {
-          return <Link to={`/Students/info/${props.value}`}>view</Link>;
-        },
-      },
     ],
     []
   );
@@ -128,10 +122,10 @@ export const SchoolStudents = ({ data, routes }) => {
               {page.map((row, i) => {
                 prepareRow(row);
                 return (
-                  <tr {...row.getRowProps()}>
+                  <tr {...row.getRowProps()} onClick={() => navigate(`/Students/info/${row.original.uid}`)}>
                     {row.cells.map((cell) => {
                       return (
-                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                        <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
                       );
                     })}
                   </tr>

@@ -111,6 +111,7 @@ export class StudentController extends Repository<Student> {
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
+              .leftJoinAndSelect("students.parentUser", "parentUser")
               .getManyAndCount();
             response.status(200);
             return {
@@ -128,6 +129,7 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .leftJoinAndSelect("students.parentUser", "parentUser")
             .getManyAndCount();
           response.status(200);
           return {
@@ -154,6 +156,7 @@ export class StudentController extends Repository<Student> {
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
+              .leftJoinAndSelect("students.parentUser", "parentUser")
               .offset(skipNum)
               .limit(takeNum)
               .getManyAndCount();
@@ -173,6 +176,7 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .leftJoinAndSelect("students.parentUser", "parentUser")
             .offset(skipNum)
             .limit(takeNum)
             .getManyAndCount();
@@ -202,6 +206,7 @@ export class StudentController extends Repository<Student> {
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
+              .leftJoinAndSelect("students.parentUser", "parentUser")
               .getManyAndCount();
             response.status(200);
             return {
@@ -218,6 +223,7 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .leftJoinAndSelect("students.parentUser", "parentUser")
             .getManyAndCount();
           response.status(200);
           return {
@@ -243,6 +249,7 @@ export class StudentController extends Repository<Student> {
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
+              .leftJoinAndSelect("students.parentUser", "parentUser")
               .offset(skipNum)
               .limit(takeNum)
               .getManyAndCount();
@@ -261,6 +268,7 @@ export class StudentController extends Repository<Student> {
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
+            .leftJoinAndSelect("students.parentUser", "parentUser")
             .offset(skipNum)
             .limit(takeNum)
             .getManyAndCount();

@@ -1,6 +1,6 @@
 import "./SchoolRoutes.css";
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useFilters, useSortBy, useTable, usePagination } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,6 +8,7 @@ import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
 export const SchoolRoutes = ({ data }) => {
+  const navigate = useNavigate();
   const columns = useMemo(
     () => [
       {
@@ -16,9 +17,8 @@ export const SchoolRoutes = ({ data }) => {
         Cell: (props) => (
           <div>
             <label>
-              <Link to={`/Routes/info/${props.row.original.uid}`}>
-                {props.value}
-              </Link>{" "}
+              {props.value}
+              {" "}
               {!props.row.original.students.some(
                 (student) =>
                   !student.inRangeStops || student.inRangeStops.length === 0
@@ -95,10 +95,10 @@ export const SchoolRoutes = ({ data }) => {
               {page.map((row, i) => {
                 prepareRow(row);
                 return (
-                  <tr {...row.getRowProps()}>
+                  <tr {...row.getRowProps()} onClick={() => navigate(`/Routes/info/${row.original.uid}`)}>
                     {row.cells.map((cell) => {
                       return (
-                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                        <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
                       );
                     })}
                   </tr>
