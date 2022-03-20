@@ -39,6 +39,7 @@ import { Student } from "../entity/Student";
 // const q = new PQueue({ intervalCap: 40, interval: 1000 });
 const ROLE_SCHOOL_STAFF = "School Staff";
 const ROLE_ADMIN = "Admin";
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
 export class BulkController {
   private isValidId(id: string) {
@@ -85,11 +86,12 @@ export class BulkController {
       return;
     }
 
-    let returnedStudents = this.studentsValidationHelper(
+    let returnedStudents = await this.studentsValidationHelper(
       students,
       role,
       userId
     );
+    console.log(returnedStudents);
     response.status(200).send(returnedStudents);
   }
 
@@ -132,7 +134,6 @@ export class BulkController {
       if (student.id != null && student.id != undefined) {
         if (!this.isValidId(student.id)) {
           if (!isAPIRequest) return false;
-
           (
             studentToReturn["error_code"] ??
             (studentToReturn["error_code"] = [])
@@ -265,7 +266,7 @@ export class BulkController {
       return;
     }
 
-    if (!this.studentsValidationHelper(students, role, userId, false)) {
+    if (!(await this.studentsValidationHelper(students, role, userId, false))) {
       response
         .status(401)
         .send("There's error with the data. Please validate first.");
@@ -413,7 +414,8 @@ export class BulkController {
       return;
     }
 
-    let returnedUsers = this.usersValidationHelper(users);
+    let returnedUsers = await this.usersValidationHelper(users);
+    console.log(returnedUsers);
     response.status(200).send(returnedUsers);
   }
 
@@ -436,13 +438,13 @@ export class BulkController {
         continue;
       }
       // 1 - Email Validation
+      console.log("User email is: " + user.email);
       if (
         user.email == null ||
         user.email == undefined ||
         !EmailValidator.validate(user.email)
-      )
+      ) {
         if (!isAPIRequest) return false;
-      {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           1
         );
@@ -453,9 +455,8 @@ export class BulkController {
         user.fullName == null ||
         user.fullName == undefined ||
         user.fullName.trim() == ""
-      )
+      ) {
         if (!isAPIRequest) return false;
-      {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           2
         );
@@ -521,9 +522,8 @@ export class BulkController {
         user.phone_number == null ||
         user.phone_number == undefined ||
         user.phone_number.trim() == ""
-      )
+      ) {
         if (!isAPIRequest) return false;
-      {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           7
         );
@@ -571,7 +571,7 @@ export class BulkController {
       return;
     }
 
-    if (!this.usersValidationHelper(users, false)) {
+    if (!(await this.usersValidationHelper(users, false))) {
       response
         .status(401)
         .send("There's error with the data. Please validate first.");
