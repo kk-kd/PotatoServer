@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import * as EmailValidator from "email-validator";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";
@@ -86,12 +86,13 @@ export class BulkController {
       return;
     }
 
-    let returnedStudents = this.studentsValidationHelper(
+    let returnedStudents = await this.studentsValidationHelper(
       students,
       role,
       userId
     );
     response.status(200).send(returnedStudents);
+
   }
 
   // return a boolean indicating if there's an error in @code{students} if @code{isAPIRequest}=false
@@ -103,7 +104,6 @@ export class BulkController {
     isAPIRequest = true
   ) {
     let returnedStudents = { students: [] };
-
     for (const student of students) {
       let studentToReturn = { ...student };
       // 99
