@@ -6,8 +6,8 @@ export const ValidateStep = ({errors, setErrors, setFileData, step_labels, activ
     
     return (
         <div>
-             <div id = 'title'> Fix </div>
-
+             <div id = 'question'> Fix </div>
+             
             <StepButtons
                 nextButtonValid = {!errors} 
                 step_labels = {step_labels} 

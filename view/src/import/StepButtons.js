@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 
 export const StepButtons = ({nextButtonValid, step_labels, activeStep, setActiveStep, setRunValidation}) => {
     const handleNext = () => {  
-        if (activeStep === 0) {
+        if (activeStep === 1) {
             setRunValidation(true);
         }
         setActiveStep(activeStep + 1);

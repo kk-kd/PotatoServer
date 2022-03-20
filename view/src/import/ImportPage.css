@@ -5,6 +5,25 @@
 
 #step {
     width: 70%;
-    border: 1px black solid;
     margin: auto;
+}
+
+#question {
+    color:black; 
+    font-size: x-large;
+    font-style: italic;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+#centered-form {
+    margin: auto;
+    display: -webkit-inline-box
+}
+
+#file-display {
+    border: 1px solid black;
+    width: 30%;
+    padding: 10px;
+    margin:auto;
 }
