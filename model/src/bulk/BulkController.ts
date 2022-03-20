@@ -450,8 +450,8 @@ export class BulkController {
       }
       // 14 - Email is invalid 
       if (
-        user.email == null ||
-        user.email == undefined ||
+        user.email != null &&
+        user.email != undefined &&
         !EmailValidator.validate(user.email)
       )
         if (!isAPIRequest) return false;
