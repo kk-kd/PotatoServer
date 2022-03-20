@@ -99,6 +99,7 @@ export class UserController extends Repository<User> {
       filterSpecification = "users." + request.query.sort;
       const queryFilterType = request.query.filterType;
       const queryFilterData = request.query.filterData;
+      const roleFilterData = request.query.roleFilter || "";
       if (request.query.showAll && request.query.showAll === "true") {
         if (role == "School Staff" && !request.query.isCreate) {
           const userId = response.locals.jwtPayload.uid;
@@ -116,6 +117,9 @@ export class UserController extends Repository<User> {
             })
             .andWhere("users.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFilterType,
+            })
+            .andWhere("users.role ilike '%' || :role || '%'", {
+              role: roleFilterData,
             })
             .leftJoinAndSelect("users.students", "student")
             .leftJoinAndSelect("student.school", "schools")
@@ -136,6 +140,9 @@ export class UserController extends Repository<User> {
           })
           .andWhere("users.fullName ilike '%' || :fullName || '%'", {
             fullName: queryFilterType,
+          })
+          .andWhere("users.role ilike '%' || :role || '%'", {
+            role: roleFilterData,
           })
           .leftJoinAndSelect("users.students", "student")
           .getManyAndCount();
@@ -162,6 +169,9 @@ export class UserController extends Repository<User> {
             .andWhere("users.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFilterType,
             })
+            .andWhere("users.role ilike '%' || :role || '%'", {
+              role: roleFilterData,
+            })
             .leftJoinAndSelect("users.students", "student")
             .leftJoinAndSelect("student.school", "schools")
             .getMany();
@@ -183,6 +193,9 @@ export class UserController extends Repository<User> {
           })
           .andWhere("users.fullName ilike '%' || :fullName || '%'", {
             fullName: queryFilterType,
+          })
+          .andWhere("users.role ilike '%' || :role || '%'", {
+            role: roleFilterData,
           })
           .leftJoinAndSelect("users.students", "student")
           .getManyAndCount();
