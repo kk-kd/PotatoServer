@@ -4,11 +4,10 @@ import PropTypes from 'prop-types'
 import {parse} from 'papaparse';
 
 
-export const UploadStep = ({fileData, setFileData, fileName, setFileName, step_labels, activeStep, setActiveStep, setRunValidation}) => {
+export const UploadStep = ({dataType, fileData, setFileData, fileName, setFileName, step_labels, activeStep, setActiveStep, setRunValidation}) => {
 
     const [validFile, setValidFile] = useState(false);
-    const [indexCount, setIndexCount] = useState(0);
-    const [columns, setColumns] = useState();
+    const [columnMap, setColumnMap] = useState();
 
     const hiddenFileInput = useRef(null);
   
@@ -22,19 +21,17 @@ export const UploadStep = ({fileData, setFileData, fileName, setFileName, step_l
     }
 
     const fixHeader = (h) => {
-       const columns = {
-           'name': 'Name', 
-           'parent': 'User', 
-           'id':'studentid'
-       }
-       if (Object.keys(columns).includes(h)) {
-           return columns[h]
-       }
-    
+        // TODO: apply column map
+
+    //    if (Object.keys(columns).includes(h)) {
+    //        return columns[h]
+    //    }
+       return h
     }
     const addIndex = (data) => {
         for (let i = 0; i < data.length; i++) {
             data[i]['index'] = i
+            
         }
         return data
     }
@@ -42,7 +39,7 @@ export const UploadStep = ({fileData, setFileData, fileName, setFileName, step_l
     // On Select, update state
     const fileSelect = (e) => {
         if (canParse(e.target.files[0].data)) {
-            parse(e.target.files[0], {'header': true, 'transformHeader': fixHeader, 'complete': updateFileData})
+            parse(e.target.files[0], {'header': true, dynamicTyping: true, 'transformHeader': fixHeader, 'complete': updateFileData})
             setValidFile(true);
             setFileName(e.target.files[0].name);
         } 
@@ -60,13 +57,26 @@ export const UploadStep = ({fileData, setFileData, fileName, setFileName, step_l
         }
     } 
 
-    // on load, if there's already a file selected, don't make them resubmit. Handles when they go backwards! 
+    // on load: 
+    // - if there's already a file selected, don't make them resubmit. Handles when they go backwards! 
+    // - define column conversions
     useEffect(() => {
         if (fileData) {
             setValidFile(true);            
             setFileData(fileData);
             setFileName(fileName);
         }
+        if (dataType === 'students') {
+            setColumnMap({
+                //TODO: define student column map
+            })
+        }
+        else if (dataType === 'users') {
+            setColumnMap({
+                //TODO: define user column map
+            })
+        }
+        
     }, []);
 
 
