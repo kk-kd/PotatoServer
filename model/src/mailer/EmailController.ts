@@ -86,7 +86,7 @@ export class EmailController {
 
       for (var stop of stops) {
         if (stop.name == "") {
-          studentInfo += `<u>Stop #${stop.uid}</u>`;
+          studentInfo += `<u>Stop #${stop.arrivalIndex}</u>`;
         } else {
           studentInfo += `<u>${stop.name}</u>`;
         }
