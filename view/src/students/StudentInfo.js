@@ -281,7 +281,7 @@ export const StudentInfo = ({ edit, role }) => {
 
       {!editable && (
         <div>
-          <label id="input-label-student"> Parent: </label>
+          <label id="input-label-student"> Parent Name: </label>
           {user && (
             <span id="input-input-inline-item">
               {" "}
@@ -290,6 +290,45 @@ export const StudentInfo = ({ edit, role }) => {
           )}
           {!user && <span id="input-input-inline-item"> None Parent </span>}
         </div>
+      )}
+
+      {!editable && (
+          <div>
+            <label id="input-label-student"> Parent Email: </label>
+            {user && (
+                <span id="input-input-inline-item">
+              {" "}
+                {" "}
+                    {user.email}{" "}
+            </span>
+            )}
+          </div>
+      )}
+
+      {!editable && (
+          <div>
+            <label id="input-label-student"> Parent Phone Number: </label>
+            {user && (
+                <span id="input-input-inline-item">
+              {" "}
+                {" "}
+                    {user.phoneNumber}{" "}
+            </span>
+            )}
+          </div>
+      )}
+
+      {!editable && (
+          <div>
+            <label id="input-label-student"> Parent Address: </label>
+            {user && (
+                <span id="input-input-inline-item">
+              {" "}
+                {" "}
+                    {user.address}{" "}
+            </span>
+            )}
+          </div>
       )}
 
       {editable && (
