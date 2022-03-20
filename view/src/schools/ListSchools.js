@@ -1,6 +1,6 @@
 import "./ListSchools.css";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllSchools } from "./../api/axios_wrapper";
@@ -9,13 +9,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 export const ListSchools = ({ role }) => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(1);
   const [size, setSize] = useState(10);
   const [sortBy, setSortBy] = useState("name");
   const [showAll, setShowAll] = useState(false);
-  const [sortDirec, setSortDirec] = useState("none");
+  const [sortDirec, setSortDirec] = useState("ASC");
   const [nameFilter, setNameFilter] = useState("");
   useEffect(() => {
     const fetchData = async () => {
@@ -40,15 +41,13 @@ export const ListSchools = ({ role }) => {
   const nextSort = (id) => {
     if (sortBy !== id) {
       setSortBy(id);
-      if (sortDirec === "none" || sortDirec === "DESC") {
-        setSortDirec("ASC");
-      } else {
+      if (sortDirec === "ASC") {
         setSortDirec("DESC");
+      } else {
+        setSortDirec("ASC");
       }
     } else if (sortDirec === "ASC") {
       setSortDirec("DESC");
-    } else if (sortDirec === "DESC") {
-      setSortDirec("none");
     } else {
       setSortDirec("ASC");
     }
@@ -77,13 +76,6 @@ export const ListSchools = ({ role }) => {
         Cell: (props) => (
           <div>{props.value ? getDisplayTime(props.value) : ""}</div>
         ),
-      },
-      {
-        Header: "Detail Page",
-        accessor: "uid",
-        Cell: (props) => {
-          return <Link to={`/Schools/info/${props.value}`}>view</Link>;
-        },
       },
     ],
     []
@@ -140,10 +132,10 @@ export const ListSchools = ({ role }) => {
             {rows.map((row) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
+                <tr {...row.getRowProps()} onClick={() => navigate(`/Schools/info/${row.original.uid}`)}>
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
                     );
                   })}
                 </tr>

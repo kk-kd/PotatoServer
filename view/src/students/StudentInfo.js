@@ -155,7 +155,7 @@ export const StudentInfo = ({ edit, role }) => {
       }
 
       if (fetchedData.data.school) {
-        console.log("School Select Filled")
+        console.log("School Select Filled");
         setSelectedSchool(fetchedData.data.school);
       }
       if (fetchedData.data.route) {
@@ -209,7 +209,7 @@ export const StudentInfo = ({ edit, role }) => {
           sortDir: "ASC",
           filterType: "",
           filterData: userFilter,
-          isCreate: true
+          isCreate: true,
         });
         setFilteredDataUser(fetchedData.data.users);
         console.log(fetchedData.data);
@@ -226,12 +226,9 @@ export const StudentInfo = ({ edit, role }) => {
     <div id="student-content">
       <ex> </ex>
 
-      <h2 id="title">
-        {" "}
-        {student ? student.fullName : ""}{" "}
-      </h2>
+      <h2 id="title"> {student ? student.fullName : ""} </h2>
       <div>
-        {(!editable && (role === "Admin" || role === "School Staff")) && (
+        {!editable && (role === "Admin" || role === "School Staff") && (
           <button
             onClick={(e) => {
               setEditable(true);
@@ -243,7 +240,7 @@ export const StudentInfo = ({ edit, role }) => {
             Edit Student{" "}
           </button>
         )}
-        {(!editable && (role === "Admin" || role === "School Staff")) && (
+        {!editable && (role === "Admin" || role === "School Staff") && (
           <button
             onClick={(e) => {
               handleDeleteStudent(id, e);
@@ -288,10 +285,7 @@ export const StudentInfo = ({ edit, role }) => {
           {user && (
             <span id="input-input-inline-item">
               {" "}
-              <Link to={"/Users/info/" + user.uid}>
-                {" "}
-                {user.fullName}
-              </Link>{" "}
+              <Link to={"/Users/info/" + user.uid}> {user.fullName}</Link>{" "}
             </span>
           )}
           {!user && <span id="input-input-inline-item"> None Parent </span>}
@@ -309,6 +303,7 @@ export const StudentInfo = ({ edit, role }) => {
           }}
           options={filteredDataUser}
           freeSolo
+          disableClearable
           renderInput={(params) => (
             <TextField
               {...params}
@@ -373,6 +368,7 @@ export const StudentInfo = ({ edit, role }) => {
           }}
           options={filteredDataSchool}
           freeSolo
+          disableClearable
           renderInput={(params) => (
             <TextField {...params} label="School" variant="standard" />
           )}
