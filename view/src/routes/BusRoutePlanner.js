@@ -14,7 +14,8 @@ import {
   faMapPin,
   faCircleQuestion,
   faCheck,
-  faXmark
+  faXmark,
+  faCircleExclamation
 } from "@fortawesome/free-solid-svg-icons";
 import { hasInRangeStop, inRange } from "./../api/distance";
 import ReactTooltip from "react-tooltip";
@@ -43,7 +44,6 @@ export const BusRoutePlanner = () => {
     const fetchData = async () => {
       try {
         const fetchedData = await getOneRoutePlanner(schoolId);
-        console.log(fetchedData.data);
         fetchedData.data.arrivalTime = fetchedData.data.arrivalTime || "08:00";
         fetchedData.data.departureTime = fetchedData.data.departureTime || "15:00";
         fetchedData.data.routes = fetchedData.data.routes.map(route =>
@@ -66,7 +66,6 @@ export const BusRoutePlanner = () => {
           }
         });
         setLocations(locationSet);
-        console.log(fetchedData);
         setSchool(fetchedData.data);
         setLoading(false);
       } catch (error) {
@@ -81,14 +80,10 @@ export const BusRoutePlanner = () => {
   }, [selectedRoute]);
   useEffect(() => {
     if (googleMap) {
-      console.log("removing listener");
       googleMaps.event.clearListeners(googleMap, "click");
       if (placeStopLocation && stopSelect && placeStopLocation) {
-        console.log("adding listener");
         googleMap.addListener("click", e => {
           if (firstSelect) {
-            console.log(e.latLng.lng());
-            console.log(e.latLng.lat());
             setValidatedRoutes(validatedRoutes.map((bool, index) =>
                 index === selectedRoute ? false : bool
             ));
@@ -126,14 +121,16 @@ export const BusRoutePlanner = () => {
     for (var i = 0; i < school.routes.length; i++) {
       const route = school.routes[i];
       if (!route.name || route.name.trim().length === 0) {
-        console.log(route);
         alert("Please ensure all routes have a name.");
         return;
       } else if (!route.desciption || route.desciption.trim().length == 0) {
         alert("Please ensure all routes have a description.")
         return;
-      } else if (!validatedRoutes[i]) {
-        alert(`Please validate ${route.name} before saving.`);
+      } else if (route.stops.length === 0) {
+        alert("Please ensure all routes have at least one stop.")
+        return;
+      } else if (route.stops.some(stop => !(stop.latitude && stop.longitude))) {
+        alert("Please ensure that all stops have been placed on the map.")
         return;
       }
     }
@@ -148,6 +145,57 @@ export const BusRoutePlanner = () => {
       }
       for (var i = 0; i < school.routes.length; i++) {
         const route = school.routes[i];
+        if (!validatedRoutes[i]) {
+          const sorted = [...route.stops.slice(0).sort((a, b) => b.arrivalIndex - a.arrivalIndex)];
+          var newPolylinesEncoded = [];
+          var newPolylinesDecoded = [];
+          for (var j = 0; j < sorted.length/26; j++) {
+            const request = {
+              origin: {
+                lat: j === 0 ? parseFloat(school.latitude) : parseFloat(sorted[j * 26 - 1].latitude),
+                lng: j === 0 ? parseFloat(school.longitude) : parseFloat(sorted[j * 26 - 1].longitude),
+              },
+              destination: {
+                lat: parseFloat(sorted[Math.min(sorted.length - 1, j * 26 + 25)].latitude),
+                lng: parseFloat(sorted[Math.min(sorted.length - 1, j * 26 + 25)].longitude)
+              },
+              travelMode: 'DRIVING',
+              waypoints: sorted.filter(
+                  (stop, index) => index >= j * 26 && index < Math.min(sorted.length - 1, j * 26 + 25)).map(stop => ({
+                location: {
+                  lat: parseFloat(stop.latitude),
+                  lng: parseFloat(stop.longitude)
+                }}))
+            };
+            const result = await directionsService.route(request);
+            if (result.status === "OK") {
+              newPolylinesEncoded = [...newPolylinesEncoded, result.routes[0].overview_polyline];
+              const len = result.routes[0].legs.length;
+              for (var k = 0; k < result.routes[0].legs.length; k++) {
+                if (k === 0 && j === 0) {
+                  sorted[0].pickupTime =
+                      subtractDriveTime(school.arrivalTime,
+                          Math.trunc(result.routes[0].legs[0].duration.value / 60));
+                  sorted[0].dropoffTime =
+                      addDriveTime(school.departureTime,
+                          Math.trunc(result.routes[0].legs[0].duration.value / 60));
+                } else {
+                  sorted[j * 26 + k].pickupTime =
+                      subtractDriveTime(sorted[j * 26 + k - 1].pickupTime,
+                          Math.trunc(result.routes[0].legs[i].duration.value / 60));
+                  sorted[j * 26 + i].dropoffTime =
+                      addDriveTime(sorted[j * 26 + k - 1].dropoffTime,
+                          Math.trunc(result.routes[0].legs[i].duration.value / 60));
+                }
+              }
+            } else {
+              alert(result.status);
+              return;
+            }
+          }
+          route.stops = sorted;
+          route.polyline = newPolylinesEncoded;
+        }
         if (route.uid) {
           const saved = await saveRoute(route);
           savedRoutes[i] = saved.data;
@@ -165,12 +213,30 @@ export const BusRoutePlanner = () => {
         if (route.uid) {
           delete route.students;
           route.stops = route.stops.map(stop => ({...stop, inRangeStudents: []}));
-          console.log(route);
           await saveRoute(route);
           await deleteRoute(route.uid);
         }
       }
       setSchool({...school, routes: savedRoutes});
+      setDeletedRoutes([]);
+      setDeletedStops([]);
+      polylines.forEach(polylineGroup => polylineGroup.forEach(polyline => polyline.setMap(null)));
+      setPolylines(savedRoutes.map((route, index) => {
+            if (route.polyline) {
+              const newPolylines = route.polyline.map(polyline => new googleMaps.Polyline({
+                path: googleMaps.geometry.encoding.decodePath(polyline),
+                strokeColor: "#0000FF",
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+              }));
+              if (selectedRoute === index) {
+                newPolylines.forEach(polyline => polyline.setMap(googleMap))
+              }
+              return newPolylines;
+            }
+            return [];
+          }
+      ));
       alert("Routes updated!")
     } catch (error) {
       alert(error.response.data);
@@ -190,9 +256,10 @@ export const BusRoutePlanner = () => {
     }
     setSchool({...school, routes: [...school.routes, newRoute]});
     setSelectedRoute(school.routes.length);
-    setChangeRoute(false);
+    setChangeRoute(true);
     setFirstSelect(true);
     setStopSelect(false);
+    setPlaceStopLocation(false);
     setPolylines([...polylines, []]);
     setValidatedRoutes([...validatedRoutes, false]);
   }
@@ -204,9 +271,7 @@ export const BusRoutePlanner = () => {
     dirRend.setMap(map);
     setDirectionsRenderer(dirRend);
     setDirectionsService(dirServ);
-    map.addListener("zoom_changed", () => {
-      console.log(map.getZoom());
-    });
+    setValidatedRoutes(validatedRoutes.map(bool => true));
     setPolylines(school.routes.map(route => {
       if (route.polyline) {
         return route.polyline.map(polyline => new maps.Polyline({
@@ -258,7 +323,6 @@ export const BusRoutePlanner = () => {
           }))
         };
         const result = await directionsService.route(request);
-        console.log(result);
         if (result.status === "OK") {
           if (polylines[selectedRoute]) {
             polylines[selectedRoute].forEach(oldPolyline => oldPolyline.setMap(null));
@@ -290,9 +354,6 @@ export const BusRoutePlanner = () => {
                       Math.trunc(result.routes[0].legs[i].duration.value / 60));
             }
           }
-          console.log(sorted);
-          console.log(result.routes[0].overview_polyline);
-          console.log(result.routes[0].overview_polyline.includes(","));
         } else {
           alert(result.status);
           return;
@@ -330,53 +391,10 @@ export const BusRoutePlanner = () => {
                   >
                     <p>Use this page to update the routes and stops for the current school.</p>
                     <p>Make sure to save before leaving the page, or all of your progress will be lost.</p>
-                  </ReactTooltip> <FontAwesomeIcon
-                      icon={!validatedRoutes.includes(false) ? faCheck : faXmark}
-                      id={!validatedRoutes.includes(false) ? "plannerComplete" : "plannerIncomplete"}
-                      size="sm"
-                      data-tip
-                      data-for="readyToSaveTip"
-                  /><ReactTooltip
-                      id="readyToSaveTip"
-                      place="top"
-                      effect="solid"
-                  >
-                    {!validatedRoutes.includes(false) ? "All routes have been validated and can be saved." :
-                        "Not all routes have been validated.  All routes must be validated before saving."
-                    }
-                  </ReactTooltip> </h2>
+                  </ReactTooltip></h2>
               <div id = "action-bar"> 
              
                     <button onClick={e => saveData()}>Save All Changes</button>
-               
-                    {firstSelect && <div style = {{display: "inline-flex"}}><button
-                      onClick={e => calculateRoutes()}
-                    >{validatedRoutes[selectedRoute] ? "Valid Route!" : "Validate Route"}</button>
-                      <button
-                          onClick={e => {
-                            setDeletedRoutes([...deletedRoutes, school.routes[selectedRoute]]);
-                            setSchool({...school, routes: school.routes.filter((route, index) => index !== selectedRoute)});
-                            if (polylines[selectedRoute]) {
-                              polylines[selectedRoute].forEach(polyline => polyline.setMap(null));
-                            }
-                            setPolylines(polylines.filter((p, index) => index !== selectedRoute));
-                            setFirstSelect(false);
-                            setStopSelect(false);
-                            setPlaceStopLocation(false);
-                          }}
-                          data-tip
-                          data-for="deleteRouteTip"
-                      >
-                        Delete Route
-                      </button><ReactTooltip
-                          id="deleteRouteTip"
-                          place="top"
-                          effect="solid"
-                      >
-                        Clicking this button will show the effects of deleting this route, but the route will not actually be deleted until Save All Changes is  clicked.
-                      </ReactTooltip>
-                    </div>}
-                    
               </div>
       <div >
         {loading ? <h3>Loading</h3> :
@@ -402,7 +420,7 @@ export const BusRoutePlanner = () => {
                         <p>Click on the student icon in the toolbar to add/remove students to/from this route by clicking their icon on the map.</p>
                         <p>Click on the Validate Route button to create a route path based on the route's stops.</p>
                       </ReactTooltip> {firstSelect && <><FontAwesomeIcon
-                        icon={completeRoute ? faCheck : faXmark}
+                        icon={completeRoute ? faCheck : faCircleExclamation}
                         id={completeRoute ? "plannerComplete" : "plannerIncomplete"}
                         size="sm"
                         data-tip
@@ -432,6 +450,7 @@ export const BusRoutePlanner = () => {
                         }
                         setFirstSelect(true);
                         setPlaceStopLocation(false);
+                        setChangeRoute(true);
                         setStopSelect(false);
                       }}
                       value={firstSelect ? selectedRoute : "-1"}
@@ -443,8 +462,6 @@ export const BusRoutePlanner = () => {
                   </select>
                   <button onClick={e => createRoute()}>New Route</button>
                     </div>
-                  
-                  <h5 id = "sub-header-bus">  Route Info </h5> 
 
                   {firstSelect && <div style={{width: "100%"}}><label id="plannerLabelDisplay"> Name: </label><input
                       type="text"
@@ -471,7 +488,7 @@ export const BusRoutePlanner = () => {
 
                   <div id="stops">
               
-                      {firstSelect && <h5 id = "sub-header-bus"> Stops <FontAwesomeIcon
+                      {firstSelect && <h5 id = "sub-header-bus"> Select A Stop Or Create A New One <FontAwesomeIcon
                           icon={faCircleQuestion}
                           size="sm"
                           data-tip
@@ -507,13 +524,14 @@ export const BusRoutePlanner = () => {
                         onChange={e => {
                           setSelectedStop(parseInt(e.target.value));
                           setStopSelect(true);
-                          setPlaceStopLocation(false);
+                          setPlaceStopLocation(true);
+                          setChangeRoute(false);
                         }}
                         value={stopSelect ? selectedStop : "-1"}
                     >
                       {stopSelect || <option value="-1">Select a Stop:</option>}
                       {school.routes[selectedRoute].stops.slice(0).sort((a, b) => a.arrivalIndex - b.arrivalIndex).map(stop => (
-                          <option value={stop.arrivalIndex}>{stop.name || (stop.uid ? `Stop #${stop.uid}` : "New Stop")}</option>
+                          <option value={stop.arrivalIndex}>{stop.name || (stop.uid ? `Stop #${stop.arrivalIndex}` : "New Stop")}</option>
                       ))}
                     </select>
                     <button
@@ -531,7 +549,8 @@ export const BusRoutePlanner = () => {
                           );
                           setSelectedStop(school.routes[selectedRoute].stops.length);
                           setStopSelect(true);
-                          setPlaceStopLocation(false);
+                          setPlaceStopLocation(true);
+                          setChangeRoute(false);
                           setValidatedRoutes(validatedRoutes.map((bool, index) =>
                               index === selectedRoute ? false : bool
                           ));
@@ -539,8 +558,6 @@ export const BusRoutePlanner = () => {
                     >New Stop</button></div>}
                     <p> </p>
                     <p> </p>
-                    <h5 id = "sub-header-bus"> Stop Info </h5>
-                    {firstSelect || <h5>Select a route to edit its stops.</h5>}
                     {stopSelect && <div style={{ width: "100%" }}>
                       <div style={{ width: "100%"}}>
                         <label id="plannerLabelDisplay">Name: </label>
@@ -576,25 +593,6 @@ export const BusRoutePlanner = () => {
                         <label style={{padding: "10px"}}>Select Stop Pickup Order in Route: <select
                             onChange={e => {
                               const newIndex = parseInt(e.target.value);
-                              console.log({...school, routes: school.routes.map((route, index) =>
-                                    index === selectedRoute ? {...route, stops: route.stops.map(stop => {
-                                        if (stop.arrivalIndex === selectedStop) {
-                                          return {...stop, arrivalIndex: newIndex};
-                                        } else if (stop.arrivalIndex < newIndex && stop.arrivalIndex > selectedStop) {
-                                          return {...stop, arrivalIndex: stop.arrivalIndex - 1};
-                                        } else if (stop.arrivalIndex > newIndex && stop.arrivalIndex < selectedStop) {
-                                          return {...stop, arrivalIndex: stop.arrivalIndex + 1};
-                                        } else if (stop.arrivalIndex === newIndex) {
-                                          if (newIndex > selectedStop) {
-                                            return {...stop, arrivalIndex: stop.arrivalIndex - 1};
-                                          } else {
-                                            return {...stop, arrivalIndex: stop.arrivalIndex + 1};
-                                          }
-                                        } else {
-                                          return stop;
-                                        }
-                                      })} : route
-                                )});
                               setSchool({...school, routes: school.routes.map((route, index) =>
                                     index === selectedRoute ? {...route, stops: route.stops.map(stop => {
                                         if (stop.arrivalIndex === selectedStop) {
@@ -649,11 +647,6 @@ export const BusRoutePlanner = () => {
                       <div style={{ flex: "30%" }}>
                         <button
                             onClick={e => {
-                              console.log({...school, routes: school.routes.map((route, index) =>
-                                    index === selectedRoute ? {...route, stops: route.stops.filter(stop =>
-                                          stop.arrivalIndex !== selectedStop).map(stop =>
-                                          stop.arrivalIndex > selectedStop ? {...stop, arrivalIndex: stop.arrivalIndex - 1} : stop
-                                      )} : route)});
                               setSchool({...school, routes: school.routes.map((route, index) =>
                                     index === selectedRoute ? {...route, stops: route.stops.filter(stop =>
                                           stop.arrivalIndex !== selectedStop).map(stop =>
@@ -676,6 +669,35 @@ export const BusRoutePlanner = () => {
                         Clicking this button will show the effects of deleting this stop, but the stop will not actually be deleted until Save All Changes is  clicked.
                       </ReactTooltip>
                       </div>
+                    </div>}
+                    {firstSelect && <div style = {{display: "inline-flex"}}>
+                      <button
+                          disabled={validatedRoutes[selectedRoute]}
+                          onClick={e => calculateRoutes()}
+                      >Visualize Route</button>
+                      <button
+                          onClick={e => {
+                            setDeletedRoutes([...deletedRoutes, school.routes[selectedRoute]]);
+                            setSchool({...school, routes: school.routes.filter((route, index) => index !== selectedRoute)});
+                            if (polylines[selectedRoute]) {
+                              polylines[selectedRoute].forEach(polyline => polyline.setMap(null));
+                            }
+                            setPolylines(polylines.filter((p, index) => index !== selectedRoute));
+                            setFirstSelect(false);
+                            setStopSelect(false);
+                            setPlaceStopLocation(false);
+                          }}
+                          data-tip
+                          data-for="deleteRouteTip"
+                      >
+                        Delete Route
+                      </button><ReactTooltip
+                          id="deleteRouteTip"
+                          place="top"
+                          effect="solid"
+                      >
+                        Clicking this button will show the effects of deleting this route, but the route will not actually be deleted until Save All Changes is  clicked.
+                      </ReactTooltip>
                     </div>}
                   </div>
                 </div>
@@ -869,5 +891,4 @@ export const BusRoutePlanner = () => {
       </div>
       </div>
   );
-  
 }

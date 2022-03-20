@@ -16,6 +16,7 @@ import {
   faSchool,
   faMapPin,
   faCircleQuestion,
+  faCircleExclamation,
   faCheck,
   faXmark
 } from "@fortawesome/free-solid-svg-icons";
@@ -130,7 +131,7 @@ export const BusRouteInfo = ({ role }) => {
   return (
       <div id = "content">
         <h2 id = "title">{route.name} <FontAwesomeIcon
-          icon={!students.some(student => student.inRangeStops.length === 0) ? faCheck : faXmark}
+          icon={!students.some(student => student.inRangeStops.length === 0) ? faCheck : faCircleExclamation}
           id={!students.some(student => student.inRangeStops.length === 0) ? "plannerComplete" : "plannerIncomplete"}
           size="sm"
           data-tip
@@ -145,7 +146,7 @@ export const BusRouteInfo = ({ role }) => {
           }
         </ReactTooltip></h2>
         <div style={{ display: "none" }}>
-          <PrintableRoster data={students.splice(0).sort((a, b) => a.fullName.localeCompare(b.fullName))} route={route} ref={componentRef} />
+          <PrintableRoster data={[...students].splice(0).sort((a, b) => a.fullName.localeCompare(b.fullName))} route={route} ref={componentRef} />
         </div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}>
@@ -155,6 +156,7 @@ export const BusRouteInfo = ({ role }) => {
           {(role === "Admin" || role === "School Staff") && <button onClick={e => {if (school.uid) {navigate(`/Routes/planner/${school.uid}`)}}}>Edit Students/Stops</button>}
           {(role === "Admin" || role === "School Staff") && <button onClick={e => navigate(`/Emails/send/-1/${id}`)}>Send Announcement</button>}
           <button onClick={handlePrint}>Print Roster</button>
+          <button onClick={() => navigate(`/Routes/navigation/${id}`)}>Navigation Link(s)</button>
         </div>
 
         <div id = "main_form">
@@ -195,7 +197,7 @@ export const BusRouteInfo = ({ role }) => {
           </div>
           <h5 id = "sub-header"> Students </h5>
           <div>
-            <RouteStudents data={students} />
+            <RouteStudents data={[...students]} />
           </div>
         </div>
 
