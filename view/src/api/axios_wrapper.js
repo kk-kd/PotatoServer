@@ -364,12 +364,9 @@ export async function saveBulkParents(specifications) {
 }
 
 export async function validateBulkStudents(specifications) {
-  return (
-    await axios.post("/api/bulk/students/validate", specifications),
-    {
-      headers: getHeaderWithAuthToken(),
-    }
-  );
+  return await axios.post("/api/bulk/students/validate", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 
 export async function saveBulkStudents(specifications) {
