@@ -17,10 +17,16 @@ export const ImportPage = () => {
     const [fileName, setFileName] = useState()
 
     // errors
-    const [Addresserrors, setAddressErrors] = useState() // dict with key of # to list of indexes
-    const [Missingerrors, setMissingErrors] = useState() // 
-    const [Invaliderrors, setInvalidErrors] = useState() 
-    const [Existserrors, setExistsErrors] = useState() 
+    const [addressErrors, setAddressErrors] = useState() // dict with key of # to list of indexes
+
+    // {
+    //   5 => [0,1,2,3]
+    //   6 => [4,5,6]  
+    // }
+
+    const [missingErrors, setMissingErrors] = useState() // 
+    const [invalidErrors, setInvalidErrors] = useState() 
+    const [existErrors, setExistsErrors] = useState() 
     const [errors, setErrors] = useState() // 
 
     // error codes 
@@ -48,44 +54,54 @@ export const ImportPage = () => {
         }
     }, [runValidation]);
 
-    const findAndFormatErrors = (data) => {
-        
+    const findAndFormatErrors = (data) => {        
         for (let i = 0; i < data.length; i++) {
             var entry = data[i]
             for (let k = 0; k < entry['error_codes'].length; k++) {
                 var code = entry['error_codes'][k] 
                 for (let j = 0; j < addressErrorCodes.length; j++) {
                     if (code === addressErrorCodes[j]) {
-                        addressErrorCodes[code].push(i)
+                        addressErrors[code].push(i)
                     }
                 } 
                 for (let m = 0; m < missingErrorCodes.length; m++) {
                     if (code === missingErrorCodes[m]) {
-                        missingErrorCodes[code].push(i)
+                        missingErrors[code].push(i)
                     }
                 } 
                 for (let n = 0; n < invalidErrorCodes.length; n++) {
                     if (code === invalidErrorCodes[n]) {
-                        invalidErrorCodes[code].push(i)
+                        // let c = existErrors[code]
+                        // c.push(i)
+                        // const newE = { ...existErrors, code : c};
+                        // setExistsErrors(newE)
+                        // console.log(newE)
+                        // invalidErrors[code].push(i)
                     }
                 } 
                 for (let p = 0; p < existErrorCodes.length; p++) {
                     if (code === existErrorCodes[p]) {
-                        existErrorCodes[code].push(i)
+                        let c = existErrors[code]
+                        c.push(i)
+                        console.log(c)
+                        const newE = { ...existErrors, code : c};
+                        setExistsErrors(newE)
+                        console.log(newE)
                     }
                 } 
             }
         }
-        console.log(addressErrorCodes)
-        console.log(missingErrorCodes)
-        console.log(invalidErrorCodes)
-        console.log(existErrorCodes)
+        console.log(addressErrors)
+        console.log(missingErrors)
+        console.log(invalidErrors)
+        console.log(existErrors)
     }
 
     async function callValidate(validation_input) {
         try {
             const resp = await validateBulkStudents(validation_input);
-            findAndFormatErrors(resp)
+            console.log(resp)
+            findAndFormatErrors(resp.validateBulkParents)
         }
         catch (e) {
             console.log(e)
