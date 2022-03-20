@@ -20,7 +20,8 @@ import { Student } from "../entity/Student";
  * 13 - user does not permission to add parents/students to this school
  *
  * PARENT
- * 1 - no email or invalid email
+ * 1 - no email
+ * 14 - invalid email
  * 3 - email existed in the database
  * 4 - repetitive emails in request
  * 5 - Missing Address
@@ -435,7 +436,19 @@ export class BulkController {
         returnedUsers.users.push(userToReturn);
         continue;
       }
-      // 1 - Email Validation
+
+      // 1 - Email is blank
+      if (
+        user.email == null ||
+        user.email == undefined
+      )
+        if (!isAPIRequest) return false;
+      {
+        (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
+          1
+        );
+      }
+      // 14 - Email is invalid 
       if (
         user.email == null ||
         user.email == undefined ||
@@ -444,9 +457,11 @@ export class BulkController {
         if (!isAPIRequest) return false;
       {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
-          1
+          14
         );
       }
+
+
 
       // 2 - Name Validation
       if (
