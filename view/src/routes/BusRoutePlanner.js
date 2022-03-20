@@ -220,6 +220,7 @@ export const BusRoutePlanner = () => {
       setSchool({...school, routes: savedRoutes});
       setDeletedRoutes([]);
       setDeletedStops([]);
+      setValidatedRoutes(validatedRoutes.map(bool => true));
       polylines.forEach(polylineGroup => polylineGroup.forEach(polyline => polyline.setMap(null)));
       setPolylines(savedRoutes.map((route, index) => {
             if (route.polyline) {
@@ -271,7 +272,6 @@ export const BusRoutePlanner = () => {
     dirRend.setMap(map);
     setDirectionsRenderer(dirRend);
     setDirectionsService(dirServ);
-    setValidatedRoutes(validatedRoutes.map(bool => true));
     setPolylines(school.routes.map(route => {
       if (route.polyline) {
         return route.polyline.map(polyline => new maps.Polyline({
