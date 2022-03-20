@@ -26,8 +26,8 @@ export const ImportPage = () => {
     // error codes 
     const addressErrorCodes = [5,6]
     const missingErrorCodes = [99, 2, 1, 7, 9, 10]
-    const invalidErrorCodes = [14,3,4,8, 11, 12]
-    const existsErrorCodes = []
+    const invalidErrorCodes = [14,8, 11, 12]
+    const existErrorCodes = [3,4]
 
 
     const [runValidation, setRunValidation] = useState(false); 
@@ -44,26 +44,42 @@ export const ImportPage = () => {
             }
             console.log(validation_input)
             callValidate(validation_input)
-            
             setRunValidation(false)
         }
     }, [runValidation]);
 
     const findAndFormatErrors = (data) => {
-
-        // for (let i = 0; i < data.length; i++) {
-        //     var entry = data[i]
-        //     for (let j = 0; j < addressErrorCodes.length; j++) {
-        //         if (entry['error_codes'][i] === addressErrorCodes[j]) {
-        //             //addressErrorCodes[]
-        //         }
-        //     } 
-        // }
-
-
-        //setErrors(response_data);
-        console.log('')
-  
+        
+        for (let i = 0; i < data.length; i++) {
+            var entry = data[i]
+            for (let k = 0; k < entry['error_codes'].length; k++) {
+                var code = entry['error_codes'][k] 
+                for (let j = 0; j < addressErrorCodes.length; j++) {
+                    if (code === addressErrorCodes[j]) {
+                        addressErrorCodes[code].push(i)
+                    }
+                } 
+                for (let m = 0; m < missingErrorCodes.length; m++) {
+                    if (code === missingErrorCodes[m]) {
+                        missingErrorCodes[code].push(i)
+                    }
+                } 
+                for (let n = 0; n < invalidErrorCodes.length; n++) {
+                    if (code === invalidErrorCodes[n]) {
+                        invalidErrorCodes[code].push(i)
+                    }
+                } 
+                for (let p = 0; p < existErrorCodes.length; p++) {
+                    if (code === existErrorCodes[p]) {
+                        existErrorCodes[code].push(i)
+                    }
+                } 
+            }
+        }
+        console.log(addressErrorCodes)
+        console.log(missingErrorCodes)
+        console.log(invalidErrorCodes)
+        console.log(existErrorCodes)
     }
 
     async function callValidate(validation_input) {

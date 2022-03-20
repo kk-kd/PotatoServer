@@ -20,7 +20,8 @@ import { Student } from "../entity/Student";
  * 13 - user does not permission to add parents/students to this school
  *
  * PARENT
- * 1 - no email or invalid email
+ * 1 - no email 
+ * 14 - invalid email
  * 3 - email existed in the database
  * 4 - repetitive emails in request
  * 5 - Missing Address
