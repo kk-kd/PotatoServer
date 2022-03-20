@@ -17,24 +17,30 @@ export const ImportPage = () => {
     const [fileName, setFileName] = useState()
 
     // errors
-    const [addressErrors, setAddressErrors] = useState() // dict with key of # to list of indexes
+    const [addressErrors, setAddressErrors] = useState({
+        5: [],
+        6: []
+    }) 
 
-    // {
-    //   5 => [0,1,2,3]
-    //   6 => [4,5,6]  
-    // }
+    const [missingErrors, setMissingErrors] = useState({
+        1: [],
+        2: [],
+        7: [],
+        9: [],
+        10: [],
+        99: []
+    }) 
+    const [invalidErrors, setInvalidErrors] = useState({
+        8: [], 
+        11: [],
+        12: [],
+        14: []
+    }) 
 
-    const [missingErrors, setMissingErrors] = useState() // 
-    const [invalidErrors, setInvalidErrors] = useState() 
-    const [existErrors, setExistsErrors] = useState() 
-    const [errors, setErrors] = useState() // 
-
-    // error codes 
-    const addressErrorCodes = [5,6]
-    const missingErrorCodes = [99, 2, 1, 7, 9, 10]
-    const invalidErrorCodes = [14,8, 11, 12]
-    const existErrorCodes = [3,4]
-
+    const [existErrors, setExistErrors] = useState({
+        3: [],
+        4: []
+    }) 
 
     const [runValidation, setRunValidation] = useState(false); 
 
@@ -42,9 +48,7 @@ export const ImportPage = () => {
     // run validation
     useEffect(() => {
         if (runValidation){
-            // TODO - make API call that checks for errors, update error state
             console.log("Run Validation")
-            console.log(fileData)
             const validation_input = {
                 'students': fileData
             }
@@ -54,42 +58,40 @@ export const ImportPage = () => {
         }
     }, [runValidation]);
 
-    const findAndFormatErrors = (data) => {        
+    const addToDict = (arr, setArr, key, val) => {
+        let newCopy = arr[key]
+        newCopy.push(val)
+        const newArr = { ...arr, key: newCopy};
+        setArr(newArr);
+    }
+
+    const findAndFormatErrors = (data) => {  
+        var data = [{'error_codes': [5,6]}, {'error_codes': [1,99]}]  
+        var address_codes = Object.keys(addressErrors)
+        var missing_codes = Object.keys(missingErrors)
+        var invalid_codes = Object.keys(invalidErrors)  
+        var exist_codes = Object.keys(existErrors)  
+
         for (let i = 0; i < data.length; i++) {
             var entry = data[i]
             for (let k = 0; k < entry['error_codes'].length; k++) {
-                var code = entry['error_codes'][k] 
-                for (let j = 0; j < addressErrorCodes.length; j++) {
-                    if (code === addressErrorCodes[j]) {
-                        addressErrors[code].push(i)
-                    }
-                } 
-                for (let m = 0; m < missingErrorCodes.length; m++) {
-                    if (code === missingErrorCodes[m]) {
-                        missingErrors[code].push(i)
-                    }
-                } 
-                for (let n = 0; n < invalidErrorCodes.length; n++) {
-                    if (code === invalidErrorCodes[n]) {
-                        // let c = existErrors[code]
-                        // c.push(i)
-                        // const newE = { ...existErrors, code : c};
-                        // setExistsErrors(newE)
-                        // console.log(newE)
-                        // invalidErrors[code].push(i)
-                    }
-                } 
-                for (let p = 0; p < existErrorCodes.length; p++) {
-                    if (code === existErrorCodes[p]) {
-                        let c = existErrors[code]
-                        c.push(i)
-                        console.log(c)
-                        const newE = { ...existErrors, code : c};
-                        setExistsErrors(newE)
-                        console.log(newE)
-                    }
-                } 
+                var code = entry['error_codes'][k].toString() 
+                if (address_codes.includes(code)) {
+                    addToDict(addressErrors, setAddressErrors, code, i)
+                }
+                else if (missing_codes.includes(code)) {
+                    addToDict(missingErrors, setMissingErrors, code, i)
+                }
+                else if (invalid_codes.includes(code)) {
+                    addToDict(invalidErrors, setInvalidErrors, code, i)
+                }
+                else if (exist_codes.includes(code)) {
+                    addToDict(existErrors, setExistErrors, code, i)
+                }
             }
+           
+    
+                
         }
         console.log(addressErrors)
         console.log(missingErrors)
@@ -99,9 +101,11 @@ export const ImportPage = () => {
 
     async function callValidate(validation_input) {
         try {
-            const resp = await validateBulkStudents(validation_input);
-            console.log(resp)
-            findAndFormatErrors(resp.validateBulkParents)
+            //const resp = await validateBulkStudents(validation_input);
+            //console.log(resp)
+       
+            //findAndFormatErrors(resp.data)
+            findAndFormatErrors(1)
         }
         catch (e) {
             console.log(e)
@@ -151,8 +155,14 @@ export const ImportPage = () => {
             {(activeStep === 2) && 
                 <div id = 'step'>
                     <ValidateStep 
-                        errors = {errors} 
-                        setErrors = {setErrors} 
+                        addressErrors = {addressErrors} 
+                        setAddressErrors = {setAddressErrors}
+                        missingErrors = {missingErrors}
+                        setMissingErrors = {setMissingErrors}
+                        invalidErrors = {invalidErrors}
+                        setInvalidErrors = {setInvalidErrors}
+                        existErrors = {existErrors}
+                        setExistErrors = {setExistErrors}
                         setFileData = {setFileData} 
                         step_labels = {step_labels}
                         activeStep = {activeStep} 
@@ -163,7 +173,7 @@ export const ImportPage = () => {
             }
             {(activeStep === 3) && 
                 <div id = 'step'>
-                    <SubmitStep errors = {errors} />    
+                    <SubmitStep fileData = {fileData} setFileData = {setFileData}/>    
                 </div>
             } 
             

@@ -1,5 +1,5 @@
 
-export const SubmitStep = (setFileData) => {
+export const SubmitStep = (fileData, setFileData) => {
 
     return (
         <div>

@@ -2,7 +2,7 @@
 
 import { StepButtons } from "./StepButtons"
 
-export const ValidateStep = ({errors, setErrors, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
+export const ValidateStep = ({addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
     //activeError = address, missing, invalid, exists
     
     return (
@@ -17,7 +17,7 @@ export const ValidateStep = ({errors, setErrors, setFileData, step_labels, activ
 
              
             <StepButtons
-                nextButtonValid = {!errors} 
+                nextButtonValid = {true} 
                 step_labels = {step_labels} 
                 activeStep = {activeStep} 
                 setActiveStep = {setActiveStep}
