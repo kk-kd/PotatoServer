@@ -419,7 +419,7 @@ export class BulkController {
 
   // return a boolean indicating if there's an error in @code{users} if @code{isAPIRequest}=false
   // return a json of potential problems of @code{users} if @code{isAPIRequest}=true
-  usersValidationHelper(users, isAPIRequest = true) {
+  async usersValidationHelper(users, isAPIRequest = true) {
     let existingEmailsInRequest = new Set<string>();
     let reptitiveEmailsInRequest = new Set<string>();
     let emailIdxPair = {};
@@ -460,7 +460,6 @@ export class BulkController {
           2
         );
       }
-
       // 3 - Existing Emails
       const reptitiveEntry = await getRepository(User)
         .createQueryBuilder("users")
