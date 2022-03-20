@@ -15,7 +15,20 @@ export const ImportPage = () => {
     const [dataType, setDataType] = useState()
     const [fileData, setFileData] = useState()
     const [fileName, setFileName] = useState()
-    const [errors, setErrors] = useState()
+
+    // errors
+    const [Addresserrors, setAddressErrors] = useState() // dict with key of # to list of indexes
+    const [Missingerrors, setMissingErrors] = useState() // 
+    const [Invaliderrors, setInvalidErrors] = useState() 
+    const [Existserrors, setExistsErrors] = useState() 
+    const [errors, setErrors] = useState() // 
+
+    // error codes 
+    const addressErrorCodes = [5,6]
+    const missingErrorCodes = [99, 2, 1, 7, 9, 10]
+    const invalidErrorCodes = [14,3,4,8, 11, 12]
+    const existsErrorCodes = []
+
 
     const [runValidation, setRunValidation] = useState(false); 
 
@@ -25,19 +38,32 @@ export const ImportPage = () => {
         if (runValidation){
             // TODO - make API call that checks for errors, update error state
             console.log("Run Validation")
+            console.log(fileData)
             const validation_input = {
                 'students': fileData
             }
+            console.log(validation_input)
             callValidate(validation_input)
             
             setRunValidation(false)
         }
     }, [runValidation]);
 
-    const findAndFormatErrors = (response_data) => {
-        // error_code:
-        
-        setErrors(response_data);
+    const findAndFormatErrors = (data) => {
+
+        // for (let i = 0; i < data.length; i++) {
+        //     var entry = data[i]
+        //     for (let j = 0; j < addressErrorCodes.length; j++) {
+        //         if (entry['error_codes'][i] === addressErrorCodes[j]) {
+        //             //addressErrorCodes[]
+        //         }
+        //     } 
+        // }
+
+
+        //setErrors(response_data);
+        console.log('')
+  
     }
 
     async function callValidate(validation_input) {
