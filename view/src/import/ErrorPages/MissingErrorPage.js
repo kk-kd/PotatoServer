@@ -14,7 +14,7 @@ export const MissingErrorPage = ({activeError, setActiveErrror, missingErrors, s
 
  
     return (
-        <div>
+        <div> Missing Error Page
 
         </div>
     )

@@ -6,7 +6,7 @@
 export const InvalidErrorPage = ({activeError, setActiveErrror, invalidErrors, setInvalidErrors, fileData, setFileData}) => {
  
     return (
-        <div>
+        <div> Invalid Error Page
 
         </div>
     )
