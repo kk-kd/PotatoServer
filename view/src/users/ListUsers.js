@@ -86,25 +86,8 @@ export const ListUsers = ({ role }) => {
         accessor: "role",
       },
       {
-        Header: "Students",
-        accessor: "students",
-        Cell: (props) => {
-          return (
-            <div>
-              {props.value.map((student) => (
-                <div>{student.firstName}</div>
-              ))}
-            </div>
-          );
-        },
-      },
-      {
         Header: "Phone Number",
         accessor: "phoneNumber",
-      },
-      {
-        Header: "Role",
-        accessor: "role",
       },
     ],
     []

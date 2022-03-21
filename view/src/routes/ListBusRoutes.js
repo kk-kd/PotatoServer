@@ -9,7 +9,7 @@ import {
   faArrowDown,
   faArrowUp,
   faCheck,
-  faXmark,
+  faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
@@ -92,7 +92,7 @@ export const ListBusRoutes = () => {
         Cell: (props) => (
           <div>
             <FontAwesomeIcon
-              icon={isComplete(props.value) ? faCheck : faXmark}
+              icon={isComplete(props.value) ? faCheck : faCircleExclamation}
               style={
                 isComplete(props.value) ? { color: "green" } : { color: "red" }
               }
