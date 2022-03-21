@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import {parse} from 'papaparse';
 
 
-export const UploadStep = ({dataType, fileData, setFileData, fileName, setFileName, step_labels, activeStep, setActiveStep, setRunValidation}) => {
+export const UploadStep = ({dataType, requiredColumns, fileData, setFileData, fileName, setFileName, step_labels, activeStep, setActiveStep, setRunValidation}) => {
 
     const [validFile, setValidFile] = useState(false);
     const [columnMap, setColumnMap] = useState();
@@ -16,15 +16,10 @@ export const UploadStep = ({dataType, fileData, setFileData, fileName, setFileNa
     };
 
     const correctHeaders = (data) => {
-        let studentKeys = ['name', 'parent_email', 'school_name', 'student_id', 'index']
-        let parentKeys = ['name', 'email', 'address', 'phone_number', 'index']
-        let requiredKeys = (dataType === 'students') ? studentKeys : parentKeys;
-        console.log(requiredKeys)
-        console.log(Object.keys(data[0]))
 
-        for (let i = 0; i < requiredKeys.length; i++) {
-            if (!Object.keys(data[0]).includes(requiredKeys[i])){
-                let message = "This file is missing required columns. Please select a file with columns  \n - " + requiredKeys.join('\n - ')
+        for (let i = 0; i < requiredColumns.length; i++) {
+            if (!Object.keys(data[0]).includes(requiredColumns[i])){
+                let message = "This file is missing required columns. Please select a file with columns  \n - " + requiredColumns.join('\n - ')
                 alert (message)
                 return false
             }
@@ -99,7 +94,6 @@ export const UploadStep = ({dataType, fileData, setFileData, fileName, setFileNa
                     {fileData ?  'Change File' :'Select A File To Upload'}
                 </button>
      
-
     
             <input type="file" style = {{display: 'none'}} ref = {hiddenFileInput} onChange={fileSelect} accept=".csv"/>
                   

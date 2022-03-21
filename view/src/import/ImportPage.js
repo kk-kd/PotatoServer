@@ -14,6 +14,8 @@ export const ImportPage = () => {
     const step_labels = ['Select Task', 'Upload File', 'Fix', 'Submit']
     const [activeStep, setActiveStep] = useState(0)
     const [processingComplete, setProcessingComplete] = useState(false);
+    const [requiredColumns, setRequiredColumns] = useState();
+
     const [dataType, setDataType] = useState()
     const [fileData, setFileData] = useState()
     const [fileName, setFileName] = useState()
@@ -138,6 +140,7 @@ export const ImportPage = () => {
           <PickTypeStep
             dataType={dataType}
             setDataType={setDataType}
+            setRequiredColumns = {setRequiredColumns}
             step_labels={step_labels}
             activeStep={activeStep}
             setActiveStep={setActiveStep}
@@ -149,6 +152,7 @@ export const ImportPage = () => {
         <div id="step">
           <UploadStep
             dataType={dataType}
+            requiredColumns = {requiredColumns}
             fileData={fileData}
             setFileData={setFileData}
             fileName={fileName}
@@ -164,6 +168,7 @@ export const ImportPage = () => {
         <div id="step">
           <ValidateStep
             dataType = {dataType} 
+            requiredColumns = {requiredColumns}
             addressErrors={addressErrors}
             setAddressErrors={setAddressErrors}
             missingErrors={missingErrors}
@@ -181,6 +186,7 @@ export const ImportPage = () => {
             setActiveStep={setActiveStep}
             setRunValidation={setRunValidation}
           />
+    
         </div>
       )}
       {activeStep === 3 && (

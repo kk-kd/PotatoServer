@@ -108,7 +108,7 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
      
     return (
         <div> 
-            <h5> {message} </h5>
+            {!complete && <h5> {message} </h5>}
 
             <CssBaseline />
             {((!complete) && (editedData.length > 0)) && <EditableTable

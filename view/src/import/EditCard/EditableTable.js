@@ -13,6 +13,7 @@ import TableRow from "@mui/material/TableRow";
 import {
     useTable
   } from "react-table";
+import { red } from "@mui/material/colors";
   
   // Create an editable cell renderer
   const EditableCell = ({
@@ -38,7 +39,7 @@ import {
     }, [initialValue]);
   
     return (index === editableRowIndex && editableColumns.includes(id)) ? (
-      <input value={value} onChange={onChange}/>
+      <input value={value} onChange={onChange} style = {{border: '1px solid #34815c'}}/>
     ) : (
       <p>{value}</p>
     );

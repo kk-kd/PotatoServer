@@ -9,7 +9,7 @@ import { useEffect, useState} from "react";
 import React from "react";
 import e from "cors";
 
-export const ValidateStep = ({dataType, addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, processingComplete, setProcessingComplete, fileData, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
+export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, processingComplete, setProcessingComplete, fileData, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
 
     const [activeError, setActiveError] = useState(0); // keeps track of which type of error 
     const [valid, setValid] = useState(false);
@@ -56,6 +56,8 @@ export const ValidateStep = ({dataType, addressErrors, setAddressErrors, missing
     }, [])
 
 
+
+
     useEffect(()=> {
         if (activeError === 4) {
             setValid(true)
@@ -66,6 +68,7 @@ export const ValidateStep = ({dataType, addressErrors, setAddressErrors, missing
         <div>    
             {(activeError === 0) && <MissingErrorPage 
                   columns = {columns}
+                  requiredColumns = {requiredColumns}
                   activeError = {activeError}
                   setActiveError = {setActiveError}
                   missingErrors = {missingErrors}
@@ -78,6 +81,7 @@ export const ValidateStep = ({dataType, addressErrors, setAddressErrors, missing
 
             {(activeError === 1) && <AddressErrorPage 
                 columns = {columns}
+                requiredColumns = {requiredColumns}
                 activeError = {activeError}
                 setActiveError = {setActiveError}
                 addressErrors = {addressErrors}
@@ -90,6 +94,7 @@ export const ValidateStep = ({dataType, addressErrors, setAddressErrors, missing
              
              {(activeError=== 2) && <InvalidErrorPage
                   columns = {columns}
+                  requiredColumns = {requiredColumns}
                   activeError = {activeError}
                   setActiveError = {setActiveError}
                   invalidErrors = {invalidErrors}
@@ -102,6 +107,7 @@ export const ValidateStep = ({dataType, addressErrors, setAddressErrors, missing
 
             {(activeError === 3) && <ExistErrorPage 
               columns = {columns}
+              requiredColumns = {requiredColumns}
               activeError = {activeError}
               setActiveError = {setActiveError}
               existErrors = {existErrors}

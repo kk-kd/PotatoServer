@@ -6,7 +6,7 @@
 import React, { useEffect, useState } from "react"
 import { EditCard } from "../EditCard/EditCard"
 
-export const ExistErrorPage = ({columns, activeError, setActiveError, existErrors, setExistErrors,processingComplete, setProcessingComplete, fileData, setFileData}) => {
+export const ExistErrorPage = ({columns, requiredColumns, activeError, setActiveError, existErrors, setExistErrors,processingComplete, setProcessingComplete, fileData, setFileData}) => {
     const [data, setData] = useState()
     const [complete, setComplete] = useState(false);
     const [edit, setEdit] = useState(false);
@@ -18,7 +18,7 @@ export const ExistErrorPage = ({columns, activeError, setActiveError, existError
         return true
     }
 
-    const editableColumns = ['parent_email', 'name', 'school_name']
+    const editableColumns = requiredColumns
 
     // upon load, make tabular data from errors. 
     useEffect(()=> {
