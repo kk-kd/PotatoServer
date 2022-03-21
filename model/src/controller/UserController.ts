@@ -272,6 +272,24 @@ export class UserController extends Repository<User> {
         response.status(409).send("User is not an admin.");
         return;
       }
+      if (!EmailValidator.validate(request.body.email)) {
+        response.status(401).send("Update User: Email validation failed");
+        return;
+      }
+      const userEmail = request.body.email;
+
+      const reptitiveEntry = await getRepository(User)
+      .createQueryBuilder("users")
+      .select()
+      .where("users.email = :email", { email: userEmail })
+      .getOne();
+
+      console.log(reptitiveEntry);
+
+      if ((reptitiveEntry != null) && (reptitiveEntry.uid != parseInt(request.body.uid))) {
+        response.status(401).send("Email is already taken for User.");
+        return;
+      }
       const user = await this.userRepository.save(request.body);
       response.status(200);
       return user;
@@ -308,7 +326,7 @@ export class UserController extends Repository<User> {
 
       console.log(reptitiveEntry);
 
-      if ((reptitiveEntry != null) && (reptitiveEntry.uid == parseInt(uidNumber))) {
+      if ((reptitiveEntry != null) && (reptitiveEntry.uid != parseInt(uidNumber))) {
         response.status(401).send("Email is already taken for User.");
         return;
       }
