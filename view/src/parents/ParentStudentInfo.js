@@ -100,7 +100,7 @@ export const ParentStudentInfo = ({user}) => {
     <div id="content">
       <h2 id="title">
         {" "}
-        {student ? student.firstName : ""} {student ? student.lastName : ""}{" "}
+        {student ? student.fullName : ""} {" "}
       </h2>
       {!student ? "Whoops! You do not have access to this student's information. In the case of a mistake, please contact your bus administrator." : ""}
       
@@ -112,31 +112,13 @@ export const ParentStudentInfo = ({user}) => {
 
     {student && <div id = "main_form"> 
     <h5 id = "sub-header"> Student Information </h5>     
-      <label id="input-label-student"> First Name: </label>
+      <label id="input-label-student"> Name: </label>
       <input
         id="input-input-student-parent"
         disabled={true}
         type="text"
         maxLength="100"
-        value={student ? student.firstName : ""}
-      />
-
-      <label id="input-label-student"> Middle Name: </label>
-      <input
-        id="input-input-student-parent"
-        disabled={true}
-        type="text"
-        maxLength="100"
-        value={student ? student.middleName : ""}
-      />
-
-      <label id="input-label-student"> Last Name: </label>
-      <input
-        id="input-input-student-parent"
-        disabled={true}
-        type="text"
-        maxLength="100"
-        value={student ? student.lastName : ""}
+        value={student ? student.fullName : ""}
       />
 
       <label id="input-label-student" for="lastName">

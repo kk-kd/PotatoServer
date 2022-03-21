@@ -6,16 +6,18 @@ import {
 } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import { School } from "../entity/School";
+import { User } from "../entity/User";
 
 @EntityRepository(School)
 export class SchoolController extends Repository<School> {
   private schoolRepository = getRepository(School);
+  private userRepository = getRepository(User);
 
   async allSchools(request: Request, response: Response, next: NextFunction) {
 
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -47,8 +49,8 @@ export class SchoolController extends Repository<School> {
   }
   async filterAllSchools(request: Request, response: Response, next: NextFunction) {
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || !(role == "Admin" || role == "School Staff" || role == "Driver")) {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -82,6 +84,26 @@ export class SchoolController extends Repository<School> {
       const queryFilterType = request.query.filterType;
       const queryFilterData = request.query.filterData;
       if (request.query.showAll && request.query.showAll === "true") {
+        if (role == "School Staff") {
+          const userId = response.locals.jwtPayload.uid;
+          const currentUser = await this.userRepository
+            .createQueryBuilder("users")
+            .where("users.uid = :uid", { uid: userId })
+            .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+            .getOneOrFail();
+          const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+          const [schoolsQueryResult, total] = await this.schoolRepository
+            .createQueryBuilder("schools")
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
+            .andWhere("schools.uid = ANY(:uids)", { uids: attachedSchools })
+            .leftJoinAndSelect("schools.routes", "routes")
+            .getManyAndCount();
+          return {
+            schools: schoolsQueryResult,
+            total: total
+          };
+        }
         const [schoolsQueryResult, total] = await this.schoolRepository
           .createQueryBuilder("schools")
           .orderBy(sortSpecification, sortDirSpec)
@@ -94,6 +116,28 @@ export class SchoolController extends Repository<School> {
           total: total
         };
       } else {
+        if (role == "School Staff") {
+          const userId = response.locals.jwtPayload.uid;
+          const currentUser = await this.userRepository
+            .createQueryBuilder("users")
+            .where("users.uid = :uid", { uid: userId })
+            .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+            .getOneOrFail();
+          const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+          const [schoolsQueryResult, total] = await this.schoolRepository
+            .createQueryBuilder("schools")
+            .skip(skipNum)
+            .take(takeNum)
+            .orderBy(sortSpecification, sortDirSpec)
+            .where("schools.name ilike '%' || :name || '%'", { name: queryFilterData })
+            .andWhere("schools.uid = ANY(:uids)", { uids: attachedSchools })
+            .leftJoinAndSelect("schools.routes", "routes")
+            .getManyAndCount();
+          return {
+            schools: schoolsQueryResult,
+            total: total
+          };
+        }
         const [schoolsQueryResult, total] = await this.schoolRepository
           .createQueryBuilder("schools")
           .skip(skipNum)
@@ -118,8 +162,8 @@ export class SchoolController extends Repository<School> {
   async oneSchool(request: Request, response: Response, next: NextFunction) {
 
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.")
         return;
       }
@@ -171,19 +215,18 @@ export class SchoolController extends Repository<School> {
 
   async saveNewSchool(request: Request, response: Response, next: NextFunction) {
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.")
         return;
       }
       var queryData = request.body;
-      queryData["uniqueName"] = request.body.name.toLowerCase().trim();
+      queryData["uniqueName"] = request.body.name.toLowerCase().trim().replace(/\s\s+/g, ' ');
       const reptitiveEntry = await getRepository(School)
         .createQueryBuilder("schools")
         .select()
         .where("schools.uniqueName = :uniqueName", { uniqueName: queryData["uniqueName"] })
         .getOne();
-
       if (reptitiveEntry != null) {
         response.status(401).send("School Name is already taken.");
         return;
@@ -203,14 +246,14 @@ export class SchoolController extends Repository<School> {
     try {
       const uidNumber = request.params.uid;
       var queryData = request.body;
-      queryData["uniqueName"] = request.body.name.toLowerCase().trim();
+      queryData["uniqueName"] = request.body.name.toLowerCase().trim().replace(/\s\s+/g, ' ');
       const reptitiveEntry = await getRepository(School)
         .createQueryBuilder("schools")
         .select()
         .where("schools.uniqueName = :uniqueName", { uniqueName: queryData["uniqueName"] })
         .getOne();
 
-      if (reptitiveEntry != null) {
+      if ((reptitiveEntry != null) && (reptitiveEntry.uid == parseInt(uidNumber))) {
         response.status(401).send("School Name is already taken.");
         return;
       }
@@ -227,8 +270,8 @@ export class SchoolController extends Repository<School> {
   async deleteSchool(request: Request, response: Response, next: NextFunction) {
 
     try {
-      const isAdmin = response.locals.jwtPayload.isAdmin;
-      if (!isAdmin) {
+      const role = response.locals.jwtPayload.role;
+      if (!role || role != "Admin") {
         response.status(409).send("User is not an admin.")
         return;
       }

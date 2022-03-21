@@ -15,7 +15,7 @@ export const RouteStops = ({ data, routes }) => {
           accessor: "name",
           Cell: props => (
               <div>
-                {props.value ? `${props.value}` : `Stop #${props.row.original.uid}`}
+                {props.value ? `${props.value}` : `Stop #${props.row.original.arrivalIndex}`}
               </div>
           )
         },

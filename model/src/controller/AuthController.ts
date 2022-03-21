@@ -18,7 +18,7 @@ schema
   .has()
   .lowercase() // Must have lowercase letters
   .has()
-  .digits(2) // Must have at least 2 digits
+  .digits(1) // Must have at least 2 digits
   .has()
   .not()
   .spaces(); // Should not have spaces
@@ -28,19 +28,19 @@ class AuthController {
   static register = async (request: Request, response: Response) => {
     let {
       email,
-      firstName,
-      middleName,
-      lastName,
+      phoneNumber,
+      fullName,
       address,
       longitude,
       latitude,
-      isAdmin,
+      role,
+      attachedSchools
     } = request.body;
-    if (!(email && firstName && lastName && isAdmin != null)) {
+    if (!(email && fullName && role != null)) {
       response
         .status(401)
         .send(
-          "User Register: email/isAdmin/firstName/lastName is not provided."
+          "User Register: email/role/firstName/lastName is not provided."
         );
       return;
     }
@@ -66,14 +66,14 @@ class AuthController {
     let user = new User();
     const userRepository = getRepository(User);
     user.email = email.toLowerCase();
+    user.phoneNumber = phoneNumber;
     user.password = null;
-    user.firstName = firstName;
-    user.middleName = middleName;
-    user.lastName = lastName;
+    user.fullName = fullName;
     user.address = address;
     user.longitude = longitude;
     user.latitude = latitude;
-    user.isAdmin = isAdmin;
+    user.role = role;
+    user.attachedSchools = attachedSchools;
 
     try {
       await userRepository.save(user);
@@ -84,7 +84,7 @@ class AuthController {
     var payload = {
       uid: user.uid,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     };
     var signOptions = {
       issuer: "Potato",
@@ -152,7 +152,7 @@ class AuthController {
     var payload = {
       uid: user.uid,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     };
     var signOptions = {
       issuer: "Potato",
@@ -251,7 +251,7 @@ class AuthController {
     var payload = {
       uid: user.uid,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
     };
     var signOptions = {
       issuer: "Potato",

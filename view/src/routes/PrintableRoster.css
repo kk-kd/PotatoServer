@@ -1,0 +1,22 @@
+#printableTable {
+  width: 100%;
+  text-align: center;
+}
+
+#printableHeaderCell {
+  border: solid 1px black;
+  background: white;
+  color: black;
+  text-align: center;
+  font-family: serif;
+  font-size: 12pt;
+}
+
+#printableRosterCell {
+  border: solid 1px black;
+  text-align: center;
+  font-family: serif;
+  font-size: 12pt;
+  break-inside: avoid-page;
+  white-space: nowrap;
+}

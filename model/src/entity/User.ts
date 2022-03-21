@@ -4,7 +4,9 @@ import {
   Column,
   Unique,
   OneToMany,
+  ManyToMany,
 } from "typeorm";
+import { School } from "./School";
 import { Student } from "./Student";
 
 @Entity({ name: "users" })
@@ -17,35 +19,23 @@ export class User {
   email: string;
 
   @Column()
-  firstName: string;
-
-  @Column({
-    nullable: true,
-  })
-  middleName: string;
+  fullName: string;
 
   @Column()
-  lastName: string;
-
-  @Column({
-    nullable: true,
-  })
   address: string;
 
   @Column({
     type: "decimal",
-    nullable: true,
   })
   longitude: number;
 
   @Column({
     type: "decimal",
-    nullable: true,
   })
   latitude: number;
 
   @Column()
-  isAdmin: boolean;
+  role: string;
 
   @Column({ nullable: true })
   password: string;
@@ -56,8 +46,14 @@ export class User {
   })
   students: Student[];
 
+  @ManyToMany(() => School, (school) => school.staff)
+  attachedSchools: School[];
+
   @Column({
     nullable: true,
   })
   confirmationCode: string;
+
+  @Column()
+  phoneNumber: string;
 }

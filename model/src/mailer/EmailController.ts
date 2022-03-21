@@ -86,7 +86,7 @@ export class EmailController {
 
       for (var stop of stops) {
         if (stop.name == "") {
-          studentInfo += `<u>Stop #${stop.uid}</u>`;
+          studentInfo += `<u>Stop #${stop.arrivalIndex}</u>`;
         } else {
           studentInfo += `<u>${stop.name}</u>`;
         }
@@ -102,12 +102,9 @@ export class EmailController {
 
   private extractName = (user) => {
     return (
-      user.firstName +
-      ("middlename" in user ? user.middleName : "") +
-      " " +
-      user.lastName
+      user.fullName
     );
-  };
+  }
 
   sendGeneralAnnouncementToAll = async (
     request: Request,

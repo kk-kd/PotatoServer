@@ -1,6 +1,6 @@
 import "./ListStudent.css";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTable } from "react-table";
 import { DefaultColumnFilter } from "./../tables/DefaultColumnFilter";
 import { filterAllStudents } from "../api/axios_wrapper";
@@ -13,16 +13,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
 
-export const ListStudents = () => {
+export const ListStudents = ({ role }) => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(1);
   const [size, setSize] = useState(10);
   const [showAll, setShowAll] = useState(false);
-  const [sortBy, setSortBy] = useState("none");
-  const [sortDirec, setSortDirec] = useState("none");
+  const [sortBy, setSortBy] = useState("fullName");
+  const [sortDirec, setSortDirec] = useState("ASC");
   const [idFilter, setIdFilter] = useState("");
-  const [lastNameFilter, setLastNameFilter] = useState("");
+  const [fullNameFilter, setFullNameFilter] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,7 +32,7 @@ export const ListStudents = () => {
           size: size,
           sort: sortBy,
           sortDir: sortDirec,
-          lastNameFilter: lastNameFilter,
+          fullNameFilter: fullNameFilter,
           idFilter: idFilter,
           showAll: showAll,
         });
@@ -43,20 +44,18 @@ export const ListStudents = () => {
       }
     };
     fetchData();
-  }, [page, size, sortDirec, idFilter, lastNameFilter, showAll]);
+  }, [page, size, sortDirec, idFilter, fullNameFilter, showAll]);
 
   const nextSort = (id) => {
     if (sortBy !== id) {
       setSortBy(id);
-      if (sortDirec === "none" || sortDirec === "DESC") {
+      if (sortDirec === "DESC") {
         setSortDirec("ASC");
       } else {
         setSortDirec("DESC");
       }
     } else if (sortDirec === "ASC") {
       setSortDirec("DESC");
-    } else if (sortDirec === "DESC") {
-      setSortDirec("none");
     } else {
       setSortDirec("ASC");
     }
@@ -65,16 +64,8 @@ export const ListStudents = () => {
   const columns = useMemo(
     () => [
       {
-        Header: "First Name",
-        accessor: "firstName",
-      },
-      {
-        Header: "Middle Name",
-        accessor: "middleName",
-      },
-      {
-        HeaderName: "Last Name",
-        accessor: "lastName",
+        HeaderName: "Name",
+        accessor: "fullName",
       },
       {
         HeaderName: "ID",
@@ -83,6 +74,16 @@ export const ListStudents = () => {
       {
         HeaderName: "School",
         accessor: "school.name",
+      },
+      {
+        Header: "Parent",
+        accessor: "parentUser",
+        Cell: props => (
+            <div>
+              <div>{props.value.fullName}</div>
+              <div>{props.value.phoneNumber}</div>
+            </div>
+        )
       },
       {
         Header: "Route",
@@ -133,13 +134,6 @@ export const ListStudents = () => {
           </div>
         ),
       },
-      {
-        Header: "Detail Page",
-        accessor: "uid",
-        Cell: (props) => {
-          return <Link to={`/Students/info/${props.value}`}>view</Link>;
-        },
-      },
     ],
     []
   );
@@ -150,9 +144,9 @@ export const ListStudents = () => {
     <div id="content">
       <h2 id="title"> Students </h2>
       <div id="userListing">
-        <Link to="/Students/create">
+        {(role === "Admin" || role === "School Staff") && <Link to="/Students/create">
           <button>Create Student</button>
-        </Link>
+        </Link>}
         <table
           {...getTableProps()}
           class="table table-striped table-bordered border-success rounded"
@@ -162,7 +156,7 @@ export const ListStudents = () => {
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <th {...column.getHeaderProps()}>
-                    {column.id === "lastName" ||
+                    {column.id === "fullName" ||
                     column.id === "id" ||
                     column.id === "school.name" ? (
                       <div>
@@ -186,7 +180,7 @@ export const ListStudents = () => {
                             setFilter={
                               column.id === "id"
                                 ? setIdFilter
-                                : setLastNameFilter
+                                : setFullNameFilter
                             }
                           />
                         )}
@@ -203,10 +197,10 @@ export const ListStudents = () => {
             {rows.map((row) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
+                <tr {...row.getRowProps()} onClick={() => navigate(`/Students/info/${row.original.uid}`)}>
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
                     );
                   })}
                 </tr>

@@ -1,224 +1,201 @@
-
 // import GoogleMapReact from "google-map-react";
-import "./StudentForm.css"
+import "./StudentForm.css";
 import { useEffect, useState, Fragment } from "react";
 import { updateStudent } from "../api/axios_wrapper";
 // import { Marker } from "../map/Marker";
 // import {registerUser, saveStudent} from "../api/axios_wrapper";
 import { Link, useNavigate } from "react-router-dom";
-import { filterAllUsers, filterAllSchools, getOneUse, saveStudent } from "../api/axios_wrapper";
+import {
+  filterAllUsers,
+  filterAllSchools,
+  getOneUse,
+  saveStudent,
+} from "../api/axios_wrapper";
 // import { Users } from "./Users";
 // import { filterAllUsers, filterAllSchools, getOneUser } from "../api/axios_wrapper";
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 
+export const StudentForm = ({ addStudentToUser }) => {
+  const action_text = addStudentToUser ? "Add New Student" : "Make New Student";
 
+  const [student, setStudent] = useState({ school: { name: "school name" } });
+  const [user, setUser] = useState();
 
-export const StudentForm = ({addStudentToUser}) => {
+  // filter search state
+  const [filteredDataSchool, setFilteredDataSchool] = useState([]);
+  const [selectedSchool, setSelectedSchool] = useState();
+  const [schoolFilter, setSchoolFilter] = useState("");
 
-    const action_text = addStudentToUser ? "Add New Student": "Make New Student" 
-  
-    const [student, setStudent] = useState({'school': {'name': 'school name'}});
-    const [user, setUser] = useState()
+  const [routeFilter, setRouteFilter] = useState("");
+  // const [selectedRoute, setSelectedRoute] = useState();
 
-    // filter search state
-    const [filteredDataSchool, setFilteredDataSchool] = useState([])
-    const [selectedSchool, setSelectedSchool] = useState();
-    const [schoolFilter, setSchoolFilter] = useState("");
+  const [filteredDataUser, setFilteredDataUser] = useState([]);
 
-    const [routeFilter, setRouteFilter] = useState("");
-   // const [selectedRoute, setSelectedRoute] = useState();
+  const [userFilter, setUserFilter] = useState("");
 
-    const [filteredDataUser, setFilteredDataUser] = useState([]);
-    
-    const [userFilter, setUserFilter] = useState("");
+  let navigate = useNavigate();
 
-
-    
-    let navigate = useNavigate(); 
-
-    const validate_student_entries = () => {
-        if (!student.firstName || !student.lastName){
-            return {valid: false, error: 'Student First and Last Name Required'}
-        }
-        else if (student.studentid && !(Number(student.studentid) > 0)) {
-          return {valid: false, error: "Student ID must be a positive number"}
-        }
-        if (!selectedSchool) {
-          return {valid: false, error: 'Student must have a School'}
-        }
-        if (!user && !addStudentToUser) {
-          return {valid: false, error: 'Student Must have a User'}
-        }
-
-        return {valid: true, error: ''}
+  const validate_student_entries = () => {
+    if (!student.fullName) {
+      return { valid: false, error: "Student Name Required" };
+    } else if (student.studentid && !(Number(student.studentid) > 0)) {
+      return { valid: false, error: "Student ID must be a positive number" };
     }
-       
-    const handleStudentFormSubmit = (e) => {
-        let valid_results = validate_student_entries();
-        if (valid_results.valid) {
-            if (addStudentToUser) {
-                console.log("Adding Student to User");
-                let form_results = {
-                  firstName: student.firstName,
-                  middleName: student.middleName,
-                  lastName: student.lastName,
-                  school: selectedSchool, 
-                  id: student.studentid,
-                  // route: selectedRoute
-                }
-                addStudentToUser(form_results);
-            }
-            else {
-                console.log("Make New Student")
-                CreateStudent(e);
-            }
-        }
-        else {
-            alert(valid_results.error)
-        }
-
+    if (!selectedSchool) {
+      return { valid: false, error: "Student must have a School" };
     }
-    
-    async function CreateStudent (e) {
+    if (!user && !addStudentToUser) {
+      return { valid: false, error: "Student Must have a User" };
+    }
+
+    return { valid: true, error: "" };
+  };
+
+  const handleStudentFormSubmit = (e) => {
+    let valid_results = validate_student_entries();
+    if (valid_results.valid) {
+      if (addStudentToUser) {
+        console.log("Adding Student to User");
         let form_results = {
-          firstName: student.firstName,
-          middleName: student.middleName,
-          lastName: student.lastName,
-          school: selectedSchool, 
+          fullName: student.fullName,
+          school: selectedSchool,
           id: student.studentid,
-          parentUser: user
-        }
-        console.log(form_results)
-
-        if (!student.studentid || student.studentid.length === 0) {
-          form_results["id"] = null;
-        }
-    
-        try {
-          let create_student_response = await saveStudent(form_results);
-        } catch (error) {
-            let message = error.response.data;
-            throw alert (message);
-        }
-    
-        alert("Successfully Created Student");
-        navigate('/Students/list');
+          // route: selectedRoute
+        };
+        addStudentToUser(form_results);
+      } else {
+        console.log("Make New Student");
+        CreateStudent(e);
       }
-    
-      useEffect(() => {
-        const fetchFilteredDataSchool = async () => {
-        
-          try {
-            const fetchedDataSchool = await filterAllSchools({
-              page: 0,
-              size: 10,
-              sort: 'name',
-              sortDir: "ASC",
-              filterType: '',
-              filterData: schoolFilter
-            });
-            setFilteredDataSchool(fetchedDataSchool.data.schools);
-         
-          } catch (error) {
-            alert(error.response.data);
-          }
-        }
-        if (schoolFilter) {
-          fetchFilteredDataSchool();
-        }
-      
-      }, [schoolFilter])
+    } else {
+      alert(valid_results.error);
+    }
+  };
 
-      useEffect(() => {
-        const fetchFilteredDataUser = async () => {
-          try {
-            const fetchedData = await filterAllUsers({
-              page: 0,
-              size: 10,
-              sort: 'email',
-              sortDir: "ASC",
-              filterType: '',
-              filterData: userFilter
-            });
-            setFilteredDataUser(fetchedData.data.users);
-            console.log(fetchedData.data)
-       
-          } catch (error) {
-            alert(error.response.data);
-          }
-        }
-        if (userFilter) {
-          fetchFilteredDataUser();
-        }
-      
-      }, [userFilter])
+  async function CreateStudent(e) {
+    let form_results = {
+      fullName: student.fullName,
+      school: selectedSchool,
+      id: student.studentid,
+      parentUser: user,
+    };
+    console.log(form_results);
 
-    return <div id = 'student-content'>
-        {addStudentToUser && <h4 id = 'subtitle'> {action_text} </h4>}
-        {!addStudentToUser && <h2 id = 'title'>  {action_text} </h2>}
+    if (!student.studentid || student.studentid.length === 0) {
+      form_results["id"] = null;
+    }
 
-        <label id = 'input-label-student'> First Name: </label>      
-        <input
-            id = 'input-input-student'
-            type="text"
-            maxLength="100"
-            value={student.firstName}
-            onChange={(e) => setStudent({...student, firstName : e.target.value})}
-        />
+    try {
+      let create_student_response = await saveStudent(form_results);
+    } catch (error) {
+      let message = error.response.data;
+      throw alert(message);
+    }
 
-        <label id = 'input-label-student'> Middle Name: </label>      
-        <input
-            id = 'input-input-student'
-            type="text"
-            maxLength="100"
-            value={student.middleName}
-            onChange={(e) => setStudent({...student, middleName : e.target.value})}
-        />
+    alert("Successfully Created Student");
+    navigate("/Students/list");
+  }
 
-        <label id = 'input-label-student' > Last Name: </label>      
-        <input
-            id = 'input-input-student'
-            type="text"
-            maxLength="100"
-            value={student.lastName}
-            onChange={(e) => setStudent({...student, lastName : e.target.value})}
-        /> 
+  useEffect(() => {
+    const fetchFilteredDataSchool = async () => {
+      try {
+        const fetchedDataSchool = await filterAllSchools({
+          page: 0,
+          size: 10,
+          sort: "name",
+          sortDir: "ASC",
+          filterType: "",
+          filterData: schoolFilter,
+        });
+        setFilteredDataSchool(fetchedDataSchool.data.schools);
+      } catch (error) {
+        alert(error.response.data);
+      }
+    };
+    if (schoolFilter) {
+      fetchFilteredDataSchool();
+    }
+  }, [schoolFilter]);
 
-        <label id = 'input-label-student' for = "lastName"> Student ID: </label>     
-        <input 
-            id = 'input-input-student'
-            type="text"
-            maxLength="100"
-            value={student.studentid}
-            onChange={(e) => {setStudent({...student, studentid : e.target.value})}}
-        />
-        
-        <Autocomplete
-            sx = {{paddingTop: '20px', paddingBottom: '10px', width: '49%', margin: 'auto', marginRight: '23%',}}
-            options={filteredDataSchool}
-            freeSolo
-            renderInput={params => (
-                <TextField {...params} label="School"  variant="standard" 
+  useEffect(() => {
+    const fetchFilteredDataUser = async () => {
+      try {
+        const fetchedData = await filterAllUsers({
+          page: 0,
+          size: 10,
+          sort: "email",
+          sortDir: "ASC",
+          filterType: "",
+          filterData: userFilter,
+          isCreate: true,
+        });
+        setFilteredDataUser(fetchedData.data.users);
+        console.log(fetchedData.data);
+      } catch (error) {
+        alert(error.response.data);
+      }
+    };
+    if (userFilter) {
+      fetchFilteredDataUser();
+    }
+  }, [userFilter]);
 
-                />
-            )}
-            getOptionLabel={option => option.name}
-            
-            noOptionsText = {"Type to Search"}
-            value={selectedSchool}
-            onInputChange = {(e) => {
-                setSchoolFilter(e.target.value);}
-            }
-            
-            onChange={(_event, newSchool) => {
-                console.log(newSchool)
-                setSelectedSchool(newSchool);
-            }}
-            
-        />
+  return (
+    <div id="student-content">
+      {addStudentToUser && <h4 id="subtitle"> {action_text} </h4>}
+      {!addStudentToUser && <h2 id="title"> {action_text} </h2>}
 
-        {/* {selectedSchool && selectedSchool.routes && selectedSchool.routes.length > 0 && 
+      <label id="input-label-student"> Name: </label>
+      <input
+        id="input-input-student"
+        type="text"
+        maxLength="100"
+        value={student.fullName}
+        onChange={(e) => setStudent({ ...student, fullName: e.target.value })}
+      />
+
+      <label id="input-label-student" for="lastName">
+        {" "}
+        Student ID:{" "}
+      </label>
+      <input
+        id="input-input-student"
+        type="text"
+        maxLength="100"
+        value={student.studentid}
+        onChange={(e) => {
+          setStudent({ ...student, studentid: e.target.value });
+        }}
+      />
+
+      <Autocomplete
+        sx={{
+          paddingTop: "20px",
+          paddingBottom: "10px",
+          width: "49%",
+          margin: "auto",
+          marginRight: "23%",
+        }}
+        options={filteredDataSchool}
+        freeSolo
+        disableClearable
+        renderInput={(params) => (
+          <TextField {...params} label="School" variant="standard" />
+        )}
+        getOptionLabel={(option) => option.name}
+        noOptionsText={"Type to Search"}
+        value={selectedSchool}
+        onInputChange={(e) => {
+          setSchoolFilter(e.target.value);
+        }}
+        onChange={(_event, newSchool) => {
+          console.log(newSchool);
+          setSelectedSchool(newSchool);
+        }}
+      />
+
+      {/* {selectedSchool && selectedSchool.routes && selectedSchool.routes.length > 0 && 
             <Autocomplete
                 options={selectedSchool.routes}
                 freeSolo
@@ -243,44 +220,51 @@ export const StudentForm = ({addStudentToUser}) => {
             
         />
         } */}
-        <div> 
-
-        {!addStudentToUser && <Autocomplete
-            sx = {{paddingTop: '20px', paddingBottom: '10px', width: '49%', margin: 'auto', marginRight: '23%',}}
+      <div>
+        {!addStudentToUser && (
+          <Autocomplete
+            sx={{
+              paddingTop: "20px",
+              paddingBottom: "10px",
+              width: "49%",
+              margin: "auto",
+              marginRight: "23%",
+            }}
             options={filteredDataUser}
             freeSolo
-            renderInput={params => (
-                <TextField {...params} label="Parent" variant="standard" 
-          
-                />
+            disableClearable
+            renderInput={(params) => (
+              <TextField {...params} label="Parent" variant="standard" />
             )}
-            getOptionLabel={option => option.email}
-            
-            noOptionsText = {"Type to Search"}
+            getOptionLabel={(option) => option.email}
+            noOptionsText={"Type to Search"}
             value={user}
-           
-            onInputChange = {(e, newInputValue, reason) => {
-              if (reason === 'reset') {
-                setUserFilter('')
-                return
-              } else if (reason === 'input') {
+            onInputChange={(e, newInputValue, reason) => {
+              if (reason === "reset") {
+                setUserFilter("");
+                return;
+              } else if (reason === "input") {
                 setUserFilter(newInputValue);
-              } 
+              }
             }}
-            
             onChange={(_event, newUser) => {
-                console.log(newUser)
-                setUser(newUser);
+              console.log(newUser);
+              setUser(newUser);
             }}
-            
-        />
-        }
+          />
+        )}
+      </div>
 
-       
-                
-        </div>
-
-        
-        <button className = "submitbutton" type="button" onClick= {(e) => {handleStudentFormSubmit(e)}}> {action_text} </button>
+      <button
+        className="submitbutton"
+        type="button"
+        onClick={(e) => {
+          handleStudentFormSubmit(e);
+        }}
+      >
+        {" "}
+        {action_text}{" "}
+      </button>
     </div>
-    }
+  );
+};

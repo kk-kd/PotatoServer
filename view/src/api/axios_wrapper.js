@@ -244,6 +244,12 @@ export async function loginUser(specifications) {
             }
 */
 
+export async function saveUser(specifications) {
+  return await axios.post("/api/users", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+
 export async function saveStudent(specifications) {
   return await axios.post("/api/students", specifications, {
     headers: getHeaderWithAuthToken(),
@@ -337,6 +343,42 @@ export async function forgetPassword(specifications) {
   return await axios.post("/api/forget-password", specifications, {
     headers: getHeaderWithAuthToken(),
   });
+}
+
+export async function validateBulkParents(specifications) {
+  return (
+    await axios.post("/api/bulk/users/validate", specifications),
+    {
+      headers: getHeaderWithAuthToken(),
+    }
+  );
+}
+
+export async function saveBulkParents(specifications) {
+  return (
+    await axios.post("/api/bulk/users/save", specifications),
+    {
+      headers: getHeaderWithAuthToken(),
+    }
+  );
+}
+
+export async function validateBulkStudents(specifications) {
+  return (
+    await axios.post("/api/bulk/students/validate", specifications),
+    {
+      headers: getHeaderWithAuthToken(),
+    }
+  );
+}
+
+export async function saveBulkStudents(specifications) {
+  return (
+    await axios.post("/api/bulk/students/save", specifications),
+    {
+      headers: getHeaderWithAuthToken(),
+    }
+  );
 }
 // Helpers
 function convertMapToURL(map) {

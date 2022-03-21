@@ -19,7 +19,7 @@ import {
 import { SchoolStudents } from "./SchoolStudents";
 import { SchoolRoutes } from "./SchoolRoutes";
 
-export const SchoolInfo = ({ edit }) => {
+export const SchoolInfo = ({ edit, role }) => {
   const [editable, setEditable] = useState(edit);
   const [addressValid, setAddressValid] = useState(false);
 
@@ -99,7 +99,7 @@ export const SchoolInfo = ({ edit }) => {
     } else if (!arrivalTime) {
       alert("Please input an arrival time.");
     } else if (!departureTime) {
-      alert("Please input a departure time.")
+      alert("Please input a departure time.");
     } else {
       try {
         await updateSchool(school.uid, {
@@ -266,7 +266,7 @@ export const SchoolInfo = ({ edit }) => {
   };
   if (isDelete) {
     let sName = prompt("Do you want to delete?  If so, enter school name:");
-    if (!sName || sName.toLowerCase() !== school.name.toLowerCase()) {
+    if (!sName || sName.toLowerCase() !== school.name.toLowerCase().trim()) {
       setIsDelete(false);
     } else {
       deleteSch();
@@ -281,13 +281,13 @@ export const SchoolInfo = ({ edit }) => {
     <div id="content">
       <h2 id="title"> {school.name}</h2>
       <div>
-        {!editable && (
+        {!editable && (role === "Admin" || role === "School Staff") && (
           <button onClick={(e) => setEditable(true)}> Edit School </button>
         )}
         {editable && (
           <button onClick={(e) => setEditable(false)}> Cancel Edits </button>
         )}
-        {!editable && (
+        {!editable && role === "Admin" && (
           <button
             onClick={(e) => {
               setIsDelete(true);
@@ -296,14 +296,18 @@ export const SchoolInfo = ({ edit }) => {
             Delete School
           </button>
         )}
-        <button onClick={(e) => navigate(`/Routes/planner/${id}`)}>
-          {" "}
-          Route Planner{" "}
-        </button>
-        <button onClick={(e) => navigate(`/Emails/send/${id}`)}>
-          {" "}
-          Send Announcement
-        </button>
+        {(role === "Admin" || role === "School Staff") && (
+          <button onClick={(e) => navigate(`/Routes/planner/${id}`)}>
+            {" "}
+            Route Planner{" "}
+          </button>
+        )}
+        {(role === "Admin" || role === "School Staff") && (
+          <button onClick={(e) => navigate(`/Emails/send/${id}`)}>
+            {" "}
+            Send Announcement
+          </button>
+        )}
       </div>
 
       <div id="top-half-wrapper">
@@ -312,7 +316,7 @@ export const SchoolInfo = ({ edit }) => {
 
           <label id="label-user"> School Name </label>
           <input
-            disabled={!editable}
+            disabled={!editable || role !== "Admin"}
             id="input-user"
             type="text"
             maxLength="100"
@@ -322,7 +326,7 @@ export const SchoolInfo = ({ edit }) => {
 
           <label id="label-user"> Address {addressValid} </label>
           <input
-            disabled={!editable}
+            disabled={!editable || role !== "Admin"}
             id="input-user"
             maxLength="100"
             type="text"
@@ -385,13 +389,15 @@ export const SchoolInfo = ({ edit }) => {
 
           {editable && (
             <div>
-              <button
-                style={{ display: "in-line block", margin: "20px" }}
-                onClick={(e) => checkMap(e)}
-              >
-                {" "}
-                {addressValid ? "Address Valid!" : "Validate Address"}{" "}
-              </button>
+              {role === "Admin" && (
+                <button
+                  style={{ display: "in-line block", margin: "20px" }}
+                  onClick={(e) => checkMap(e)}
+                >
+                  {" "}
+                  {addressValid ? "Address Valid!" : "Validate Address"}{" "}
+                </button>
+              )}
               <button
                 style={{ display: "in-line block", margin: "20px" }}
                 className="button"
