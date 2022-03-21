@@ -49,20 +49,20 @@ export class BulkController {
    * request: {students: [
    * {
    * index: ...,
-   * id: ...,
-   * fullName:  ...,
-   * school: ...,
-   * parent: ... },
+   * student_id: ...,
+   * name:  ...,
+   * school_name: ...,
+   * parent_email: ... },
    * {},
    * ...]};
    *
    * return: {students: [
    * {
    * index: ...,
-   * id: ...,
-   * fullName:  ...,
-   * school: ...,
-   * parent: ...,
+   * student_id: ...,
+   * name:  ...,
+   * school_name: ...,
+   * parent_email: ...,
    * error_code: [..., ...],
    * {},
    * ...]};
@@ -117,9 +117,9 @@ export class BulkController {
 
       // 2
       if (
-        student.fullName == null ||
-        student.fullName == undefined ||
-        student.fullName.trim() == ""
+        student.name == null ||
+        student.name == undefined ||
+        student.name.trim() == ""
       ) {
         // If not an API request, just wanna check if there's ANY error. Don't care about what the error is.
         // Similar below
@@ -130,8 +130,8 @@ export class BulkController {
       }
 
       // 8
-      if (student.id != null && student.id != undefined) {
-        if (!this.isValidId(student.id)) {
+      if (student.student_id != null && student.student_id != undefined) {
+        if (!this.isValidId(student.student_id)) {
           if (!isAPIRequest) return false;
 
           (
@@ -143,9 +143,9 @@ export class BulkController {
 
       // 9
       if (
-        student.school == null ||
-        student.school == undefined ||
-        student.school.trim() == ""
+        student.school_name == null ||
+        student.school_name == undefined ||
+        student.school_name.trim() == ""
       ) {
         if (!isAPIRequest) return false;
         (
@@ -157,7 +157,7 @@ export class BulkController {
           .createQueryBuilder("schools")
           .select()
           .where("schools.uniqueName = :uniqueName", {
-            uniqueName: student.school
+            uniqueName: student.school_name
               .toLowerCase()
               .trim()
               .replace(/\s\s+/g, " "),
@@ -202,9 +202,9 @@ export class BulkController {
 
       // 10
       if (
-        student.parent == null ||
-        student.parent == undefined ||
-        student.parent.trim() == ""
+        student.parent_email == null ||
+        student.parent_email == undefined ||
+        student.parent_email.trim() == ""
       ) {
         if (!isAPIRequest) return false;
         (
@@ -216,7 +216,7 @@ export class BulkController {
           .createQueryBuilder("users")
           .select()
           .where("users.email = :email", {
-            email: student.parent,
+            email: student.parent_email,
           })
           .getOne();
 
