@@ -648,34 +648,18 @@ export const UserInfo = ({ edit, role, uid }) => {
               ))}
             </thead>
             <tbody {...getTableBodyProps()}>
-              {rows.map((row) => {
-                prepareRow(row);
-                return (
-                  <tr {...row.getRowProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                  <tr {...row.getRowProps()} onClick={() => navigate(`/Students/info/${row.original.uid}`)}>
                     {row.cells.map((cell) => {
                       return (
-                        <tr
-                          {...row.getRowProps()}
-                          onClick={() =>
-                            navigate(`/Students/info/${row.original.uid}`)
-                          }
-                        >
-                          {row.cells.map((cell) => {
-                            return (
-                              <td
-                                {...cell.getCellProps()}
-                                style={{ cursor: "pointer" }}
-                              >
-                                {cell.render("Cell")}
-                              </td>
-                            );
-                          })}
-                        </tr>
+                          <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
                       );
                     })}
                   </tr>
-                );
-              })}
+              );
+            })}
             </tbody>
           </table>
 

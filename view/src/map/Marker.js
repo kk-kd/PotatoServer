@@ -33,7 +33,7 @@ export const Marker = ({ text, onRoute, stop, inRangeStop, detail, isSchool, isS
               place="top"
               effect="solid"
           >
-            {stop.name || `Stop #${stop.uid}`}
+            {stop.name || `Stop #${stop.arrivalIndex}`}
           </ReactTooltip>
         </>
     )
@@ -78,7 +78,7 @@ export const Marker = ({ text, onRoute, stop, inRangeStop, detail, isSchool, isS
         >
           <p>Students at this location:</p>
           {students.map(student => (
-              <p>{`${student.firstName} ${student.lastName}`}</p>
+              <p>{student.fullName}</p>
           ))}
         </ReactTooltip>
       </>

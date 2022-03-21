@@ -20,8 +20,13 @@ import { Student } from "../entity/Student";
  * 13 - user does not permission to add parents/students to this school
  *
  * PARENT
+<<<<<<< HEAD
  * 1 - Email is not valid
  * 16 - Email is empty
+=======
+ * 1 - no email
+ * 14 - invalid email
+>>>>>>> dev
  * 3 - email existed in the database
  * 4 - repetitive emails in request
  * 5 - Missing Address
@@ -42,6 +47,7 @@ import { Student } from "../entity/Student";
 // const q = new PQueue({ intervalCap: 40, interval: 1000 });
 const ROLE_SCHOOL_STAFF = "School Staff";
 const ROLE_ADMIN = "Admin";
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
 export class BulkController {
   private isValidId(id: string) {
@@ -93,8 +99,8 @@ export class BulkController {
       role,
       userId
     );
+    console.log(returnedStudents);
     response.status(200).send(returnedStudents);
-
   }
 
   // return a boolean indicating if there's an error in @code{students} if @code{isAPIRequest}=false
@@ -136,15 +142,13 @@ export class BulkController {
         if (!isAPIRequest) return false;
 
         (
-          studentToReturn["error_code"] ??
-          (studentToReturn["error_code"] = [])
+          studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
         ).push(8);
       }
       // 14 STUDENT ID IS NON NUMERICAL
       if (student.student_id != null && student.student_id != undefined) {
         if (!this.isValidId(student.student_id)) {
           if (!isAPIRequest) return false;
-
           (
             studentToReturn["error_code"] ??
             (studentToReturn["error_code"] = [])
@@ -276,7 +280,12 @@ export class BulkController {
         .send("You don't have enough permission for this action.");
       return;
     }
-    const bool = await this.studentsValidationHelper(students, role, userId, false)
+    const bool = await this.studentsValidationHelper(
+      students,
+      role,
+      userId,
+      false
+    );
     if (!bool) {
       response
         .status(401)
@@ -408,7 +417,7 @@ export class BulkController {
    * ...]};
    */
   async validateUsers(request: Request, response: Response) {
-    console.log("we made it")
+    console.log("we made it");
     const { users } = request.body;
     const role = response.locals.jwtPayload.role;
 
@@ -427,6 +436,7 @@ export class BulkController {
     }
 
     let returnedUsers = await this.usersValidationHelper(users);
+    console.log(returnedUsers);
     response.status(200).send(returnedUsers);
   }
 
@@ -448,23 +458,25 @@ export class BulkController {
         returnedUsers.users.push(userToReturn);
         continue;
       }
-      // 1 - Email Validation
-      if (
-        user.email != null &&
-        user.email != undefined &&
-        !EmailValidator.validate(user.email)
-      )
+
+      // 1 - Email is blank
+      if (user.email == null || user.email == undefined) {
         if (!isAPIRequest) return false;
-      {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           1
         );
+      } else {
+        // 14 - Email is invalid
+        if (!EmailValidator.validate(user.email)) {
+          if (!isAPIRequest) return false;
+          (
+            userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
+          ).push(14);
+        }
       }
+
       // 16 - Email MISSING
-      if (
-        user.email != null ||
-        user.email != undefined
-      )
+      if (user.email != null || user.email != undefined)
         if (!isAPIRequest) return false;
       {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
@@ -474,12 +486,11 @@ export class BulkController {
 
       // 2 - Name Validation
       if (
-        user.name == null ||
-        user.name == undefined ||
-        user.name.trim() == ""
-      )
+        user.fullName == null ||
+        user.fullName == undefined ||
+        user.fullName.trim() == ""
+      ) {
         if (!isAPIRequest) return false;
-      {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           2
         );
@@ -540,13 +551,10 @@ export class BulkController {
       }
       // });
 
-      // 7 - Missing phone number 
+      // 7 - Missing phone number
       // When changing this in ev4, trim a string version of the phone number to check if its blank
-      if (
-        user.phone_number == null ||
-        user.phone_number == undefined)
+      if (user.phone_number == null || user.phone_number == undefined) {
         if (!isAPIRequest) return false;
-      {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           7
         );
@@ -594,7 +602,7 @@ export class BulkController {
       return;
     }
 
-    if (!this.usersValidationHelper(users, false)) {
+    if (!(await this.usersValidationHelper(users, false))) {
       response
         .status(401)
         .send("There's error with the data. Please validate first.");
