@@ -66,16 +66,17 @@ export const ImportPage = () => {
     }
 
     const findAndFormatErrors = (data) => {  
-        var data = [{'error_codes': [5,6]}, {'error_codes': [1,99]}]  
+        //var data = [{'error_codes': [5,6]}, {'error_codes': [1,99]}]  
         var address_codes = Object.keys(addressErrors)
         var missing_codes = Object.keys(missingErrors)
         var invalid_codes = Object.keys(invalidErrors)  
-        var exist_codes = Object.keys(existErrors)  
+        var exist_codes = Object.keys(existErrors)
+        console.log(data)  
 
         for (let i = 0; i < data.length; i++) {
             var entry = data[i]
-            for (let k = 0; k < entry['error_codes'].length; k++) {
-                var code = entry['error_codes'][k].toString() 
+            for (let k = 0; k < entry['error_code'].length; k++) {
+                var code = entry['error_code'][k].toString() 
                 if (address_codes.includes(code)) {
                     addToDict(addressErrors, setAddressErrors, code, i)
                 }
@@ -88,10 +89,7 @@ export const ImportPage = () => {
                 else if (exist_codes.includes(code)) {
                     addToDict(existErrors, setExistErrors, code, i)
                 }
-            }
-           
-    
-                
+            }       
         }
         console.log(addressErrors)
         console.log(missingErrors)
@@ -101,11 +99,10 @@ export const ImportPage = () => {
 
     async function callValidate(validation_input) {
         try {
-            //const resp = await validateBulkStudents(validation_input);
-            //console.log(resp)
+            const resp = await validateBulkStudents(validation_input);
+            console.log(resp)
        
-            //findAndFormatErrors(resp.data)
-            findAndFormatErrors(1)
+            findAndFormatErrors(resp.data.students)
         }
         catch (e) {
             console.log(e)
@@ -163,6 +160,7 @@ export const ImportPage = () => {
                         setInvalidErrors = {setInvalidErrors}
                         existErrors = {existErrors}
                         setExistErrors = {setExistErrors}
+                        fileData = {fileData}
                         setFileData = {setFileData} 
                         step_labels = {step_labels}
                         activeStep = {activeStep} 
