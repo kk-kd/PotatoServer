@@ -10,7 +10,7 @@ import React from "react";
 
 export const ValidateStep = ({addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, processingComplete, setProcessingComplete, fileData, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
 
-    const [activeError, setActiveError] = useState(0);
+    const [activeError, setActiveError] = useState(0); // keeps track of which type of error 
     const [valid, setValid] = useState(false);
 
     const columns = React.useMemo(
@@ -38,9 +38,7 @@ export const ValidateStep = ({addressErrors, setAddressErrors, missingErrors, se
     }, [activeError])
     
     return (
-        <div>
-             <div id = 'question'> Fix </div>
-    
+        <div>    
             {(activeError === 0) && <MissingErrorPage 
                   columns = {columns}
                   activeError = {activeError}
@@ -78,7 +76,7 @@ export const ValidateStep = ({addressErrors, setAddressErrors, missingErrors, se
              />}
 
             {(activeError === 3) && <ExistErrorPage 
-                columns = {columns}
+              columns = {columns}
               activeError = {activeError}
               setActiveError = {setActiveError}
               existErrors = {existErrors}
@@ -87,7 +85,11 @@ export const ValidateStep = ({addressErrors, setAddressErrors, missingErrors, se
               setProcessingComplete = {setProcessingComplete}
               fileData = {fileData}
               setFileData = {setFileData}    
-             />}            
+             />} 
+
+             {(activeError === 4) && <div> 
+                 All Errors Fixed!
+                 </div>}            
              
             <StepButtons
                 nextButtonValid = {valid} 

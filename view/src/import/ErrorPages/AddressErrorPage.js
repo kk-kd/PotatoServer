@@ -66,7 +66,6 @@ export const AddressErrorPage = ({columns, activeError, setActiveError, addressE
                     <button onClick = {()=> {setEdit(true); setSelected(true); }}> Fix Entries </button>
                     <button onClick = {()=> {setEdit(false); setSelected(true); removeEntries()}}> Remove Entries </button>
                 </div>
-                
             </div>
             }
         {((data) && (edit)) && 
