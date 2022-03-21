@@ -6,13 +6,11 @@ import PropTypes from "prop-types";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
-import TableFooter from "@mui/material/TableFooter";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 
 
 import {
-    useRowSelect,
     useTable
   } from "react-table";
   
@@ -21,27 +19,26 @@ import {
     value: initialValue,
     row: { index },
     column: { id },
-    updateMyData, 
-    editableRowIndex // index of the row we requested for editing
+    updateEditedData, 
+    updateEditedDataValid,
+    editableRowIndex, // index of the row we requested for editing
+    editableColumns, // list of editable columns
   }) => {
     const [value, setValue] = React.useState(initialValue);
   
     const onChange = (e) => {
       setValue(e.target.value);
+      updateEditedDataValid(index, id, e.target.value);
     };
-  
-    // We'll only update the external data when the input is blurred
-    const onBlur = () => {
-      updateMyData(index, id, value);
-    };
-  
+
+    
     // If the initialValue is changed externall, sync it up with our state
     React.useEffect(() => {
       setValue(initialValue);
     }, [initialValue]);
   
-    return index === editableRowIndex ? (
-      <input value={value} onChange={onChange} onBlur={onBlur} />
+    return (index === editableRowIndex && editableColumns.includes(id)) ? (
+      <input value={value} onChange={onChange}/>
     ) : (
       <p>{value}</p>
     );
@@ -57,7 +54,9 @@ import {
     column: PropTypes.shape({
       id: PropTypes.number.isRequired
     }),
-    updateMyData: PropTypes.func.isRequired
+    updateEditedData: PropTypes.func.isRequired,
+    updateEditedDataValid: PropTypes.func.isRequired,
+    editableColumns: PropTypes.array()
   };
   
   // Set our editable cell renderer as the default Cell renderer
@@ -82,63 +81,81 @@ import {
     }
   );
 
-export const EnhancedTable = ({
+export const EditableTable = ({
     columns,
-    data,
-    setData,
-    updateMyData
+    editableColumns,
+    editedData,
+    setEditedData,
+    updateEditedDataValid,
+    submitRow,
   }) => {
-    const [editableRowIndex, setEditableRowIndex] = React.useState(null);
+    const [editableRowIndex, setEditableRowIndex] = React.useState(0);
   
     const {
       getTableProps,
       headerGroups,
       rows, 
       prepareRow,
-      preGlobalFilteredRows,
       state: {selectedRowIds}
     } = useTable(
       {
         columns,
-        data,
+        editableColumns,
+        data : editedData,
+        setEditedData,
         defaultColumn,
-        updateMyData,
+        submitRow,
+        updateEditedDataValid,
         editableRowIndex,
-        setEditableRowIndex 
+        setEditableRowIndex
       },
-      useRowSelect,
+
+
       (hooks) => {
         hooks.allColumns.push((columns) => [
           ...columns,
-          // pass edit hook
+          {
+            accessor: "valid",
+            id: "valid",
+            Header: "Status",
+            Cell: ({ row, setEditableRowIndex, editableRowIndex, editableColumns,updateEditedDataValid}) => (
+              (row.values.valid) ?
+               <div> Yes {row.values.valid}</div> // TODO: replace with icons
+                : 
+                <div> No {row.values.valid} </div>)
+          },
           {
             accessor: "edit",
             id: "edit",
-            Header: "edit",
-            Cell: ({ row, setEditableRowIndex, editableRowIndex }) => (
-              <button
-                className="action-button"
-                onClick={() => {
-                  const currentIndex = row.index;
-                  if (editableRowIndex !== currentIndex) {
-                    // row requested for edit access
-                    setEditableRowIndex(currentIndex);
-                  } else {
-                    // request for saving the updated row
-                    setEditableRowIndex(null);
-                    const updatedRow = row.values;
-                    console.log("updated row values:");
-                    console.log(updatedRow);
-                    // call your updateRow API
-                  }
-                }}
-              >
-                {editableRowIndex !== row.index ? "Edit" : "Save"}
-              </button>
-            )
-          }
-        ]);
-      }
+            Header: "",
+            Cell: ({ row, setEditableRowIndex, editableRowIndex, editableColumns, updateEditedDataValid}) => (
+              (row.index === editableRowIndex) ?
+                <button
+                    className="action-button"
+                    disabled = {!row.values.valid}
+                    onClick={() => {         
+                        const Row = row.values;
+                        delete Row.edit;
+                        console.log(Row)
+                        console.log(row.index)
+                        updateEditedDataValid(row.index, ['index'], Row['index'])
+                        console.log("updated row values:");
+                        console.log(editedData);
+                        //move to next column
+                        if (row.values.valid) {
+                            setEditableRowIndex(row.index + 1);
+                            submitRow(row.index, row.values)
+                        }
+                    }
+                    }
+                >
+                
+                {row.values.valid ? "Submit": 'Not Valid'}
+                </button>
+                : 
+                <div></div>)
+          },
+        ]);}
     );
   
     const removeByIndexs = (array, indexs) =>
@@ -146,14 +163,12 @@ export const EnhancedTable = ({
   
     const deleteUserHandler = (event) => {
       const newData = removeByIndexs(
-        data,
+        editedData,
         Object.keys(selectedRowIds).map((x) => parseInt(x, 10))
       );
-      setData(newData);
+      setEditedData(newData);
     };
   
-
-    // Render the UI for your table
     return (
       <TableContainer>
         <Table {...getTableProps()}>
@@ -190,12 +205,5 @@ export const EnhancedTable = ({
       </TableContainer>
     );
   };
-  
-  EnhancedTable.propTypes = {
-    columns: PropTypes.array.isRequired,
-    data: PropTypes.array.isRequired,
-    updateMyData: PropTypes.func.isRequired,
-    setData: PropTypes.func.isRequired
-  };
-  
-  export default EnhancedTable;
+    
+  export default EditableTable;

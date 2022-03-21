@@ -52,8 +52,9 @@ export const UploadStep = ({dataType, fileData, setFileData, fileName, setFileNa
         console.log(newData)
    
         if (!result.error) { 
+            
             setValidFile(true);
-            setFileData(data);
+            setFileData(newData);
         }
     } 
 

@@ -52,9 +52,10 @@ export const ImportPage = () => {
             const validation_input = {
                 'students': fileData
             }
-            console.log(validation_input)
-            callValidate(validation_input)
+           
+            //callValidate(validation_input)
             setRunValidation(false)
+            console.log(validation_input)
         }
     }, [runValidation]);
 
