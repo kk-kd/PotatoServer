@@ -46,10 +46,10 @@ export const PrintableRoster = React.forwardRef(({ data, route }, ref) => {
     rows
   } = useTable({ columns, data });
   return (
-      <div ref={ref}>
+      <div ref={ref} id="printableTable">
         {data.length === 0 ? <h4>This route has no students</h4>
             : <><h4>{`${route.school.name}: ${route.name}`}</h4>
-              <table {...getTableProps()} id="printableTable">
+              <table {...getTableProps()}>
               <thead>
               {headerGroups.map(headerGroup => (
                   <tr {...headerGroup.getHeaderGroupProps()}>
