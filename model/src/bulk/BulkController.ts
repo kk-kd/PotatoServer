@@ -20,13 +20,8 @@ import { Student } from "../entity/Student";
  * 13 - user does not permission to add parents/students to this school
  *
  * PARENT
-<<<<<<< HEAD
  * 1 - Email is not valid
  * 16 - Email is empty
-=======
- * 1 - no email
- * 14 - invalid email
->>>>>>> dev
  * 3 - email existed in the database
  * 4 - repetitive emails in request
  * 5 - Missing Address
@@ -463,7 +458,7 @@ export class BulkController {
       if (user.email == null || user.email == undefined) {
         if (!isAPIRequest) return false;
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
-          1
+          16
         );
       } else {
         // 14 - Email is invalid
@@ -471,24 +466,15 @@ export class BulkController {
           if (!isAPIRequest) return false;
           (
             userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
-          ).push(14);
+          ).push(1);
         }
-      }
-
-      // 16 - Email MISSING
-      if (user.email != null || user.email != undefined)
-        if (!isAPIRequest) return false;
-      {
-        (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
-          16
-        );
       }
 
       // 2 - Name Validation
       if (
-        user.fullName == null ||
-        user.fullName == undefined ||
-        user.fullName.trim() == ""
+        user.name == null ||
+        user.name == undefined ||
+        user.name.trim() == ""
       ) {
         if (!isAPIRequest) return false;
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
@@ -533,23 +519,24 @@ export class BulkController {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           5
         );
+      } else {
+        // 6 - Geo
+        // await q.add(async () => {
+        var loc;
+        try {
+          loc = await getLngLat(user.address);
+          console.log(loc);
+          userToReturn = { ...userToReturn, loc };
+        } catch (error) {
+          console.log(
+            `${user.email} failed to fetch location, error - ${error}`
+          );
+          if (!isAPIRequest) return false;
+          (
+            userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
+          ).push(6);
+        }
       }
-
-      // 6 - Geo
-      // await q.add(async () => {
-      let loc;
-      try {
-        loc = await getLngLat(user.address);
-        console.log(loc);
-        userToReturn = { ...userToReturn, loc };
-      } catch (error) {
-        console.log(`${user.email} failed to fetch location, error - ${error}`);
-        if (!isAPIRequest) return false;
-        (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
-          6
-        );
-      }
-      // });
 
       // 7 - Missing phone number
       // When changing this in ev4, trim a string version of the phone number to check if its blank

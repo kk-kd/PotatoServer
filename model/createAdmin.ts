@@ -7,13 +7,13 @@ require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 createConnection().then(async (connection) => {
   const firstAdmin = new User();
   firstAdmin.email = "admin@example.com";
-  firstAdmin.firstName = "Admin";
-  firstAdmin.lastName = "Example";
-  firstAdmin.password = await bcrypt.hash("Admin123", 10);
+  firstAdmin.fullName = "Admin";
+  firstAdmin.password = await bcrypt.hash("Potato458!", 10);
   firstAdmin.address = "1 Fake Street";
   firstAdmin.longitude = 0;
   firstAdmin.latitude = 0;
-  firstAdmin.isAdmin = true;
+  firstAdmin.role = "Admin";
+  firstAdmin.phoneNumber = "5555555555";
 
   await connection.manager.save(firstAdmin);
 });
