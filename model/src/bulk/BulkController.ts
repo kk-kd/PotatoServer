@@ -29,7 +29,8 @@ import { Student } from "../entity/Student";
  * 7 - Missing Phone Number
  *
  * STUDENT
- * 8 - id not numerical
+ * 8 - id is empty
+ * 15 - id is invalid/nonnumerical
  * 9 - school entry is empty
  * 10 - parent email is empty
  * 11 - school does not exist
@@ -129,7 +130,16 @@ export class BulkController {
         ).push(2);
       }
 
-      // 8
+      // 8 ID IS EMPTY
+      if (student.student_id == null || student.student_id == undefined) {
+        if (!isAPIRequest) return false;
+
+        (
+          studentToReturn["error_code"] ??
+          (studentToReturn["error_code"] = [])
+        ).push(8);
+      }
+      // 14 STUDENT ID IS NON NUMERICAL
       if (student.student_id != null && student.student_id != undefined) {
         if (!this.isValidId(student.student_id)) {
           if (!isAPIRequest) return false;
@@ -137,11 +147,11 @@ export class BulkController {
           (
             studentToReturn["error_code"] ??
             (studentToReturn["error_code"] = [])
-          ).push(8);
+          ).push(15);
         }
       }
 
-      // 9
+      // 9 SCHOOL NAME ENTRY MISSING
       if (
         student.school_name == null ||
         student.school_name == undefined ||
@@ -152,7 +162,7 @@ export class BulkController {
           studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
         ).push(9);
       } else {
-        // 11
+        // 11 SCHOOL DOESN'T EXIST IN DATABASE
         const schoolEntry = await getRepository(School)
           .createQueryBuilder("schools")
           .select()
@@ -200,7 +210,7 @@ export class BulkController {
         }
       }
 
-      // 10
+      // 10 PARENT EMAIL IS EMPTY
       if (
         student.parent_email == null ||
         student.parent_email == undefined ||
@@ -211,7 +221,7 @@ export class BulkController {
           studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
         ).push(10);
       } else {
-        // 12
+        // 12 PARENT EMAIL DOESN'T EXIST
         const parentEntry = await getRepository(User)
           .createQueryBuilder("users")
           .select()
@@ -232,7 +242,7 @@ export class BulkController {
         // }
       }
 
-      // 0
+      // 0 SUCCESS
       if (studentToReturn["error_code"] == null) {
         studentToReturn["error_code"] = [0];
       }
