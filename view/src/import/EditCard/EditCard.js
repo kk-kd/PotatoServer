@@ -6,14 +6,12 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
-    // called on editable cell change to check for validity
+    // called whenever an editable cell is changed to check for validity
     const updateEditedDataValid = (rowIndex, columnId, value) => {
         setEditedData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
                 let copy = {...old[rowIndex], [columnId]: value}
-                console.log("changing")
-                console.log(copy)
                 if (rowValidation(copy)) {
                     return {
                         ...copy,
@@ -32,29 +30,32 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
         )
     } 
 
+    const updateEntry = (d, setD, ind, newD) => {
+        let c = d
+        c[ind] = newD;
+        setD(c)
+    }
+
+
     // for list of entry objects. 
     // NOTE: replaces entry with empty to preserve indexing. The objects are re-indexed upon submission.
     const removeEntry = (d, setD, ind) => {
         delete d[ind]
         setD(d)
-        console.log(d)
-        checkComplete()
     }
 
     const removeError = (ind) => {
         let temp = errors
         delete temp[ind]
         setErrors(temp)
-        console.log("errors")
-        console.log(errors)
     }
 
     // called on row deletion 
     const deleteRow = (ind, newRow) => {
-        console.log(newRow)
         removeEntry(fileData, setFileData, newRow['index']) // stored data
         removeEntry(editedData, setEditedData, ind) // displayed subset
-        removeError(ind)    
+        removeError(ind)  
+        checkComplete()  
     }
 
 
@@ -63,6 +64,9 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
         if (rowValidation(newRow)) {
             removeEntry(editedData, setEditedData, ind) // displayed subset
             removeError(ind) 
+            updateEntry(fileData, setFileData, newRow['index'], newRow)
+            checkComplete()
+
         }
         else {
             setEditedData(old =>
@@ -89,15 +93,15 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
 
     const checkComplete = () => {
         if (isEmptyDict(errors)) {
-            console.log('errors empty')
             setComplete(true);
         }
-        if (editedData.length < 0) {
-            console.log('edit empty')
+        let nonempty_count = editedData.filter(Boolean).length
+        
+        if (nonempty_count === 0) {
             setComplete(true);
+
         }
         if (complete) {
-            console.log('a')
             setComplete(true)
         }
     }
@@ -105,8 +109,9 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
     return (
         <div> 
             <h5> {message} </h5>
+
             <CssBaseline />
-            {((!complete) && (editedData) && (editedData.length >0)) && <EditableTable
+            {((!complete) && (editedData.length > 0)) && <EditableTable
                 columns={columns}
                 editableColumns = {editableColumns}
                 editedData={editedData}

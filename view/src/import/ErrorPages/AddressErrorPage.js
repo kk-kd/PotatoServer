@@ -6,70 +6,78 @@
 import React, { useEffect, useState } from "react"
 import { EditCard } from "../EditCard/EditCard"
 
-export const AddressErrorPage = ({activeError, setActiveError, addressErrors, setAddressErrors, fileData, setFileData}) => {
-    const [data5, setData5] = useState();
+export const AddressErrorPage = ({columns, activeError, setActiveError, addressErrors, setAddressErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
+    const [data, setData] = useState();
     const [complete, setComplete] = useState(false);
-
-    const columns = React.useMemo(
-        () => [
-          {
-            Header: 'Email',
-            accessor: 'parent_email',
-          },
-          {
-            Header: 'School',
-            accessor: 'school_name',
-          },
-        ],
-        []
-      )
+    const [edit, setEdit] = useState(false);
+    const [selected, setSelected] = useState(false);
       
       const addressValidation = (rowData) => {
           //TODO - add google maps validation
           console.log(rowData)
-          if (rowData['firstName'] === 'Morgan') {
-              return true
-          }
-          else {
-            return true
-         }
+          return true
       }
 
-      const editableColumns = ['parent_email']
+      const editableColumns = ['parent_email', 'name', 'school_name']
 
     // upon load, make tabular data from errors. 
     useEffect(()=> {
-        let codes = [5,6]
-
-        for (let i = 0; i < codes.length; i++) {
-            let code = codes[i]
-            let tempArr = []
-            for (let j = 0; j < addressErrors[code].length; j++) {
-                //tempArr.push(fileData[addressErrors[code][j]])
-            } 
-            tempArr.push(fileData[0]);
-            console.log(tempArr)
-            setData5(tempArr)
+        let errSet = new Set() // avoid duplicates!
+    
+       if (processingComplete) {
+           for (const [key, value] of Object.entries(addressErrors)) {
+               for (let j = 0; j < value.length; j++) {
+                   let ind = value[j] 
+                   let ent = fileData[ind]
+                   errSet.add(ent)            
+               } 
         }
-    }, [])
+       setData(Array.from(errSet));
+       
+       if (errSet.size === 0) {
+           setComplete(true);
+       }
+       }
+       
+   }, [processingComplete])  
 
-    useEffect (()=> {
-        if (complete) {
-            setComplete(true)
-        }
-    }, [complete])
+   const removeEntries = () => {
+        // remove all entries from fileData and data
+        for (let i = 0; i < data.length; i++) {
+            let ind = data[i]['index']
+            delete fileData[ind]
+            setFileData(fileData)
+            delete data[i]
+            setData(data)
+        }  
+        console.log(fileData)
+        setAddressErrors({})
+        setComplete(true);
+    }
+
     
       return (
         <div>
-         {(data5) && 
+            {((!selected) && (data) && (!complete)) && 
+            <div>
+                We found {data.length} record(s) with invalid addresses. 
+
+               <div>
+                    <button onClick = {()=> {setEdit(true); setSelected(true); }}> Fix Entries </button>
+                    <button onClick = {()=> {setEdit(false); setSelected(true); removeEntries()}}> Remove Entries </button>
+                </div>
+                
+            </div>
+            }
+        {((data) && (edit)) && 
          <EditCard 
             message = {"Please Fix Entries With Missing or Invalid Addresses"}
             complete = {complete}
             setComplete = {setComplete}
             errors = {addressErrors}
             setErrors = {setAddressErrors}
-            errorDataSubset = {data5} 
-            setErrorDataSubset = {setData5}
+            errorDataSubset = {data} 
+            setErrorDataSubset = {setData}
             fileData = {fileData} 
             setFileData = {setFileData}
             columns = {columns}
@@ -83,7 +91,7 @@ export const AddressErrorPage = ({activeError, setActiveError, addressErrors, se
              <button onClick = {(e)=> setActiveError(activeError +1)}> Continue
             </button>
             </div>
-        }
+         }
         </div>
       )
  

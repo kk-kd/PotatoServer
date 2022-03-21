@@ -138,11 +138,7 @@ export const EditableTable = ({
                     onClick={() => {         
                         const Row = row.values;
                         delete Row.edit;
-                        console.log(Row)
-                        console.log(row.index)
                         updateEditedDataValid(row.index, ['index'], Row['index'])
-                        console.log("updated row values:");
-                        console.log(editedData);
                         //move to next column
                         if (row.values.valid) {
                             setEditableRowIndex(row.index + 1);

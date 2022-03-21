@@ -13,6 +13,7 @@ import {
 export const ImportPage = () => {
     const step_labels = ['Pick Data Type', 'Upload File', 'Fix', 'Submit']
     const [activeStep, setActiveStep] = useState(0)
+    const [processingComplete, setProcessingComplete] = useState(false);
     const [dataType, setDataType] = useState()
     const [fileData, setFileData] = useState()
     const [fileName, setFileName] = useState()
@@ -76,20 +77,12 @@ export const ImportPage = () => {
         setArr(newArr);
     }
 
-  const addToDict = (arr, setArr, key, val) => {
-    let newCopy = arr[key];
-    newCopy.push(val);
-    const newArr = { ...arr, key: newCopy };
-    setArr(newArr);
-  };
 
   const findAndFormatErrors = (data) => {
-    //var data = [{'error_codes': [5,6]}, {'error_codes': [1,99]}]
     var address_codes = Object.keys(addressErrors);
     var missing_codes = Object.keys(missingErrors);
     var invalid_codes = Object.keys(invalidErrors);
     var exist_codes = Object.keys(existErrors);
-    console.log(data);
 
     for (let i = 0; i < data.length; i++) {
       var entry = data[i];
@@ -110,11 +103,12 @@ export const ImportPage = () => {
     console.log(missingErrors);
     console.log(invalidErrors);
     console.log(existErrors);
+    setProcessingComplete(true);
   };
 
   async function callValidate(validation_input) {
     try {
-      const resp = await validateBulkParents(validation_input);
+      const resp = await validateBulkStudents(validation_input);
       console.log(resp);
 
       findAndFormatErrors(resp.data.students);
@@ -173,6 +167,8 @@ export const ImportPage = () => {
             setInvalidErrors={setInvalidErrors}
             existErrors={existErrors}
             setExistErrors={setExistErrors}
+            processingComplete = {processingComplete}
+            setProcessingComplete = {setProcessingComplete}
             fileData={fileData}
             setFileData={setFileData}
             step_labels={step_labels}
