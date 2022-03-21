@@ -20,8 +20,8 @@ import { Student } from "../entity/Student";
  * 13 - user does not permission to add parents/students to this school
  *
  * PARENT
- * 1 - no email 
- * 14 - invalid email
+ * 1 - Email is not valid
+ * 16 - Email is empty
  * 3 - email existed in the database
  * 4 - repetitive emails in request
  * 5 - Missing Address
@@ -33,11 +33,12 @@ import { Student } from "../entity/Student";
  * 15 - id is invalid/nonnumerical
  * 9 - school entry is empty
  * 10 - parent email is empty
+ * 14 - invalid email
  * 11 - school does not exist
  * 12 - parent email does not exist
  */
 
-// TODO: add phone number valiation once we have the requiremnt
+// TODO: add phone number valiation once we have the requiremnt (ev4)
 // const q = new PQueue({ intervalCap: 40, interval: 1000 });
 const ROLE_SCHOOL_STAFF = "School Staff";
 const ROLE_ADMIN = "Admin";
@@ -275,8 +276,8 @@ export class BulkController {
         .send("You don't have enough permission for this action.");
       return;
     }
-
-    if (!this.studentsValidationHelper(students, role, userId, false)) {
+    const bool = await this.studentsValidationHelper(students, role, userId, false)
+    if (!bool) {
       response
         .status(401)
         .send("There's error with the data. Please validate first.");
@@ -387,7 +388,7 @@ export class BulkController {
    * {
    * index: ...,
    * email: ...,
-   * fullName:  ...,
+   * name:  ...,
    * address: ...,
    * phone_number: ... },
    * {},
@@ -407,6 +408,7 @@ export class BulkController {
    * ...]};
    */
   async validateUsers(request: Request, response: Response) {
+    console.log("we made it")
     const { users } = request.body;
     const role = response.locals.jwtPayload.role;
 
@@ -424,7 +426,7 @@ export class BulkController {
       return;
     }
 
-    let returnedUsers = this.usersValidationHelper(users);
+    let returnedUsers = await this.usersValidationHelper(users);
     response.status(200).send(returnedUsers);
   }
 
@@ -448,8 +450,8 @@ export class BulkController {
       }
       // 1 - Email Validation
       if (
-        user.email == null ||
-        user.email == undefined ||
+        user.email != null &&
+        user.email != undefined &&
         !EmailValidator.validate(user.email)
       )
         if (!isAPIRequest) return false;
@@ -458,12 +460,23 @@ export class BulkController {
           1
         );
       }
+      // 16 - Email MISSING
+      if (
+        user.email != null ||
+        user.email != undefined
+      )
+        if (!isAPIRequest) return false;
+      {
+        (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
+          16
+        );
+      }
 
       // 2 - Name Validation
       if (
-        user.fullName == null ||
-        user.fullName == undefined ||
-        user.fullName.trim() == ""
+        user.name == null ||
+        user.name == undefined ||
+        user.name.trim() == ""
       )
         if (!isAPIRequest) return false;
       {
@@ -527,12 +540,11 @@ export class BulkController {
       }
       // });
 
-      // 7 - Missing phone number
+      // 7 - Missing phone number 
+      // When changing this in ev4, trim a string version of the phone number to check if its blank
       if (
         user.phone_number == null ||
-        user.phone_number == undefined ||
-        user.phone_number.trim() == ""
-      )
+        user.phone_number == undefined)
         if (!isAPIRequest) return false;
       {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
@@ -603,9 +615,9 @@ export class BulkController {
       }
 
       if (
-        user.fullName == null ||
-        user.fullName == undefined ||
-        user.fullName.trim() == ""
+        user.name == null ||
+        user.name == undefined ||
+        user.name.trim() == ""
       ) {
         response.status(401).send(`Empty name for user ${user.email}`);
         return;
@@ -636,7 +648,7 @@ export class BulkController {
       // Save
       try {
         newUser.email = user.email;
-        newUser.fullName = user.fullName;
+        newUser.fullName = user.name;
         newUser.address = user.address;
         newUser.longitude = user.loc.longitude;
         newUser.latitude = user.loc.latitude;
