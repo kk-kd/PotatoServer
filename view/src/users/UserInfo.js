@@ -517,7 +517,7 @@ export const UserInfo = ({ edit, role, uid }) => {
                   <ListItem
                     key={school.uid}
                     secondaryAction={
-                      editable && (
+                      (editable && role === "Admin") && (
                         <IconButton
                           aria-label="delete"
                           style={{ backgroundColor: "transparent" }}
@@ -542,7 +542,7 @@ export const UserInfo = ({ edit, role, uid }) => {
                 );
               })}
 
-              {editable && (
+              {(editable && role === "Admin") && (
                 <ListItem key={"-1"} disablePadding>
                   <ListItemButton
                     onClick={(e) => {
