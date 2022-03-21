@@ -15,34 +15,38 @@ export const UploadStep = ({dataType, fileData, setFileData, fileName, setFileNa
         hiddenFileInput.current.click();
     };
 
-    const canParse = (data) => {
-        // TODO - check for column names
+    const correctHeaders = (data) => {
+        let studentKeys = ['name', 'parent_email', 'school_name', 'student_id', 'index']
+        let parentKeys = ['name', 'email', 'address', 'phone_number', 'index']
+        let requiredKeys = (dataType === 'students') ? studentKeys : parentKeys;
+        console.log(requiredKeys)
+        console.log(Object.keys(data[0]))
+
+        for (let i = 0; i < requiredKeys.length; i++) {
+            if (!Object.keys(data[0]).includes(requiredKeys[i])){
+                let message = "This file is missing required columns. Please select a file with columns  \n - " + requiredKeys.join('\n - ')
+                alert (message)
+                return false
+            }
+        }
         return true;
     }
 
     const fixHeader = (h) => {
-        // TODO: apply column map
+        // TODO: apply column map if input is different
 
-    //    if (Object.keys(columns).includes(h)) {
-    //        return columns[h]
-    //    }
        return h
     }
     const addIndex = (data) => {
         for (let i = 0; i < data.length; i++) {
-            data[i]['index'] = i
-            
+            data[i]['index'] = i  
         }
         return data
     }
 
     // On Select, update state
     const fileSelect = (e) => {
-        if (canParse(e.target.files[0].data)) {
-            parse(e.target.files[0], {'header': true, dynamicTyping: true, 'transformHeader': fixHeader, 'complete': updateFileData})
-            setValidFile(true);
-            setFileName(e.target.files[0].name);
-        } 
+        parse(e.target.files[0], {'header': true, dynamicTyping: true, 'transformHeader': fixHeader, 'complete': updateFileData}) 
     };
 
     const updateFileData = (result, file) => {
@@ -50,18 +54,21 @@ export const UploadStep = ({dataType, fileData, setFileData, fileName, setFileNa
         console.log(result.data)
         const newData = addIndex(data)
         console.log(newData)
-   
-        if (!result.error) { 
-            
+
+        if (correctHeaders(newData)) {
+            setFileName(file.name);
             setValidFile(true);
             setFileData(newData);
+
         }
+
     } 
 
     // on load: 
     // - if there's already a file selected, don't make them resubmit. Handles when they go backwards! 
     // - define column conversions
     useEffect(() => {
+        console.log(dataType)
         if (fileData) {
             setValidFile(true);            
             setFileData(fileData);
@@ -84,15 +91,16 @@ export const UploadStep = ({dataType, fileData, setFileData, fileName, setFileNa
     return (
         <div>
             <div id = 'question'> What File Do You Want to Use? </div>
+
+  
+                {fileName && <div id = 'file-display'> {fileName} </div>}
             
-            <button onClick = {handleClick}>
-                {fileData ?  'Change File' :'Select A File To Upload'}
-            </button>
+                <button onClick = {handleClick}>
+                    {fileData ?  'Change File' :'Select A File To Upload'}
+                </button>
+     
 
-              
-            {(fileData && fileName) && <div id = 'file-display'> {fileName} </div>
-            }
-
+    
             <input type="file" style = {{display: 'none'}} ref = {hiddenFileInput} onChange={fileSelect} accept=".csv"/>
                   
 

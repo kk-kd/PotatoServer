@@ -62,7 +62,7 @@ export const MissingErrorPage = ({columns, activeError, setActiveError, missingE
         <div> 
         {((!selected) && (data) && (!complete)) && 
             <div>
-                We found {data.length} record(s) with missing values. 
+                <h6> We found {data.length} record(s) with missing values. </h6>
                 <div>
                     <button onClick = {()=> {setEdit(true); setSelected(true); }}> Fix Entries </button>
                     <button onClick = {()=> {setEdit(false); setSelected(true); removeEntries()}}> Remove Entries </button>

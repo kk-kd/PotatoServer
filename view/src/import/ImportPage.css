@@ -1,6 +1,8 @@
 #stepper {
     width: 40%;
     margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 #step {
@@ -23,7 +25,9 @@
 
 #file-display {
     border: 1px solid black;
-    width: 30%;
     padding: 10px;
     margin:auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 45%;
 }

@@ -11,7 +11,7 @@ import {
 } from "../api/axios_wrapper";
 
 export const ImportPage = () => {
-    const step_labels = ['Pick Data Type', 'Upload File', 'Fix', 'Submit']
+    const step_labels = ['Select Task', 'Upload File', 'Fix', 'Submit']
     const [activeStep, setActiveStep] = useState(0)
     const [processingComplete, setProcessingComplete] = useState(false);
     const [dataType, setDataType] = useState()
@@ -108,10 +108,14 @@ export const ImportPage = () => {
 
   async function callValidate(validation_input) {
     try {
-      const resp = await validateBulkStudents(validation_input);
-      console.log(resp);
-
-      findAndFormatErrors(resp.data.students);
+      if (dataType === 'students') {
+        const resp = await validateBulkStudents(validation_input);
+        findAndFormatErrors(resp.data.students);
+      }
+      else if (dataType === 'parents') {
+        const resp = await validateBulkParents(validation_input);
+        findAndFormatErrors(resp.data.parents);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -120,7 +124,7 @@ export const ImportPage = () => {
 
   return (
     <div id="content">
-      <h2 id="title"> Import Account Information </h2>
+      <h2 id="title"> Import </h2>
 
       <div id="stepper">
         <HorizontalStepper
@@ -159,6 +163,7 @@ export const ImportPage = () => {
       {activeStep === 2 && (
         <div id="step">
           <ValidateStep
+            dataType = {dataType} 
             addressErrors={addressErrors}
             setAddressErrors={setAddressErrors}
             missingErrors={missingErrors}

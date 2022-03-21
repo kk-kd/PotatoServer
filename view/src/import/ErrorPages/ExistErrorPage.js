@@ -59,7 +59,7 @@ export const ExistErrorPage = ({columns, activeError, setActiveError, existError
         <div> 
             {((!selected) && (data) && (!complete)) && 
             <div>
-                We found {data.length} record(s) with duplicates. 
+                <h6> We found {data.length} record(s) with a duplicate record. </h6>
 
                <div>
                     <button onClick = {()=> {setEdit(true); setSelected(true); }}> Fix Entries </button>

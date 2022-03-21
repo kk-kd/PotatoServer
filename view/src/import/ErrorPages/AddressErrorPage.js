@@ -60,7 +60,7 @@ export const AddressErrorPage = ({columns, activeError, setActiveError, addressE
         <div>
             {((!selected) && (data) && (!complete)) && 
             <div>
-                We found {data.length} record(s) with invalid addresses. 
+                <h6> We found {data.length} record(s) with missing or invalid addresses. </h6>
 
                <div>
                     <button onClick = {()=> {setEdit(true); setSelected(true); }}> Fix Entries </button>

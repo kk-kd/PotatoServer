@@ -7,29 +7,54 @@ import {InvalidErrorPage} from "./ErrorPages/InvalidErrorPage";
 import {ExistErrorPage} from "./ErrorPages/ExistErrorPage";
 import { useEffect, useState} from "react";
 import React from "react";
+import e from "cors";
 
-export const ValidateStep = ({addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, processingComplete, setProcessingComplete, fileData, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
+export const ValidateStep = ({dataType, addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, processingComplete, setProcessingComplete, fileData, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
 
     const [activeError, setActiveError] = useState(0); // keeps track of which type of error 
     const [valid, setValid] = useState(false);
+    const [columns, setColumns] = useState();
 
-    const columns = React.useMemo(
+    const studentColumns = React.useMemo(
         () => [
           {
             Header: 'Name',
             accessor: 'name',
           },
           {
-            Header: 'Email',
+            Header: 'Parent Email',
             accessor: 'parent_email',
           },
           {
             Header: 'School',
             accessor: 'school_name',
           },
+          {
+            Header: 'Student ID',
+            accessor: 'student_id',
+          },
         ],
         []
     )
+
+    const parentColumns = React.useMemo(
+        () => [
+          {
+            Header: 'Name',
+            accessor: 'name',
+          },
+        ],
+        []
+    )
+    useEffect(()=> {
+        if (dataType=== 'students') {
+            setColumns(studentColumns)
+        }
+        else {
+            setColumns(parentColumns)
+        }
+    }, [])
+
 
     useEffect(()=> {
         if (activeError === 4) {

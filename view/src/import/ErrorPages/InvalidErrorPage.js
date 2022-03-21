@@ -62,7 +62,7 @@ export const InvalidErrorPage = ({columns, activeError, setActiveError, invalidE
         <div> 
              {((!selected) && (data) && (!complete)) && 
             <div>
-                We found {data.length} record(s) with invalid entries 
+                <h6> We found {data.length} record(s) with invalid entries. </h6>
         
                <div>
                     <button onClick = {()=> {setEdit(true); setSelected(true); }}> Fix Entries </button>

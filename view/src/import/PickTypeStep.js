@@ -21,7 +21,7 @@ export const PickTypeStep = ({dataType, setDataType, step_labels, activeStep, se
                     onChange={(e) => setDataType(e.target.value)}
                 >
                     <FormControlLabel value="students" control={<Radio />} label="Students" />
-                    <FormControlLabel value="users" control={<Radio />} label="Admin, Staff, or Parents" />
+                    <FormControlLabel value="parents" control={<Radio />} label="Admin, Staff, or Parents" />
                 </RadioGroup>
             </div>
            

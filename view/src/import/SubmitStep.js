@@ -3,8 +3,8 @@ export const SubmitStep = (fileData, setFileData) => {
 
     return (
         <div>
-            Submit
-
+             <h6> Submit </h6>
+             
         </div>
     )
 }
