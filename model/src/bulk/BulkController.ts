@@ -278,35 +278,35 @@ export class BulkController {
 
       // Validations
       if (
-        student.fullName == null ||
-        student.fullName == undefined ||
-        student.fullName.trim() == ""
+        student.name == null ||
+        student.name == undefined ||
+        student.name.trim() == ""
       ) {
-        response.status(401).send(`Empty name for student ${student.fullName}`);
+        response.status(401).send(`Empty name for student ${student.name}`);
         return;
       }
-      newStudent.fullName = student.fullName;
+      newStudent.fullName = student.name;
 
-      if (student.id != null && student.id != undefined) {
-        if (!this.isValidId(student.id)) {
+      if (student.student_id != null && student.student_id != undefined) {
+        if (!this.isValidId(student.student_id)) {
           response
             .status(401)
             .send(
-              `Student ${student.fullName} has invalid id. Id needs to be a positive integer.`
+              `Student ${student.name} has invalid id. Id needs to be a positive integer.`
             );
           return;
         }
-        newStudent.id = student.id;
+        newStudent.id = student.student_id;
       }
 
       if (
-        student.school == null ||
-        student.school == undefined ||
-        student.school.trim() == ""
+        student.school_name == null ||
+        student.school_name == undefined ||
+        student.school_name.trim() == ""
       ) {
         response
           .status(401)
-          .send(`No school provided for student ${student.fullName}`);
+          .send(`No school provided for student ${student.name}`);
         return;
       }
 
@@ -314,7 +314,7 @@ export class BulkController {
         .createQueryBuilder("schools")
         .select()
         .where("schools.uniqueName = :uniqueName", {
-          uniqueName: student.school.toLowerCase().trim(),
+          uniqueName: student.school_name.toLowerCase().trim(),
         })
         .getOne();
 
@@ -322,20 +322,20 @@ export class BulkController {
         response
           .status(401)
           .send(
-            `Student ${student.fullName}'s school does not exist in the database. Please create the school before adding the student.`
+            `Student ${student.name}'s school does not exist in the database. Please create the school before adding the student.`
           );
         return;
       }
       newStudent.school = schoolEntry;
 
       if (
-        student.parent == null ||
-        student.parent == undefined ||
-        student.parent.trim() == ""
+        student.parent_email == null ||
+        student.parent_email == undefined ||
+        student.parent_email.trim() == ""
       ) {
         response
           .status(401)
-          .send(`No parent email provided for student ${student.fullName}`);
+          .send(`No parent email provided for student ${student.name}`);
         return;
       }
 
@@ -343,7 +343,7 @@ export class BulkController {
         .createQueryBuilder("users")
         .select()
         .where("users.email = :email", {
-          email: student.parent,
+          email: student.parent_email,
         })
         .getOne();
 
@@ -351,7 +351,7 @@ export class BulkController {
         response
           .status(401)
           .send(
-            `Student ${student.fullName}'s parent does not exist in the database. Please create the parent before adding the student.`
+            `Student ${student.name}'s parent does not exist in the database. Please create the parent before adding the student.`
           );
         return;
       }
