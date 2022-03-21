@@ -20,8 +20,8 @@ export const ListBusRoutes = () => {
   const [total, setTotal] = useState(1);
   const [size, setSize] = useState(10);
   const [showAll, setShowAll] = useState(false);
-  const [sortBy, setSortBy] = useState("none");
-  const [sortDirec, setSortDirec] = useState("none");
+  const [sortBy, setSortBy] = useState("name");
+  const [sortDirec, setSortDirec] = useState("ASC");
   const [nameFilter, setNameFilter] = useState("");
   useEffect(() => {
     const fetchData = async () => {
@@ -46,15 +46,13 @@ export const ListBusRoutes = () => {
   const nextSort = (id) => {
     if (sortBy !== id) {
       setSortBy(id);
-      if (sortDirec === "none" || sortDirec === "DESC") {
-        setSortDirec("ASC");
-      } else {
+      if (sortDirec === "ASC") {
         setSortDirec("DESC");
+      } else {
+        setSortDirec("ASC");
       }
     } else if (sortDirec === "ASC") {
       setSortDirec("DESC");
-    } else if (sortDirec === "DESC") {
-      setSortDirec("none");
     } else {
       setSortDirec("ASC");
     }
