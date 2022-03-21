@@ -88,6 +88,7 @@ export const EditableTable = ({
     setEditedData,
     updateEditedDataValid,
     submitRow,
+    deleteRow,
   }) => {
     const [editableRowIndex, setEditableRowIndex] = React.useState(0);
   
@@ -105,6 +106,7 @@ export const EditableTable = ({
         setEditedData,
         defaultColumn,
         submitRow,
+        deleteRow,
         updateEditedDataValid,
         editableRowIndex,
         setEditableRowIndex
@@ -154,6 +156,14 @@ export const EditableTable = ({
                 </button>
                 : 
                 <div></div>)
+          },
+          {
+            accessor: "index",
+            id: "index",
+            Header: "",
+            Cell: ({row, deleteRow}) => (
+               <button onClick = {(e) => {deleteRow(row.index, row.values)}}> Delete </button> // TODO: replace with icons
+            )
           },
         ]);}
     );

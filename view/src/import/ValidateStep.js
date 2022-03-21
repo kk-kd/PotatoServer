@@ -5,11 +5,18 @@ import {AddressErrorPage} from "./ErrorPages/AddressErrorPage";
 import {MissingErrorPage} from "./ErrorPages/MissingErrorPage";
 import {InvalidErrorPage} from "./ErrorPages/InvalidErrorPage";
 import {ExistErrorPage} from "./ErrorPages/ExistErrorPage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const ValidateStep = ({addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, fileData, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
 
     const [activeError, setActiveError] = useState(0);
+    const [valid, setValid] = useState(false);
+
+    useEffect(()=> {
+        if (activeError === 4) {
+            setValid(true)
+        }
+    }, [activeError])
     
     return (
         <div>

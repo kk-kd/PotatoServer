@@ -49,13 +49,22 @@ export const ImportPage = () => {
     useEffect(() => {
         if (runValidation){
             console.log("Run Validation")
-            const validation_input = {
-                'students': fileData
+            if (dataType === 'students') {
+                const validation_input = {
+                    'students': fileData
+                }
+                callValidate(validation_input)
+                setRunValidation(false)
+                console.log(validation_input)
             }
-           
-            //callValidate(validation_input)
-            setRunValidation(false)
-            console.log(validation_input)
+            else if (dataType === 'users') {
+                const validation_input = {
+                    'users': fileData
+                }
+                callValidate(validation_input)
+                setRunValidation(false)
+                console.log(validation_input)
+            }        
         }
     }, [runValidation]);
 

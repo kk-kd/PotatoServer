@@ -49,10 +49,18 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
         console.log(errors)
     }
 
+    // called on row deletion 
+    const deleteRow = (ind, newRow) => {
+        console.log(newRow)
+        removeEntry(fileData, setFileData, newRow['index']) // stored data
+        removeEntry(editedData, setEditedData, ind) // displayed subset
+        removeError(ind)    
+    }
+
+
     // called on row submission
     const submitRow = (ind, newRow) => {
         if (rowValidation(newRow)) {
-            removeEntry(fileData, setFileData, newRow['index']) // stored data
             removeEntry(editedData, setEditedData, ind) // displayed subset
             removeError(ind) 
         }
@@ -89,7 +97,8 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
             setComplete(true);
         }
         if (complete) {
-
+            console.log('a')
+            setComplete(true)
         }
     }
      
@@ -97,12 +106,13 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
         <div> 
             <h5> {message} </h5>
             <CssBaseline />
-            {(!complete && (isEmptyDict(errors))) && <EditableTable
+            {((!complete) && (editedData) && (editedData.length >0)) && <EditableTable
                 columns={columns}
                 editableColumns = {editableColumns}
                 editedData={editedData}
                 setEditedData={setEditedData}
                 submitRow={submitRow}
+                deleteRow = {deleteRow}
                 updateEditedDataValid={updateEditedDataValid}
                 rowValidation = {rowValidation}
              />}

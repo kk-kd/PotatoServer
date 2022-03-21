@@ -8,7 +8,7 @@ import { EditCard } from "../EditCard/EditCard"
 
 export const AddressErrorPage = ({activeError, setActiveError, addressErrors, setAddressErrors, fileData, setFileData}) => {
     const [data5, setData5] = useState();
-    const [complete, setComplete] = useState();
+    const [complete, setComplete] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -19,10 +19,6 @@ export const AddressErrorPage = ({activeError, setActiveError, addressErrors, se
           {
             Header: 'School',
             accessor: 'school_name',
-          },
-          {
-            Header: '',
-            accessor: 'index',
           },
         ],
         []
@@ -52,20 +48,21 @@ export const AddressErrorPage = ({activeError, setActiveError, addressErrors, se
                 //tempArr.push(fileData[addressErrors[code][j]])
             } 
             tempArr.push(fileData[0]);
-            console.log(fileData)
+            console.log(tempArr)
             setData5(tempArr)
         }
     }, [])
 
     useEffect (()=> {
         if (complete) {
-            setActiveError(activeError +1)
+            setComplete(true)
         }
     }, [complete])
     
       return (
         <div>
-         {(fileData && data5 && (data5.length > 0)) && <EditCard 
+         {(data5) && 
+         <EditCard 
             message = {"Please Fix Entries With Missing or Invalid Addresses"}
             complete = {complete}
             setComplete = {setComplete}
@@ -80,6 +77,13 @@ export const AddressErrorPage = ({activeError, setActiveError, addressErrors, se
             rowValidation = {addressValidation}
             showMap = {true}
          />}
+         
+         {complete && <div> 
+             <h6> No Address Errors Left! </h6>
+             <button onClick = {(e)=> setActiveError(activeError +1)}> Continue
+            </button>
+            </div>
+        }
         </div>
       )
  
