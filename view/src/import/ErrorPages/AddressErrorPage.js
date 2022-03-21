@@ -6,19 +6,15 @@
 import React, { useEffect, useState } from "react"
 import { EditCard } from "../EditCard/EditCard"
 
-export const AddressErrorPage = ({columns, requiredColumns, activeError, setActiveError, addressErrors, setAddressErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
+
+export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, addressErrors, setAddressErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
     const [data, setData] = useState();
     const [complete, setComplete] = useState(false);
     const [edit, setEdit] = useState(false);
     const [selected, setSelected] = useState(false);
       
-      const addressValidation = (rowData) => {
-          //TODO - add google maps validation
-          console.log(rowData)
-          return true
-      }
 
-      const editableColumns = requiredColumns
+    const editableColumns = requiredColumns
 
     // upon load, make tabular data from errors. 
     useEffect(()=> {
@@ -81,7 +77,8 @@ export const AddressErrorPage = ({columns, requiredColumns, activeError, setActi
             setFileData = {setFileData}
             columns = {columns}
             editableColumns = {editableColumns}
-            rowValidation = {addressValidation}
+            rowValidation = {checkRow}
+            isCellValid = {checkCell}
             showMap = {true}
          />}
          

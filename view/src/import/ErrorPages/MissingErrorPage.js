@@ -7,8 +7,9 @@
 import { useState, useEffect } from "react";
 import React from "react";
 import { EditCard } from "../EditCard/EditCard";
+import { CheckStudentCell, CheckParentCell, CheckStudentRow, CheckParentRow} from "../ValidationUtils";
 
-export const MissingErrorPage = ({columns, requiredColumns, activeError, setActiveError, missingErrors, setMissingErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
+export const MissingErrorPage = ({checkRow, checkCell, columns, dataType, requiredColumns, activeError, setActiveError, missingErrors, setMissingErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
 
     const [data, setData] = useState();
     const [complete, setComplete] = useState(false);
@@ -16,16 +17,10 @@ export const MissingErrorPage = ({columns, requiredColumns, activeError, setActi
     const [selected, setSelected] = useState(false);
 
     const editableColumns = requiredColumns;
-
-    const missingValidation = (rowData) => {
-        //TODO - add validation
-        return true
-    }
-
+    
      // upon load, make tabular data from errors. 
      useEffect(()=> {
          let errSet = new Set() // avoid duplicates!
-    
 
         if (processingComplete) {
             for (const [key, value] of Object.entries(missingErrors)) {
@@ -83,7 +78,8 @@ export const MissingErrorPage = ({columns, requiredColumns, activeError, setActi
                 setFileData = {setFileData}
                 columns = {columns}
                 editableColumns = {editableColumns}
-                rowValidation = {missingValidation}
+                rowValidation = {checkRow}
+                isCellValid = {checkCell}
                 showMap = {false}
             />}
         

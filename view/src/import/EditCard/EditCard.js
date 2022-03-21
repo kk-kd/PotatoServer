@@ -2,16 +2,18 @@ import EditableTable from "./EditableTable";
 import {CssBaseline } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export const EditCard = ({complete, setComplete, errors, setErrors, message, errorDataSubset, setErrorDataSubset, fileData, setFileData, columns, editableColumns, rowValidation, showMap}) => {
+export const EditCard = ({complete, setComplete, errors, setErrors, message, errorDataSubset, setErrorDataSubset, fileData, setFileData, columns, editableColumns, rowValidation, isCellValid, showMap}) => {
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
     // called whenever an editable cell is changed to check for validity
     const updateEditedDataValid = (rowIndex, columnId, value) => {
+        
         setEditedData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
                 let copy = {...old[rowIndex], [columnId]: value}
+                console.log(copy)
                 if (rowValidation(copy)) {
                     return {
                         ...copy,
@@ -120,6 +122,7 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
                 deleteRow = {deleteRow}
                 updateEditedDataValid={updateEditedDataValid}
                 rowValidation = {rowValidation}
+                isCellValid = {isCellValid}
              />}
         </div>
 

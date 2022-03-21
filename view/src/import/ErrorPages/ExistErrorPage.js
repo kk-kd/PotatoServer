@@ -6,17 +6,11 @@
 import React, { useEffect, useState } from "react"
 import { EditCard } from "../EditCard/EditCard"
 
-export const ExistErrorPage = ({columns, requiredColumns, activeError, setActiveError, existErrors, setExistErrors,processingComplete, setProcessingComplete, fileData, setFileData}) => {
+export const ExistErrorPage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, existErrors, setExistErrors,processingComplete, setProcessingComplete, fileData, setFileData}) => {
     const [data, setData] = useState()
     const [complete, setComplete] = useState(false);
     const [edit, setEdit] = useState(false);
     const [selected, setSelected] = useState(false);
-
-    const existValidation = (rowData) => {
-        //TODO - add google maps validation
-        console.log(rowData)
-        return true
-    }
 
     const editableColumns = requiredColumns
 
@@ -81,8 +75,10 @@ export const ExistErrorPage = ({columns, requiredColumns, activeError, setActive
                 setFileData = {setFileData}
                 columns = {columns}
                 editableColumns = {editableColumns}
-                rowValidation = {existValidation}
+                rowValidation = {checkRow}
+                isCellValid = {checkCell}
                 showMap = {false}
+
          />}
 
         {complete && <div> 

@@ -8,12 +8,33 @@ import {ExistErrorPage} from "./ErrorPages/ExistErrorPage";
 import { useEffect, useState} from "react";
 import React from "react";
 import e from "cors";
+import { CheckStudentCell, CheckStudentRow, CheckParentCell, CheckParentRow} from "./ValidationUtils";
 
 export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, processingComplete, setProcessingComplete, fileData, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
 
     const [activeError, setActiveError] = useState(0); // keeps track of which type of error 
     const [valid, setValid] = useState(false);
     const [columns, setColumns] = useState();
+
+    const checkRow = (rowData) => {
+      if (dataType === 'students') {
+          return CheckStudentRow(rowData)
+      }
+      else if (dataType === 'parents') {
+          return CheckParentRow(rowData)
+      }
+      return false;
+  }
+
+  const checkCell = (col, val) => {
+      if (dataType === 'students') {
+          return CheckStudentCell(col, val)
+      }
+      else if (dataType === 'parents') {
+          return CheckParentCell(col, val)
+      }
+      return false;
+  }
 
     const studentColumns = React.useMemo(
         () => [
@@ -67,7 +88,10 @@ export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddre
     return (
         <div>    
             {(activeError === 0) && <MissingErrorPage 
+                  checkRow = {checkRow} 
+                  checkCell = {checkCell}
                   columns = {columns}
+                  dataType = {dataType}
                   requiredColumns = {requiredColumns}
                   activeError = {activeError}
                   setActiveError = {setActiveError}
@@ -80,7 +104,10 @@ export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddre
              />}
 
             {(activeError === 1) && <AddressErrorPage 
+                checkRow = {checkRow} 
+                checkCell = {checkCell}
                 columns = {columns}
+                dataType = {dataType}
                 requiredColumns = {requiredColumns}
                 activeError = {activeError}
                 setActiveError = {setActiveError}
@@ -93,7 +120,10 @@ export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddre
              />}
              
              {(activeError=== 2) && <InvalidErrorPage
+                  checkRow = {checkRow} 
+                  checkCell = {checkCell}
                   columns = {columns}
+                  dataType = {dataType}
                   requiredColumns = {requiredColumns}
                   activeError = {activeError}
                   setActiveError = {setActiveError}
@@ -106,7 +136,10 @@ export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddre
              />}
 
             {(activeError === 3) && <ExistErrorPage 
+              checkRow = {checkRow} 
+              checkCell = {checkCell}
               columns = {columns}
+              dataType = {dataType}
               requiredColumns = {requiredColumns}
               activeError = {activeError}
               setActiveError = {setActiveError}

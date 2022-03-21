@@ -7,17 +7,11 @@
 import React, { useEffect, useState } from "react"
 import { EditCard } from "../EditCard/EditCard"
 
-export const InvalidErrorPage = ({columns, requiredColumns, activeError, setActiveError, invalidErrors, setInvalidErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
+export const InvalidErrorPage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, invalidErrors, setInvalidErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
     const [data, setData] = useState()
     const [complete, setComplete] = useState(false);
     const [edit, setEdit] = useState(false);
     const [selected, setSelected] = useState(false);
-
-    const invalidValidation = (rowData) => {
-        //TODO - add validation
-        console.log(rowData)
-        return true
-    }
 
     const editableColumns = requiredColumns
 
@@ -83,7 +77,8 @@ export const InvalidErrorPage = ({columns, requiredColumns, activeError, setActi
             setFileData = {setFileData}
             columns = {columns}
             editableColumns = {editableColumns}
-            rowValidation = {invalidValidation}
+            rowValidation = {checkRow}
+            isCellValid = {checkCell}
             showMap = {true}
          />}
 

@@ -8,12 +8,16 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleCheck,
+  faCircleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
 
 
 import {
     useTable
   } from "react-table";
-import { red } from "@mui/material/colors";
   
   // Create an editable cell renderer
   const EditableCell = ({
@@ -24,22 +28,32 @@ import { red } from "@mui/material/colors";
     updateEditedDataValid,
     editableRowIndex, // index of the row we requested for editing
     editableColumns, // list of editable columns
+    isCellValid,
   }) => {
     const [value, setValue] = React.useState(initialValue);
+    const [valid, setValid] = React.useState();
   
     const onChange = (e) => {
       setValue(e.target.value);
       updateEditedDataValid(index, id, e.target.value);
+      setValid(isCellValid(id, e.target.value));
     };
 
     
     // If the initialValue is changed externall, sync it up with our state
     React.useEffect(() => {
       setValue(initialValue);
+      if (isCellValid(id, initialValue)) {
+        setValid(true);
+      } 
+      else {
+        setValid(false)
+      }
+
     }, [initialValue]);
   
     return (index === editableRowIndex && editableColumns.includes(id)) ? (
-      <input value={value} onChange={onChange} style = {{border: '1px solid #34815c'}}/>
+      <input value={value} onChange={onChange} style = {{border: valid ? '1px solid #34815c': '1px solid red'}}/>
     ) : (
       <p>{value}</p>
     );
@@ -90,6 +104,7 @@ export const EditableTable = ({
     updateEditedDataValid,
     submitRow,
     deleteRow,
+    isCellValid,
   }) => {
     const [editableRowIndex, setEditableRowIndex] = React.useState(0);
   
@@ -110,7 +125,8 @@ export const EditableTable = ({
         deleteRow,
         updateEditedDataValid,
         editableRowIndex,
-        setEditableRowIndex
+        setEditableRowIndex, 
+        isCellValid
       },
 
 
@@ -123,9 +139,17 @@ export const EditableTable = ({
             Header: "Status",
             Cell: ({ row, setEditableRowIndex, editableRowIndex, editableColumns,updateEditedDataValid}) => (
               (row.values.valid) ?
-               <div> Yes {row.values.valid}</div> // TODO: replace with icons
+              <FontAwesomeIcon
+                icon={faCircleCheck}
+                size="lg"
+                style={{ color: "green"}}
+               />
                 : 
-                <div> No {row.values.valid} </div>)
+                <FontAwesomeIcon
+                icon={faCircleExclamation}
+                size="lg"
+                style={{ color: "red" }}
+               />)
           },
           {
             accessor: "edit",
@@ -149,7 +173,7 @@ export const EditableTable = ({
                     }
                 >
                 
-                {row.values.valid ? "Submit": 'Not Valid'}
+                {row.values.valid ? "Submit": 'Please Fix Errors'}
                 </button>
                 : 
                 <div></div>)
