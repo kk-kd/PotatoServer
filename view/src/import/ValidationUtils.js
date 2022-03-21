@@ -2,14 +2,14 @@
 
 export const CheckStudentCell = (col, val) => {
     if (col === 'index' || col === 'valid') {
-        return true
+        return ''
     }
-    // 
+    // check for columns
     else if (val) {
-        return true;
+        return '';
     }
     else {
-        return false;
+        return 'Empty';
     }
     
 } 
@@ -22,12 +22,13 @@ export const CheckStudentRow = (row) => {
     console.log(row)
     
     for (const [key, value] of Object.entries(row)) {
-        if (!CheckStudentCell(key, value)) {
+        let m = CheckStudentCell(key, value)
+        if (m) {
             console.log(key, value)
-            return false
+            return m;
         }
     }  
-    return true; 
+    return ''; 
 } 
 
 export const CheckParentRow = (row) => {

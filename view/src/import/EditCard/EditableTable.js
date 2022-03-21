@@ -31,29 +31,38 @@ import {
     isCellValid,
   }) => {
     const [value, setValue] = React.useState(initialValue);
-    const [valid, setValid] = React.useState();
-  
+    const [err, setErr] = React.useState();
+
+    const onBlur = (e) => {
+      if (id === 'address') {
+        updateEditedDataValid(index, id, e.target.value);
+        setErr(isCellValid(id, e.target.value));
+      }
+    }
+      
     const onChange = (e) => {
       setValue(e.target.value);
-      updateEditedDataValid(index, id, e.target.value);
-      setValid(isCellValid(id, e.target.value));
+      if (id !== 'address') {
+        updateEditedDataValid(index, id, e.target.value);
+        setErr(isCellValid(id, e.target.value));
+      }
     };
 
     
     // If the initialValue is changed externall, sync it up with our state
     React.useEffect(() => {
       setValue(initialValue);
-      if (isCellValid(id, initialValue)) {
-        setValid(true);
-      } 
-      else {
-        setValid(false)
-      }
-
+      setErr(isCellValid(id, initialValue));
     }, [initialValue]);
   
     return (index === editableRowIndex && editableColumns.includes(id)) ? (
-      <input value={value} onChange={onChange} style = {{border: valid ? '1px solid #34815c': '1px solid red'}}/>
+      <div>
+
+        <input value={value} onChange={onChange} onBlur = {onBlur} style = {{border: err ? '1px solid red': '1px solid #34815c', position: 'relative'}}/>
+        <span style = {{color:'red'}}> {err} </span>
+        
+      </div>
+      
     ) : (
       <p>{value}</p>
     );
@@ -78,23 +87,6 @@ import {
   const defaultColumn = {
     Cell: EditableCell
   };
-
-  const IndeterminateCheckbox = React.forwardRef(
-    ({ indeterminate, ...rest }, ref) => {
-      const defaultRef = React.useRef();
-      const resolvedRef = ref || defaultRef;
-  
-      React.useEffect(() => {
-        resolvedRef.current.indeterminate = indeterminate;
-      }, [resolvedRef, indeterminate]);
-  
-      return (
-        <>
-          <Checkbox ref={resolvedRef} {...rest} />
-        </>
-      );
-    }
-  );
 
 export const EditableTable = ({
     columns,
@@ -137,7 +129,7 @@ export const EditableTable = ({
             accessor: "valid",
             id: "valid",
             Header: "Status",
-            Cell: ({ row, setEditableRowIndex, editableRowIndex, editableColumns,updateEditedDataValid}) => (
+            Cell: ({ row}) => (
               (row.values.valid) ?
               <FontAwesomeIcon
                 icon={faCircleCheck}

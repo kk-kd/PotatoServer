@@ -8,13 +8,14 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
 
     // called whenever an editable cell is changed to check for validity
     const updateEditedDataValid = (rowIndex, columnId, value) => {
+        console.log(value)
         
         setEditedData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
                 let copy = {...old[rowIndex], [columnId]: value}
-                console.log(copy)
-                if (rowValidation(copy)) {
+                let e = rowValidation(copy)
+                if (!e) {
                     return {
                         ...copy,
                         ['valid']: true,
