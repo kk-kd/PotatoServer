@@ -2,21 +2,20 @@ import EditableTable from "./EditableTable";
 import {CssBaseline } from "@mui/material";
 import { useEffect, useState } from "react";
 
-export const EditCard = ({complete, setComplete, errors, setErrors, message, errorDataSubset, setErrorDataSubset, fileData, setFileData, columns, editableColumns, rowValidation, isCellValid, showMap}) => {
+export const EditCard = ({setSelectedIndex,complete, setComplete, errors, setErrors, message, errorDataSubset, setErrorDataSubset, fileData, setFileData, columns, editableColumns, rowValidation, isCellValid, showMap}) => {
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
 
     // called whenever an editable cell is changed to check for validity
-    const updateEditedDataValid = (rowIndex, columnId, value) => { 
-        console.log(rowIndex)
-        console.log(columnId)
-        console.log(value)       
+    const updateEditedDataValid = (rowIndex, columnId, value) => {      
         setEditedData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
                 let copy = {...old[rowIndex], [columnId]: value}
                 let e = rowValidation(copy)
+                console.log(e)
+                
                 if (!e) {
                     return {
                         ...copy,
@@ -65,11 +64,14 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
 
     // called on row submission
     const submitRow = (ind, newRow) => {
+        console.log(newRow)
         if (!rowValidation(newRow)) {
             removeEntry(editedData, setEditedData, ind) // displayed subset
             removeError(ind) // errors.filter 
             updateEntry(fileData, setFileData, newRow['index'], newRow)
             checkComplete()
+            console.log(editedData)
+            console.log(fileData)
         }
         else {
             setEditedData(old =>
@@ -117,6 +119,7 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
 
             <CssBaseline />
             {((!complete) && (editedData.length > 0)) && <EditableTable
+                setSelectedIndex ={setSelectedIndex}
                 columns={columns}
                 editableColumns = {editableColumns}
                 editedData={editedData}

@@ -19,10 +19,12 @@ export const UploadStep = ({dataType, requiredColumns, fileData, setFileData, fi
 
         for (let i = 0; i < requiredColumns.length; i++) {
             if (!Object.keys(data[0]).includes(requiredColumns[i])){
-                let message = "This file is missing required columns. Please select a file with columns  \n - " + requiredColumns.join('\n - ')
-                alert (message)
-                return false
-            }
+                // if (!['index', 'loc'].includes(requiredColumns[i])){
+                    let message = "This file is missing required columns. Please select a file with columns  \n - " + requiredColumns.join('\n - ')
+                    alert (message)
+                    return false
+            // }
+        }
         }
         return true;
     }

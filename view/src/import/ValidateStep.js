@@ -66,9 +66,20 @@ export const ValidateStep = ({users, schools, schoolNames, emails, dataType, req
           },
           {
             Header: 'Email',
-            accessor: 'parent_email',
+            accessor: 'email',
           },
-
+          {
+            Header: 'Address',
+            accessor: 'address',
+          },
+          {
+            Header: 'Phone Number',
+            accessor: 'phone_number',
+          },
+          {
+            Header: '',
+            accessor: 'loc',
+            Cell: ({ row}) => (<div></div>)}
         ],
         []
     )

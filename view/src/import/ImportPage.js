@@ -154,6 +154,7 @@ export const ImportPage = () => {
     console.log(missingErrors);
     console.log(invalidErrors);
     console.log(existErrors);
+    
     setProcessingComplete(true);
   };
 
@@ -162,10 +163,12 @@ export const ImportPage = () => {
       if (dataType === 'students') {
         const resp = await validateBulkStudents(validation_input);
         findAndFormatErrors(resp.data.students);
+        setFileData(resp.data.students)
       }
       else if (dataType === 'parents') {
         const resp = await validateBulkParents(validation_input);
-        findAndFormatErrors(resp.data.parents);
+        findAndFormatErrors(resp.data.users);
+        setFileData(resp.data.users)
       }
     } catch (e) {
       console.log(e);
