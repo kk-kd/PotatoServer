@@ -48,7 +48,7 @@ export const CheckParentCell = (
     return "";
   }
   // catches blank cases
-  else if ((val === null || val === undefined) && (col !== 'address')){
+  else if ((val === null || val === undefined) && col !== "loc") {
     return "Blank!";
   }
   //email cases
@@ -65,9 +65,8 @@ export const CheckParentCell = (
     if (!EmailValidator.validate(val)) {
       return "Not Valid";
     }
-  }
-  else if (col === "address") {
-      return ''
+  } else if (col === "address") {
+    return "";
   }
   //dodged every wrong case? Return a success.
 
