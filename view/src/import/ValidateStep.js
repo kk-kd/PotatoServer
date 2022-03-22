@@ -77,8 +77,6 @@ export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddre
     }, [])
 
 
-
-
     useEffect(()=> {
         if (activeError === 4) {
             setValid(true)

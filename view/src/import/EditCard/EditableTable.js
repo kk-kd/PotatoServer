@@ -99,6 +99,7 @@ export const EditableTable = ({
     isCellValid,
   }) => {
     const [editableRowIndex, setEditableRowIndex] = React.useState(0);
+    
   
     const {
       getTableProps,
@@ -110,7 +111,7 @@ export const EditableTable = ({
       {
         columns,
         editableColumns,
-        data : editedData,
+        data: editedData,
         setEditedData,
         defaultColumn,
         submitRow,
@@ -164,7 +165,7 @@ export const EditableTable = ({
                     }
                     }
                 >
-                
+        
                 {row.values.valid ? "Submit": 'Please Fix Errors'}
                 </button>
                 : 
@@ -175,7 +176,7 @@ export const EditableTable = ({
             id: "index",
             Header: "",
             Cell: ({row, deleteRow}) => (
-               <button onClick = {(e) => {deleteRow(row.index, row.values)}}> Delete </button> // TODO: replace with icons
+               <button onClick = {(e) => {deleteRow(row.index, row.values); updateEditedDataValid(row.index, 'index', row.index); setEditableRowIndex(row.index +1)}}> Delete </button> 
             )
           },
         ]);}

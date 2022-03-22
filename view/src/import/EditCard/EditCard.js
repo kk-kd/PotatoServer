@@ -6,10 +6,12 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
+
     // called whenever an editable cell is changed to check for validity
-    const updateEditedDataValid = (rowIndex, columnId, value) => {
-        console.log(value)
-        
+    const updateEditedDataValid = (rowIndex, columnId, value) => { 
+        console.log(rowIndex)
+        console.log(columnId)
+        console.log(value)       
         setEditedData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
@@ -39,7 +41,6 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
         setD(c)
     }
 
-
     // for list of entry objects. 
     // NOTE: replaces entry with empty to preserve indexing. The objects are re-indexed upon submission.
     const removeEntry = (d, setD, ind) => {
@@ -58,18 +59,17 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
         removeEntry(fileData, setFileData, newRow['index']) // stored data
         removeEntry(editedData, setEditedData, ind) // displayed subset
         removeError(ind)  
-        checkComplete()  
+        checkComplete() 
     }
 
 
     // called on row submission
     const submitRow = (ind, newRow) => {
-        if (rowValidation(newRow)) {
+        if (!rowValidation(newRow)) {
             removeEntry(editedData, setEditedData, ind) // displayed subset
-            removeError(ind) 
+            removeError(ind) // errors.filter 
             updateEntry(fileData, setFileData, newRow['index'], newRow)
             checkComplete()
-
         }
         else {
             setEditedData(old =>
@@ -108,10 +108,12 @@ export const EditCard = ({complete, setComplete, errors, setErrors, message, err
             setComplete(true)
         }
     }
+
      
     return (
         <div> 
             {!complete && <h5> {message} </h5>}
+           
 
             <CssBaseline />
             {((!complete) && (editedData.length > 0)) && <EditableTable
