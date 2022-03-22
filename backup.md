@@ -29,7 +29,7 @@
 
   ```
   create user backupuser superuser password '<password>';
-  alter user backupuser set default_transacation_read_only = on;
+  alter user backupuser set default_transaction_read_only = on;
   ```
 
 #### As **backupuser**
@@ -74,7 +74,7 @@
 
   ```shell
   mkdir -p /mnt/backup
-  chown backup:backup /mnt/backup
+  chown backupuser:backupuser /mnt/backup
   chmod 770 /mnt/backup
   ```
 
@@ -87,7 +87,7 @@
   ```
   Confirm with
   ```shell
-  ssh remote.example.com
+  ssh backupuser@potato.colab.duke.edu
   ```
 - Add mailing script at `~/run_rsnapshot.sh`
 
@@ -95,16 +95,16 @@
   OUTPUT=`rsnapshot $@`
   if [ $? -ne 0 ]
   then
-      echo -e "Here's your backup log: \n${OUTPUT}" | /usr/bin/mail -s "[Potato] Beta Server Backup Failed" zz160@duke.edu
+      printf "Here's your backup log: ${OUTPUT}" | /usr/bin/mail -s "[Potato] Beta Server Backup Failed" zz160@duke.edu
   else
-      echo -e "Here's your backup log: \n${OUTPUT}" | /usr/bin/mail -s "[Potato] Beta Server Backup Succeeded" zz160@duke.edu
+      printf "Here's your backup log: ${OUTPUT}" | /usr/bin/mail -s "[Potato] Beta Server Backup Succeeded" zz160@duke.edu
   fi
   ```
 
 - Configure crontab `crotab -e`
 
   ```
-  0 4 * * * /home/backupuser/run_rsnapshot.sh daily
+  0 5 * * * /home/backupuser/run_rsnapshot.sh daily
   0 4 * * 1 /home/backupuser/run_rsnapshot.sh weekly
-  0 4 1 * * /home/backupuser/run_rsnapshot.sh monthly
+  0 3 1 * * /home/backupuser/run_rsnapshot.sh monthly
   ```
