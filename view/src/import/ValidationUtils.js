@@ -66,6 +66,9 @@ export const CheckParentCell = (
       return "Not Valid";
     }
   }
+  //dodged every wrong case? Return a success.
+
+  return "";
 };
 
 export const CheckStudentRow = (row, schools, users, emails, schoolNames) => {
