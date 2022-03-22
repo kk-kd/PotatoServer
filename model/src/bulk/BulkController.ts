@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import * as EmailValidator from "email-validator";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";
@@ -20,8 +20,8 @@ import { Student } from "../entity/Student";
  * 13 - user does not permission to add parents/students to this school
  *
  * PARENT
- * 1 - no email
- * 14 - invalid email
+ * 1 - Email is not valid
+ * 16 - Email is empty
  * 3 - email existed in the database
  * 4 - repetitive emails in request
  * 5 - Missing Address
@@ -29,14 +29,16 @@ import { Student } from "../entity/Student";
  * 7 - Missing Phone Number
  *
  * STUDENT
- * 8 - id not numerical
+ * 8 - id is empty
+ * 15 - id is invalid/nonnumerical
  * 9 - school entry is empty
  * 10 - parent email is empty
+ * 14 - invalid email
  * 11 - school does not exist
  * 12 - parent email does not exist
  */
 
-// TODO: add phone number valiation once we have the requiremnt
+// TODO: add phone number valiation once we have the requiremnt (ev4)
 // const q = new PQueue({ intervalCap: 40, interval: 1000 });
 const ROLE_SCHOOL_STAFF = "School Staff";
 const ROLE_ADMIN = "Admin";
@@ -50,20 +52,20 @@ export class BulkController {
    * request: {students: [
    * {
    * index: ...,
-   * id: ...,
-   * fullName:  ...,
-   * school: ...,
-   * parent: ... },
+   * student_id: ...,
+   * name:  ...,
+   * school_name: ...,
+   * parent_email: ... },
    * {},
    * ...]};
    *
    * return: {students: [
    * {
    * index: ...,
-   * id: ...,
-   * fullName:  ...,
-   * school: ...,
-   * parent: ...,
+   * student_id: ...,
+   * name:  ...,
+   * school_name: ...,
+   * parent_email: ...,
    * error_code: [..., ...],
    * {},
    * ...]};
@@ -105,7 +107,6 @@ export class BulkController {
     isAPIRequest = true
   ) {
     let returnedStudents = { students: [] };
-
     for (const student of students) {
       let studentToReturn = { ...student };
       // 99
@@ -119,9 +120,9 @@ export class BulkController {
 
       // 2
       if (
-        student.fullName == null ||
-        student.fullName == undefined ||
-        student.fullName.trim() == ""
+        student.name == null ||
+        student.name == undefined ||
+        student.name.trim() == ""
       ) {
         // If not an API request, just wanna check if there's ANY error. Don't care about what the error is.
         // Similar below
@@ -131,34 +132,42 @@ export class BulkController {
         ).push(2);
       }
 
-      // 8
-      if (student.id != null && student.id != undefined) {
-        if (!this.isValidId(student.id)) {
+      // 8 ID IS EMPTY
+      if (student.student_id == null || student.student_id == undefined) {
+        if (!isAPIRequest) return false;
+
+        (
+          studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
+        ).push(8);
+      }
+      // 14 STUDENT ID IS NON NUMERICAL
+      if (student.student_id != null && student.student_id != undefined) {
+        if (!this.isValidId(student.student_id)) {
           if (!isAPIRequest) return false;
           (
             studentToReturn["error_code"] ??
             (studentToReturn["error_code"] = [])
-          ).push(8);
+          ).push(15);
         }
       }
 
-      // 9
+      // 9 SCHOOL NAME ENTRY MISSING
       if (
-        student.school == null ||
-        student.school == undefined ||
-        student.school.trim() == ""
+        student.school_name == null ||
+        student.school_name == undefined ||
+        student.school_name.trim() == ""
       ) {
         if (!isAPIRequest) return false;
         (
           studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
         ).push(9);
       } else {
-        // 11
+        // 11 SCHOOL DOESN'T EXIST IN DATABASE
         const schoolEntry = await getRepository(School)
           .createQueryBuilder("schools")
           .select()
           .where("schools.uniqueName = :uniqueName", {
-            uniqueName: student.school
+            uniqueName: student.school_name
               .toLowerCase()
               .trim()
               .replace(/\s\s+/g, " "),
@@ -201,23 +210,23 @@ export class BulkController {
         }
       }
 
-      // 10
+      // 10 PARENT EMAIL IS EMPTY
       if (
-        student.parent == null ||
-        student.parent == undefined ||
-        student.parent.trim() == ""
+        student.parent_email == null ||
+        student.parent_email == undefined ||
+        student.parent_email.trim() == ""
       ) {
         if (!isAPIRequest) return false;
         (
           studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
         ).push(10);
       } else {
-        // 12
+        // 12 PARENT EMAIL DOESN'T EXIST
         const parentEntry = await getRepository(User)
           .createQueryBuilder("users")
           .select()
           .where("users.email = :email", {
-            email: student.parent,
+            email: student.parent_email,
           })
           .getOne();
 
@@ -233,7 +242,7 @@ export class BulkController {
         // }
       }
 
-      // 0
+      // 0 SUCCESS
       if (studentToReturn["error_code"] == null) {
         studentToReturn["error_code"] = [0];
       }
@@ -266,8 +275,13 @@ export class BulkController {
         .send("You don't have enough permission for this action.");
       return;
     }
-
-    if (!(await this.studentsValidationHelper(students, role, userId, false))) {
+    const bool = await this.studentsValidationHelper(
+      students,
+      role,
+      userId,
+      false
+    );
+    if (!bool) {
       response
         .status(401)
         .send("There's error with the data. Please validate first.");
@@ -279,35 +293,35 @@ export class BulkController {
 
       // Validations
       if (
-        student.fullName == null ||
-        student.fullName == undefined ||
-        student.fullName.trim() == ""
+        student.name == null ||
+        student.name == undefined ||
+        student.name.trim() == ""
       ) {
-        response.status(401).send(`Empty name for student ${student.fullName}`);
+        response.status(401).send(`Empty name for student ${student.name}`);
         return;
       }
-      newStudent.fullName = student.fullName;
+      newStudent.fullName = student.name;
 
-      if (student.id != null && student.id != undefined) {
-        if (!this.isValidId(student.id)) {
+      if (student.student_id != null && student.student_id != undefined) {
+        if (!this.isValidId(student.student_id)) {
           response
             .status(401)
             .send(
-              `Student ${student.fullName} has invalid id. Id needs to be a positive integer.`
+              `Student ${student.name} has invalid id. Id needs to be a positive integer.`
             );
           return;
         }
-        newStudent.id = student.id;
+        newStudent.id = student.student_id;
       }
 
       if (
-        student.school == null ||
-        student.school == undefined ||
-        student.school.trim() == ""
+        student.school_name == null ||
+        student.school_name == undefined ||
+        student.school_name.trim() == ""
       ) {
         response
           .status(401)
-          .send(`No school provided for student ${student.fullName}`);
+          .send(`No school provided for student ${student.name}`);
         return;
       }
 
@@ -315,7 +329,7 @@ export class BulkController {
         .createQueryBuilder("schools")
         .select()
         .where("schools.uniqueName = :uniqueName", {
-          uniqueName: student.school.toLowerCase().trim(),
+          uniqueName: student.school_name.toLowerCase().trim(),
         })
         .getOne();
 
@@ -323,38 +337,47 @@ export class BulkController {
         response
           .status(401)
           .send(
-            `Student ${student.fullName}'s school does not exist in the database. Please create the school before adding the student.`
+            `Student ${student.name}'s school does not exist in the database. Please create the school before adding the student.`
           );
         return;
       }
       newStudent.school = schoolEntry;
 
       if (
-        student.parent == null ||
-        student.parent == undefined ||
-        student.parent.trim() == ""
+        student.parent_email == null ||
+        student.parent_email == undefined ||
+        student.parent_email.trim() == ""
       ) {
         response
           .status(401)
-          .send(`No parent email provided for student ${student.fullName}`);
+          .send(`No parent email provided for student ${student.name}`);
         return;
       }
 
-      const parentEntry = await getRepository(User)
+      var parentEntry = await getRepository(User)
         .createQueryBuilder("users")
         .select()
         .where("users.email = :email", {
-          email: student.parent,
+          email: student.parent_email.toLowerCase(),
         })
         .getOne();
 
       if (parentEntry == null) {
-        response
-          .status(401)
-          .send(
-            `Student ${student.fullName}'s parent does not exist in the database. Please create the parent before adding the student.`
-          );
-        return;
+        parentEntry = await getRepository(User)
+          .createQueryBuilder("users")
+          .select()
+          .where("users.email = :email", {
+            email: student.parent_email,
+          })
+          .getOne();
+        if (parentEntry == null) {
+          response
+            .status(401)
+            .send(
+              `Student ${student.name}'s parent does not exist in the database. Please create the parent before adding the student.`
+            );
+          return;
+        }
       }
       newStudent.parentUser = parentEntry;
 
@@ -378,7 +401,7 @@ export class BulkController {
    * {
    * index: ...,
    * email: ...,
-   * fullName:  ...,
+   * name:  ...,
    * address: ...,
    * phone_number: ... },
    * {},
@@ -398,6 +421,7 @@ export class BulkController {
    * ...]};
    */
   async validateUsers(request: Request, response: Response) {
+    console.log("we made it");
     const { users } = request.body;
     const role = response.locals.jwtPayload.role;
 
@@ -443,26 +467,23 @@ export class BulkController {
       if (user.email == null || user.email == undefined) {
         if (!isAPIRequest) return false;
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
-          1
+          16
         );
-      }
-      // 14 - Email is invalid
-      if (
-        user.email != null &&
-        user.email != undefined &&
-        !EmailValidator.validate(user.email)
-      ) {
-        if (!isAPIRequest) return false;
-        (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
-          14
-        );
+      } else {
+        // 14 - Email is invalid
+        if (!EmailValidator.validate(user.email)) {
+          if (!isAPIRequest) return false;
+          (
+            userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
+          ).push(1);
+        }
       }
 
       // 2 - Name Validation
       if (
-        user.fullName == null ||
-        user.fullName == undefined ||
-        user.fullName.trim() == ""
+        user.name == null ||
+        user.name == undefined ||
+        user.name.trim() == ""
       ) {
         if (!isAPIRequest) return false;
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
@@ -470,30 +491,34 @@ export class BulkController {
         );
       }
       // 3 - Existing Emails
-      const reptitiveEntry = await getRepository(User)
-        .createQueryBuilder("users")
-        .select()
-        .where("users.email = :email", { email: user.email })
-        .getOne();
+      if (user.email != null || user.email != undefined) {
+        const reptitiveEntry = await getRepository(User)
+          .createQueryBuilder("users")
+          .select()
+          .where("users.email = :email", { email: user.email })
+          .getOne();
 
-      if (reptitiveEntry != null) {
-        if (!isAPIRequest) return false;
-        (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
-          3
-        );
-        userToReturn.hint_uids = [reptitiveEntry.uid];
+        if (reptitiveEntry != null) {
+          if (!isAPIRequest) return false;
+          (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
+            3
+          );
+          userToReturn.hint_uids = [reptitiveEntry.uid];
+        }
       }
+      if (user.email != null || user.email != undefined) {
 
-      // 4 - repetitive emails in the form, details added later
-      (emailIdxPair[user.email] ?? (emailIdxPair[user.email] = [])).push(
-        user.index
-      );
-      if (existingEmailsInRequest.has(user.email)) {
-        if (!isAPIRequest) return false;
+        // 4 - repetitive emails in the form, details added later
+        (emailIdxPair[user.email] ?? (emailIdxPair[user.email] = [])).push(
+          user.index
+        );
+        if (existingEmailsInRequest.has(user.email)) {
+          if (!isAPIRequest) return false;
 
-        reptitiveEmailsInRequest.add(user.email);
-      } else {
-        existingEmailsInRequest.add(user.email);
+          reptitiveEmailsInRequest.add(user.email);
+        } else {
+          existingEmailsInRequest.add(user.email);
+        }
       }
 
       // 5 - Missing Address
@@ -507,30 +532,28 @@ export class BulkController {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           5
         );
+        // } else {
+        //   // 6 - Geo
+        //   // await q.add(async () => {
+        //   var loc;
+        //   try {
+        //     loc = await getLngLat(user.address);
+        //     console.log(loc);
+        //     userToReturn = { ...userToReturn, loc };
+        //   } catch (error) {
+        //     console.log(
+        //       `${user.email} failed to fetch location, error - ${error}`
+        //     );
+        //     if (!isAPIRequest) return false;
+        //     (
+        //       userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
+        //     ).push(6);
+        //   }
       }
-
-      // 6 - Geo
-      // await q.add(async () => {
-      let loc;
-      try {
-        loc = await getLngLat(user.address);
-        console.log(loc);
-        userToReturn = { ...userToReturn, loc };
-      } catch (error) {
-        console.log(`${user.email} failed to fetch location, error - ${error}`);
-        if (!isAPIRequest) return false;
-        (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
-          6
-        );
-      }
-      // });
 
       // 7 - Missing phone number
-      if (
-        user.phone_number == null ||
-        user.phone_number == undefined ||
-        user.phone_number.trim() == ""
-      ) {
+      // When changing this in ev4, trim a string version of the phone number to check if its blank
+      if (user.phone_number == null || user.phone_number == undefined) {
         if (!isAPIRequest) return false;
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           7
@@ -552,6 +575,9 @@ export class BulkController {
         user["error_code"] = [0];
       }
     });
+
+    // console.log(returnedUsers[0]["error_code"]);
+
 
     if (isAPIRequest) {
       return returnedUsers;
@@ -600,9 +626,9 @@ export class BulkController {
       }
 
       if (
-        user.fullName == null ||
-        user.fullName == undefined ||
-        user.fullName.trim() == ""
+        user.name == null ||
+        user.name == undefined ||
+        user.name.trim() == ""
       ) {
         response.status(401).send(`Empty name for user ${user.email}`);
         return;
@@ -632,12 +658,12 @@ export class BulkController {
       const newUser = new User();
       // Save
       try {
-        newUser.email = user.email;
-        newUser.fullName = user.fullName;
+        newUser.email = user.email.toLowerCase();
+        newUser.fullName = user.name;
         newUser.address = user.address;
         newUser.longitude = user.loc.longitude;
         newUser.latitude = user.loc.latitude;
-        newUser.role = "Parent";
+        newUser.role = "None";
         if (user.phone_number != null && user.phone_number != undefined) {
           newUser.phoneNumber = user.phone_number;
         }

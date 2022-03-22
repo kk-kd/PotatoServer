@@ -160,9 +160,11 @@ export const BusRouteInfo = ({ role }) => {
         </div>
 
         <div id = "main_form">
-          <h5 id = "sub-header"> Details </h5>         
-              <label id="label-route">School Name: </label>
-                <Link id= "input-route-display" to={`/Schools/info/${school.uid}`}>{school.name}</Link>
+          <h5 id = "sub-header"> Details </h5>
+          <div>
+            <label id="school-route-label">School Name: <Link to={`/Schools/info/${school.uid}`}>{school.name}</Link></label>
+          </div>
+
               
               <label id="label-route">Route Name: </label>
                 <input

@@ -44,6 +44,10 @@ export const Header = ({ setLoggedIn, role }) => {
         <TableLinks hash="Routes" link="Routes/list" display="Routes" />
       )}
       {emailRights && (
+        <TableLinks hash="Import" link="Import/upload" display="Import Account Info"/>)
+      }
+
+      {emailRights && (
         <TableLinks
           hash="Emails"
           link="Emails/send"

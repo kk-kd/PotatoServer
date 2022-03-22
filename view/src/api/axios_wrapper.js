@@ -346,39 +346,27 @@ export async function forgetPassword(specifications) {
 }
 
 export async function validateBulkParents(specifications) {
-  return (
-    await axios.post("/api/bulk/users/validate", specifications),
-    {
-      headers: getHeaderWithAuthToken(),
-    }
-  );
+  return await axios.post("/api/bulk/users/validate", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 
 export async function saveBulkParents(specifications) {
-  return (
-    await axios.post("/api/bulk/users/save", specifications),
-    {
-      headers: getHeaderWithAuthToken(),
-    }
-  );
+  return await axios.post("/api/bulk/users/save", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 
 export async function validateBulkStudents(specifications) {
-  return (
-    await axios.post("/api/bulk/students/validate", specifications),
-    {
-      headers: getHeaderWithAuthToken(),
-    }
-  );
+  return await axios.post("/api/bulk/students/validate", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 
 export async function saveBulkStudents(specifications) {
-  return (
-    await axios.post("/api/bulk/students/save", specifications),
-    {
-      headers: getHeaderWithAuthToken(),
-    }
-  );
+  return await axios.post("/api/bulk/students/save", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
 }
 // Helpers
 function convertMapToURL(map) {

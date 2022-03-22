@@ -97,8 +97,8 @@ export class UserController extends Repository<User> {
       }
       var filterSpecification;
       filterSpecification = "users." + request.query.sort;
-      const queryFilterType = request.query.filterType;
-      const queryFilterData = request.query.filterData;
+      const queryFilterType = request.query.filterType || "";
+      const queryFilterData = request.query.filterData || "";
       const roleFilterData = request.query.roleFilter || "";
       if (request.query.showAll && request.query.showAll === "true") {
         if (role == "School Staff" && !request.query.isCreate) {
