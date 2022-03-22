@@ -95,9 +95,9 @@
   OUTPUT=`rsnapshot $@`
   if [ $? -ne 0 ]
   then
-      echo -e "Here's your backup log: \n${OUTPUT}" | /usr/bin/mail -s "[Potato] Beta Server Backup Failed" zz160@duke.edu
+      printf "Here's your backup log: ${OUTPUT}" | /usr/bin/mail -s "[Potato] Beta Server Backup Failed" zz160@duke.edu
   else
-      echo -e "Here's your backup log: \n${OUTPUT}" | /usr/bin/mail -s "[Potato] Beta Server Backup Succeeded" zz160@duke.edu
+      printf "Here's your backup log: ${OUTPUT}" | /usr/bin/mail -s "[Potato] Beta Server Backup Succeeded" zz160@duke.edu
   fi
   ```
 
