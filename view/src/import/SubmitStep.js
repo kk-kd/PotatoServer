@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { saveBulkParents, saveBulkStudents } from "../api/axios_wrapper";
 
 export const SubmitStep = ({ dataType, fileData, setFileData, resetState }) => {
+  const [emails, setEmails] = useState();
   async function callSave(validation_input) {
     try {
       if (dataType === "students") {
@@ -10,13 +11,16 @@ export const SubmitStep = ({ dataType, fileData, setFileData, resetState }) => {
         setFileData(resp);
       } else if (dataType === "parents") {
         const resp = await saveBulkParents(validation_input);
-
         setFileData(resp);
       }
+      alert("Entries Added Successfully!");
+      resetState();
     } catch (e) {
-      console.log(e);
+      alert(e.response.data)
+      resetState();
+      return false;
     }
-    return 1;
+    return true;
   }
 
   const fixAddresses = () => {
@@ -32,30 +36,38 @@ export const SubmitStep = ({ dataType, fileData, setFileData, resetState }) => {
     }
   }, [])
 
-  
   const handleSubmit = () => {
     let confirm = window.confirm("Do you want to import this data?");
-
     if (confirm) {
       if (dataType === "students") {
+        let emails = []
         const validation_input_filtered = fileData.filter((element) => {
           return element !== null;
-        });
+        });        
         const validation_input = {
           students: validation_input_filtered,
         };
-        callSave(validation_input);
+        let val2 = callSave(validation_input);
+        // if (val2) {
+        //   alert("Entries Added Successfully!");
+        //   resetState();
+        // }
+
       } else {
-        const validation_input_filtered = fileData.filter((element) => {
+        const filter1 = fileData.filter((element) => {
           return element !== null;
         });
         const validation_input = {
-          users: validation_input_filtered,
+          users: filter1,
         };
-        callSave(validation_input);
+        console.log(validation_input)
+        let val = callSave(validation_input);
+        // if (val) {
+        //   alert("Entries Added Successfully!");
+        //   resetState();
+        // }
+
       }
-      alert("Entries Added Successfully!");
-      resetState();
     }
   };
 
