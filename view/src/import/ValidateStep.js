@@ -80,28 +80,41 @@ export const ValidateStep = ({
     []
   );
 
-  const parentColumns = React.useMemo(
-    () => [
-      {
-        Header: "Name",
-        accessor: "name",
-      },
-      {
-        Header: "Email",
-        accessor: "parent_email",
-      },
-    ],
-    []
-  );
-  useEffect(() => {
-    if (dataType === "students") {
-      setColumns(studentColumns);
-    } else {
-      setColumns(parentColumns);
-    }
-  }, []);
-
-  useEffect(() => {
+    const parentColumns = React.useMemo(
+        () => [
+          {
+            Header: 'Name',
+            accessor: 'name',
+          },
+          {
+            Header: 'Email',
+            accessor: 'email',
+          },
+          {
+            Header: 'Address',
+            accessor: 'address',
+          },
+          {
+            Header: 'Phone Number',
+            accessor: 'phone_number',
+          },
+          {
+            Header: '',
+            accessor: 'loc',
+            Cell: ({ row}) => (<div></div>)}
+        ],
+        []
+    )
+    useEffect(()=> {
+        if (dataType=== 'students') {
+            setColumns(studentColumns)
+        }
+        else {
+            setColumns(parentColumns)
+        }
+    }, [])
+  
+    useEffect(() => {
     if (activeError === 4) {
       setValid(true);
     }

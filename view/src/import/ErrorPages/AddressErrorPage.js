@@ -31,6 +31,7 @@ export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns,
                } 
         }
        setData(Array.from(errSet));
+       console.log(errSet)
        
        if (errSet.size === 0) {
            setComplete(true);
