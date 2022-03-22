@@ -1,3 +1,5 @@
+import * as EmailValidator from "email-validator";
+
 export const CheckStudentCell = (
   col,
   val,
@@ -41,11 +43,32 @@ export const CheckParentCell = (
   users,
   emails,
   schoolNames
-) => {};
+) => {
+  if (col === "index" || col === "valid") {
+    return "";
+  }
+  // catches blank cases
+  else if (val === null || val === undefined) {
+    return "Blank!";
+  }
+  //email cases
+  else if (col === "email") {
+    //email already taken
+    const lowerEmails = emails.map((element) => {
+      return element.toLowerCase();
+    });
+    if (lowerEmails.includes(val.toLowerCase())) {
+      return "Existing Email";
+    }
+    //if email is valid
+
+    if (!EmailValidator.validate(val)) {
+      return "Not Valid";
+    }
+  }
+};
 
 export const CheckStudentRow = (row, schools, users, emails, schoolNames) => {
-  console.log(row);
-
   for (const [key, value] of Object.entries(row)) {
     let m = CheckStudentCell(key, value);
     if (m !== "") {
@@ -56,5 +79,11 @@ export const CheckStudentRow = (row, schools, users, emails, schoolNames) => {
 };
 
 export const CheckParentRow = (row, schools, users, emails, schoolNames) => {
+  for (const [key, value] of Object.entries(row)) {
+    let m = CheckParentCell(key, value);
+    if (m !== "") {
+      return "Error found";
+    }
+  }
   return "";
 };
