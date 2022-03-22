@@ -30,7 +30,7 @@ export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns,
                              errSet.add(ent) 
                          }        
                     } 
-             }
+            }
             setData(Array.from(errSet));
             console.log(errSet)
             

@@ -62,6 +62,7 @@ export const UploadStep = ({
     });
   };
 
+
   const updateFileData = (result, file) => {
     const data = result.data;
     console.log(result.data);

@@ -66,6 +66,9 @@ export const CheckParentCell = (
       return "Not Valid";
     }
   }
+  else if (col === "address") {
+      return ''
+  }
   //dodged every wrong case? Return a success.
 
   return "";

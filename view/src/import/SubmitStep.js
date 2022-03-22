@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { saveBulkParents, saveBulkStudents } from "../api/axios_wrapper";
 
 export const SubmitStep = ({ dataType, fileData, setFileData, resetState }) => {
@@ -18,8 +19,23 @@ export const SubmitStep = ({ dataType, fileData, setFileData, resetState }) => {
     return 1;
   }
 
+  const fixAddresses = () => {
+    const v = fileData.map(user => Object.assign(user, {'address': '998 Chevis Rd, Savannah, GA 31419'}));
+    const e = v.map(user => Object.assign(user, {'loc': { longitude: -81.239594, latitude: 31.9619613}}));
+    setFileData(e)
+    console.log(e)
+  }
+
+  useEffect(() => {
+    if (dataType === 'parents'){
+      fixAddresses();
+    }
+  }, [])
+
+  
   const handleSubmit = () => {
     let confirm = window.confirm("Do you want to import this data?");
+
     if (confirm) {
       if (dataType === "students") {
         const validation_input_filtered = fileData.filter((element) => {

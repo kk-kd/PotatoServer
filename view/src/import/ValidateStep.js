@@ -115,7 +115,7 @@ export const ValidateStep = ({
     }, [])
   
     useEffect(() => {
-    if (activeError === 4) {
+    if (activeError === 3) {
       setValid(true);
     }
   }, [activeError]);
@@ -140,7 +140,7 @@ export const ValidateStep = ({
         />
       )}
 
-      {activeError === 1 && (
+      {false && (
         <AddressErrorPage
           checkRow={checkRow}
           checkCell={checkCell}
@@ -158,7 +158,7 @@ export const ValidateStep = ({
         />
       )}
 
-      {activeError === 2 && (
+      {activeError === 1 && (
         <InvalidErrorPage
           checkRow={checkRow}
           checkCell={checkCell}
@@ -176,7 +176,7 @@ export const ValidateStep = ({
         />
       )}
 
-      {activeError === 3 && (
+      {activeError === 2 && (
         <ExistErrorPage
           checkRow={checkRow}
           checkCell={checkCell}
@@ -194,7 +194,7 @@ export const ValidateStep = ({
         />
       )}
 
-      {activeError === 4 && <h6>All Errors Fixed!</h6>}
+      {activeError === 3 && <h6>All Errors Fixed!</h6>}
 
       <StepButtons
         nextButtonValid={valid}
