@@ -87,7 +87,7 @@
   ```
   Confirm with
   ```shell
-  ssh remote.example.com
+  ssh backupuser@potato.colab.duke.edu
   ```
 - Add mailing script at `~/run_rsnapshot.sh`
 
