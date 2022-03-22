@@ -18,25 +18,27 @@ export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns,
 
     // upon load, make tabular data from errors. 
     useEffect(()=> {
-        let errSet = new Set() // avoid duplicates!
+        if (activeError === 1) {
+            let errSet = new Set() // avoid duplicates!
     
-       if (processingComplete) {
-           for (const [key, value] of Object.entries(addressErrors)) {
-               for (let j = 0; j < value.length; j++) {
-                   let ind = value[j] 
-                   if (fileData[ind]) {
-                        let ent = fileData[ind]
-                        errSet.add(ent) 
-                    }        
-               } 
+            if (processingComplete) {
+                for (const [key, value] of Object.entries(addressErrors)) {
+                    for (let j = 0; j < value.length; j++) {
+                        let ind = value[j] 
+                        if (fileData[ind]) {
+                             let ent = fileData[ind]
+                             errSet.add(ent) 
+                         }        
+                    } 
+             }
+            setData(Array.from(errSet));
+            console.log(errSet)
+            
+            if (errSet.size === 0) {
+                setComplete(true);
+            }
+            }
         }
-       setData(Array.from(errSet));
-       console.log(errSet)
-       
-       if (errSet.size === 0) {
-           setComplete(true);
-       }
-       }
        
    }, [processingComplete])  
 

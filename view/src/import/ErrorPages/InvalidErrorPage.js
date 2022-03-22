@@ -22,9 +22,11 @@ export const InvalidErrorPage = ({checkRow, checkCell, columns, requiredColumns,
        if (processingComplete) {
            for (const [key, value] of Object.entries(invalidErrors)) {
                for (let j = 0; j < value.length; j++) {
-                   let ind = value[j] 
-                   let ent = fileData[ind]
-                   errSet.add(ent)            
+                    let ind = value[j] 
+                    if (fileData[ind]) { // NECESSARY to pre
+                        let ent = fileData[ind]
+                        errSet.add(ent) 
+                    }                
                } 
         }
        setData(Array.from(errSet));
