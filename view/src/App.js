@@ -14,6 +14,7 @@ import { ChangeMyPassword } from "./parents/ChangeMyPassword";
 import { Emails } from "./email/Email";
 import { PasswordForgotForm } from "./login/PasswordForgotForm";
 import { PasswordResetForm } from "./login/PasswordResetForm";
+import { Import } from "./import/Import";
 
 
 export const App = () => {
@@ -91,11 +92,13 @@ export const App = () => {
               path="MyStudents"
               element={<MyStudents user={currentUser} />}
             />
+            
             <Route path="Schools/*" element={<Schools role={currentUser.role} />} />
             <Route path="Users/*" element={<Users role={currentUser.role} uid={currentUser.uid} />} />
             <Route path="Students/*" element={<Students role={currentUser.role} />} />
             <Route path="Routes/*" element={<BusRoutes role={currentUser.role} />} />
             {currentUser.role !== "Driver" && <Route path="Emails/*" element={<Emails role={currentUser.role} />} />}
+            <Route path="Import/*" element={<Import />} />
             <Route path="*" element={<Navigate to="MyStudents" />} />
           </Routes>
         </div>
