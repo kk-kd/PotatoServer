@@ -1,7 +1,11 @@
 #printableTable {
   width: 100%;
+  margin: 0;
+  float: none;
   text-align: center;
 }
+
+@media print{@page { margin: 2cm }}
 
 #printableHeaderCell {
   border: solid 1px black;

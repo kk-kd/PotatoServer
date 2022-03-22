@@ -182,10 +182,10 @@ export const BusRoutePlanner = () => {
                 } else {
                   sorted[j * 26 + k].pickupTime =
                       subtractDriveTime(sorted[j * 26 + k - 1].pickupTime,
-                          Math.trunc(result.routes[0].legs[i].duration.value / 60));
-                  sorted[j * 26 + i].dropoffTime =
+                          Math.trunc(result.routes[0].legs[k].duration.value / 60));
+                  sorted[j * 26 + k].dropoffTime =
                       addDriveTime(sorted[j * 26 + k - 1].dropoffTime,
-                          Math.trunc(result.routes[0].legs[i].duration.value / 60));
+                          Math.trunc(result.routes[0].legs[k].duration.value / 60));
                 }
               }
             } else {
