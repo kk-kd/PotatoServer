@@ -354,21 +354,30 @@ export class BulkController {
         return;
       }
 
-      const parentEntry = await getRepository(User)
+      var parentEntry = await getRepository(User)
         .createQueryBuilder("users")
         .select()
         .where("users.email = :email", {
-          email: student.parent_email,
+          email: student.parent_email.toLowerCase(),
         })
         .getOne();
 
       if (parentEntry == null) {
-        response
-          .status(401)
-          .send(
-            `Student ${student.name}'s parent does not exist in the database. Please create the parent before adding the student.`
-          );
-        return;
+        parentEntry = await getRepository(User)
+          .createQueryBuilder("users")
+          .select()
+          .where("users.email = :email", {
+            email: student.parent_email,
+          })
+          .getOne();
+        if (parentEntry == null) {
+          response
+            .status(401)
+            .send(
+              `Student ${student.name}'s parent does not exist in the database. Please create the parent before adding the student.`
+            );
+          return;
+        }
       }
       newStudent.parentUser = parentEntry;
 
@@ -642,7 +651,7 @@ export class BulkController {
       const newUser = new User();
       // Save
       try {
-        newUser.email = user.email;
+        newUser.email = user.email.toLowerCase();
         newUser.fullName = user.name;
         newUser.address = user.address;
         newUser.longitude = user.loc.longitude;

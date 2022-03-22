@@ -54,10 +54,10 @@ export const CheckParentCell = (
   //email cases
   else if (col === "email") {
     //email already taken
-    const lowerEmails = emails.map((element) => {
-      return element.toLowerCase();
-    });
-    if (lowerEmails.includes(val.toLowerCase())) {
+    // const lowerEmails = emails.map((element) => {
+    //   return element.toLowerCase();
+    // });
+    if (emails.includes(val.toLowerCase())) {
       return "Existing Email";
     }
     //if email is valid
@@ -66,6 +66,9 @@ export const CheckParentCell = (
       return "Not Valid";
     }
   }
+  //dodged every wrong case? Return a success.
+
+  return "";
 };
 
 export const CheckStudentRow = (row, schools, users, emails, schoolNames) => {
