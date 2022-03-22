@@ -48,7 +48,7 @@ export const CheckParentCell = (
     return "";
   }
   // catches blank cases
-  else if (val === null || val === undefined) {
+  else if ((val === null || val === undefined) && (col !== 'address')){
     return "Blank!";
   }
   //email cases
