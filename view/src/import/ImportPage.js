@@ -158,6 +158,43 @@ export const ImportPage = () => {
     setProcessingComplete(true);
   };
 
+  const resetState = () => {
+    setFileName(''); 
+    setFileData([]);
+    setProcessingComplete(false);
+    setAddressErrors({
+        5: [],
+        6: []
+    });
+    setInvalidErrors({
+        8: [], 
+        11: [],
+        12: [],
+        14: []
+    });
+    setMissingErrors({
+        1: [],
+        2: [],
+        7: [],
+        9: [],
+        10: [],
+        99: []
+    });
+    setExistErrors({
+        3: [],
+        4: []
+    })
+    setDataType();
+    setActiveStep(0);
+}
+
+{activeStep === 3 && (
+    <div id="step">
+      <SubmitStep dataType = {dataType} resetState = {resetState} fileData={fileData} setFileData={setFileData} />
+    </div>
+  )}
+
+
   async function callValidate(validation_input) {
     try {
       if (dataType === 'students') {
