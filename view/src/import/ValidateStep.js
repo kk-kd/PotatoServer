@@ -10,7 +10,7 @@ import React from "react";
 import e from "cors";
 import { CheckStudentCell, CheckStudentRow, CheckParentCell, CheckParentRow} from "./ValidationUtils";
 
-export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, processingComplete, setProcessingComplete, fileData, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
+export const ValidateStep = ({users, schools, schoolNames, emails, dataType, requiredColumns, addressErrors, setAddressErrors, missingErrors, setMissingErrors, invalidErrors, setInvalidErrors, existErrors, setExistErrors, processingComplete, setProcessingComplete, fileData, setFileData, step_labels, activeStep, setActiveStep, setRunValidation}) => {
 
     const [activeError, setActiveError] = useState(0); // keeps track of which type of error 
     const [valid, setValid] = useState(false);
@@ -18,20 +18,20 @@ export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddre
 
     const checkRow = (rowData) => {
       if (dataType === 'students') {
-          return CheckStudentRow(rowData)
+          return CheckStudentRow(rowData, users, schools, emails, schoolNames)
       }
       else if (dataType === 'parents') {
-          return CheckParentRow(rowData)
+          return CheckParentRow(rowData, users, schools, emails, schoolNames)
       }
       return false;
   }
 
   const checkCell = (col, val) => {
       if (dataType === 'students') {
-          return CheckStudentCell(col, val)
+          return CheckStudentCell(col, val, users, schools)
       }
       else if (dataType === 'parents') {
-          return CheckParentCell(col, val)
+          return CheckParentCell(col, val, users, schools)
       }
       return false;
   }

@@ -1,6 +1,6 @@
 
 
-export const CheckStudentCell = (col, val) => {
+export const CheckStudentCell = (col, val, schools, users, emails, schoolNames) => {
     if (col === 'index' || col === 'valid') {
         return ''
     }
@@ -14,11 +14,11 @@ export const CheckStudentCell = (col, val) => {
     
 } 
 
-export const CheckParentCell = (col, val) => {
+export const CheckParentCell = (col, val, schools, users, emails, schoolNames) => {
     
 } 
 
-export const CheckStudentRow = (row) => {
+export const CheckStudentRow = (row, schools, users, emails, schoolNames) => {
     console.log(row)
     
     for (const [key, value] of Object.entries(row)) {
@@ -31,6 +31,7 @@ export const CheckStudentRow = (row) => {
     return ''; 
 } 
 
-export const CheckParentRow = (row) => {
+export const CheckParentRow = (row, schools, users, emails, schoolNames) => {
+    return '';
     
 } 

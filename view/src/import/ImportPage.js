@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import "./ImportPage.css";
 import {
   validateBulkStudents,
-  validateBulkParents,
+  validateBulkParents,getAllSchools, getAllUsers, filterAllSchools, filterAllUsers
 } from "../api/axios_wrapper";
 
 export const ImportPage = () => {
@@ -19,6 +19,11 @@ export const ImportPage = () => {
     const [dataType, setDataType] = useState()
     const [fileData, setFileData] = useState()
     const [fileName, setFileName] = useState()
+
+    const [users, setUsers] = useState();
+    const [schools, setSchools] = useState();
+    const [emails, setEmails] = useState();
+    const [schoolNames, setSchoolNames] = useState();
 
     // errors
     const [addressErrors, setAddressErrors] = useState({
@@ -48,6 +53,50 @@ export const ImportPage = () => {
 
     const [runValidation, setRunValidation] = useState(false); 
 
+    const fetchSchoolData = async () => {
+        try {
+          const fetchedData = await filterAllSchools({
+            page: 1,
+            size: 500,
+            filterType: 'name',
+            filterData: '',
+            sort: 'none',
+            sortDir: 'none',
+            showAll: 'true',
+          });
+
+          setSchools(fetchedData.data.schools);
+          let a = fetchedData.data.schools.map(school => school.uniqueName)
+          setSchoolNames(a);
+
+        } catch (error) {
+          alert(error.response.data);
+        }
+    };
+
+    const fetchUserData = async () => {
+        try {
+          const fetchedData = await filterAllUsers({
+            page: 1,
+            size: 500,            
+            sort: 'none',
+            sortDir: 'none',
+            showAll: 'true',
+          });
+          setUsers(fetchedData.data.users);
+          let a = fetchedData.data.users.map(user => user.email);
+          setEmails(a)
+        
+        } catch (error) {
+          alert(error.response.data);
+        }
+    };
+
+    useEffect(() => {
+        fetchUserData();
+        fetchSchoolData();
+        
+      }, []);
 
     // run validation
     useEffect(() => {
@@ -167,6 +216,10 @@ export const ImportPage = () => {
       {activeStep === 2 && (
         <div id="step">
           <ValidateStep
+            users = {users}
+            schools = {schools}
+            emails = {emails}
+            schoolNames = {schoolNames}
             dataType = {dataType} 
             requiredColumns = {requiredColumns}
             addressErrors={addressErrors}

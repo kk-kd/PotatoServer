@@ -26,8 +26,10 @@ export const MissingErrorPage = ({checkRow, checkCell, columns, dataType, requir
             for (const [key, value] of Object.entries(missingErrors)) {
                 for (let j = 0; j < value.length; j++) {
                     let ind = value[j] 
-                    let ent = fileData[ind]
-                    errSet.add(ent)            
+                    if (fileData[ind]) {
+                        let ent = fileData[ind]
+                        errSet.add(ent) 
+                    }           
                 } 
             }
         setData(Array.from(errSet));
