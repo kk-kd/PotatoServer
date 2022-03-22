@@ -74,7 +74,7 @@
 
   ```shell
   mkdir -p /mnt/backup
-  chown backup:backup /mnt/backup
+  chown backupuser:backupuser /mnt/backup
   chmod 770 /mnt/backup
   ```
 
