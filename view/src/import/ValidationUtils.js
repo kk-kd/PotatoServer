@@ -70,7 +70,7 @@ export const CheckParentCell = (
 
 export const CheckStudentRow = (row, schools, users, emails, schoolNames) => {
   for (const [key, value] of Object.entries(row)) {
-    let m = CheckStudentCell(key, value);
+    let m = CheckStudentCell(key, value, schools, users, emails, schoolNames);
     if (m !== "") {
       return "Error found";
     }
@@ -80,7 +80,7 @@ export const CheckStudentRow = (row, schools, users, emails, schoolNames) => {
 
 export const CheckParentRow = (row, schools, users, emails, schoolNames) => {
   for (const [key, value] of Object.entries(row)) {
-    let m = CheckParentCell(key, value);
+    let m = CheckParentCell(key, value, schools, users, emails, schoolNames);
     if (m !== "") {
       return "Error found";
     }
