@@ -29,7 +29,7 @@
 
   ```
   create user backupuser superuser password '<password>';
-  alter user backupuser set default_transacation_read_only = on;
+  alter user backupuser set default_transaction_read_only = on;
   ```
 
 #### As **backupuser**
