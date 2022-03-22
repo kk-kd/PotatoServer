@@ -491,30 +491,34 @@ export class BulkController {
         );
       }
       // 3 - Existing Emails
-      const reptitiveEntry = await getRepository(User)
-        .createQueryBuilder("users")
-        .select()
-        .where("users.email = :email", { email: user.email })
-        .getOne();
+      if (user.email != null || user.email != undefined) {
+        const reptitiveEntry = await getRepository(User)
+          .createQueryBuilder("users")
+          .select()
+          .where("users.email = :email", { email: user.email })
+          .getOne();
 
-      if (reptitiveEntry != null) {
-        if (!isAPIRequest) return false;
-        (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
-          3
-        );
-        userToReturn.hint_uids = [reptitiveEntry.uid];
+        if (reptitiveEntry != null) {
+          if (!isAPIRequest) return false;
+          (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
+            3
+          );
+          userToReturn.hint_uids = [reptitiveEntry.uid];
+        }
       }
+      if (user.email != null || user.email != undefined) {
 
-      // 4 - repetitive emails in the form, details added later
-      (emailIdxPair[user.email] ?? (emailIdxPair[user.email] = [])).push(
-        user.index
-      );
-      if (existingEmailsInRequest.has(user.email)) {
-        if (!isAPIRequest) return false;
+        // 4 - repetitive emails in the form, details added later
+        (emailIdxPair[user.email] ?? (emailIdxPair[user.email] = [])).push(
+          user.index
+        );
+        if (existingEmailsInRequest.has(user.email)) {
+          if (!isAPIRequest) return false;
 
-        reptitiveEmailsInRequest.add(user.email);
-      } else {
-        existingEmailsInRequest.add(user.email);
+          reptitiveEmailsInRequest.add(user.email);
+        } else {
+          existingEmailsInRequest.add(user.email);
+        }
       }
 
       // 5 - Missing Address
@@ -528,23 +532,23 @@ export class BulkController {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           5
         );
-      } else {
-        // 6 - Geo
-        // await q.add(async () => {
-        var loc;
-        try {
-          loc = await getLngLat(user.address);
-          console.log(loc);
-          userToReturn = { ...userToReturn, loc };
-        } catch (error) {
-          console.log(
-            `${user.email} failed to fetch location, error - ${error}`
-          );
-          if (!isAPIRequest) return false;
-          (
-            userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
-          ).push(6);
-        }
+        // } else {
+        //   // 6 - Geo
+        //   // await q.add(async () => {
+        //   var loc;
+        //   try {
+        //     loc = await getLngLat(user.address);
+        //     console.log(loc);
+        //     userToReturn = { ...userToReturn, loc };
+        //   } catch (error) {
+        //     console.log(
+        //       `${user.email} failed to fetch location, error - ${error}`
+        //     );
+        //     if (!isAPIRequest) return false;
+        //     (
+        //       userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
+        //     ).push(6);
+        //   }
       }
 
       // 7 - Missing phone number
@@ -571,6 +575,9 @@ export class BulkController {
         user["error_code"] = [0];
       }
     });
+
+    // console.log(returnedUsers[0]["error_code"]);
+
 
     if (isAPIRequest) {
       return returnedUsers;
