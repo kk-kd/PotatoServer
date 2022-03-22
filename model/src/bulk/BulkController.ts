@@ -637,7 +637,7 @@ export class BulkController {
         newUser.address = user.address;
         newUser.longitude = user.loc.longitude;
         newUser.latitude = user.loc.latitude;
-        newUser.role = "Parent";
+        newUser.role = "None";
         if (user.phone_number != null && user.phone_number != undefined) {
           newUser.phoneNumber = user.phone_number;
         }
