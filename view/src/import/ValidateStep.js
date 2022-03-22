@@ -64,6 +64,11 @@ export const ValidateStep = ({dataType, requiredColumns, addressErrors, setAddre
             Header: 'Name',
             accessor: 'name',
           },
+          {
+            Header: 'Email',
+            accessor: 'parent_email',
+          },
+
         ],
         []
     )

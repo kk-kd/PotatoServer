@@ -61,7 +61,7 @@ export const ImportPage = () => {
                 setRunValidation(false)
                 console.log(validation_input)
             }
-            else if (dataType === 'users') {
+            else if (dataType === 'parents') {
                 const validation_input = {
                     'users': fileData
                 }

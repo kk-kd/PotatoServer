@@ -24,8 +24,10 @@ export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns,
            for (const [key, value] of Object.entries(addressErrors)) {
                for (let j = 0; j < value.length; j++) {
                    let ind = value[j] 
-                   let ent = fileData[ind]
-                   errSet.add(ent)            
+                   if (fileData[ind]) {
+                        let ent = fileData[ind]
+                        errSet.add(ent) 
+                    }        
                } 
         }
        setData(Array.from(errSet));
