@@ -194,7 +194,7 @@ export const ValidateStep = ({
         />
       )}
 
-      {activeError === 4 && <div>All Errors Fixed!</div>}
+      {activeError === 4 && <h6>All Errors Fixed!</h6>}
 
       <StepButtons
         nextButtonValid={valid}

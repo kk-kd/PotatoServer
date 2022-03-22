@@ -6,7 +6,6 @@ export const EditCard = ({setSelectedIndex,complete, setComplete, errors, setErr
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
-
     // called whenever an editable cell is changed to check for validity
     const updateEditedDataValid = (rowIndex, columnId, value) => {      
         setEditedData(old =>
@@ -14,7 +13,6 @@ export const EditCard = ({setSelectedIndex,complete, setComplete, errors, setErr
             if (index === rowIndex) {
                 let copy = {...old[rowIndex], [columnId]: value}
                 let e = rowValidation(copy)
-                console.log(e)
                 
                 if (!e) {
                     return {
