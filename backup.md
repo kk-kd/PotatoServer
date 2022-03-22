@@ -104,7 +104,7 @@
 - Configure crontab `crotab -e`
 
   ```
-  0 4 * * * /home/backupuser/run_rsnapshot.sh daily
+  0 5 * * * /home/backupuser/run_rsnapshot.sh daily
   0 4 * * 1 /home/backupuser/run_rsnapshot.sh weekly
-  0 4 1 * * /home/backupuser/run_rsnapshot.sh monthly
+  0 3 1 * * /home/backupuser/run_rsnapshot.sh monthly
   ```
