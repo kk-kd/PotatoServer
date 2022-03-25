@@ -48,7 +48,7 @@ export const CheckParentCell = (
     return "";
   }
   // catches blank cases
-  else if ((val === null || val === undefined) && col !== "loc") {
+  else if ((val === null || val === undefined || val === "") && col !== "loc") {
     return "Blank!";
   }
 
