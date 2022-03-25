@@ -1,12 +1,14 @@
 import EditableTable from "./EditableTable";
 import {CssBaseline } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { MapHelper } from "./MapHelper";
 
-export const EditCard = ({setSelectedIndex,complete, setComplete, errors, setErrors, message, errorDataSubset, setErrorDataSubset, fileData, setFileData, columns, editableColumns, rowValidation, isCellValid, showMap}) => {
+export const EditManager = ({setSelectedIndex,complete, setComplete, errors, setErrors, message, errorDataSubset, setErrorDataSubset, fileData, setFileData, columns, editableColumns, rowValidation, isCellValid, showMap}) => {
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
-    // called whenever an editable cell is changed to check for validity
+    // called whenever an editable cell is changed, ONLY checks for validity and updatest the 'valid' key to display that the 
+    // user has fixed the error. editedData is changed dynamically in EditableTable. 
     const updateEditedDataValid = (rowIndex, columnId, value) => {      
         setEditedData(old =>
           old.map((row, index) => {
@@ -127,7 +129,10 @@ export const EditCard = ({setSelectedIndex,complete, setComplete, errors, setErr
                 updateEditedDataValid={updateEditedDataValid}
                 rowValidation = {rowValidation}
                 isCellValid = {isCellValid}
+                
              />}
+
+             {showMap && <MapHelper ></MapHelper>}
         </div>
 
     );
