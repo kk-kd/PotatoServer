@@ -28,18 +28,7 @@ Backend Options; can add additional calls to smooth out operations if needed:
 ### TODOS
 
 Jackson:
-(add onenote notes too);
-Do a verbage check on syntax on the page;
-on route planner, nest the boxes to indicate how route->stop->stop detail are connected
-Route planner, group like elements together:
+Bulk import:
 
-- specifically, for saving routes and stops in the planner
-  Buttons (smaller) on table view and margin should be consistent
-
-Backend Bugs:
-
-- Update calls need to check if you are actually changing the unique user/school name: https://github.com/cadyzq/PotatoServer/issues/171
-
-Check Nolan does:
-route planner changes
-default sort for all table calls
+- check deleting entry combinations
+  - esp for those with multiple errors in a single row
