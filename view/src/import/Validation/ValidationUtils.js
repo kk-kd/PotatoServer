@@ -13,7 +13,7 @@ export const CheckStudentCell = (
     return "";
   }
   // catches blank cases
-  else if (val === null || val === undefined) {
+  else if (val === null || val === undefined || val === "") {
     return "Blank!";
   }
   // If the student isn't numerical
@@ -49,9 +49,10 @@ export const CheckParentCell = (
     return "";
   }
   // catches blank cases
-  else if ((val === null || val === undefined) && col !== "loc") {
+  else if ((val === null || val === undefined || val === "") && col !== "loc") {
     return "Blank!";
   }
+
   //email cases
   else if (col === "email") {
 
