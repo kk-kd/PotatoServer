@@ -1,4 +1,5 @@
 import * as EmailValidator from "email-validator";
+// This handles all validation EXCEPT addresses, which is handled by MapHelper in EditContent/MapHelper.
 
 export const CheckStudentCell = (
   col,
@@ -53,15 +54,12 @@ export const CheckParentCell = (
   }
   //email cases
   else if (col === "email") {
+
     //email already taken
-    // const lowerEmails = emails.map((element) => {
-    //   return element.toLowerCase();
-    // });
     if (emails.includes(val.toLowerCase())) {
       return "Existing Email";
     }
     //if email is valid
-
     if (!EmailValidator.validate(val)) {
       return "Not Valid";
     }

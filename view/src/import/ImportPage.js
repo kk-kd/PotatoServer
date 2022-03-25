@@ -1,8 +1,8 @@
-import { HorizontalStepper } from "./HorizontalStepper";
-import { PickTypeStep } from "./PickTypeStep";
-import { UploadStep } from "./UploadStep";
-import { ValidateStep } from "./ValidateStep";
-import { SubmitStep } from "./SubmitStep";
+import { HorizontalStepper } from "./StepNavigation/HorizontalStepper";
+import { PickTypeStep } from "./StepPages/PickTypeStep";
+import { UploadStep } from "./StepPages/UploadStep";
+import { ValidateStep } from "./StepPages/ValidateStep";
+import { SubmitStep } from "./StepPages/SubmitStep";
 import { useState, useEffect } from "react";
 import "./ImportPage.css";
 import {

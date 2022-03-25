@@ -6,9 +6,10 @@
 // - must change elements in fileData with fixed entries 
 import { useState, useEffect } from "react";
 import React from "react";
-import { EditCard } from "../EditCard/EditCard";
-import { CheckStudentCell, CheckParentCell, CheckStudentRow, CheckParentRow} from "../ValidationUtils";
+import { EditManager} from "../EditContent/EditManager";
+import { CheckStudentCell, CheckParentCell, CheckStudentRow, CheckParentRow} from "../Validation/ValidationUtils";
 
+// validate all data except maps. 
 export const MissingErrorPage = ({checkRow, checkCell, columns, dataType, requiredColumns, activeError, setActiveError, missingErrors, setMissingErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
 
     const [data, setData] = useState();
@@ -16,7 +17,7 @@ export const MissingErrorPage = ({checkRow, checkCell, columns, dataType, requir
     const [edit, setEdit] = useState(false);
     const [selected, setSelected] = useState(false);
 
-    const editableColumns = requiredColumns;
+    const editableColumns = requiredColumns; // not have 'address'
     
      // upon load, make tabular data from errors. 
      useEffect(()=> {
@@ -68,7 +69,7 @@ export const MissingErrorPage = ({checkRow, checkCell, columns, dataType, requir
         }
 
         {((data) && (edit)) && 
-            <EditCard 
+            <EditManager
                 message = {"Please Fill In Missing Data"}
                 complete = {complete}
                 setComplete = {setComplete}
