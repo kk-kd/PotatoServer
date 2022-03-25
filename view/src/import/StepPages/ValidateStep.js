@@ -2,14 +2,14 @@ import { StepButtons } from "../StepNavigation/StepButtons";
 import { AddressErrorPage } from "../ErrorPages/AddressErrorPage";
 import { MissingErrorPage } from "../ErrorPages/MissingErrorPage";
 import { InvalidErrorPage } from "../ErrorPages/InvalidErrorPage";
-import { ExistErrorPage } from "../ErrorPages/ExistErrorPage";
+import { DatabaseDuplicatePage } from "../ErrorPages/DatabaseDuplicatePage";
 import { useEffect, useState } from "react";
 import React from "react";
 import {
-  CheckStudentCell,
   CheckStudentRow,
-  CheckParentCell,
   CheckParentRow,
+  CheckStudentCell, 
+  CheckParentCell
 } from "../Validation/ValidationUtils";
 
 export const ValidateStep = ({
@@ -177,7 +177,7 @@ export const ValidateStep = ({
       )}
 
       {activeError === 3 && (
-        <ExistErrorPage
+        <DatabaseDuplicatePage
           checkRow={checkRow}
           checkCell={checkCell}
           columns={columns}

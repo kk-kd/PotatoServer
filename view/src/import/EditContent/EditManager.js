@@ -7,16 +7,48 @@ export const EditManager = ({setSelectedIndex,complete, setComplete, errors, set
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
+    // maps
+    // const [mapApi, setMapApi] = useState();
+    // const [lat, setLat] = useState();
+    // const [lng, setLng] = useState();
+    
+    // const [map, setMap] = useState();
+    // const [apiLoaded, setApiLoaded] = useState(false);
+    // const [geocoder, setGeocoder] = useState();
+    // const [error, setError] = useState(null);
+    // const defaultProps = {
+    //     center: {
+    //     lat: 0,
+    //     lng: 0,
+    //     },
+    //     zoom: 13,
+    // };
+
+
+
+
+    // const checkCellAndMap = (val) => {
+    //     isCellValid 
+        
+    // }
+
     // called whenever an editable cell is changed, ONLY checks for validity and updatest the 'valid' key to display that the 
     // user has fixed the error. editedData is changed dynamically in EditableTable. 
-    const updateEditedDataValid = (rowIndex, columnId, value) => {      
+
+    const updateEditedDataValid = (rowIndex, columnId, value) => {  
+
         setEditedData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
                 let copy = {...old[rowIndex], [columnId]: value}
-                let e = rowValidation(copy)
+
+                let row_error = rowValidation(copy) // returns error string or '' and checks all validity except maps
                 
-                if (!e) {
+                // if (editableColumns.includes('address')) {
+                //     let address_error = check_map_and_update_address()
+                // } 
+                
+                if (!row_error) {
                     return {
                         ...copy,
                         ['valid']: true,

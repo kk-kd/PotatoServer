@@ -6,7 +6,7 @@
 import React, { useEffect, useState } from "react"
 import { EditManager } from "../EditContent/EditManager"
 
-export const ExistErrorPage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, existErrors, setExistErrors,processingComplete, setProcessingComplete, fileData, setFileData}) => {
+export const DatabaseDuplicatePage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, existErrors, setExistErrors,processingComplete, setProcessingComplete, fileData, setFileData}) => {
     const [data, setData] = useState()
     const [complete, setComplete] = useState(false);
     const [edit, setEdit] = useState(false);
