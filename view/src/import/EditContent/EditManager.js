@@ -1,20 +1,54 @@
 import EditableTable from "./EditableTable";
 import {CssBaseline } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { MapHelper } from "./MapHelper";
 
-export const EditCard = ({setSelectedIndex,complete, setComplete, errors, setErrors, message, errorDataSubset, setErrorDataSubset, fileData, setFileData, columns, editableColumns, rowValidation, isCellValid, showMap}) => {
+export const EditManager = ({setSelectedIndex,complete, setComplete, errors, setErrors, message, errorDataSubset, setErrorDataSubset, fileData, setFileData, columns, editableColumns, rowValidation, isCellValid, showMap}) => {
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
-    // called whenever an editable cell is changed to check for validity
-    const updateEditedDataValid = (rowIndex, columnId, value) => {      
+    // maps
+    // const [mapApi, setMapApi] = useState();
+    // const [lat, setLat] = useState();
+    // const [lng, setLng] = useState();
+    
+    // const [map, setMap] = useState();
+    // const [apiLoaded, setApiLoaded] = useState(false);
+    // const [geocoder, setGeocoder] = useState();
+    // const [error, setError] = useState(null);
+    // const defaultProps = {
+    //     center: {
+    //     lat: 0,
+    //     lng: 0,
+    //     },
+    //     zoom: 13,
+    // };
+
+
+
+
+    // const checkCellAndMap = (val) => {
+    //     isCellValid 
+        
+    // }
+
+    // called whenever an editable cell is changed, ONLY checks for validity and updatest the 'valid' key to display that the 
+    // user has fixed the error. editedData is changed dynamically in EditableTable. 
+
+    const updateEditedDataValid = (rowIndex, columnId, value) => {  
+
         setEditedData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
                 let copy = {...old[rowIndex], [columnId]: value}
-                let e = rowValidation(copy)
+
+                let row_error = rowValidation(copy) // returns error string or '' and checks all validity except maps
                 
-                if (!e) {
+                // if (editableColumns.includes('address')) {
+                //     let address_error = check_map_and_update_address()
+                // } 
+                
+                if (!row_error) {
                     return {
                         ...copy,
                         ['valid']: true,
@@ -127,7 +161,10 @@ export const EditCard = ({setSelectedIndex,complete, setComplete, errors, setErr
                 updateEditedDataValid={updateEditedDataValid}
                 rowValidation = {rowValidation}
                 isCellValid = {isCellValid}
+                
              />}
+
+             {showMap && <MapHelper ></MapHelper>}
         </div>
 
     );

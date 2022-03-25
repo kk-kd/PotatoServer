@@ -1,5 +1,5 @@
 
-import { StepButtons } from "./StepButtons"
+import { StepButtons } from "../StepNavigation/StepButtons"
 import { RadioGroup, FormControlLabel, Radio } from "@mui/material"
 import { useEffect } from "react";
 

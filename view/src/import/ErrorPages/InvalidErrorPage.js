@@ -5,7 +5,7 @@
 // - must change elements in fileData with fixed entries 
 
 import React, { useEffect, useState } from "react"
-import { EditCard } from "../EditCard/EditCard"
+import { EditManager } from "../EditContent/EditManager"
 
 export const InvalidErrorPage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, invalidErrors, setInvalidErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
     const [data, setData] = useState()
@@ -67,7 +67,7 @@ export const InvalidErrorPage = ({checkRow, checkCell, columns, requiredColumns,
             </div>
             }
             {((data) && (edit)) && 
-         <EditCard 
+         <EditManager
             message = {"Please Fix Invalid Entries"}
             complete = {complete}
             setComplete = {setComplete}

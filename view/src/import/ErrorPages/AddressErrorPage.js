@@ -4,7 +4,7 @@
 // - must remove values from addressErrors as they are fixed 
 // - must change elements in fileData with fixed entries 
 import React, { useEffect, useState } from "react"
-import { EditCard } from "../EditCard/EditCard"
+import { EditManager } from "../EditContent/EditManager"
 
 
 export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, addressErrors, setAddressErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
@@ -14,9 +14,9 @@ export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns,
     const [selected, setSelected] = useState(false);
       
 
-    const editableColumns = requiredColumns
+    const editableColumns = requiredColumns 
 
-    // upon load, make tabular data from errors. 
+    // upon load, make tabular data from errors to display in EditableTable. 
     useEffect(()=> {
         if (activeError === 1) {
             let errSet = new Set() // avoid duplicates!
@@ -62,7 +62,6 @@ export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns,
             {((!selected) && (data) && (!complete)) && 
             <div>
                 <h6> We found {data.length} record(s) with missing or invalid addresses. </h6>
-
                <div>
                     <button onClick = {()=> {setEdit(true); setSelected(true); }}> Fix Entries </button>
                     <button onClick = {()=> {setEdit(false); setSelected(true); removeEntries()}}> Remove Entries </button>
@@ -70,7 +69,7 @@ export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns,
             </div>
             }
         {((data) && (edit)) && 
-         <EditCard 
+         <EditManager
             message = {"Please Fix Entries With Missing or Invalid Addresses"}
             complete = {complete}
             setComplete = {setComplete}

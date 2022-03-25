@@ -1,16 +1,16 @@
-import { StepButtons } from "./StepButtons";
-import { AddressErrorPage } from "./ErrorPages/AddressErrorPage";
-import { MissingErrorPage } from "./ErrorPages/MissingErrorPage";
-import { InvalidErrorPage } from "./ErrorPages/InvalidErrorPage";
-import { ExistErrorPage } from "./ErrorPages/ExistErrorPage";
+import { StepButtons } from "../StepNavigation/StepButtons";
+import { AddressErrorPage } from "../ErrorPages/AddressErrorPage";
+import { MissingErrorPage } from "../ErrorPages/MissingErrorPage";
+import { InvalidErrorPage } from "../ErrorPages/InvalidErrorPage";
+import { DatabaseDuplicatePage } from "../ErrorPages/DatabaseDuplicatePage";
 import { useEffect, useState } from "react";
 import React from "react";
 import {
-  CheckStudentCell,
   CheckStudentRow,
-  CheckParentCell,
   CheckParentRow,
-} from "./ValidationUtils";
+  CheckStudentCell, 
+  CheckParentCell
+} from "../Validation/ValidationUtils";
 
 export const ValidateStep = ({
   users,
@@ -140,7 +140,7 @@ export const ValidateStep = ({
         />
       )}
 
-      {false && (
+      {activeError == 1 && (
         <AddressErrorPage
           checkRow={checkRow}
           checkCell={checkCell}
@@ -158,7 +158,7 @@ export const ValidateStep = ({
         />
       )}
 
-      {activeError === 1 && (
+      {activeError === 2 && (
         <InvalidErrorPage
           checkRow={checkRow}
           checkCell={checkCell}
@@ -176,8 +176,8 @@ export const ValidateStep = ({
         />
       )}
 
-      {activeError === 2 && (
-        <ExistErrorPage
+      {activeError === 3 && (
+        <DatabaseDuplicatePage
           checkRow={checkRow}
           checkCell={checkCell}
           columns={columns}
@@ -194,7 +194,7 @@ export const ValidateStep = ({
         />
       )}
 
-      {activeError === 3 && <h6>All Errors Fixed!</h6>}
+      {activeError === 4 && <h6>All Errors Fixed!</h6>}
 
       <StepButtons
         nextButtonValid={valid}

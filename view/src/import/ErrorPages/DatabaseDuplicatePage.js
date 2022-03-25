@@ -4,9 +4,9 @@
 // - must remove values from missingErrors as they are fixed 
 // - must change elements in fileData with fixed entries 
 import React, { useEffect, useState } from "react"
-import { EditCard } from "../EditCard/EditCard"
+import { EditManager } from "../EditContent/EditManager"
 
-export const ExistErrorPage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, existErrors, setExistErrors,processingComplete, setProcessingComplete, fileData, setFileData}) => {
+export const DatabaseDuplicatePage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, existErrors, setExistErrors,processingComplete, setProcessingComplete, fileData, setFileData}) => {
     const [data, setData] = useState()
     const [complete, setComplete] = useState(false);
     const [edit, setEdit] = useState(false);
@@ -65,7 +65,7 @@ export const ExistErrorPage = ({checkRow, checkCell, columns, requiredColumns, a
             }
 
         {((data) && (edit)) && 
-            <EditCard 
+            <EditManager
                 message = {"Please Fix Entries With Missing or Invalid Addresses"}
                 complete = {complete}
                 setComplete = {setComplete}

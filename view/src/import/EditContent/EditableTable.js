@@ -1,6 +1,5 @@
 import React from "react";
 
-import Checkbox from '@mui/material/Checkbox';
 import Table from "@mui/material/Table"
 import PropTypes from "prop-types";
 import TableBody from "@mui/material/TableBody";
@@ -24,11 +23,11 @@ import {
     value: initialValue,
     row: { index },
     column: { id },
-    updateEditedData, 
     updateEditedDataValid,
     editableRowIndex, // index of the row we requested for editing
     editableColumns, // list of editable columns
     isCellValid,
+
   }) => {
     const [value, setValue] = React.useState(initialValue);
     const [err, setErr] = React.useState();
@@ -42,12 +41,9 @@ import {
       
     const onChange = (e) => {
       setValue(e.target.value);
-      if (id !== 'address') {
-        updateEditedDataValid(index, id, e.target.value);
-        setErr(isCellValid(id, e.target.value));
-      }
+      updateEditedDataValid(index, id, e.target.value);
+      setErr(isCellValid(id, e.target.value));
     };
-
     
     // If the initialValue is changed externall, sync it up with our state
     React.useEffect(() => {
@@ -78,7 +74,6 @@ import {
     column: PropTypes.shape({
       id: PropTypes.number.isRequired
     }),
-    updateEditedData: PropTypes.func.isRequired,
     updateEditedDataValid: PropTypes.func.isRequired,
     editableColumns: PropTypes.array()
   };
