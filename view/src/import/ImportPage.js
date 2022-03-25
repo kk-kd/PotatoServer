@@ -42,6 +42,7 @@ export const ImportPage = () => {
     9: [],
     10: [],
     99: [],
+    16: 
   });
   const [invalidErrors, setInvalidErrors] = useState({
     8: [],
@@ -180,6 +181,7 @@ export const ImportPage = () => {
       9: [],
       10: [],
       99: [],
+      16: [],
     });
     setExistErrors({
       3: [],
