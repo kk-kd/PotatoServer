@@ -42,7 +42,7 @@ export const ImportPage = () => {
     9: [],
     10: [],
     99: [],
-    16: 
+    16: [],
   });
   const [invalidErrors, setInvalidErrors] = useState({
     8: [],
