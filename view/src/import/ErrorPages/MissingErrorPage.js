@@ -81,8 +81,8 @@ export const MissingErrorPage = ({checkRow, checkCell, columns, dataType, requir
                 setFileData = {setFileData}
                 columns = {columns}
                 editableColumns = {editableColumns}
-                rowValidation = {checkRow}
-                isCellValid = {checkCell}
+                checkRow = {checkRow}
+                checkCell = {checkCell}
                 showMap = {false}
             />}
         

@@ -77,8 +77,8 @@ export const DatabaseDuplicatePage = ({checkRow, checkCell, columns, requiredCol
                 setFileData = {setFileData}
                 columns = {columns}
                 editableColumns = {editableColumns}
-                rowValidation = {checkRow}
-                isCellValid = {checkCell}
+                checkRow = {checkRow}
+                checkCell = {checkCell}
                 showMap = {false}
 
          />}

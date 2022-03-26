@@ -19,6 +19,7 @@ export const InvalidErrorPage = ({checkRow, checkCell, columns, requiredColumns,
     useEffect(()=> {
         let errSet = new Set() // avoid duplicates!
     
+    
        if (processingComplete) {
            for (const [key, value] of Object.entries(invalidErrors)) {
                for (let j = 0; j < value.length; j++) {
@@ -79,8 +80,8 @@ export const InvalidErrorPage = ({checkRow, checkCell, columns, requiredColumns,
             setFileData = {setFileData}
             columns = {columns}
             editableColumns = {editableColumns}
-            rowValidation = {checkRow}
-            isCellValid = {checkCell}
+            checkRow = {checkRow}
+            checkCell = {checkCell}
             showMap = {true}
          />}
 

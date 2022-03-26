@@ -81,8 +81,8 @@ export const AddressErrorPage = ({checkRow, checkCell, columns, requiredColumns,
             setFileData = {setFileData}
             columns = {columns}
             editableColumns = {editableColumns}
-            rowValidation = {checkRow}
-            isCellValid = {checkCell}
+            checkRow = {checkRow}
+            checkCell = {checkCell}
             showMap = {true}
          />}
          

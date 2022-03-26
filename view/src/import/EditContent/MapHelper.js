@@ -1,43 +1,62 @@
 
 // Map used to help validate addresses
 // when address changes, it needs to display the given address, and return the lat and loc in the form {}
+import { useEffect, useState } from "react";
+import GoogleMapReact from "google-map-react";
+import { Marker } from "../../map/Marker";
 
-export const MapHelper = (address) => {
+export const MapHelper = ({activeAddress, setAddressValid, lat, setLat, lng, setLng}) => {
 
-    // const handleApiLoaded = (map, maps) => {
-    //     const geocoder = new maps.Geocoder();
-    //     setMapApi({ geocoder: geocoder, map: map });
-    //     setApiLoaded(true);
-    //   };
+    const [mapApi, setMapApi] = useState();
+    const [map, setMap] = useState();
+    const [apiLoaded, setApiLoaded] = useState(false);
+    const [geocoder, setGeocoder] = useState();
+    const [error, setError] = useState(null);
+    const defaultProps = {
+        center: {
+        lat: 0,
+        lng: 0,
+        },
+        zoom: 13,
+    };
+
+    const handleApiLoaded = (map, maps) => {
+        const geocoder = new maps.Geocoder();
+        setMapApi({ geocoder: geocoder, map: map });
+        setApiLoaded(true);
+    };
     
     
-    //   const searchLocation = () => {
-    //     mapApi.geocoder.geocode({ address: user.address }, (results, status) => {
-    //       if (!user.address || user.address.trim().length === 0) {
-    //         alert("Please Enter an Address");
-    //         return;
-    //       }
-    //       if (status === "OK") {
-    //         mapApi.map.setCenter(results[0].geometry.location);
-    //         setLng(results[0].geometry.location.lng());
-    //         setLat(results[0].geometry.location.lat());
-    //         setError(null);
-    //         setUser({ ...user, address: user.address });
-    //         setAddressValid(true);
-    //       } else if (status === "ZERO_RESULTS") {
-    //         setAddressValid(false);
-    //         setError("No results for that address");
-    //         alert("No results for that address");
-    //       } else {
-    //         setAddressValid(false);
-    //         setError("Server Error. Try again later");
-    //         alert("Server Error. Try again later");
-    //       }
-    //     });
-    //   };
+    const searchLocation = () => {
+        console.log("searching location = ")
+        console.log(activeAddress)
+        mapApi.geocoder.geocode({ address: activeAddress }, (results, status) => {
+          if (status === "OK") {
+            mapApi.map.setCenter(results[0].geometry.location);
+            setLng(results[0].geometry.location.lng());
+            setLat(results[0].geometry.location.lat());
+            setAddressValid(true);
+
+          } else if (status === "ZERO_RESULTS") {
+            setAddressValid(false);
+
+          } else {
+            setAddressValid(false);
+            console.log("Server Error. Try again later");
+          }
+        });
+      };
+
+      useEffect(()=> {
+        console.log("active address changed")
+        if (apiLoaded) {
+            searchLocation()
+        }
+        return 
+      },[activeAddress])
 
     return (<div> Map
-        {/* <div id="map">
+        <div id="map">
         {error && <div>{error}</div>}
         <div style={{ height: "50vh", width: "80%", display: "inline-block" }}>
           <GoogleMapReact
@@ -49,10 +68,10 @@ export const MapHelper = (address) => {
             yesIWantToUseGoogleMapApiInternals
             onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
           >
-            <Marker text="Your Address" lat={lat} lng={lng} isUser />
+            <Marker text="Address" lat={lat} lng={lng} isUser />
           </GoogleMapReact>
         </div>
-      </div> */}
+      </div>
 
     </div>)
 }
