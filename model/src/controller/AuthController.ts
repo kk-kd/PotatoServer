@@ -34,14 +34,12 @@ class AuthController {
       longitude,
       latitude,
       role,
-      attachedSchools
+      attachedSchools,
     } = request.body;
     if (!(email && fullName && role != null)) {
       response
         .status(401)
-        .send(
-          "User Register: email/role/firstName/lastName is not provided."
-        );
+        .send("User Register: email/role/firstName/lastName is not provided.");
       return;
     }
 
@@ -81,6 +79,40 @@ class AuthController {
       response.status(401).send("User Register: " + error);
       return;
     }
+
+    const link = await this.generatePasswordJWT(user, "14 days");
+    try {
+      const saved = await userRepository.save(user);
+      console.log(saved);
+    } catch (error) {
+      response.status(401).send("User Register: " + error);
+      return;
+    }
+
+    try {
+      await this.sendNewUserEmail(user, link);
+    } catch (error) {
+      response
+        .status(401)
+        .send("Error sending confirmation email. Please try again.");
+      return;
+    }
+
+    response.status(201).send(`${user.uid}`);
+  };
+
+  static sendNewUserEmail = async (user: User, link: string) => {
+    await publishMessage({
+      from: "Potato Web Service",
+      subject: "[Potato] Please set your password",
+      html:
+        `<div>Your school admin just made you an account! Please set your password <a href=${link}>here.</a></div><br>` +
+        `<div>If the above link does not work, copy and paste the URL below into your browser:<br>${link}</div>`,
+      to: user.email,
+    });
+  };
+
+  static generatePasswordJWT = async (user: User, expirationTime: string) => {
     var payload = {
       uid: user.uid,
       email: user.email,
@@ -90,7 +122,7 @@ class AuthController {
       issuer: "Potato",
       subject: user.email,
       audience: "potato.colab.duke.edu",
-      expiresIn: "14 days",
+      expiresIn: expirationTime,
       algorithm: "RS256",
     };
 
@@ -101,31 +133,7 @@ class AuthController {
     user.confirmationCode = await bcrypt.hash(token, 10);
     const link = `${process.env.BASE_URL}/PasswordReset/${token}`;
 
-    try {
-      const saved = await userRepository.save(user);
-      console.log(saved);
-    } catch (error) {
-      response.status(401).send("User Register: " + error);
-      return;
-    }
-
-    try {
-      await publishMessage({
-        from: "Potato Web Service",
-        subject: "[Potato] Please set your password",
-        html:
-          `<div>Your school admin just made you an account! Please set your password <a href=${link}>here.</a></div><br>` +
-          `<div>If the above link does not work, copy and paste the URL below into your browser:<br>${link}</div>`,
-        to: user.email,
-      });
-    } catch (error) {
-      response
-        .status(401)
-        .send("Error sending confirmation email. Please try again.");
-      return;
-    }
-
-    response.status(201).send(`${user.uid}`);
+    return link;
   };
 
   static generatePasswordResetLink = async (
@@ -149,26 +157,7 @@ class AuthController {
       return;
     }
 
-    var payload = {
-      uid: user.uid,
-      email: user.email,
-      role: user.role,
-    };
-    var signOptions = {
-      issuer: "Potato",
-      subject: user.email,
-      audience: "potato.colab.duke.edu",
-      expiresIn: "2h",
-      algorithm: "RS256",
-    };
-
-    let privateKey = fs.readFileSync(
-      __dirname + "/../../secrets/jwt_private.key"
-    );
-
-    const token = jwt.sign(payload, privateKey, signOptions);
-    user.confirmationCode = await bcrypt.hash(token, 10);
-    const link = `${process.env.BASE_URL}/PasswordReset/${token}`;
+    const link = await this.generatePasswordJWT(user, "2h");
 
     try {
       await publishMessage({

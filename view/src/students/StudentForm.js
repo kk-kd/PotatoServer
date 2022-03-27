@@ -79,12 +79,15 @@ export const StudentForm = ({ addStudentToUser }) => {
       school: selectedSchool,
       id: student.studentid,
       parentUser: user,
+      email: student.email,
     };
     console.log(form_results);
 
     if (!student.studentid || student.studentid.length === 0) {
       form_results["id"] = null;
     }
+
+    console.log(form_results);
 
     try {
       let create_student_response = await saveStudent(form_results);
@@ -153,6 +156,15 @@ export const StudentForm = ({ addStudentToUser }) => {
         maxLength="100"
         value={student.fullName}
         onChange={(e) => setStudent({ ...student, fullName: e.target.value })}
+      />
+
+      <label id="input-label-student"> Email (optional): </label>
+      <input
+        id="input-input-student"
+        type="text"
+        maxLength="100"
+        value={student.email}
+        onChange={(e) => setStudent({ ...student, email: e.target.value })}
       />
 
       <label id="input-label-student" for="lastName">
