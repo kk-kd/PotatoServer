@@ -38,7 +38,11 @@ export class Student {
   @ManyToOne(() => User, (user) => user.students, { onDelete: "CASCADE" })
   parentUser: User;
 
-  @ManyToMany(() => Stop, stop => stop.inRangeStudents, { cascade: true })
+  @ManyToMany(() => Stop, (stop) => stop.inRangeStudents, { cascade: true })
   @JoinTable()
   inRangeStops: Stop[];
+
+  @OneToOne(() => User, { cascade: true, onDelete: "CASCADE" })
+  @JoinColumn()
+  account: User;
 }
