@@ -280,8 +280,8 @@ export async function updateUser(uid, specifications, changePassword) {
     headers: getHeaderWithAuthToken(),
   });
 }
-export async function updateStudent(uid, specifications) {
-  return await axios.put("/api/students/" + uid, specifications, {
+export async function updateStudent(specifications) {
+  return await axios.put("/api/students/update", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }

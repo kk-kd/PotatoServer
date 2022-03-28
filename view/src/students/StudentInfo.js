@@ -34,6 +34,7 @@ export const StudentInfo = ({ edit, role }) => {
 
   const [student, setStudent] = useState();
   const [user, setUser] = useState();
+  const [studentAccount, setStudentAccount] = useState();
   const [userDefault, setUserDefault] = "";
   const [studentLoaded, setStudentLoaded] = useState(false);
   const [removeInRangeStops, setRemoveInRangeStops] = useState(false);
@@ -79,6 +80,7 @@ export const StudentInfo = ({ edit, role }) => {
         school: selectedSchool,
         parentUser: user,
         id: student.studentid,
+        account: studentAccount,
       };
       if (removeInRangeStops) {
         form_results.inRangeStops = [];
@@ -92,7 +94,7 @@ export const StudentInfo = ({ edit, role }) => {
 
   const modifyStudent = async (form_results) => {
     try {
-      let update_user_response = await saveStudent(form_results);
+      let update_user_response = await updateStudent(form_results);
       setEditable(false);
     } catch (error) {
       let message = error.response.data;
@@ -152,6 +154,10 @@ export const StudentInfo = ({ edit, role }) => {
 
       if (fetchedData.data.parentUser) {
         setUser(fetchedData.data.parentUser);
+      }
+
+      if (fetchedData.data.account) {
+        setStudentAccount(fetchedData.data.account);
       }
 
       if (fetchedData.data.school) {
@@ -261,7 +267,10 @@ export const StudentInfo = ({ edit, role }) => {
         type="text"
         maxLength="100"
         value={student ? student.fullName : ""}
-        onChange={(e) => setStudent({ ...student, fullName: e.target.value })}
+        onChange={(e) => {
+          setStudent({ ...student, fullName: e.target.value });
+          setStudentAccount({ ...studentAccount, fullName: e.target.value });
+        }}
       />
 
       <label id="input-label-student" for="lastName">
@@ -279,6 +288,21 @@ export const StudentInfo = ({ edit, role }) => {
         }}
       />
 
+      <label id="input-label-student" for="lastName">
+        {" "}
+        Student email:{" "}
+      </label>
+      <input
+        id="input-input-student"
+        disabled={!editable}
+        type="text"
+        maxLength="100"
+        value={studentAccount ? studentAccount.email : ""}
+        onChange={(e) => {
+          setStudentAccount({ ...studentAccount, email: e.target.value });
+        }}
+      />
+
       {!editable && (
         <div>
           <label id="input-label-student"> Parent Name: </label>
@@ -293,42 +317,26 @@ export const StudentInfo = ({ edit, role }) => {
       )}
 
       {!editable && (
-          <div>
-            <label id="input-label-student"> Parent Email: </label>
-            {user && (
-                <span id="input-input-inline-item">
-              {" "}
-                {" "}
-                    {user.email}{" "}
-            </span>
-            )}
-          </div>
+        <div>
+          <label id="input-label-student"> Parent Email: </label>
+          {user && <span id="input-input-inline-item"> {user.email} </span>}
+        </div>
       )}
 
       {!editable && (
-          <div>
-            <label id="input-label-student"> Parent Phone Number: </label>
-            {user && (
-                <span id="input-input-inline-item">
-              {" "}
-                {" "}
-                    {user.phoneNumber}{" "}
-            </span>
-            )}
-          </div>
+        <div>
+          <label id="input-label-student"> Parent Phone Number: </label>
+          {user && (
+            <span id="input-input-inline-item"> {user.phoneNumber} </span>
+          )}
+        </div>
       )}
 
       {!editable && (
-          <div>
-            <label id="input-label-student"> Parent Address: </label>
-            {user && (
-                <span id="input-input-inline-item">
-              {" "}
-                {" "}
-                    {user.address}{" "}
-            </span>
-            )}
-          </div>
+        <div>
+          <label id="input-label-student"> Parent Address: </label>
+          {user && <span id="input-input-inline-item"> {user.address} </span>}
+        </div>
       )}
 
       {editable && (
