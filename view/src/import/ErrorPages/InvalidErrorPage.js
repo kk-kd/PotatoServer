@@ -13,11 +13,24 @@ export const InvalidErrorPage = ({checkRow, checkCell, columns, requiredColumns,
     const [edit, setEdit] = useState(false);
     const [selected, setSelected] = useState(false);
 
-    const editableColumns = requiredColumns
+    const [editableColumns, setEditableColumns] = useState(requiredColumns)
+
+    useEffect(()=> {
+        if (editableColumns.includes('address')){
+            let copy = editableColumns
+            for( var i = 0; i < copy.length; i++){ 
+                if ( copy[i] === 'address') { 
+                    copy.splice(i, 1);
+                    setEditableColumns(copy); 
+                }
+            }
+        }
+    }, [])
 
     // upon load, make tabular data from errors. 
     useEffect(()=> {
         let errSet = new Set() // avoid duplicates!
+    
     
        if (processingComplete) {
            for (const [key, value] of Object.entries(invalidErrors)) {
@@ -68,7 +81,7 @@ export const InvalidErrorPage = ({checkRow, checkCell, columns, requiredColumns,
             }
             {((data) && (edit)) && 
          <EditManager
-            message = {"Please Fix Invalid Entries"}
+            message = {"Please Fix Missing or Invalid Entries"}
             complete = {complete}
             setComplete = {setComplete}
             errors = {invalidErrors}
@@ -79,9 +92,8 @@ export const InvalidErrorPage = ({checkRow, checkCell, columns, requiredColumns,
             setFileData = {setFileData}
             columns = {columns}
             editableColumns = {editableColumns}
-            rowValidation = {checkRow}
-            isCellValid = {checkCell}
-            showMap = {true}
+            checkRow = {checkRow}
+            checkCell = {checkCell}
          />}
 
         {complete && <div> 

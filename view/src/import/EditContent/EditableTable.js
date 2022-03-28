@@ -13,6 +13,8 @@ import {
   faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 
+import Autocomplete from "react-google-autocomplete";
+
 
 import {
     useTable
@@ -31,13 +33,6 @@ import {
   }) => {
     const [value, setValue] = React.useState(initialValue);
     const [err, setErr] = React.useState();
-
-    const onBlur = (e) => {
-      if (id === 'address') {
-        updateEditedDataValid(index, id, e.target.value);
-        setErr(isCellValid(id, e.target.value));
-      }
-    }
       
     const onChange = (e) => {
       setValue(e.target.value);
@@ -45,20 +40,42 @@ import {
       setErr(isCellValid(id, e.target.value));
     };
     
-    // If the initialValue is changed externall, sync it up with our state
+    // If the initialValue is changed externally, sync it up with our state
     React.useEffect(() => {
       setValue(initialValue);
       setErr(isCellValid(id, initialValue));
     }, [initialValue]);
   
-    return (index === editableRowIndex && editableColumns.includes(id)) ? (
+    return (index === editableRowIndex && editableColumns.includes(id)) ? 
+    (id === 'address' ? (
       <div>
-
-        <input value={value} onChange={onChange} onBlur = {onBlur} style = {{border: err ? '1px solid red': '1px solid #34815c', position: 'relative'}}/>
-        <span style = {{color:'red'}}> {err} </span>
-        
-      </div>
-      
+              <Autocomplete
+                apiKey={process.env.REACT_APP_GOOGLE_MAPS_API}
+                onPlaceSelected={(place) => {
+                  let selected = {'address': place.formatted_address, 'lat': place.geometry.location.lat(), 'lng': place.geometry.location.lng()}
+                  setValue(selected)
+                  updateEditedDataValid(index, id,  selected);
+                  setErr('');
+                }}
+                defaultValue = {initialValue}
+                onChange = {()=> {
+                  setErr('Invalid Address')
+                  updateEditedDataValid(index, id,  {'address': ''});
+                }}
+                
+                options={{
+                  fields: ["geometry.location", "formatted_address"],
+                  types: ["geocode"],
+                }}
+              />  
+              <div style = {{color:'red'}}> {err} </div>
+              </div>
+        ) 
+        :
+          <div>
+            <input value={value} onChange={onChange} style = {{border: err ? '1px solid red': '1px solid #34815c', position: 'relative'}}/>
+            <div style = {{color:'red'}}> {err} </div>
+          </div>
     ) : (
       <p>{value}</p>
     );
@@ -139,12 +156,16 @@ export const EditableTable = ({
                 style={{ color: "red" }}
                />)
           },
+      
           {
             accessor: "edit",
             id: "edit",
             Header: "",
             Cell: ({ row, setEditableRowIndex, editableRowIndex, editableColumns, updateEditedDataValid}) => (
-              (row.index === editableRowIndex) ?
+
+              (row.index === editableRowIndex)) ?
+
+              (row.values.valid ? 
                 <button
                     className="action-button"
                     disabled = {!row.values.valid}
@@ -159,12 +180,11 @@ export const EditableTable = ({
                         }
                     }
                     }
-                >
-        
-                {row.values.valid ? "Submit": 'Please Fix Errors'}
-                </button>
-                : 
-                <div></div>)
+                    > Submit 
+                  </button> 
+                :  <button style={{opacity: 0.3}} disabled = {true}> Submit </button> // backgroundColor: 'rgba(0, 0, 0, 0.38)'
+              ) 
+              : <div></div>
           },
           {
             accessor: "index",

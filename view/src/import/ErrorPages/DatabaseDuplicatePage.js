@@ -66,7 +66,7 @@ export const DatabaseDuplicatePage = ({checkRow, checkCell, columns, requiredCol
 
         {((data) && (edit)) && 
             <EditManager
-                message = {"Please Fix Entries With Missing or Invalid Addresses"}
+                message = {"Please Fix Entries"}
                 complete = {complete}
                 setComplete = {setComplete}
                 errors = {existErrors}
