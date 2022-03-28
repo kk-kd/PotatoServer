@@ -50,7 +50,7 @@ import {
     (id === 'address' ? (
       <div>
               <Autocomplete
-                apiKey={'AIzaSyBWqokXgx_Cgj1_TcXxH_c7Pqgz3qzATV4'}
+                apiKey={process.env.REACT_APP_GOOGLE_MAPS_API}
                 onPlaceSelected={(place) => {
                   let selected = {'address': place.formatted_address, 'lat': place.geometry.location.lat(), 'lng': place.geometry.location.lng()}
                   setValue(selected)
