@@ -174,6 +174,7 @@ export const ImportPage = () => {
       15: [],
       16: [],
       99: [],
+      16: [],
     });
 
     setExistErrors({

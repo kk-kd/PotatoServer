@@ -21,16 +21,20 @@ export class User {
   @Column()
   fullName: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   address: string;
 
   @Column({
     type: "decimal",
+    nullable: true,
   })
   longitude: number;
 
   @Column({
     type: "decimal",
+    nullable: true,
   })
   latitude: number;
 
@@ -54,6 +58,8 @@ export class User {
   })
   confirmationCode: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   phoneNumber: string;
 }
