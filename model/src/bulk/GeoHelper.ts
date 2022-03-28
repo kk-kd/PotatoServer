@@ -40,10 +40,10 @@ export const getLngLat = async (address: string) => {
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${address
         .split(" ")
-        .join("+")}&key=${process.env.GOOGLE_MAP_API_KEY}`
+        .join("+")}&key=${process.env.GOOGLE_MAP_API}`
     );
     const data = await response.json();
-    // console.log(data);
+    console.log(data);
     newLoc.longitude = data.results[0].geometry.location.lng;
     newLoc.latitude = data.results[0].geometry.location.lat;
     await getConnection().manager.save(newLoc);
@@ -51,6 +51,7 @@ export const getLngLat = async (address: string) => {
     console.log(
       `Google Map Address Fetch Failed: ${error.name}, ${error.message}`
     );
+    console.log(process.env.GOOGLE_MAP_API)
     throw "Failed to fetch address from google api";
   }
 

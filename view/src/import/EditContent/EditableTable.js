@@ -186,7 +186,6 @@ export const EditableTable = ({
                 :  <button style={{opacity: 0.3}} disabled = {true}> Submit </button> // backgroundColor: 'rgba(0, 0, 0, 0.38)'
               ) 
               : <div></div>
-      
           },
           {
             accessor: "index",

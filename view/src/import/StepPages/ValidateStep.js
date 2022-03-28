@@ -1,6 +1,5 @@
 import { StepButtons } from "../StepNavigation/StepButtons";
 import { AddressErrorPage } from "../ErrorPages/AddressErrorPage";
-import { MissingErrorPage } from "../ErrorPages/MissingErrorPage";
 import { InvalidErrorPage } from "../ErrorPages/InvalidErrorPage";
 import { DatabaseDuplicatePage } from "../ErrorPages/DatabaseDuplicatePage";
 import { useEffect, useState } from "react";
@@ -21,8 +20,6 @@ export const ValidateStep = ({
   requiredColumns,
   addressErrors,
   setAddressErrors,
-  missingErrors,
-  setMissingErrors,
   invalidErrors,
   setInvalidErrors,
   existErrors,
@@ -132,60 +129,42 @@ export const ValidateStep = ({
   return (
     <div>
       {activeError === 0 && (
-        <MissingErrorPage
-          checkRow={checkRow}
-          checkCell={checkCell}
-          columns={columns}
-          dataType={dataType}
-          requiredColumns={requiredColumns}
-          activeError={activeError}
-          setActiveError={setActiveError}
-          missingErrors={missingErrors}
-          setMissingErrors={setMissingErrors}
-          processingComplete={processingComplete}
-          setProcessingComplete={setProcessingComplete}
-          fileData={fileData}
-          setFileData={setFileData}
-        />
+        <InvalidErrorPage
+        checkRow={checkRow}
+        checkCell={checkCell}
+        columns={columns}
+        dataType={dataType}
+        requiredColumns={requiredColumns}
+        activeError={activeError}
+        setActiveError={setActiveError}
+        invalidErrors={invalidErrors}
+        setInvalidErrors={setInvalidErrors}
+        processingComplete={processingComplete}
+        setProcessingComplete={setProcessingComplete}
+        fileData={fileData}
+        setFileData={setFileData}
+      />
       )}
 
-      {activeError == 1 && (
-        <AddressErrorPage
-          checkRow={checkRow}
-          checkCell={checkCell}
-          columns={columns}
-          dataType={dataType}
-          requiredColumns={requiredColumns}
-          activeError={activeError}
-          setActiveError={setActiveError}
-          addressErrors={addressErrors}
-          setAddressErrors={setAddressErrors}
-          processingComplete={processingComplete}
-          setProcessingComplete={setProcessingComplete}
-          fileData={fileData}
-          setFileData={setFileData}
-        />
+      {activeError === 1 && (
+                <AddressErrorPage
+                checkRow={checkRow}
+                checkCell={checkCell}
+                columns={columns}
+                dataType={dataType}
+                requiredColumns={['address']}
+                activeError={activeError}
+                setActiveError={setActiveError}
+                addressErrors={addressErrors}
+                setAddressErrors={setAddressErrors}
+                processingComplete={processingComplete}
+                setProcessingComplete={setProcessingComplete}
+                fileData={fileData}
+                setFileData={setFileData}
+              />
       )}
 
       {activeError === 2 && (
-        <InvalidErrorPage
-          checkRow={checkRow}
-          checkCell={checkCell}
-          columns={columns}
-          dataType={dataType}
-          requiredColumns={requiredColumns}
-          activeError={activeError}
-          setActiveError={setActiveError}
-          invalidErrors={invalidErrors}
-          setInvalidErrors={setInvalidErrors}
-          processingComplete={processingComplete}
-          setProcessingComplete={setProcessingComplete}
-          fileData={fileData}
-          setFileData={setFileData}
-        />
-      )}
-
-      {activeError === 3 && (
         <DatabaseDuplicatePage
           checkRow={checkRow}
           checkCell={checkCell}
@@ -203,7 +182,7 @@ export const ValidateStep = ({
         />
       )}
 
-      {activeError === 4 && <h6>All Errors Fixed!</h6>}
+      {activeError === 3 && <h6>All Errors Fixed!</h6>}
 
       <StepButtons
         nextButtonValid={valid}

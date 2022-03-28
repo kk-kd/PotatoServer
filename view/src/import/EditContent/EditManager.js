@@ -3,7 +3,7 @@ import {CssBaseline } from "@mui/material";
 import { useState } from "react";
 import { MapHelper } from "./MapHelper";
 
-export const EditManager = ({setSelectedIndex, complete, setComplete, errors, setErrors, message, errorDataSubset, fileData, setFileData, columns, editableColumns, checkRow, checkCell, showMap}) => {
+export const EditManager = ({setSelectedIndex, complete, setComplete, errors, setErrors, message, errorDataSubset, fileData, setFileData, columns, editableColumns, checkRow, checkCell}) => {
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
