@@ -163,7 +163,10 @@ export const EditableTable = ({
             id: "edit",
             Header: "",
             Cell: ({ row, setEditableRowIndex, editableRowIndex, editableColumns, updateEditedDataValid}) => (
-              (row.index === editableRowIndex) ?
+
+              (row.index === editableRowIndex)) ?
+
+              (row.values.valid ? 
                 <button
                     className="action-button"
                     disabled = {!row.values.valid}
@@ -178,12 +181,12 @@ export const EditableTable = ({
                         }
                     }
                     }
-                >
-        
-                {row.values.valid ? "Submit": 'Please Fix Errors'}
-                </button>
-                : 
-                <div></div>)
+                    > Submit 
+                  </button> 
+                :  <button style={{opacity: 0.3}} disabled = {true}> Submit </button> // backgroundColor: 'rgba(0, 0, 0, 0.38)'
+              ) 
+              : <div></div>
+      
           },
           {
             accessor: "index",
