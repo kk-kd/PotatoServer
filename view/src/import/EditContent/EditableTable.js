@@ -57,6 +57,7 @@ import {
                   updateEditedDataValid(index, id,  selected);
                   setErr('');
                 }}
+                defaultValue = {initialValue}
                 onChange = {()=> {
                   console.log('change')
                   setErr('Invalid Address')
