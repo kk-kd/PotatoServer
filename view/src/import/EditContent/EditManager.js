@@ -7,25 +7,6 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
-    // maps
-    const [lat, setLat] = useState();
-    const [lng, setLng] = useState();  
-    const [activeAddress, setActiveAddress] = useState()
-    const [addressValid, setAddressValid] = useState(false);
-
-    // wrapper to call 1) checkCell (from ValidationStep), which checks all non-address cells for validity, and 
-    // 2) check for address validity 
-    const checkCellAndMap = (col, val) => {
-        let err = checkCell(col, val)
-        if ((activeAddress) && !(addressValid)) {
-            return 'Not Valid Address'
-        }
-        else if (err) {
-            return err
-        }
-        else return ''
-    }
-
     // called whenever an editable cell is changed, ONLY checks for validity and updatest the 'valid' key to display that the 
     // user has fixed the error. editedData is changed dynamically in EditableTable. 
     const updateEditedDataValid = (rowIndex, columnId, value) => {  
@@ -33,19 +14,20 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
         if (columnId === 'address') {
             console.log('address set to ')
             console.log(value)
-            setActiveAddress(value)
         }
         
         // update validity
         setEditedData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
+                
                 let copy = {...old[rowIndex], [columnId]: value}
 
                 let row_error = checkRow(copy) // returns error string or '' and checks all validity except maps
                 
-                // if editing address and address is not valid, row is not valid
-                if ((editableColumns.includes('address') && !addressValid)) {
+                // if editing address and row address does not have a lat or lng, not valid
+                if ((editableColumns.includes('address') && columnId === 'address') && (!value.lat || !value.lng)) {
+                    console.log('no lat or lng')
                     return {
                         ...copy,
                         ['valid']: false,
@@ -54,6 +36,7 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
                 
                 // if other row error, row is not valid
                 else if (row_error) {
+                    console.log(row_error)
                     return {
                         ...copy,
                         ['valid']: false,
@@ -63,7 +46,7 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
                 else {  
                     return {
                         ...copy,
-                        ['valid']: false,
+                        ['valid']: true,
                     }
                 }
             }
@@ -72,10 +55,10 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
         )
     } 
 
-    const updateEntry = (d, setD, ind, newD) => {
-        let c = d
-        c[ind] = newD;
-        setD(c)
+    const updateEntry = (d, setD, index, newDict) => {
+        let copy = d
+        copy[index] = newDict;
+        setD(copy)
     }
 
     // for list of entry objects. 
@@ -99,11 +82,15 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
         checkComplete() 
     }
 
-
     // called on row submission
     const submitRow = (ind, newRow) => {
         console.log(newRow)
         if (!checkRow(newRow)) {
+            // when changed, address value is {'address': '', 'lat': 12, 'lng':31} and needs to be unpacked to get lat and lng keys
+            if (editableColumns.includes('address') && newRow['address']['lat']) {  
+                newRow['loc'] =  {'lat': newRow['address']['lat'], 'lng': newRow['address']['lng']}
+                newRow['address'] = newRow['address']['address']
+            }
             removeEntry(editedData, setEditedData, ind) // displayed subset
             removeError(ind) // errors.filter 
             updateEntry(fileData, setFileData, newRow['index'], newRow)
@@ -169,15 +156,6 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
                 isCellValid = {checkCell}
                 
              />}
-
-             {showMap && <MapHelper 
-                            activeAddress = {activeAddress} 
-                            setAddressValid = {setAddressValid} 
-                            lat = {lat}
-                            setLat = {setLat}
-                            lng = {lng} 
-                            setLng ={setLng}> 
-                        </MapHelper>}
         </div>
 
     );

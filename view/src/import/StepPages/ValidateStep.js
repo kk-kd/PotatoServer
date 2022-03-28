@@ -53,6 +53,15 @@ export const ValidateStep = ({
     if (dataType === "students") {
       return CheckStudentCell(col, val, users, schools, emails, schoolNames);
     } else if (dataType === "parents") {
+      if (col === 'address') {
+        console.log(val)
+        if (!val || !val['address']) {
+          return 'No Address Selected'
+        }
+        else {
+          return ''
+        }
+      }
       return CheckParentCell(col, val, users, schools, emails, schoolNames);
     }
     return false;
