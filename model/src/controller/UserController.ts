@@ -8,6 +8,8 @@ import { NextFunction, Request, Response } from "express";
 import { User } from "../entity/User";
 import * as bcrypt from "bcryptjs";
 import * as EmailValidator from "email-validator";
+import { Dirent } from "fs";
+import { AccountRole } from "../Role";
 
 @EntityRepository(User)
 export class UserController extends Repository<User> {
@@ -66,13 +68,18 @@ export class UserController extends Repository<User> {
       // PAGE STARTS AT 0
 
       const role = response.locals.jwtPayload.role;
-      if (!role || !(role == "Admin" || role == "School Staff" || role == "Driver")) {
+      if (
+        !role ||
+        !(role == "Admin" || role == "School Staff" || role == "Driver")
+      ) {
         response.status(409).send("User is not an admin.");
         return;
       }
       const pageNum: number = +request.query.page;
       if (pageNum <= -1) {
-        response.status(401).send("Please specify a positive page number to view results.");
+        response
+          .status(401)
+          .send("Please specify a positive page number to view results.");
         return;
       }
       const takeNum: number = +request.query.size;
@@ -108,7 +115,9 @@ export class UserController extends Repository<User> {
             .where("users.uid = :uid", { uid: userId })
             .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
             .getOneOrFail();
-          const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+          const attachedSchools = currentUser.attachedSchools.map(
+            (school) => school.uid
+          );
           const usersQueryResult = await this.userRepository
             .createQueryBuilder("users")
             .orderBy(sortSpecification, sortDirSpec)
@@ -125,7 +134,11 @@ export class UserController extends Repository<User> {
             .leftJoinAndSelect("student.school", "schools")
             .getMany();
           response.status(200);
-          const filtered = usersQueryResult.filter(user => user.students.some(student => attachedSchools.some(uid => uid == student.school.uid)));
+          const filtered = usersQueryResult.filter((user) =>
+            user.students.some((student) =>
+              attachedSchools.some((uid) => uid == student.school.uid)
+            )
+          );
           const total = filtered.length;
           return {
             users: filtered,
@@ -159,7 +172,9 @@ export class UserController extends Repository<User> {
             .where("users.uid = :uid", { uid: userId })
             .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
             .getOneOrFail();
-          const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+          const attachedSchools = currentUser.attachedSchools.map(
+            (school) => school.uid
+          );
           const usersQueryResult = await this.userRepository
             .createQueryBuilder("users")
             .orderBy(sortSpecification, sortDirSpec)
@@ -176,7 +191,11 @@ export class UserController extends Repository<User> {
             .leftJoinAndSelect("student.school", "schools")
             .getMany();
           response.status(200);
-          const filtered = usersQueryResult.filter(user => user.students.some(student => attachedSchools.some(uid => uid == student.school.uid)));
+          const filtered = usersQueryResult.filter((user) =>
+            user.students.some((student) =>
+              attachedSchools.some((uid) => uid == student.school.uid)
+            )
+          );
           const total = filtered.length;
           return {
             users: filtered.splice(skipNum, skipNum + takeNum),
@@ -232,8 +251,8 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-          response.locals.jwtPayload.uid +
-          " was not found adn could not be deleted."
+            response.locals.jwtPayload.uid +
+            " was not found adn could not be deleted."
         );
       return;
     }
@@ -243,7 +262,10 @@ export class UserController extends Repository<User> {
     try {
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const role = response.locals.jwtPayload.role;
-      if (!role || !(role == "Admin" || role == "School Staff" || role == "Driver")) {
+      if (
+        !role ||
+        !(role == "Admin" || role == "School Staff" || role == "Driver")
+      ) {
         response.status(409).send("User is not an admin.");
         return;
       }
@@ -279,14 +301,17 @@ export class UserController extends Repository<User> {
       const userEmail = request.body.email;
 
       const reptitiveEntry = await getRepository(User)
-      .createQueryBuilder("users")
-      .select()
-      .where("users.email = :email", { email: userEmail })
-      .getOne();
+        .createQueryBuilder("users")
+        .select()
+        .where("users.email = :email", { email: userEmail })
+        .getOne();
 
       console.log(reptitiveEntry);
 
-      if ((reptitiveEntry != null) && (reptitiveEntry.uid != parseInt(request.body.uid))) {
+      if (
+        reptitiveEntry != null &&
+        reptitiveEntry.uid != parseInt(request.body.uid)
+      ) {
         response.status(401).send("Email is already taken for User.");
         return;
       }
@@ -307,8 +332,8 @@ export class UserController extends Repository<User> {
     try {
       const uidNumber = request.params.uid;
       const role = response.locals.jwtPayload.role;
-      if (!role || !(role == "Admin" || role == "School Staff")) {
-        response.status(409).send("User is not an admin.");
+      if (!(role == AccountRole.ADMIN || role == AccountRole.SCHOOL_STAFF)) {
+        response.status(409).send("The user does not have enough permission.");
         return;
       }
 
@@ -326,7 +351,7 @@ export class UserController extends Repository<User> {
 
       console.log(reptitiveEntry);
 
-      if ((reptitiveEntry != null) && (reptitiveEntry.uid != parseInt(uidNumber))) {
+      if (reptitiveEntry != null && reptitiveEntry.uid != parseInt(uidNumber)) {
         response.status(401).send("Email is already taken for User.");
         return;
       }
@@ -344,11 +369,11 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User with UID " +
-          request.params.uid +
-          " and details(" +
-          request.body +
-          ") couldn't be updated with error " +
-          e
+            request.params.uid +
+            " and details(" +
+            request.body +
+            ") couldn't be updated with error " +
+            e
         );
       return;
     }
@@ -379,8 +404,8 @@ export class UserController extends Repository<User> {
         .status(401)
         .send(
           "User UID: " +
-          request.params.uid +
-          " was not found adn could not be deleted."
+            request.params.uid +
+            " was not found adn could not be deleted."
         );
       return;
     }

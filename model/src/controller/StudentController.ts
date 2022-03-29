@@ -8,7 +8,7 @@ import { NextFunction, Request, Response } from "express";
 import { Student } from "../entity/Student";
 import { User } from "../entity/User";
 import * as EmailValidator from "email-validator";
-import { Direction } from "../Role";
+import { AccountRole } from "../Role";
 import AuthController from "./AuthController";
 
 @EntityRepository(Student)
@@ -48,11 +48,8 @@ export class StudentController extends Repository<Student> {
       return;
     }
   }
-  async filterAllStudents(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
+
+  async filterAllStudents(request: Request, response: Response) {
     try {
       const pageNum: number = +request.query.page;
       if (pageNum <= -1) {
@@ -309,6 +306,7 @@ export class StudentController extends Repository<Student> {
         .leftJoinAndSelect("students.school", "school")
         .leftJoinAndSelect("students.parentUser", "user")
         .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+        .leftJoinAndSelect("students.account", "account")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -320,11 +318,7 @@ export class StudentController extends Repository<Student> {
     }
   }
 
-  async saveNewStudent(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
+  async saveNewStudent(request: Request, response: Response) {
     const studentEmail = request.body.email;
     if (studentEmail != undefined && !EmailValidator.validate(studentEmail)) {
       response.status(401).send("Please enter a valid email address.");
@@ -343,6 +337,7 @@ export class StudentController extends Repository<Student> {
       }
     }
 
+    // would like all students live at the same place to have the same bus route
     const existingStudent = await this.studentRepository
       .createQueryBuilder("students")
       .leftJoinAndSelect("students.school", "school")
@@ -369,7 +364,7 @@ export class StudentController extends Repository<Student> {
       var loginAccount = new User();
       loginAccount.fullName = request.body.fullName;
       loginAccount.email = studentEmail;
-      loginAccount.role = Direction.STUDENT;
+      loginAccount.role = AccountRole.STUDENT;
       request.body.account = loginAccount;
     }
 
@@ -412,29 +407,56 @@ export class StudentController extends Repository<Student> {
   }
 
   async updateStudent(request: Request, response: Response) {
+    console.log(request.body);
+    const studentEmail = request.body.account.email;
+    if (studentEmail != undefined && !EmailValidator.validate(studentEmail)) {
+      response.status(401).send("Please enter a valid email address.");
+      return;
+    }
+
+    if (studentEmail != undefined) {
+      const existingEmail = await getRepository(User)
+        .createQueryBuilder("users")
+        .where("users.email = :email", { email: studentEmail })
+        .getOne();
+
+      if (existingEmail != undefined) {
+        console.log("Update associated user account...");
+
+        if (request.body.account.uid != existingEmail.uid) {
+          response.status(401).send("This email has already been registered.");
+          return;
+        }
+
+        // try {
+        //   await getRepository(User).save({
+        //     ...existingEmail,
+        //     fullName: request.body.fullName,
+        //     email: request.body.email,
+        //   });
+        // } catch (e) {
+        //   response
+        //     .status(401)
+        //     .send(
+        //       "There's an error while updating the associated account with this student: " +
+        //         e
+        //     );
+        //   return;
+        // }
+      }
+    }
+
     try {
-      const uidNumber = request.params.uid;
-      const a = await getConnection()
-        .createQueryBuilder()
-        .update(Student)
-        .where("uid = :uid", { uid: uidNumber })
-        .set(request.body)
-        .execute();
-      response.status(200);
-      return a;
+      await getRepository(Student).save(request.body);
     } catch (e) {
       response
         .status(401)
-        .send(
-          "Student with UID " +
-            request.params.uid +
-            " and details(" +
-            request.body +
-            ") couldn't be updated with error " +
-            e
-        );
+        .send("There's an error while updating the student: " + e);
       return;
     }
+
+    response.status(200).send();
+    return;
   }
 
   async deleteStudent(request: Request, response: Response) {

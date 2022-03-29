@@ -147,7 +147,7 @@ export const allRoutes = [
   },
   {
     method: "put",
-    route: "/api/students/:uid",
+    route: "/api/students/update",
     controller: StudentController,
     action: "updateStudent",
   },
