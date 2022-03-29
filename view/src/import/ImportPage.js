@@ -35,7 +35,7 @@ export const ImportPage = () => {
     6: [],
   });
 
-  const [missingErrors, setMissingErrors] = useState({
+  const [invalidErrors, setInvalidErrors] = useState({
     1: [],
     2: [],
     7: [],
@@ -43,8 +43,6 @@ export const ImportPage = () => {
     10: [],
     99: [],
     16: [],
-  });
-  const [invalidErrors, setInvalidErrors] = useState({
     8: [],
     11: [],
     12: [],
@@ -132,7 +130,6 @@ export const ImportPage = () => {
 
   const findAndFormatErrors = (data) => {
     var address_codes = Object.keys(addressErrors);
-    var missing_codes = Object.keys(missingErrors);
     var invalid_codes = Object.keys(invalidErrors);
     var exist_codes = Object.keys(existErrors);
 
@@ -142,8 +139,6 @@ export const ImportPage = () => {
         var code = entry["error_code"][k].toString();
         if (address_codes.includes(code)) {
           addToDict(addressErrors, setAddressErrors, code, i);
-        } else if (missing_codes.includes(code)) {
-          addToDict(missingErrors, setMissingErrors, code, i);
         } else if (invalid_codes.includes(code)) {
           addToDict(invalidErrors, setInvalidErrors, code, i);
         } else if (exist_codes.includes(code)) {
@@ -152,7 +147,6 @@ export const ImportPage = () => {
       }
     }
     console.log(addressErrors);
-    console.log(missingErrors);
     console.log(invalidErrors);
     console.log(existErrors);
 
@@ -168,21 +162,21 @@ export const ImportPage = () => {
       6: [],
     });
     setInvalidErrors({
+      1: [],
+      2: [],
+      7: [],
       8: [],
+      9: [],
+      10: [],
       11: [],
       12: [],
       14: [],
       15: [],
-    });
-    setMissingErrors({
-      1: [],
-      2: [],
-      7: [],
-      9: [],
-      10: [],
+      16: [],
       99: [],
       16: [],
     });
+
     setExistErrors({
       3: [],
       4: [],
@@ -272,8 +266,6 @@ export const ImportPage = () => {
             requiredColumns={requiredColumns}
             addressErrors={addressErrors}
             setAddressErrors={setAddressErrors}
-            missingErrors={missingErrors}
-            setMissingErrors={setMissingErrors}
             invalidErrors={invalidErrors}
             setInvalidErrors={setInvalidErrors}
             existErrors={existErrors}

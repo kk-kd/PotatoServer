@@ -532,23 +532,23 @@ export class BulkController {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           5
         );
-        // } else {
-        //   // 6 - Geo
-        //   // await q.add(async () => {
-        //   var loc;
-        //   try {
-        //     loc = await getLngLat(user.address);
-        //     console.log(loc);
-        //     userToReturn = { ...userToReturn, loc };
-        //   } catch (error) {
-        //     console.log(
-        //       `${user.email} failed to fetch location, error - ${error}`
-        //     );
-        //     if (!isAPIRequest) return false;
-        //     (
-        //       userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
-        //     ).push(6);
-        //   }
+        } else {
+          // 6 - Geo
+          // await q.add(async () => {
+          var loc;
+          try {
+            loc = await getLngLat(user.address);
+            console.log(loc);
+            userToReturn = { ...userToReturn, loc };
+          } catch (error) {
+            console.log(
+              `${user.email} failed to fetch location, error - ${error}`
+            );
+            if (!isAPIRequest) return false;
+            (
+              userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
+            ).push(6);
+          }
       }
 
       // 7 - Missing phone number

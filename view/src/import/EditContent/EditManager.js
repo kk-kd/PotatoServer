@@ -3,61 +3,50 @@ import {CssBaseline } from "@mui/material";
 import { useState } from "react";
 import { MapHelper } from "./MapHelper";
 
-export const EditManager = ({setSelectedIndex,complete, setComplete, errors, setErrors, message, errorDataSubset, setErrorDataSubset, fileData, setFileData, columns, editableColumns, rowValidation, isCellValid, showMap}) => {
+export const EditManager = ({setSelectedIndex, complete, setComplete, errors, setErrors, message, errorDataSubset, fileData, setFileData, columns, editableColumns, checkRow, checkCell}) => {
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
-    // maps
-    // const [mapApi, setMapApi] = useState();
-    // const [lat, setLat] = useState();
-    // const [lng, setLng] = useState();
-    
-    // const [map, setMap] = useState();
-    // const [apiLoaded, setApiLoaded] = useState(false);
-    // const [geocoder, setGeocoder] = useState();
-    // const [error, setError] = useState(null);
-    // const defaultProps = {
-    //     center: {
-    //     lat: 0,
-    //     lng: 0,
-    //     },
-    //     zoom: 13,
-    // };
-
-
-
-
-    // const checkCellAndMap = (val) => {
-    //     isCellValid 
-        
-    // }
-
     // called whenever an editable cell is changed, ONLY checks for validity and updatest the 'valid' key to display that the 
     // user has fixed the error. editedData is changed dynamically in EditableTable. 
-
     const updateEditedDataValid = (rowIndex, columnId, value) => {  
-
+        // change active address 
+        if (columnId === 'address') {
+            console.log('address set to ')
+            console.log(value)
+        }
+        
+        // update validity
         setEditedData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
+                
                 let copy = {...old[rowIndex], [columnId]: value}
 
-                let row_error = rowValidation(copy) // returns error string or '' and checks all validity except maps
+                let row_error = checkRow(copy) // returns error string or '' and checks all validity except maps
                 
-                // if (editableColumns.includes('address')) {
-                //     let address_error = check_map_and_update_address()
-                // } 
-                
-                if (!row_error) {
-                    return {
-                        ...copy,
-                        ['valid']: true,
-                    }
-                }
-                else {  
+                // if editing address and row address does not have a lat or lng, not valid
+                if ((editableColumns.includes('address') && columnId === 'address') && (!value.lat || !value.lng)) {
+                    console.log('no lat or lng')
                     return {
                         ...copy,
                         ['valid']: false,
+                    }
+                } 
+                
+                // if other row error, row is not valid
+                else if (row_error) {
+                    console.log(row_error)
+                    return {
+                        ...copy,
+                        ['valid']: false,
+                    }
+                }
+                // otherwsie, is valid
+                else {  
+                    return {
+                        ...copy,
+                        ['valid']: true,
                     }
                 }
             }
@@ -66,10 +55,10 @@ export const EditManager = ({setSelectedIndex,complete, setComplete, errors, set
         )
     } 
 
-    const updateEntry = (d, setD, ind, newD) => {
-        let c = d
-        c[ind] = newD;
-        setD(c)
+    const updateEntry = (d, setD, index, newDict) => {
+        let copy = d
+        copy[index] = newDict;
+        setD(copy)
     }
 
     // for list of entry objects. 
@@ -93,11 +82,15 @@ export const EditManager = ({setSelectedIndex,complete, setComplete, errors, set
         checkComplete() 
     }
 
-
     // called on row submission
     const submitRow = (ind, newRow) => {
         console.log(newRow)
-        if (!rowValidation(newRow)) {
+        if (!checkRow(newRow)) {
+            // when changed, address value is {'address': '', 'lat': 12, 'lng':31} and needs to be unpacked to get lat and lng keys
+            if (editableColumns.includes('address') && newRow['address']['lat']) {  
+                newRow['loc'] =  {'lat': newRow['address']['lat'], 'lng': newRow['address']['lng']}
+                newRow['address'] = newRow['address']['address']
+            }
             removeEntry(editedData, setEditedData, ind) // displayed subset
             removeError(ind) // errors.filter 
             updateEntry(fileData, setFileData, newRow['index'], newRow)
@@ -159,12 +152,10 @@ export const EditManager = ({setSelectedIndex,complete, setComplete, errors, set
                 submitRow={submitRow}
                 deleteRow = {deleteRow}
                 updateEditedDataValid={updateEditedDataValid}
-                rowValidation = {rowValidation}
-                isCellValid = {isCellValid}
+                checkRow = {checkRow}
+                isCellValid = {checkCell}
                 
              />}
-
-             {showMap && <MapHelper ></MapHelper>}
         </div>
 
     );
