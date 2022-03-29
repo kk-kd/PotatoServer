@@ -5,30 +5,77 @@
 // - must change elements in fileData with fixed entries 
 import React, { useEffect, useState } from "react"
 import { EditManager } from "../EditContent/EditManager"
+import { getOneUser } from "../../api/axios_wrapper"
+import { UserTable } from "./UserTable"
+import "./Error.css"
 
 export const DatabaseDuplicatePage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, existErrors, setExistErrors,processingComplete, setProcessingComplete, fileData, setFileData}) => {
     const [data, setData] = useState()
     const [complete, setComplete] = useState(false);
     const [edit, setEdit] = useState(false);
     const [selected, setSelected] = useState(false);
+    const [duplicatesToShow, setDuplicatesToShow]  = useState([]) 
+    const [duplicateIds, setDuplicateIds] = useState()
+    const [duplicateIndex, setDuplicateIndex] = useState()
+    const [duplicatesLoaded, setDuplicatesLoaded] = useState(false);
 
     const editableColumns = requiredColumns
 
-    // upon load, make tabular data from errors. 
+    const fetchUserDuplicates = async () => {
+        let dup_ids = duplicateIds[duplicateIndex]
+        let a = []
+        
+        console.log(dup_ids)
+        if (dup_ids) {
+            try {
+                for (let j = 0; j < dup_ids.length; j++) {
+                    const fetchedData = await getOneUser(dup_ids[j]).catch((error) => {
+                        let message = error.response.data;
+                        throw alert(message);
+                    });
+                    a.push(fetchedData.data);
+                    console.log("User from API Call:");
+                    console.log(fetchedData.data);
+                    setDuplicatesLoaded(true)
+                }
+                setDuplicatesToShow(a)
+            } catch (error) {
+              console.log(error);
+            }
+        }
+        
+      };
+
+    useEffect(()=> {
+        console.log("duplicate index changed")
+        fetchUserDuplicates();
+    }, [duplicateIndex])
+
+    // upon load, make tabular data from errors, and pull duplicates from database 
     useEffect(()=> {
         let errSet = new Set() // avoid duplicates!
+        let duplicateUserIds = []; 
     
        if (processingComplete) {
-           for (const [key, value] of Object.entries(existErrors)) {
-               for (let j = 0; j < value.length; j++) {
-                let ind = value[j] 
-                if (fileData[ind]) {
-                    let ent = fileData[ind]
-                    errSet.add(ent) 
-                }          
-               } 
-        }
+           for (const [k, v] of Object.entries(existErrors)) {
+               if (k !== 'key') { 
+                for (let j = 0; j < v.length; j++) {
+                     let ind = v[j]                  
+                     if (fileData[ind]) {
+                         console.log('adding')
+                         let ent = fileData[ind]
+                         duplicateUserIds.push(ent['hint_uids'])
+                         errSet.add(ent) 
+                     }          
+                } 
+
+               }
+              
+       }
        setData(Array.from(errSet));
+       setDuplicateIds(duplicateUserIds)
+       console.log(duplicateUserIds)
+       setDuplicateIndex(0)
        
        if (errSet.size === 0) {
            setComplete(true);
@@ -46,10 +93,9 @@ export const DatabaseDuplicatePage = ({checkRow, checkCell, columns, requiredCol
         delete data[i]
         setData(data)
     }  
-    console.log(fileData)
     setExistErrors({})
     setComplete(true);
-}
+   }
 
     return (
         <div> 
@@ -65,23 +111,33 @@ export const DatabaseDuplicatePage = ({checkRow, checkCell, columns, requiredCol
             }
 
         {((data) && (edit)) && 
-            <EditManager
-                message = {"Please Fix Entries"}
-                complete = {complete}
-                setComplete = {setComplete}
-                errors = {existErrors}
-                setErrors = {setExistErrors}
-                errorDataSubset = {data} 
-                setErrorDataSubset = {setData}
-                fileData = {fileData} 
-                setFileData = {setFileData}
-                columns = {columns}
-                editableColumns = {editableColumns}
-                rowValidation = {checkRow}
-                isCellValid = {checkCell}
-                showMap = {false}
+        <div>
+            {(!complete && duplicatesLoaded) && 
+                <div id = "duplicateContainer"> 
+                    <div> Similar User Already Exists </div>
+                    <UserTable displayData = {duplicatesToShow} ></UserTable>
+                </div>
+            }
 
-         />}
+             <EditManager
+             message = {"Please Fix Entries"}
+             complete = {complete}
+             setComplete = {setComplete}
+             errors = {existErrors}
+             setErrors = {setExistErrors}
+             errorDataSubset = {data} 
+             setErrorDataSubset = {setData}
+             fileData = {fileData} 
+             setFileData = {setFileData}
+             columns = {columns}
+             editableColumns = {editableColumns}
+             checkRow = {checkRow}
+             checkCell = {checkCell}
+             duplicateIndex = {duplicateIndex}
+             setDuplicateIndex = {setDuplicateIndex}
+          />
+        </div>  
+        }
 
         {complete && <div> 
              <h6> No Duplicate Errors Left! </h6>

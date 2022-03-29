@@ -3,18 +3,13 @@ import {CssBaseline } from "@mui/material";
 import { useState } from "react";
 import { MapHelper } from "./MapHelper";
 
-export const EditManager = ({setSelectedIndex, complete, setComplete, errors, setErrors, message, errorDataSubset, fileData, setFileData, columns, editableColumns, checkRow, checkCell}) => {
+export const EditManager = ({setSelectedIndex, complete, setComplete, errors, setErrors, message, errorDataSubset, fileData, setFileData, columns, editableColumns, checkRow, checkCell, duplicateIndex, setDuplicateIndex}) => {
 
     const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
 
     // called whenever an editable cell is changed, ONLY checks for validity and updatest the 'valid' key to display that the 
     // user has fixed the error. editedData is changed dynamically in EditableTable. 
     const updateEditedDataValid = (rowIndex, columnId, value) => {  
-        // change active address 
-        if (columnId === 'address') {
-            console.log('address set to ')
-            console.log(value)
-        }
         
         // update validity
         setEditedData(old =>
@@ -22,7 +17,7 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
             if (index === rowIndex) {
                 
                 let copy = {...old[rowIndex], [columnId]: value}
-
+ 
                 let row_error = checkRow(copy) // returns error string or '' and checks all validity except maps
                 
                 // if editing address and row address does not have a lat or lng, not valid
@@ -80,6 +75,10 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
         removeEntry(editedData, setEditedData, ind) // displayed subset
         removeError(ind)  
         checkComplete() 
+        console.log(duplicateIndex)
+        if (setDuplicateIndex) {
+            setDuplicateIndex(duplicateIndex + 1)
+        }
     }
 
     // called on row submission
@@ -95,6 +94,9 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
             removeError(ind) // errors.filter 
             updateEntry(fileData, setFileData, newRow['index'], newRow)
             checkComplete()
+            if (setDuplicateIndex) {
+                setDuplicateIndex(duplicateIndex + 1)
+            }
             console.log(editedData)
             console.log(fileData)
         }
