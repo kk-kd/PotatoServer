@@ -33,14 +33,14 @@ import { fontSize } from "@mui/system";
 export const UserForm = ({ role }) => {
   let navigate = useNavigate();
 
-  const action_text = "Make New Parent or Adminstrator";
+  const action_text = "Create New User";
 
   // user
   const [user, setUser] = useState({
     name: "",
     isAdmin: false,
     address: "",
-    role: "None",
+    role: "Parent",
     attachedSchools: [],
   });
 
@@ -81,11 +81,11 @@ export const UserForm = ({ role }) => {
       return { valid: false, error: "User Name Required" };
     } else if (!user.email) {
       return { valid: false, error: "Please provide a user email" };
-    } else if (!user.address) {
+    } else if (user.role === "Parent" && !user.address) {
       return { valid: false, error: "Please provide a user address" };
-    } else if (!addressValid) {
-      return { valid: false, error: "Please Validate User Address." };
-    } else if (!user.phoneNumber) {
+    } else if (user.role === "Parent" && !addressValid) {
+      return { valid: false, error: "The address is not valid." };
+    } else if (user.role === "Parent" && !user.phoneNumber) {
       return { valid: false, error: "Please provide a phone number" };
     }
     return { valid: true, error: "" };
@@ -177,12 +177,16 @@ export const UserForm = ({ role }) => {
   }, [students]);
 
   //maps
-  const checkMap = (e) => {
+  // const checkMap = () => {};
+
+  const eventCheckMap = async (e) => {
     e.preventDefault();
     if (apiLoaded) {
       searchLocation();
     }
+    return e;
   };
+
   const searchLocation = () => {
     mapApi.geocoder.geocode({ address: user.address }, (results, status) => {
       if (!user.address || user.address.trim().length === 0) {
@@ -218,9 +222,9 @@ export const UserForm = ({ role }) => {
       <h2 id="title"> {action_text} </h2>
 
       <div id="main_form">
-        <h5 id="sub-header"> Information </h5>
+        <h5 id="sub-header">Information</h5>
 
-        <label id="label-user"> Name </label>
+        <label id="label-user"> Name* </label>
         <input
           id="input-user"
           type="text"
@@ -229,7 +233,7 @@ export const UserForm = ({ role }) => {
           onChange={(e) => setUser({ ...user, fullName: e.target.value })}
         />
 
-        <label id="label-user"> Email </label>
+        <label id="label-user"> Email* </label>
         <input
           id="input-user"
           maxLength="100"
@@ -238,7 +242,10 @@ export const UserForm = ({ role }) => {
           onChange={(e) => setUser({ ...user, email: e.target.value })}
         />
 
-        <label id="label-user"> Phone Number </label>
+        <label id="label-user">
+          {" "}
+          {user.role === "Parent" ? "Phone Number*" : "Phone Number"}{" "}
+        </label>
         <input
           id="input-user"
           maxLength="100"
@@ -247,17 +254,21 @@ export const UserForm = ({ role }) => {
           onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
         />
 
-        <label id="label-user"> Address {addressValid} </label>
-        <input
-          id="input-user"
-          maxLength="100"
-          type="text"
-          value={user.address}
-          onChange={(e) => {
-            setUser({ ...user, address: e.target.value });
-            setAddressValid(false);
-          }}
-        />
+        {user.role === "Parent" && (
+          <div>
+            <label id="label-user"> Address* {addressValid} </label>
+            <input
+              id="input-user"
+              maxLength="100"
+              type="text"
+              value={user.address}
+              onChange={(e) => {
+                setUser({ ...user, address: e.target.value });
+                setAddressValid(false);
+              }}
+            />
+          </div>
+        )}
 
         {role === "Admin" && (
           <>
@@ -267,7 +278,7 @@ export const UserForm = ({ role }) => {
               value={user.role}
               onChange={(e) => setUser({ ...user, role: e.target.value })}
             >
-              <option value="None">None</option>
+              <option value="Parent">Parent</option>
               <option value="Driver">Driver</option>
               <option value="School Staff">School Staff</option>
               <option value="Admin">Admin</option>
@@ -369,70 +380,81 @@ export const UserForm = ({ role }) => {
           />
         )}
 
-        <p> </p>
-        <div>
-          <h5 id="sub-header"> Students </h5>
+        {user.role === "Parent" && (
+          <div>
+            <p> </p>
+            <div>
+              <h5 id="sub-header"> Students </h5>
 
-          <Box
-            sx={{
-              width: "100%",
-              maxWidth: 360,
-              bgcolor: "background.paper",
-              margin: "auto",
-              marginTop: "10px",
-            }}
-          >
-            <List
-              dense
-              sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
-            >
-              {students.map((student) => {
-                const labelId = `checkbox-list-secondary-label-${student.studentid}`;
-                return (
-                  <ListItem
-                    key={student.studentid}
-                    secondaryAction={
-                      <IconButton
-                        aria-label="delete"
-                        style={{ backgroundColor: "transparent" }}
-                      >
-                        <DeleteIcon
-                          onClick={(e) => {
-                            let filtered = students.filter(function (el) {
-                              return el.studentid != student.studentid;
-                            });
-                            setStudents(filtered);
-                          }}
-                        />
-                      </IconButton>
-                    }
-                    disablePadding
-                  >
-                    <ListItemButton
-                      onClick={(e) => {
-                        setSelectedStudent(student);
-                      }}
-                    >
-                      <PersonIcon> </PersonIcon>
-                      <ListItemText id={labelId} primary={student.fullName} />
-                    </ListItemButton>
-                  </ListItem>
-                );
-              })}
-
-              <ListItem key={"-1"} disablePadding>
-                <ListItemButton
-                  onClick={(e) => {
-                    setMakeStudent(true);
+              <Box
+                sx={{
+                  width: "100%",
+                  maxWidth: 360,
+                  bgcolor: "background.paper",
+                  margin: "auto",
+                  marginTop: "10px",
+                }}
+              >
+                <List
+                  dense
+                  sx={{
+                    width: "100%",
+                    maxWidth: 360,
+                    bgcolor: "background.paper",
                   }}
                 >
-                  <PersonAddIcon />
-                  <ListItemText primary={"Add New Student"} />
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </Box>
-        </div>
+                  {students.map((student) => {
+                    const labelId = `checkbox-list-secondary-label-${student.studentid}`;
+                    return (
+                      <ListItem
+                        key={student.studentid}
+                        secondaryAction={
+                          <IconButton
+                            aria-label="delete"
+                            style={{ backgroundColor: "transparent" }}
+                          >
+                            <DeleteIcon
+                              onClick={(e) => {
+                                let filtered = students.filter(function (el) {
+                                  return el.studentid != student.studentid;
+                                });
+                                setStudents(filtered);
+                              }}
+                            />
+                          </IconButton>
+                        }
+                        disablePadding
+                      >
+                        <ListItemButton
+                          onClick={(e) => {
+                            setSelectedStudent(student);
+                          }}
+                        >
+                          <PersonIcon> </PersonIcon>
+                          <ListItemText
+                            id={labelId}
+                            primary={student.fullName}
+                          />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
+
+                  <ListItem key={"-1"} disablePadding>
+                    <ListItemButton
+                      onClick={(e) => {
+                        setMakeStudent(true);
+                      }}
+                    >
+                      <PersonAddIcon />
+                      <ListItemText primary={"Add New Student"} />
+                    </ListItemButton>
+                  </ListItem>
+                </List>
+              </Box>
+            </div>
+          </div>
+        )}
 
         {makeStudent && (
           <div id="sub-form">
@@ -453,13 +475,16 @@ export const UserForm = ({ role }) => {
         )}
 
         <div>
-          <button
-            style={{ display: "in-line block", margin: "20px" }}
-            onClick={(e) => checkMap(e)}
-          >
-            {" "}
-            {addressValid ? "Address Valid!" : "Validate Address"}{" "}
-          </button>
+          {user.role === "Parent" && (
+            <button
+              style={{ display: "in-line block", margin: "20px" }}
+              onClick={(e) => eventCheckMap(e)}
+            >
+              {" "}
+              {addressValid ? "Address Valid!" : "Validate Address"}{" "}
+            </button>
+          )}
+
           <button
             style={{ display: "in-line block", margin: "20px" }}
             className="button"
@@ -473,22 +498,26 @@ export const UserForm = ({ role }) => {
           </button>
         </div>
       </div>
-      <div id="map">
-        {error && <div>{error}</div>}
-        <div style={{ height: "50vh", width: "80%", display: "inline-block" }}>
-          <GoogleMapReact
-            bootstrapURLKeys={{
-              key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`,
-            }}
-            defaultCenter={defaultProps.center}
-            defaultZoom={defaultProps.zoom}
-            yesIWantToUseGoogleMapApiInternals
-            onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+      {user.role === "Parent" && (
+        <div id="map">
+          {error && <div>{error}</div>}
+          <div
+            style={{ height: "50vh", width: "80%", display: "inline-block" }}
           >
-            <Marker text="Your Address" lat={lat} lng={lng} isUser />
-          </GoogleMapReact>
+            <GoogleMapReact
+              bootstrapURLKeys={{
+                key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`,
+              }}
+              defaultCenter={defaultProps.center}
+              defaultZoom={defaultProps.zoom}
+              yesIWantToUseGoogleMapApiInternals
+              onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+            >
+              <Marker text="Your Address" lat={lat} lng={lng} isUser />
+            </GoogleMapReact>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
