@@ -2,11 +2,9 @@ import "./UserForm.css";
 import GoogleMapReact from "google-map-react";
 import { useEffect, useState, useMemo } from "react";
 import { Marker } from "../map/Marker";
-import { registerUser, saveStudent } from "../api/axios_wrapper";
-import { Link, use, useNavigate, useParams } from "react-router-dom";
-import { Users } from "./Users";
+import { saveStudent } from "../api/axios_wrapper";
+import { useNavigate, useParams } from "react-router-dom";
 import {
-  filterAllUsers,
   filterAllSchools,
   getOneUser,
   createUser,
@@ -21,25 +19,19 @@ import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
 import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import FolderIcon from "@mui/icons-material/Folder";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PersonIcon from "@mui/icons-material/Person";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { ListItemButton } from "@mui/material";
-import Divider from "@mui/material/Divider";
 import CloseIcon from "@mui/icons-material/Close";
-import { fontSize } from "@mui/system";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircleExclamation,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import ReactTooltip from "react-tooltip";
-
 // this functions as the user edit and detail pages.
 
 export const UserInfo = ({ edit, role, uid }) => {
@@ -51,9 +43,10 @@ export const UserInfo = ({ edit, role, uid }) => {
 
   // user
   const [user, setUser] = useState({
-    fullName: "",
-    isAdmin: false,
+    name: "",
     address: "",
+    role: "",
+    attachedSchools: [],
   });
 
   const [students, setStudents] = useState([]);
@@ -92,9 +85,7 @@ export const UserInfo = ({ edit, role, uid }) => {
   const [mapApi, setMapApi] = useState();
   const [lat, setLat] = useState();
   const [lng, setLng] = useState();
-  const [map, setMap] = useState();
   const [apiLoaded, setApiLoaded] = useState(false);
-  const [geocoder, setGeocoder] = useState();
   const [error, setError] = useState(null);
   const defaultProps = {
     center: {
@@ -112,14 +103,14 @@ export const UserInfo = ({ edit, role, uid }) => {
 
   const validate_user_entries = () => {
     if (!user.fullName) {
-      return { valid: false, error: "User First Name and Last Name Required" };
+      return { valid: false, error: "User Name Required" };
     } else if (!user.email) {
       return { valid: false, error: "Please provide a user email" };
-    } else if (!user.address) {
+    } else if (user.role === "Parent" && !user.address) {
       return { valid: false, error: "Please provide a user address" };
-    } else if (!addressValid) {
-      return { valid: false, error: "Please Validate User Address." };
-    } else if (!user.phoneNumber) {
+    } else if (user.role === "Parent" && !addressValid) {
+      return { valid: false, error: "The address is not valid." };
+    } else if (user.role === "Parent" && !user.phoneNumber) {
       return { valid: false, error: "Please provide a phone number" };
     }
     return { valid: true, error: "" };
@@ -128,13 +119,13 @@ export const UserInfo = ({ edit, role, uid }) => {
   const handleUserFormSubmit = (e) => {
     let valid_results = validate_user_entries();
     if (valid_results.valid) {
-      UpdateUser(e, students);
+      UpdateUser(e);
     } else {
       alert(valid_results.error);
     }
   };
 
-  async function UpdateUser(e, studentsList) {
+  async function UpdateUser(e) {
     if (e) {
       e.preventDefault(); // prevents page reload on submission
     }
@@ -266,7 +257,7 @@ export const UserInfo = ({ edit, role, uid }) => {
   const deleteable =
     role === "Admin" ||
     (role === "School Staff" &&
-      user.role === "None" &&
+      user.role === "Parent" &&
       !students.some(
         (student) =>
           !staffSchools.some((school) => school.uid === student.school.uid)
@@ -293,19 +284,17 @@ export const UserInfo = ({ edit, role, uid }) => {
     console.log("user loaded = " + userLoaded);
     console.log("address = " + user.address);
     if (apiLoaded && userLoaded && user.address) {
-      checkMap(null);
+      eventCheckMap(null);
     }
   }, [apiLoaded, userLoaded]);
 
   //maps
-  const checkMap = (e) => {
-    if (e) {
-      e.preventDefault();
-    }
-    console.log(apiLoaded);
+  const eventCheckMap = async (e) => {
+    e.preventDefault();
     if (apiLoaded) {
       searchLocation();
     }
+    return e;
   };
 
   const searchLocation = () => {
@@ -332,6 +321,7 @@ export const UserInfo = ({ edit, role, uid }) => {
       }
     });
   };
+
   const handleApiLoaded = (map, maps) => {
     const geocoder = new maps.Geocoder();
     setMapApi({ geocoder: geocoder, map: map });
@@ -471,18 +461,22 @@ export const UserInfo = ({ edit, role, uid }) => {
           onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
         />
 
-        <label id="label-user"> Address {addressValid} </label>
-        <input
-          id="input-user"
-          maxLength="100"
-          disabled={!editable}
-          type="text"
-          value={user.address}
-          onChange={(e) => {
-            setUser({ ...user, address: e.target.value });
-            setAddressValid(false);
-          }}
-        />
+        {user.role === "Parent" && (
+          <div>
+            <label id="label-user"> Address {addressValid} </label>
+            <input
+              id="input-user"
+              maxLength="100"
+              disabled={!editable}
+              type="text"
+              value={user.address}
+              onChange={(e) => {
+                setUser({ ...user, address: e.target.value });
+                setAddressValid(false);
+              }}
+            />
+          </div>
+        )}
 
         <label id="label-user"> Role </label>
         <select
@@ -491,10 +485,11 @@ export const UserInfo = ({ edit, role, uid }) => {
           onChange={(e) => setUser({ ...user, role: e.target.value })}
           disabled={!editable || role !== "Admin" || user.uid === uid}
         >
-          <option value="None">None</option>
+          <option value="Parent">Parent</option>
           <option value="Driver">Driver</option>
           <option value="School Staff">School Staff</option>
           <option value="Admin">Admin</option>
+          <option value="Student">Student</option>
         </select>
 
         {user.role === "School Staff" && (
@@ -517,7 +512,8 @@ export const UserInfo = ({ edit, role, uid }) => {
                   <ListItem
                     key={school.uid}
                     secondaryAction={
-                      (editable && role === "Admin") && (
+                      editable &&
+                      role === "Admin" && (
                         <IconButton
                           aria-label="delete"
                           style={{ backgroundColor: "transparent" }}
@@ -542,7 +538,7 @@ export const UserInfo = ({ edit, role, uid }) => {
                 );
               })}
 
-              {(editable && role === "Admin") && (
+              {editable && role === "Admin" && (
                 <ListItem key={"-1"} disablePadding>
                   <ListItemButton
                     onClick={(e) => {
@@ -598,13 +594,15 @@ export const UserInfo = ({ edit, role, uid }) => {
         <p> </p>
         {editable && (
           <div>
-            <button
-              style={{ display: "in-line block", margin: "20px" }}
-              onClick={(e) => checkMap(e)}
-            >
-              {" "}
-              {addressValid ? "Address Valid!" : "Validate Address"}{" "}
-            </button>
+            {user.role === "Parent" && (
+              <button
+                style={{ display: "in-line block", margin: "20px" }}
+                onClick={(e) => eventCheckMap(e)}
+              >
+                {" "}
+                {addressValid ? "Address Valid!" : "Validate Address"}{" "}
+              </button>
+            )}
             <button
               style={{ display: "in-line block", margin: "20px" }}
               className="button"
@@ -618,93 +616,106 @@ export const UserInfo = ({ edit, role, uid }) => {
             </button>
           </div>
         )}
-        <div>
-          <p> </p>
-          <p> </p>
-          <p> </p>
-          <p> </p>
-          <h5 id="sub-header"> Students </h5>
-          <p> </p>
-          <p> </p>
-          <p> </p>
-          <table {...getTableProps()} class="table table-striped">
-            <thead class="thead-dark">
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <th
-                      {...column.getHeaderProps()}
-                      style={{
-                        borderBottom: "solid 3px black",
-                        background: "white",
-                        color: "black",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {column.render("Header")}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row);
-              return (
-                  <tr {...row.getRowProps()} onClick={() => navigate(`/Students/info/${row.original.uid}`)}>
-                    {row.cells.map((cell) => {
-                      return (
-                          <td {...cell.getCellProps()} style={{ cursor: "pointer" }}>{cell.render("Cell")}</td>
-                      );
-                    })}
+        {user.role === "Parent" && (
+          <div>
+            <p> </p>
+            <p> </p>
+            <p> </p>
+            <p> </p>
+
+            <h5 id="sub-header"> Students </h5>
+            <p> </p>
+            <p> </p>
+            <p> </p>
+            <table {...getTableProps()} class="table table-striped">
+              <thead class="thead-dark">
+                {headerGroups.map((headerGroup) => (
+                  <tr {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map((column) => (
+                      <th
+                        {...column.getHeaderProps()}
+                        style={{
+                          borderBottom: "solid 3px black",
+                          background: "white",
+                          color: "black",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {column.render("Header")}
+                      </th>
+                    ))}
                   </tr>
-              );
-            })}
-            </tbody>
-          </table>
+                ))}
+              </thead>
+              <tbody {...getTableBodyProps()}>
+                {rows.map((row) => {
+                  prepareRow(row);
+                  return (
+                    <tr
+                      {...row.getRowProps()}
+                      onClick={() =>
+                        navigate(`/Students/info/${row.original.uid}`)
+                      }
+                    >
+                      {row.cells.map((cell) => {
+                        return (
+                          <td
+                            {...cell.getCellProps()}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {cell.render("Cell")}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
 
-          {students.length === 0 && (
-            <div>
-              <p>
-                {" "}
-                There are no students associated with this account.{" "}
-                {editable ? "" : "Click Edit to Add a Student."}{" "}
-              </p>
-            </div>
-          )}
+            {students.length === 0 && (
+              <div>
+                <p>
+                  {" "}
+                  There are no students associated with this account.{" "}
+                  {editable ? "" : "Click Edit to Add a Student."}{" "}
+                </p>
+              </div>
+            )}
 
-          {editable && (
-            <Box
-              sx={{
-                width: "100%",
-                maxWidth: 360,
-                bgcolor: "background.paper",
-                margin: "auto",
-                marginTop: "10px",
-              }}
-            >
-              <List
-                dense
+            {editable && (
+              <Box
                 sx={{
                   width: "100%",
                   maxWidth: 360,
                   bgcolor: "background.paper",
+                  margin: "auto",
+                  marginTop: "10px",
                 }}
               >
-                <ListItem key={"-1"} disablePadding>
-                  <ListItemButton
-                    onClick={(e) => {
-                      setMakeStudent(true);
-                    }}
-                  >
-                    <PersonAddIcon />
-                    <ListItemText primary={"Add New Student"} />
-                  </ListItemButton>
-                </ListItem>
-              </List>
-            </Box>
-          )}
-        </div>
+                <List
+                  dense
+                  sx={{
+                    width: "100%",
+                    maxWidth: 360,
+                    bgcolor: "background.paper",
+                  }}
+                >
+                  <ListItem key={"-1"} disablePadding>
+                    <ListItemButton
+                      onClick={(e) => {
+                        setMakeStudent(true);
+                      }}
+                    >
+                      <PersonAddIcon />
+                      <ListItemText primary={"Add New Student"} />
+                    </ListItemButton>
+                  </ListItem>
+                </List>
+              </Box>
+            )}
+          </div>
+        )}
 
         {makeStudent && (
           <div id="sub-form">
@@ -725,22 +736,26 @@ export const UserInfo = ({ edit, role, uid }) => {
         )}
       </div>
 
-      <div id="map">
-        {error && <div>{error}</div>}
-        <div style={{ height: "50vh", width: "80%", display: "inline-block" }}>
-          <GoogleMapReact
-            bootstrapURLKeys={{
-              key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`,
-            }}
-            defaultCenter={defaultProps.center}
-            defaultZoom={defaultProps.zoom}
-            yesIWantToUseGoogleMapApiInternals
-            onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+      {user.role === "Parent" && (
+        <div id="map">
+          {error && <div>{error}</div>}
+          <div
+            style={{ height: "50vh", width: "80%", display: "inline-block" }}
           >
-            <Marker text="Your Address" lat={lat} lng={lng} isUser />
-          </GoogleMapReact>
+            <GoogleMapReact
+              bootstrapURLKeys={{
+                key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`,
+              }}
+              defaultCenter={defaultProps.center}
+              defaultZoom={defaultProps.zoom}
+              yesIWantToUseGoogleMapApiInternals
+              onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+            >
+              <Marker text="Your Address" lat={lat} lng={lng} isUser />
+            </GoogleMapReact>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
