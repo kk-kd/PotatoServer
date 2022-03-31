@@ -38,7 +38,6 @@ export const UserForm = ({ role }) => {
   // user
   const [user, setUser] = useState({
     name: "",
-    isAdmin: false,
     address: "",
     role: "Parent",
     attachedSchools: [],
@@ -59,9 +58,7 @@ export const UserForm = ({ role }) => {
   const [mapApi, setMapApi] = useState();
   const [lat, setLat] = useState();
   const [lng, setLng] = useState();
-  const [map, setMap] = useState();
   const [apiLoaded, setApiLoaded] = useState(false);
-  const [geocoder, setGeocoder] = useState();
   const [error, setError] = useState(null);
   const defaultProps = {
     center: {
@@ -177,8 +174,6 @@ export const UserForm = ({ role }) => {
   }, [students]);
 
   //maps
-  // const checkMap = () => {};
-
   const eventCheckMap = async (e) => {
     e.preventDefault();
     if (apiLoaded) {
