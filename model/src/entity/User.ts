@@ -6,6 +6,7 @@ import {
   OneToMany,
   ManyToMany,
 } from "typeorm";
+import { Run } from "./Run";
 import { School } from "./School";
 import { Student } from "./Student";
 
@@ -62,4 +63,10 @@ export class User {
     nullable: true,
   })
   phoneNumber: string;
+
+  @OneToMany(() => Run, (run) => run.driver, {
+    cascade: true,
+    eager: true
+  })
+  runs: Run[];
 }
