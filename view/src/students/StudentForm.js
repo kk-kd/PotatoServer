@@ -149,7 +149,7 @@ export const StudentForm = ({ addStudentToUser }) => {
       {addStudentToUser && <h4 id="subtitle"> {action_text} </h4>}
       {!addStudentToUser && <h2 id="title"> {action_text} </h2>}
 
-      <label id="input-label-student"> Name: </label>
+      <label id="input-label-student"> Name* </label>
       <input
         id="input-input-student"
         type="text"
@@ -158,7 +158,7 @@ export const StudentForm = ({ addStudentToUser }) => {
         onChange={(e) => setStudent({ ...student, fullName: e.target.value })}
       />
 
-      <label id="input-label-student"> Email (optional): </label>
+      <label id="input-label-student"> Email </label>
       <input
         id="input-input-student"
         type="text"
@@ -169,7 +169,7 @@ export const StudentForm = ({ addStudentToUser }) => {
 
       <label id="input-label-student" for="lastName">
         {" "}
-        Student ID:{" "}
+        Student ID{" "}
       </label>
       <input
         id="input-input-student"
