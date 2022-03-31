@@ -2,13 +2,14 @@ import { StepButtons } from "../StepNavigation/StepButtons";
 import { AddressErrorPage } from "../ErrorPages/AddressErrorPage";
 import { InvalidErrorPage } from "../ErrorPages/InvalidErrorPage";
 import { DatabaseDuplicatePage } from "../ErrorPages/DatabaseDuplicatePage";
+import { InputDuplicatePage } from "../ErrorPages/InputDuplicatePage";
 import { useEffect, useState } from "react";
 import React from "react";
 import {
   CheckStudentRow,
   CheckParentRow,
-  CheckStudentCell, 
-  CheckParentCell
+  CheckStudentCell,
+  CheckParentCell,
 } from "../Validation/ValidationUtils";
 
 export const ValidateStep = ({
@@ -50,13 +51,12 @@ export const ValidateStep = ({
     if (dataType === "students") {
       return CheckStudentCell(col, val, users, schools, emails, schoolNames);
     } else if (dataType === "parents") {
-      if (col === 'address') {
-        console.log(val)
-        if (!val || !val['address']) {
-          return 'No Address Selected'
-        }
-        else {
-          return ''
+      if (col === "address") {
+        console.log(val);
+        if (!val || !val["address"]) {
+          return "No Address Selected";
+        } else {
+          return "";
         }
       }
       return CheckParentCell(col, val, users, schools, emails, schoolNames);
@@ -86,42 +86,42 @@ export const ValidateStep = ({
     []
   );
 
-    const parentColumns = React.useMemo(
-        () => [
-          {
-            Header: 'Name',
-            accessor: 'name',
-          },
-          {
-            Header: 'Email',
-            accessor: 'email',
-          },
-          {
-            Header: 'Address',
-            accessor: 'address',
-          },
-          {
-            Header: 'Phone Number',
-            accessor: 'phone_number',
-          },
-          {
-            Header: '',
-            accessor: 'loc',
-            Cell: ({ row}) => (<div></div>)}
-        ],
-        []
-    )
-    useEffect(()=> {
-        if (dataType=== 'students') {
-            setColumns(studentColumns)
-        }
-        else {
-            setColumns(parentColumns)
-        }
-    }, [])
-  
-    useEffect(() => {
-    if (activeError === 3) {
+  const parentColumns = React.useMemo(
+    () => [
+      {
+        Header: "Name",
+        accessor: "name",
+      },
+      {
+        Header: "Email",
+        accessor: "email",
+      },
+      {
+        Header: "Address",
+        accessor: "address",
+      },
+      {
+        Header: "Phone Number",
+        accessor: "phone_number",
+      },
+      {
+        Header: "",
+        accessor: "loc",
+        Cell: ({ row }) => <div></div>,
+      },
+    ],
+    []
+  );
+  useEffect(() => {
+    if (dataType === "students") {
+      setColumns(studentColumns);
+    } else {
+      setColumns(parentColumns);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activeError === 4) {
       setValid(true);
     }
   }, [activeError]);
@@ -130,38 +130,38 @@ export const ValidateStep = ({
     <div>
       {activeError === 0 && (
         <InvalidErrorPage
-        checkRow={checkRow}
-        checkCell={checkCell}
-        columns={columns}
-        dataType={dataType}
-        requiredColumns={requiredColumns}
-        activeError={activeError}
-        setActiveError={setActiveError}
-        invalidErrors={invalidErrors}
-        setInvalidErrors={setInvalidErrors}
-        processingComplete={processingComplete}
-        setProcessingComplete={setProcessingComplete}
-        fileData={fileData}
-        setFileData={setFileData}
-      />
+          checkRow={checkRow}
+          checkCell={checkCell}
+          columns={columns}
+          dataType={dataType}
+          requiredColumns={requiredColumns}
+          activeError={activeError}
+          setActiveError={setActiveError}
+          invalidErrors={invalidErrors}
+          setInvalidErrors={setInvalidErrors}
+          processingComplete={processingComplete}
+          setProcessingComplete={setProcessingComplete}
+          fileData={fileData}
+          setFileData={setFileData}
+        />
       )}
 
       {activeError === 1 && (
-                <AddressErrorPage
-                checkRow={checkRow}
-                checkCell={checkCell}
-                columns={columns}
-                dataType={dataType}
-                requiredColumns={['address']}
-                activeError={activeError}
-                setActiveError={setActiveError}
-                addressErrors={addressErrors}
-                setAddressErrors={setAddressErrors}
-                processingComplete={processingComplete}
-                setProcessingComplete={setProcessingComplete}
-                fileData={fileData}
-                setFileData={setFileData}
-              />
+        <AddressErrorPage
+          checkRow={checkRow}
+          checkCell={checkCell}
+          columns={columns}
+          dataType={dataType}
+          requiredColumns={["address"]}
+          activeError={activeError}
+          setActiveError={setActiveError}
+          addressErrors={addressErrors}
+          setAddressErrors={setAddressErrors}
+          processingComplete={processingComplete}
+          setProcessingComplete={setProcessingComplete}
+          fileData={fileData}
+          setFileData={setFileData}
+        />
       )}
 
       {activeError === 2 && (
@@ -181,8 +181,25 @@ export const ValidateStep = ({
           setFileData={setFileData}
         />
       )}
+      {activeError === 3 && (
+        <InputDuplicatePage
+          checkRow={checkRow}
+          checkCell={checkCell}
+          columns={columns}
+          dataType={dataType}
+          requiredColumns={requiredColumns}
+          activeError={activeError}
+          setActiveError={setActiveError}
+          existErrors={existErrors}
+          setExistErrors={setExistErrors}
+          processingComplete={processingComplete}
+          setProcessingComplete={setProcessingComplete}
+          fileData={fileData}
+          setFileData={setFileData}
+        />
+      )}
 
-      {activeError === 3 && <h6>All Errors Fixed!</h6>}
+      {activeError === 4 && <h6>All Errors Fixed!</h6>}
 
       <StepButtons
         nextButtonValid={valid}
