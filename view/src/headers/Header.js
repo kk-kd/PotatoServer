@@ -3,7 +3,8 @@ import { LogOut } from "./../login/LogOut";
 import { TableLinks } from "./TableLinks";
 
 export const Header = ({ setLoggedIn, role }) => {
-  const anyRights = role === "School Staff" || role === "Admin" || role === "Driver";
+  const anyRights =
+    role === "School Staff" || role === "Admin" || role === "Driver";
   const emailRights = role === "School Staff" || role === "Admin";
   return (
     <div className="Header">
@@ -31,11 +32,7 @@ export const Header = ({ setLoggedIn, role }) => {
         <TableLinks hash="Schools" link="Schools/list" display="Schools" />
       )}
       {anyRights && (
-        <TableLinks
-          hash="Users"
-          link="Users/list"
-          display="Parents & Administrators "
-        />
+        <TableLinks hash="Users" link="Users/list" display="Users" />
       )}
       {anyRights && (
         <TableLinks hash="Students" link="Students/list" display="Students" />
@@ -44,8 +41,12 @@ export const Header = ({ setLoggedIn, role }) => {
         <TableLinks hash="Routes" link="Routes/list" display="Routes" />
       )}
       {emailRights && (
-        <TableLinks hash="Import" link="Import/upload" display="Import Account Info"/>)
-      }
+        <TableLinks
+          hash="Import"
+          link="Import/upload"
+          display="Import Account Info"
+        />
+      )}
 
       {emailRights && (
         <TableLinks
