@@ -23,11 +23,6 @@ export const Header = ({ setLoggedIn, role }) => {
       </div>
 
       <TableLinks hash="MyStudents" link="MyStudents" display="My Students" />
-      <TableLinks
-        hash="ChangeMyPassword"
-        link="ChangeMyPassword"
-        display="Change Password"
-      />
       {anyRights && (
         <TableLinks hash="Schools" link="Schools/list" display="Schools" />
       )}
@@ -55,6 +50,11 @@ export const Header = ({ setLoggedIn, role }) => {
           display="Send Announcement"
         />
       )}
+      <TableLinks
+        hash="ChangeMyPassword"
+        link="ChangeMyPassword"
+        display="Change Password"
+      />
       <LogOut setLoggedIn={setLoggedIn} />
     </div>
   );

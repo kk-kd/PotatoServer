@@ -33,7 +33,7 @@ import { fontSize } from "@mui/system";
 export const UserForm = ({ role }) => {
   let navigate = useNavigate();
 
-  const action_text = "Create New User";
+  const action_text = "Create New Parent, Administrator, or School Staff";
 
   // user
   const [user, setUser] = useState({
@@ -113,7 +113,6 @@ export const UserForm = ({ role }) => {
     let valid_results = validate_user_entries();
     if (valid_results.valid) {
       CreateUser(e);
-      console.log("Make New User");
     } else {
       alert(valid_results.error);
     }
