@@ -185,19 +185,6 @@ export const ImportPage = () => {
     setActiveStep(0);
   };
 
-  {
-    activeStep === 3 && (
-      <div id="step">
-        <SubmitStep
-          dataType={dataType}
-          resetState={resetState}
-          fileData={fileData}
-          setFileData={setFileData}
-        />
-      </div>
-    );
-  }
-
   async function callValidate(validation_input) {
     try {
       if (dataType === "students") {
