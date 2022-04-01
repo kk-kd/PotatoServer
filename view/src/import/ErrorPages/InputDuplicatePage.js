@@ -50,27 +50,56 @@ export const InputDuplicatePage = ({
   useEffect(() => {
     let duplicateEmailMap = {}; // duplicateEmailMap contains a key of the email to the indicies where it's duplicated.
     // example, {"example@gmail.com": [2, 3]} indicates that example@gmail.com appears at index 2 and 3
+    let duplicateNameMap = {}; // duplicateNameMap contains a key of the name to the indicies where it's duplicated.
+    // example, {"Mega": [2, 3, 7]} indicates that Mega appears at index 2, 3 and 7
     // this is only used in the case of parents: if duplicate emails are registered, we have a problem.
     let duplicateRowMap = {}; // duplicateRowMap contains a key of the row to the indicies where it's duplicated.
     // example, {{1:"email": "example@gmail.com", "student_id...": [2, 3, 5]} indicates that example@gmail.com appears at index 2 and 3 and 5
+
     // populating duplicateRowMap
     var fileDataClone = JSON.parse(JSON.stringify(fileData));
+    // Delete index from our copy of fileData so we can compare just the data to others.
+
+    for (let i = 0; i < fileDataClone.length; i++) {
+      fileDataClone[i].index = 0;
+    }
+
+    let alreadyFoundRowCopyIndicies = [];
+    for (let i = 0; i < fileData.length; i++) {
+      for (let j = 0; j < fileData.length; j++) {
+        if (
+          i !== j &&
+          i < j &&
+          !alreadyFoundRowCopyIndicies.includes(j) &&
+          JSON.stringify(fileDataClone[i]) === JSON.stringify(fileDataClone[j])
+        ) {
+          var duplicateList =
+            duplicateRowMap[fileData[i].index] ??
+            (duplicateRowMap[fileData[i].index] = []);
+          duplicateList.push(j);
+          alreadyFoundRowCopyIndicies.push(j);
+          duplicateRowMap[fileData[i].index] = duplicateList;
+          /*  (duplicateRowMap[fileData[i].index] ?? (duplicateRowMap[fileData[i].index] = [])).push(j); */
+        }
+      }
+    }
+    // populating duplicateEmailMap
+    let alreadyFoundEmailIndicies = [];
     if (dataType === "parents") {
-      let alreadyFoundIndiciesForEmail = [];
       for (let i = 0; i < fileData.length; i++) {
-        console.log(i);
         for (let j = 0; j < fileData.length; j++) {
           if (
             i !== j &&
             i < j &&
-            !alreadyFoundIndiciesForEmail.includes(j) &&
+            !alreadyFoundRowCopyIndicies.includes(j) &&
+            !alreadyFoundEmailIndicies.includes(j) &&
             fileData[i].email === fileDataClone[j].email
           ) {
             var duplicateListEmail =
               duplicateEmailMap[fileData[i].email] ??
               (duplicateEmailMap[fileData[i].email] = [i]);
             duplicateListEmail.push(j);
-            alreadyFoundIndiciesForEmail.push(j);
+            alreadyFoundEmailIndicies.push(j);
             duplicateEmailMap[fileData[i].email] = duplicateListEmail;
 
             /*  (duplicateRowMap[fileData[i].index] ?? (duplicateRowMap[fileData[i].index] = [])).push(j); */
@@ -78,32 +107,24 @@ export const InputDuplicatePage = ({
         }
       }
     }
-    console.log(duplicateEmailMap);
 
-    // Delete index from our copy of fileData so we can compare just the data to others.
-
-    for (let i = 0; i < fileDataClone.length; i++) {
-      fileDataClone[i].index = 0;
-    }
-
-    let alreadyFoundIndicies = [];
+    let alreadyFoundNameIndicies = [];
     for (let i = 0; i < fileData.length; i++) {
-      console.log(i);
       for (let j = 0; j < fileData.length; j++) {
         if (
           i !== j &&
           i < j &&
-          !alreadyFoundIndicies.includes(j) &&
-          JSON.stringify(fileDataClone[i]) === JSON.stringify(fileDataClone[j])
+          !alreadyFoundNameIndicies.includes(j) &&
+          !alreadyFoundRowCopyIndicies.includes(j) &&
+          fileData[i].name === fileData[j].name
         ) {
-          //double check the right index
-          var duplicateList =
-            duplicateRowMap[fileData[i].index] ??
-            (duplicateRowMap[fileData[i].index] = []);
-          duplicateList.push(j);
-          alreadyFoundIndicies.push(j);
-          duplicateRowMap[fileData[i].index] = duplicateList;
-          /*  (duplicateRowMap[fileData[i].index] ?? (duplicateRowMap[fileData[i].index] = [])).push(j); */
+          var duplicateListForName =
+            duplicateNameMap[fileData[i].name] ??
+            (duplicateNameMap[fileData[i].name] = []);
+          duplicateListForName.push(j);
+          alreadyFoundNameIndicies.push(j);
+          duplicateNameMap[fileData[i].name] = duplicateListForName;
+          /*  (duplicateNameMap[fileData[i].index] ?? (duplicateNameMap[fileData[i].index] = [])).push(j); */
         }
       }
     }
