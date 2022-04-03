@@ -19,13 +19,13 @@ export class Run {
 
   @ManyToOne(() => User, (user) => user.runs, {
     onDelete: "CASCADE",
-    orphanedRowAction: "delete"
+    orphanedRowAction: "delete",
   })
   driver: User;
 
   @ManyToOne(() => Route, (route) => route.runs, {
     onDelete: "CASCADE",
-    orphanedRowAction: "delete"
+    orphanedRowAction: "delete",
   })
   route: Route;
 
@@ -37,4 +37,17 @@ export class Run {
 
   @Column()
   direction: string;
+
+  @Column({ type: "timestamptz" })
+  lastFetchTime: string;
+
+  @Column({
+    type: "decimal",
+  })
+  longitude: number;
+
+  @Column({
+    type: "decimal",
+  })
+  latitude: number;
 }

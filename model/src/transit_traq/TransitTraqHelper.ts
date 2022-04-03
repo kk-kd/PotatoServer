@@ -1,7 +1,9 @@
-import { connect } from "http2";
 import fetch from "node-fetch";
 const Queue = require("bull");
-const DEBUG = false;
+const DEBUG = true;
+const LOWEST_PRIORITY = 20;
+const PRIORITY_OUTDATED = LOWEST_PRIORITY - 2;
+const PRIORITY_REQUESTED = LOWEST_PRIORITY - 1;
 
 export class TransitTraqHelper {
   static busQueue = new Queue("bus", "redis://127.0.0.1:6379", {
@@ -23,11 +25,11 @@ export class TransitTraqHelper {
 
     if (DEBUG) {
       TransitTraqHelper.busQueue.on("progress", (job, progress) => {
-        console.log(`Job ${job} in progress: ${progress}`);
+        console.log(`Job ${job.json} in progress: ${progress.json}`);
       });
 
       TransitTraqHelper.busQueue.on("waiting", (job) => {
-        console.log(`Job ${job} waiting`);
+        console.log(`Job ${job.json} waiting`);
       });
     }
 
@@ -39,7 +41,23 @@ export class TransitTraqHelper {
     });
   }
 
-  static addBusNumberToQueue(data) {
-    TransitTraqHelper.busQueue.add(data);
+  static addOutdatedBus(data) {
+    this.addBusNumberToQueueWithPriority(data, PRIORITY_OUTDATED);
+  }
+
+  static addRequestedBus(data) {
+    this.addBusNumberToQueueWithPriority(data, PRIORITY_REQUESTED);
+  }
+  s;
+
+  static addBusNumberToQueueWithPriority(data, p) {
+    TransitTraqHelper.busQueue.add(data, {
+      priority: p,
+      timeout: 2000,
+      attempts: 3,
+    });
   }
 }
+
+// TransitTraqHelper.initQueue();
+// TransitTraqHelper.addBusNumberToQueue({ busId: 7000 });
