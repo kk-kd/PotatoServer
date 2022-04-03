@@ -1,4 +1,6 @@
 import fetch from "node-fetch";
+import { getConnection, getRepository } from "typeorm";
+import { Run } from "../entity/Run";
 const Queue = require("bull");
 const DEBUG = true;
 const LOWEST_PRIORITY = 20;
@@ -13,7 +15,7 @@ export class TransitTraqHelper {
     },
   });
 
-  static initQueue() {
+  static async initQueue() {
     TransitTraqHelper.busQueue.process(async (job) => {
       // console.log(job);
       const response = await fetch(
@@ -35,10 +37,44 @@ export class TransitTraqHelper {
 
     // If failed, result = 'unknown bus'
     // If succeede, result = { bus: '7000', lat: 26.89855408395368, lng: -101.5380859375 }
-    TransitTraqHelper.busQueue.on("completed", (job, result) => {
-      console.log(`Job completed`);
+    TransitTraqHelper.busQueue.on("completed", async (job, result) => {
+      console.log(`TransitTraqHelper: Retrieve bus location, job completed`);
       console.log(result);
+
+      if (!("bus" in result) || !("lat" in result) || !("lng" in result)) {
+        console.log("Seems like an invalid response");
+      }
+
+      const saveStatus = this.saveNewBusLocationToDatabase(result);
+      if (!saveStatus) {
+        console.log("Something's wrong when saving to the database");
+      }
     });
+  }
+
+  private static async saveNewBusLocationToDatabase(response) {
+    const existingEntry = await getRepository(Run)
+      .createQueryBuilder("run")
+      .where("run.busNumber = :busNumber", { busNumber: response.bus })
+      .andWhere("run.ongoing = :ongoing", { ongoing: true })
+      .getOne();
+
+    if (existingEntry == undefined) {
+      return false;
+    }
+    try {
+      existingEntry.longitude = response.lng;
+      existingEntry.latitude = response.lat;
+      existingEntry.lastFetchTime = new Date().toISOString();
+      await getConnection().manager.save(existingEntry);
+    } catch (e) {
+      console.log(
+        "TransitTraqHelper: failed to save new location to the database"
+      );
+      return false;
+    }
+
+    return true;
   }
 
   static addOutdatedBus(data) {
@@ -48,7 +84,6 @@ export class TransitTraqHelper {
   static addRequestedBus(data) {
     this.addBusNumberToQueueWithPriority(data, PRIORITY_REQUESTED);
   }
-  s;
 
   static addBusNumberToQueueWithPriority(data, p) {
     TransitTraqHelper.busQueue.add(data, {
