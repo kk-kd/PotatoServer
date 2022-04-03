@@ -52,6 +52,7 @@ export class TransitTraqHelper {
     });
   }
 
+<<<<<<< HEAD
   private static async saveNewBusLocationToDatabase(response) {
     const existingEntry = await getRepository(Run)
       .createQueryBuilder("run")
@@ -77,6 +78,8 @@ export class TransitTraqHelper {
     return true;
   }
 
+=======
+>>>>>>> 9a5eb921d532e295d834eaad95b688c348c61e49
   static addOutdatedBus(data) {
     this.addBusNumberToQueueWithPriority(data, PRIORITY_OUTDATED);
   }
@@ -84,6 +87,10 @@ export class TransitTraqHelper {
   static addRequestedBus(data) {
     this.addBusNumberToQueueWithPriority(data, PRIORITY_REQUESTED);
   }
+<<<<<<< HEAD
+=======
+  s;
+>>>>>>> 9a5eb921d532e295d834eaad95b688c348c61e49
 
   static addBusNumberToQueueWithPriority(data, p) {
     TransitTraqHelper.busQueue.add(data, {
