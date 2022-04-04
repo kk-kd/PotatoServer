@@ -38,16 +38,18 @@ export class Run {
   @Column()
   direction: string;
 
-  @Column({ type: "timestamptz" })
+  @Column({ type: "timestamptz", nullable: true })
   lastFetchTime: string;
 
   @Column({
     type: "decimal",
+    nullable: true,
   })
   longitude: number;
 
   @Column({
     type: "decimal",
+    nullable: true,
   })
   latitude: number;
 }

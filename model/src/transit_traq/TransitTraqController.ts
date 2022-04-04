@@ -2,12 +2,13 @@ import { getConnection, getRepository } from "typeorm";
 import { Request, Response } from "express";
 import { Run } from "../entity/Run";
 import { TransitTraqHelper } from "./TransitTraqHelper";
+import fetch from "node-fetch";
 
-const LOW_PRIORITY = 500; //1s
+const LOW_PRIORITY = 500;
 const NEEDS_REFRESH = 1000;
 
-export class RunController {
-  static async getBusLocation(request: Request, response: Response) {
+export class TransitTraqController {
+  async getBusLocation(request: Request, response: Response) {
     const { busNumber } = request.body;
 
     const existingEntry = await getRepository(Run)
@@ -21,19 +22,22 @@ export class RunController {
       return;
     }
 
-    // fetch from database
     const currentTime = new Date();
-    const timeElapsed =
-      currentTime.getTime() - new Date(existingEntry.lastFetchTime).getTime();
 
-    if (timeElapsed < NEEDS_REFRESH) {
-      console.log(`Bus location ${busNumber} fetched from database.`);
-      response.status(200).send({ ...existingEntry, latest: true });
+    if (existingEntry.lastFetchTime != null) {
+      // fetch from database
+      var timeElapsed =
+        currentTime.getTime() - new Date(existingEntry.lastFetchTime).getTime();
 
-      if (timeElapsed > LOW_PRIORITY) {
-        TransitTraqHelper.addRequestedBus(busNumber);
+      if (timeElapsed < NEEDS_REFRESH) {
+        console.log(`Bus location ${busNumber} fetched from database.`);
+        response.status(200).send({ ...existingEntry, latest: true });
+
+        if (timeElapsed > LOW_PRIORITY) {
+          TransitTraqHelper.addRequestedBus(busNumber);
+        }
+        return;
       }
-      return;
     }
 
     // fetch from transit traq
@@ -68,7 +72,7 @@ export class RunController {
     response.status(200).send({ ...existingEntry, latest: true });
   }
 
-  static async fetchBusLocationFromTransitTraq(busId) {
+  async fetchBusLocationFromTransitTraq(busId) {
     const response = await fetch(
       `http://tranzit.colab.duke.edu:8000/get?bus=${busId}`
     );

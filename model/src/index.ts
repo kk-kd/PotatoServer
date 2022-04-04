@@ -21,6 +21,7 @@ import { StopController } from "./controller/StopController";
 import { School } from "./entity/School";
 import { SchoolController } from "./controller/SchoolController";
 import { checkJwt } from "./middlewares/checkJwt";
+import { TransitTraqHelper } from "./transit_traq/TransitTraqHelper";
 
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -57,6 +58,8 @@ function makeid(length) {
   return result;
 }
 
+TransitTraqHelper.initQueue();
+
 createConnection()
   .then(async (connection) => {
     // start express server
@@ -86,7 +89,6 @@ createConnection()
     // const studentRepository = connection.getCustomRepository(StudentController);
     // const schoolRepository = connection.getCustomRepository(SchoolController);
     // const routeRepository = connection.getCustomRepository(RouteController);
-
 
     // Clean tables
 
@@ -169,12 +171,11 @@ createConnection()
       "McCaster981@example.com",
     ];
 
-
     // Add basic admin account
 
-    /* 
-    **********************************************************
-    */
+    /*
+     **********************************************************
+     */
 
     // const newUser = new User();
     // newUser.email = "admin@example.com"
@@ -227,11 +228,9 @@ createConnection()
 
     // }
 
-
-    /* 
-    **********************************************************
-    */
-
+    /*
+     **********************************************************
+     */
 
     // Construct School Entities
 
