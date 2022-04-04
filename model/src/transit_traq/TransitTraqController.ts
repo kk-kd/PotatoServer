@@ -34,6 +34,7 @@ export class TransitTraqController {
         response.status(200).send({ ...existingEntry, latest: true });
 
         if (timeElapsed > LOW_PRIORITY) {
+          console.log("Job fetching location added to queue");
           TransitTraqHelper.addRequestedBus(busNumber);
         }
         return;

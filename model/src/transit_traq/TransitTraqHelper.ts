@@ -17,10 +17,10 @@ export class TransitTraqHelper {
 
   static async initQueue() {
     TransitTraqHelper.busQueue.process(async (job) => {
-      // console.log(job);
-      const response = await fetch(
-        `http://tranzit.colab.duke.edu:8000/get?bus=${job.data.busId}`
-      );
+      const dst = `http://tranzit.colab.duke.edu:8000/get?bus=${job.data.busId}`;
+      console.log(`fetching from ${dst}`);
+
+      const response = await fetch(dst);
       const responseJson = await response.json();
       return responseJson;
     });
@@ -41,7 +41,12 @@ export class TransitTraqHelper {
       console.log(`TransitTraqHelper: Retrieve bus location, job completed`);
       console.log(result);
 
-      if (!("bus" in result) || !("lat" in result) || !("lng" in result)) {
+      if (
+        typeof result != "object" ||
+        !("bus" in result) ||
+        !("lat" in result) ||
+        !("lng" in result)
+      ) {
         console.log("Seems like an invalid response");
       }
 
@@ -86,11 +91,14 @@ export class TransitTraqHelper {
   }
 
   static addBusNumberToQueueWithPriority(data, p) {
-    TransitTraqHelper.busQueue.add(data, {
-      priority: p,
-      timeout: 2000,
-      attempts: 3,
-    });
+    TransitTraqHelper.busQueue.add(
+      { busId: data },
+      {
+        priority: p,
+        timeout: 2000,
+        attempts: 3,
+      }
+    );
   }
 }
 
