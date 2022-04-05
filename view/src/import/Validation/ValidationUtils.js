@@ -96,7 +96,7 @@ export const CheckParentCell = (
     return [null,"", "", "", ""];
   }
   // catches blank cases
-  else if ((val === null || val === undefined || val === "") && col !== "loc") {
+  else if ((val === null || val === undefined || val === "") && col !== "loc" && (col !== 'address')) {
     let missing_col_code_map = {
       'email': 16, 
       'name': 2,
@@ -104,7 +104,13 @@ export const CheckParentCell = (
       'phone_number': 7
     }
     let code = missing_col_code_map[col]
-    return [code, "Blank!", "", "", ""];
+    if (code) {
+      return [code, "Blank!", "", "", ""];
+    }
+    else {
+      return [code, "", "", "", ""];
+    }
+    
   }
 
   //email cases
@@ -123,7 +129,13 @@ export const CheckParentCell = (
   } 
   // address
   else if (col === "address") {
-    return [null,"", "", ""];
+    console.log(val)
+    if (!val) {
+      return [6,"Invalid Address", "", ""];
+    }
+    else {
+      return [null ,"", "", ""];
+    }
   }
   // name
   else if (col === 'name') {

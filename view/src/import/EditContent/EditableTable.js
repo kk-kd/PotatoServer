@@ -51,17 +51,18 @@ import {
 
     // If the initialValue is changed externally, sync it up with our state
     React.useEffect(() => {
-      setValue(initialValue);
-      let e = isCellValid(id, initialValue);
-      console.log(e)
-      if (e[1]) {        
-        if (e[3]) {
-          setWarn(e[1]);
+        setValue(initialValue);
+        console.log(initialValue);
+        let e = isCellValid(id, initialValue);
+        console.log(e)
+        if (e[1]) {        
+          if (e[3]) {
+            setWarn(e[1]);
+          }
+          else {
+            setErr(e[1]);
+          }
         }
-        else {
-          setErr(e[1]);
-        }
-      }
     }, [initialValue]);
   
     return (editableColumns.includes(id)) ? 
@@ -75,17 +76,17 @@ import {
                   updateErrorCodes(index, id,  selected);
                   setErr('');
                 }}
+                onClick = {onClick}
+  
                 defaultValue = {initialValue}
                 onChange = {()=> {
-                  setErr('Invalid Address')
-                  updateErrorCodes(index, id,  {'address': ''});
+                  updateErrorCodes(index, id,  '');
                 }}
-                
                 options={{
                   fields: ["geometry.location", "formatted_address"],
                   types: ["geocode"],
                 }}
-                style = {{border: (err) ? '1px solid red': '1px solid #34815c'}}
+                style = {{border: (err) ? '1px solid red': '1px solid black'}}
               />  
               <div style = {{color:'red'}}> {err} </div>
               </div>

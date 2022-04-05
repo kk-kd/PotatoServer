@@ -6,8 +6,7 @@ import e from "cors";
 export const EditManager = ({complete, setComplete, message, editableFileData, setEditableFileData, columns, editableColumns, checkRow, checkCell, selectedIndex, setSelectedIndex, resetErrorData, resetWarningData}) => {
 
     
-    // called whenever an editable cell is changed, this function is called, and updates the error_codes list of the corresponding
-    // element. editedData is changed dynamically in EditableTable. 
+    // called whenever an editable cell is changed. 
     const updateEditedDataErrors = (rowIndex, columnId, value) => {  
         console.log(columnId)
         
@@ -17,16 +16,48 @@ export const EditManager = ({complete, setComplete, message, editableFileData, s
             if (index === rowIndex) {
                 let copy = {...old[rowIndex], [columnId]: value}
                 let [row_errors, error_uid, warning_uid] = checkRow(copy) 
+                let loc_values = {}
+                let address = []
 
                 console.log("check parent returned")
                 console.log(checkRow(copy))
    
                 // if editing address and row address does not have a lat or lng, not valid
-                if ((editableColumns.includes('address')) && (!value.lat || !value.lng)) {
-                    row_errors.push(6)
-                } 
+                if ((editableColumns.includes('address'))) {
+                    let has_loc = Boolean(copy.address && copy.address.address && copy.loc && copy.loc.longitude && copy.loc.latitude)
+                    let has_loc_from_validate = Boolean(copy.address && !copy.address.address && copy.loc && copy.loc.longitude && copy.loc.latitude)
+                    let has_new_loc = Boolean(copy.address && copy.address['lat'] && copy.address['lng'])
+                    console.log("Has Loc ")
+                    console.log(has_loc)
+                    console.log("Has Loc From Valid ")
+                    console.log(has_loc_from_validate)
+                    console.log("New loc")
+                    console.log(has_new_loc)
+                    console.log(copy)
 
-                let a= {...copy, ['hint_uids']: [error_uid], ['warning_uids']: [warning_uid], ['error_code']: row_errors} 
+                    // if no set location, has error
+                    if (!(has_loc || has_new_loc || has_loc_from_validate)) {
+                        row_errors.push(6)
+                    }
+                    // if new location, fix row 
+                    else if (has_new_loc) {
+                        loc_values['latitude'] = copy.address['lat']
+                        loc_values['longitude'] = copy.address['lng']
+                        address.push(copy.address.address)
+                    }
+                    else if (has_loc) {
+                        loc_values['latitude'] = copy.loc['latitude']
+                        loc_values['longitude'] = copy.loc['longitude']
+                        address.push(copy.address)
+                    }
+                    else if (has_loc_from_validate) {
+                        loc_values['latitude'] = copy.loc['latitude']
+                        loc_values['longitude'] = copy.loc['longitude']
+                        address.push(copy.address)
+                    }
+                } 
+                
+                let a= {...copy, ['hint_uids']: [error_uid], ['warning_uids']: [warning_uid], ['error_code']: row_errors, ['loc']: loc_values, ['address']: address[0]} 
                 console.log("updated keys and values are")
                 console.log(a)
                 resetWarningData(warning_uid)
