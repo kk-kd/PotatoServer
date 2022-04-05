@@ -1,5 +1,11 @@
-#duplicateContainer {
+#errorContainer {
     margin-right:33%;
     margin-bottom: 20px;
-    border:2px solid green;
+    border:2px solid red;
+}
+
+#warningContainer {
+    margin-right:33%;
+    margin-bottom: 20px;
+    border:2px solid orange;
 }

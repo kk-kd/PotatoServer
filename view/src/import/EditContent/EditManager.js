@@ -1,59 +1,37 @@
 import EditableTable from "./EditableTable";
 import {CssBaseline } from "@mui/material";
 import { useEffect, useState } from "react";
+import e from "cors";
 
-export const EditManager = ({setSelectedIndex, complete, setComplete, message, editableFileData, setEditableFileData, columns, editableColumns, checkRow, checkCell, duplicateIndex, setDuplicateIndex, resetDuplicates}) => {
+export const EditManager = ({complete, setComplete, message, editableFileData, setEditableFileData, columns, editableColumns, checkRow, checkCell, selectedIndex, setSelectedIndex, resetErrorData, resetWarningData}) => {
 
     
     // called whenever an editable cell is changed, this function is called, and updates the error_codes list of the corresponding
     // element. editedData is changed dynamically in EditableTable. 
     const updateEditedDataErrors = (rowIndex, columnId, value) => {  
+        console.log(columnId)
         
         // update validity
         setEditableFileData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
-                
                 let copy = {...old[rowIndex], [columnId]: value}
-                let [row_errors, uid] = checkRow(copy) // returns [] for valid, [1,2,4] if not.
+                let [row_errors, error_uid, warning_uid] = checkRow(copy) 
+
+                console.log("check parent returned")
+                console.log(checkRow(copy))
    
                 // if editing address and row address does not have a lat or lng, not valid
-                if ((editableColumns.includes('address') && columnId === 'address') && (!value.lat || !value.lng)) {
-                    console.log('no lat or lng')
+                if ((editableColumns.includes('address')) && (!value.lat || !value.lng)) {
                     row_errors.push(6)
                 } 
-                
-                // Update the error_code key with new errors
-                if (row_errors.length === 0){
-                    let n = {...copy, ['error_code']: [0]} 
-                    // if entry has duplicate, update hint_uids key. 
-                    if (row_errors.includes(3)){
-                        let duplicates = {...n, ['hint_uids']: [uid]} 
-                        resetDuplicates(uid)
-                        return duplicates
-                    }
 
-                    else {
-                        let no_duplicates = {...n, ['hint_uids']: []} 
-                        resetDuplicates()
-                        return no_duplicates
-                    }
-                }
-                else {
-                    let n = {...copy, ['error_code']: row_errors} 
-                    // if entry has duplicate, update hint_uids key. 
-                    if (row_errors.includes(3)){
-                        let duplicates = {...n, ['hint_uids']: [uid]} 
-                        resetDuplicates(uid)
-                        return duplicates
-                    }
-                    else {
-                        let no_duplicates = {...n, ['hint_uids']: []} 
-                        resetDuplicates()
-                        return no_duplicates
-                    }
-                    return n
-                }
+                let a= {...copy, ['hint_uids']: [error_uid], ['warning_uids']: [warning_uid], ['error_code']: row_errors} 
+                console.log("updated keys and values are")
+                console.log(a)
+                resetWarningData(warning_uid)
+                resetErrorData(error_uid)
+                return a                
             }
             return row;
           })
@@ -132,8 +110,8 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, message, e
                 updateErrorCodes={updateEditedDataErrors}
                 checkRow = {checkRow}
                 isCellValid = {checkCell}
-                duplicateIndex = {duplicateIndex}
-                setDuplicateIndex = {setDuplicateIndex}
+                selectedIndex = {selectedIndex}
+                setSelectedIndex = {setSelectedIndex}
              />}
         </div>
 

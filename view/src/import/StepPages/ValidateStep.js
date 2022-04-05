@@ -13,7 +13,7 @@ export const ValidateStep = ({
   users,
   schools,
   schoolNames,
-  emails,
+  databaseUsers,
   dataType,
   requiredColumns,
   processingComplete,
@@ -31,16 +31,16 @@ export const ValidateStep = ({
 
   const checkRow = (rowData) => {
     if (dataType === "students") {
-      return CheckStudentRow(rowData, users, schools, emails, schoolNames);
+      return CheckStudentRow(rowData, users, schools, databaseUsers, schoolNames);
     } else if (dataType === "parents") {
-      return CheckParentRow(rowData, users, schools, emails, schoolNames);
+      return CheckParentRow(rowData, users, schools, databaseUsers, schoolNames);
     }
     return false;
   };
 
   const checkCell = (col, val) => {
     if (dataType === "students") {
-      return CheckStudentCell(col, val, users, schools, emails, schoolNames);
+      return CheckStudentCell(col, val, users, schools, databaseUsers, schoolNames);
     } else if (dataType === "parents") {
       if (col === "address") {
         if (!val || !val["address"]) {
@@ -49,7 +49,7 @@ export const ValidateStep = ({
           return [0, ""];
         }
       }
-      return CheckParentCell(col, val, users, schools, emails, schoolNames);
+      return CheckParentCell(col, val, users, schools, databaseUsers, schoolNames);
     }
     return false;
   };

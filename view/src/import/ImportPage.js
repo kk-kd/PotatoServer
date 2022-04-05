@@ -26,7 +26,7 @@ export const ImportPage = () => {
 
   const [users, setUsers] = useState();
   const [schools, setSchools] = useState();
-  const [emails, setEmails] = useState();
+  const [databaseUsers, setDatabaseUsers] = useState();
   const [schoolNames, setSchoolNames] = useState();
 
   // errors
@@ -93,9 +93,10 @@ export const ImportPage = () => {
       setUsers(fetchedData.data.users);
       let email = fetchedData.data.users.map((user) => user.email);
       let uid =  fetchedData.data.users.map((user) => user.uid);
-      let e = {'email': email, 'uid': uid}
+      let name =  fetchedData.data.users.map((user) => user.fullName);
+      let e = {'email': email, 'uid': uid, 'fullName': name}
       console.log(e)
-      setEmails(e);
+      setDatabaseUsers(e);
 
     } catch (error) {
       alert(error.response.data);
@@ -237,7 +238,7 @@ export const ImportPage = () => {
           <ValidateStep
             users={users}
             schools={schools}
-            emails={emails}
+            databaseUsers={databaseUsers}
             schoolNames={schoolNames}
             dataType={dataType}
             requiredColumns={requiredColumns}

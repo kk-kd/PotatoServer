@@ -1,3 +1,4 @@
+import { faCodePullRequest } from "@fortawesome/free-solid-svg-icons";
 import * as EmailValidator from "email-validator";
 // This handles all validation EXCEPT addresses, which is handled by MapHelper in EditContent/MapHelper.
 
@@ -32,7 +33,7 @@ export const CheckStudentCell = (
   val,
   schools,
   users,
-  emails,
+  databaseUsers,
   schoolNames
 ) => {
   if (col === "index" || col === "valid") {
@@ -56,7 +57,7 @@ export const CheckStudentCell = (
       return [15, "Not a number"];
     }
   } else if (col === "parent_email") {
-    if (!emails.email.includes(val) && !emails.email.includes(val.toLowerCase().trim())) {
+    if (!databaseUsers.email.includes(val) && !databaseUsers.email.includes(val.toLowerCase().trim())) {
       return [12, "Email not registered"];
     }
      if (!EmailValidator.validate(val)) {
@@ -81,17 +82,18 @@ export const CheckStudentCell = (
 // * 5 - Missing Address
 // * 6 - Error while querying address
 // * 7 - Missing Phone Number
+// return [code, error_message, error_uid, warning_message, warning_uid]
 
 export const CheckParentCell = (
   col,
   val,
   schools,
   users,
-  emails,
+  databaseUsers,
   schoolNames
 ) => {
   if (col === "index" || col === "valid") {
-    return [-1,""];
+    return [null,"", "", "", ""];
   }
   // catches blank cases
   else if ((val === null || val === undefined || val === "") && col !== "loc") {
@@ -102,57 +104,71 @@ export const CheckParentCell = (
       'phone_number': 7
     }
     let code = missing_col_code_map[col]
-    return [code, "Blank!"];
+    return [code, "Blank!", "", "", ""];
   }
 
   //email cases
   else if (col === "email") {
-
     //email already taken
-    if (emails.email.includes(val.toLowerCase()) || emails.email.includes(val.toLowerCase().trim())) {
-      let dup_email_index = emails.email.indexOf(val.toLowerCase().trim())
-      let ui = emails.uid[dup_email_index]
-      console.log(val.toLowerCase().trim())
-      console.log(emails)
-      console.log(dup_email_index)
-      console.log(ui)
+    if (databaseUsers.email.includes(val.toLowerCase()) || databaseUsers.email.includes(val.toLowerCase().trim())) {
+      let dup_email_index = databaseUsers.email.indexOf(val.toLowerCase().trim())
+      let ui = databaseUsers.uid[dup_email_index]
       
-      return [3, "Existing Email", ui];
+      return [3, "Existing Email", ui, null, null];
     }
     //if email is valid
     if (!EmailValidator.validate(val)) {
-      return [1, "Not Valid"];
+      return [1, "Not Valid", "", "", ""];
     } 
-  } else if (col === "address") {
-    return [-1,""];
+  } 
+  // address
+  else if (col === "address") {
+    return [null,"", "", ""];
   }
+  // name
+  else if (col === 'name') {
+    // name exists
+    if (databaseUsers.fullName.includes(val) || databaseUsers.fullName.includes(val.trim())) {
+      let dup_name_index = databaseUsers.fullName.indexOf(val.trim())
+      let ui = databaseUsers.uid[dup_name_index]
+      let r = [4, "", null , "May be a Duplicate", ui];
+      return r
+    }
+  } 
+
   //dodged every wrong case? Return a success.
 
-  return [0,""];
+  return [null,"", "", "", ""];
 };
 
-export const CheckStudentRow = (row, schools, users, emails, schoolNames) => {
+export const CheckStudentRow = (row, schools, users, databaseUsers, schoolNames) => {
   let errors = []
   for (const [key, value] of Object.entries(row)) {
-    let error = CheckStudentCell(key, value, schools, users, emails, schoolNames);
+    let error = CheckStudentCell(key, value, schools, users, databaseUsers, schoolNames);
     if (error[1] !== "") {
       errors.push(error[0])
     }
   }
-  return errors;
+  return [errors, ];
 };
 
-export const CheckParentRow = (row, schools, users, emails, schoolNames) => {
-  let errors = []
-  let uid = []
+export const CheckParentRow = (row, schools, users, databaseUsers, schoolNames) => {
+  let codes = []
+  let error_uid = [null]
+  let warning_uid = [null]
   for (const [key, value] of Object.entries(row)) {
-    let error = CheckParentCell(key, value, schools, users, emails, schoolNames);
-    if (error[1] !== "") {
-      if (error[2]) {
-        uid.push(error[2])
-      }
-      errors.push(error[0])
+    let [code, error_message, err_uid, warn_message, warn_uid] = CheckParentCell(key, value, schools, users, databaseUsers, schoolNames); 
+    console.log("checkCell returned")
+    console.log([code, error_message, err_uid, warn_message, warn_uid])
+    if (code) {
+      codes.push(code)
+    }
+    if (err_uid) {
+      error_uid.push(err_uid) 
+    }
+    if (warn_uid) {
+      warning_uid.push(warn_uid)
     }
   }
-  return [errors, uid[0]];
+    return [codes, error_uid.pop(), warning_uid.pop()]
 };

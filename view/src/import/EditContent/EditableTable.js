@@ -29,33 +29,39 @@ import {
     updateErrorCodes,
     editableColumns, // list of editable columns
     isCellValid,
-    setDuplicateIndex, 
-    duplicateIndex
+    setSelectedIndex, 
+    selectedIndex
 
   }) => {
     const [value, setValue] = React.useState(initialValue);
     const [err, setErr] = React.useState();
+    const [warn, setWarn] = React.useState();
       
     const onChange = (e) => {
       setValue(e.target.value);
       updateErrorCodes(index, id, e.target.value);
-      let d = isCellValid(id, e.target.value);
-      if (d[0] !== 0) {
-        setErr(d[1]);
-      }
+      let [code, err_message, error_uid, warning_message, warning_uid] = isCellValid(id, e.target.value); // [code, error_message, error_uid, warning_message, warning_uid]
+      setWarn(warning_message)
+      setErr(err_message)
     };
     
     const onClick =()=> {
-      setDuplicateIndex(index);
-      console.log('duplicate index changed to ')
-      console.log(index)
+      setSelectedIndex(index);
     }
 
     // If the initialValue is changed externally, sync it up with our state
     React.useEffect(() => {
       setValue(initialValue);
       let e = isCellValid(id, initialValue);
-      setErr(e[1]);
+      console.log(e)
+      if (e[1]) {        
+        if (e[3]) {
+          setWarn(e[1]);
+        }
+        else {
+          setErr(e[1]);
+        }
+      }
     }, [initialValue]);
   
     return (editableColumns.includes(id)) ? 
@@ -86,8 +92,10 @@ import {
         ) 
         :
           <div>
-            <input value={value} onChange={onChange} onClick = {onClick} style = {{border: (err) ? '1px solid red': '1px solid #34815c', position: 'relative'}}/>
+            {!warn && <input value={value} onChange={onChange} onClick = {onClick} style = {{border: (err) ? '1px solid red': '1px solid black', position: 'relative'}}/>} 
+            {warn && <input value={value} onChange={onChange} onClick = {onClick} style = {{border: '1px solid orange', position: 'relative'}}/>} 
             <div style = {{color:'red'}}> {err} </div>
+            <div style = {{color:'orange'}}> {warn} </div>
           </div>
     ) : (
       <p>{value}</p>
@@ -120,8 +128,8 @@ export const EditableTable = ({
     setEditableFileData,
     updateErrorCodes,
     isCellValid,
-    duplicateIndex, 
-    setDuplicateIndex,
+    selectedIndex, 
+    setSelectedIndex,
   }) => {
     const [editableRowIndex, setEditableRowIndex] = React.useState(0);
  
@@ -142,8 +150,8 @@ export const EditableTable = ({
         editableRowIndex,
         setEditableRowIndex, 
         isCellValid, 
-        duplicateIndex, 
-        setDuplicateIndex
+        selectedIndex, 
+        setSelectedIndex
       },
 
       (hooks) => {
@@ -154,7 +162,7 @@ export const EditableTable = ({
             id: "valid",
             Header: "Status",
             Cell: ({row}) => (
-              (row.values.error_code[0] === 0)  ?
+              (!row.values.error_code[0])  ?
               <FontAwesomeIcon
                 onClick = {()=> {console.log(row)}}
                 icon={faCircleCheck}

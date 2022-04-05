@@ -16,77 +16,125 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
     const [edit, setEdit] = useState(false);
     const [selected, setSelected] = useState(false);
 
-    const [duplicatesToShow, setDuplicatesToShow] = useState([]);
-    const [duplicateIds, setDuplicateIds] = useState();
-    const [duplicateIndex, setDuplicateIndex] = useState();
-      
+    const [errorDataToShow, setErrorDataToShow] = useState([]);
+    const [errorIds, setErrorIds] = useState([]);
+    const [warningDataToShow, setWarningDataToShow] = useState([]);
+    const [warningIds, setWarningIds] = useState([]);
+    
+    const [selectedIndex, setSelectedIndex] = useState();
+
     const editableColumns = requiredColumns 
 
-    const fetchUserDuplicates = async () => {
-        if (duplicateIds && (duplicateIndex === 0 || duplicateIndex)) { 
-            let dup_ids = duplicateIds[duplicateIndex];
+    const fetchUserErrorDuplicates = async (ids) => {
+        console.log("fetch error with errorids")
+        console.log(ids)
+        if (ids && (selectedIndex === 0 || selectedIndex)) { 
             let a = [];
-            console.log(dup_ids);
-            if (dup_ids) {
             try {
-                for (let j = 0; j < dup_ids.length; j++) {
-                const fetchedData = await getOneUser(dup_ids[j]).catch((error) => {
-                    let message = error.response.data;
-                    throw alert(message);
-                });
-                a.push(fetchedData.data);
-                }
-                setDuplicatesToShow(a);
+                for (let j = 0; j < ids.length; j++) {
+                    if (ids[j]) {
+                        const fetchedData = await getOneUser(ids[j]).catch((error) => {
+                            let message = error.response.data;
+                            throw alert(message);
+                        });
+                        a.push(fetchedData.data);
+                        }
+                    }
+                
+                setErrorDataToShow(a);
                 
             } catch (error) {
                 console.log(error);
             }
-        }
       }  
     };
 
-    const resetDuplicates = (uid) => {
-        console.log('reset duplicates got')
+    const fetchUserWarningDuplicates = async (ids) => {
+        console.log("fetch error with warningids")
+        console.log(ids)
+        if (ids && (selectedIndex === 0 || selectedIndex)) { 
+            let a = [];
+            try {
+                for (let j = 0; j < ids.length; j++) {
+                    if (ids[j]) {
+                    const fetchedData = await getOneUser(ids[j]).catch((error) => {
+                        let message = error.response.data;
+                        throw alert(message);
+                    });
+                    a.push(fetchedData.data);
+                    }
+                }
+                setWarningDataToShow(a);
+                
+            } catch (error) {
+                console.log(error);
+            }
+      }  
+    };
+
+    const resetErrorData = (uid) => {
+        console.log("resestErrorData called with uid")
         console.log(uid)
         if (uid) {
-           // refetch duplicates with new uid
-           setDuplicatesToShow()
-           let dup  = duplicateIds;
-           dup[duplicateIndex] = [uid]
-           setDuplicateIds(dup)
-           fetchUserDuplicates()
+            if (!errorIds.includes(uid)) {
+                 // re fetch error user
+                 setErrorDataToShow()
+                 let new_ids = [...errorIds, uid]
+                 setErrorIds(new_ids);
+                 fetchUserErrorDuplicates(new_ids)
+            }
         }
         else {
-            console.log('resetting duplicates to nothing')
-            setDuplicatesToShow([])
-            setDuplicateIds([])
+            setErrorDataToShow([])
+            setErrorIds([])
+        }
+    }
+
+    const resetWarningData = (uid) => {
+        if (uid) {
+            if (!warningIds.includes(uid)) {
+                 // re fetch error user
+                 setWarningDataToShow([])
+                 let new_ids = [...warningIds, uid]
+                 setWarningIds(new_ids)
+                 fetchUserWarningDuplicates(new_ids)
+            }
+        }
+        else {
+            setWarningDataToShow([])
+            setWarningIds([])
         }
     }
 
     useEffect(() => {
-        if (duplicateIndex > 0) {
-            fetchUserDuplicates();
-        }
-    }, [duplicateIndex]);
+        console.log("selectd index use effect")
+        console.log(selectedIndex)
+        checkForErrorAndWarningData(selectedIndex)
+    }, [selectedIndex]);
 
-    useEffect(() => {
-        let duplicateids = [];
-    
-        if (processingComplete && editableFileData) {
-          for (let i = 0; i < editableFileData.length; i++) {
-                let row = editableFileData[i]
-                if ("hint_uids" in row) {
-                    duplicateids.push(row['hint_uids']);
-                }
-                else {
-                    duplicateids.push([]);
-                }
-          }
-
-          setDuplicateIds(duplicateids);
-          setDuplicateIndex(0);
+    // used to load on page load, or on index change
+    const checkForErrorAndWarningData = (ind) => {
+        if (editableFileData) {
+            let currentRow = editableFileData[ind]
+            console.log(currentRow)
+            if (currentRow['hint_uids']) {
+                setErrorIds(currentRow['hint_uids'])
+                fetchUserErrorDuplicates(currentRow['hint_uids'])
+            }
+            else {
+                resetErrorData();
+            }
+            if (currentRow['warning_uids']) {
+                setWarningIds(currentRow['warning_uids'])
+                fetchUserWarningDuplicates(currentRow['warning_uids'])
+            }
+            else {
+                resetWarningData()
+            }
+            
         }
-      }, [processingComplete, editableFileData]);
+
+    }
 
    const removeEntries = () => {
         // // remove all entries from data
@@ -101,6 +149,7 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
     useEffect(()=> {
         if (processingComplete && fileData) {
             setEditableFileData(fileData)
+            setSelectedIndex(0);
         }  
     }
     ,[processingComplete])
@@ -120,12 +169,19 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
         {((editableFileData) && (edit)) && 
        (
             <div>                
-                {(!complete && duplicatesToShow && duplicatesToShow.length !== 0) && 
-                
-                 <div id="duplicateContainer">
-                    <div> Similar User Already Exists </div>
-                    <UserTable displayData={duplicatesToShow}></UserTable> 
+                {(!complete && errorDataToShow && errorDataToShow.length !== 0) && 
+                 <div id="errorContainer">
+                    <div> Similar User Already Exists! </div>
+                    <UserTable displayData={errorDataToShow}></UserTable> 
                 </div>
+                }
+
+                {(!complete && warningDataToShow && warningDataToShow.length !== 0) && 
+            
+                    <div id="warningContainer">
+                        <div> We found a user with a matching name! </div>
+                        <UserTable displayData={warningDataToShow}></UserTable> 
+                    </div>
                 }
   
                 <EditManager
@@ -138,9 +194,10 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
                     editableColumns = {editableColumns}
                     checkRow = {checkRow}
                     checkCell = {checkCell}
-                    duplicateIndex = {duplicateIndex}
-                    setDuplicateIndex = {setDuplicateIndex}
-                    resetDuplicates = {resetDuplicates}
+                    selectedIndex = {selectedIndex}
+                    setSelectedIndex = {setSelectedIndex}
+                    resetErrorData = {resetErrorData}
+                    resetWarningData = {resetWarningData}
                 />
            </div>)}
          
