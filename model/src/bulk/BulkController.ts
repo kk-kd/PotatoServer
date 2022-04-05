@@ -1,4 +1,4 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import * as EmailValidator from "email-validator";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";

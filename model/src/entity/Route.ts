@@ -8,6 +8,7 @@ import {
   ManyToOne,
   AfterUpdate,
 } from "typeorm";
+import { Run } from "./Run";
 import { School } from "./School";
 import { Student } from "./Student";
 import { Stop } from "./Stop";
@@ -44,6 +45,12 @@ export class Route {
     eager: true,
   })
   stops: Stop[];
+
+  @OneToMany(() => Run, (run) => run.route, {
+    cascade: true,
+    eager: true,
+  })
+  runs: Run[];
 
   studentCount: number;
 }

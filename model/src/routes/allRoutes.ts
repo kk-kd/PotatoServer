@@ -5,6 +5,8 @@ import { SchoolController } from "../controller/SchoolController";
 import { EmailController } from "../mailer/EmailController";
 import { StopController } from "../controller/StopController";
 import { BulkController } from "../bulk/BulkController";
+import { TransitTraqController } from "../transit_traq/TransitTraqController";
+import { RunController } from "../controller/RunController";
 
 /*
 
@@ -419,5 +421,19 @@ export const allRoutes = [
     route: "/api/bulk/students/save",
     controller: BulkController,
     action: "saveStudents",
+  },
+
+  {
+    method: "get",
+    route: "/api/gps",
+    controller: TransitTraqController,
+    action: "getBusLocation",
+  },
+
+  {
+    method: "post",
+    route: "/api/run/new",
+    controller: RunController,
+    action: "saveNewRun",
   },
 ];

@@ -50,6 +50,17 @@ Useful Commands:
 `sudo rabbitmqctl purge_queue queue_name`  
 `sudo rabbitmqctl list_queues`
 
+## Install Redis
+
+```
+curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+
+sudo apt-get update
+sudo apt-get install redis
+```
+
 ## Clone the repo
 
 `git clone -b <branch> https://github.com/meganrichards3/PotatoServer.git`
@@ -71,7 +82,8 @@ add to `~/.bashrc`
 copy-paste what's given
 
 ## Enable Rabbitmq-server to start on boot
-`sudo systemctl enable  rabbitmq-server`  
+
+`sudo systemctl enable rabbitmq-server`
 
 ## Enable binding to ports under 1024
 
@@ -129,6 +141,7 @@ Use `example_redirect.js` to replace `index.js` for testing purpose
 - Check that f**\*\*** ormconfig file is in .js
 - delete and restart pm2 process if necessary
 
-# New to EV2 
+# New to EV2
+
 - add base_url to .env
-- use pm2 ecosystem file 
+- use pm2 ecosystem file
