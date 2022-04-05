@@ -9,7 +9,8 @@ export const EditManager = ({complete, setComplete, message, editableFileData, s
     // called whenever an editable cell is changed. 
     const updateEditedDataErrors = (rowIndex, columnId, value) => {  
         console.log(columnId)
-        
+        let warning_codes = [4]
+
         // update validity
         setEditableFileData(old =>
           old.map((row, index) => {
@@ -18,6 +19,7 @@ export const EditManager = ({complete, setComplete, message, editableFileData, s
                 let [row_errors, error_uid, warning_uid] = checkRow(copy) 
                 let loc_values = {}
                 let address = []
+                let valid = [true];
 
                 console.log("check parent returned")
                 console.log(checkRow(copy))
@@ -56,8 +58,24 @@ export const EditManager = ({complete, setComplete, message, editableFileData, s
                         address.push(copy.address)
                     }
                 } 
-                
-                let a= {...copy, ['hint_uids']: [error_uid], ['warning_uids']: [warning_uid], ['error_code']: row_errors, ['loc']: loc_values, ['address']: address[0]} 
+                // check if any of the error codes are in this sample (and are not warnings)
+                for (let i = 0; i < row_errors.length; i++) {
+                    if (row_errors[i] && !warning_codes.includes(row_errors[i])) {
+                        valid.push(false)
+                    }
+                }
+                if (row_errors.length === 0) {
+                    valid.push(true)
+                }
+                console.log("valid array is")
+                console.log(valid)
+
+                let v = valid.pop()
+                console.log("v is")
+                console.log(v)
+
+           
+                let a= {...copy, ['hint_uids']: [error_uid], ['warning_uids']: [warning_uid], ['error_code']: row_errors, ['loc']: loc_values, ['address']: address[0], ['valid']: v } 
                 console.log("updated keys and values are")
                 console.log(a)
                 resetWarningData(warning_uid)

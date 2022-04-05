@@ -13,7 +13,7 @@ import * as EmailValidator from "email-validator";
 // * 1 - Email is not valid
 // * 16 - Email is empty
 // * 3 - email existed in the database
-// * 4 - repetitive emails in request
+// * 4 - existing name in database (warning)
 // * 5 - Missing Address
 // * 6 - Error while querying address
 // * 7 - Missing Phone Number
@@ -100,8 +100,6 @@ export const CheckParentCell = (
     let missing_col_code_map = {
       'email': 16, 
       'name': 2,
-      'email': 16,
-      'phone_number': 7
     }
     let code = missing_col_code_map[col]
     if (code) {
@@ -110,7 +108,6 @@ export const CheckParentCell = (
     else {
       return [code, "", "", "", ""];
     }
-    
   }
 
   //email cases
@@ -168,7 +165,9 @@ export const CheckParentRow = (row, schools, users, databaseUsers, schoolNames) 
   let codes = []
   let error_uid = [null]
   let warning_uid = [null]
+
   for (const [key, value] of Object.entries(row)) {
+
     let [code, error_message, err_uid, warn_message, warn_uid] = CheckParentCell(key, value, schools, users, databaseUsers, schoolNames); 
     console.log("checkCell returned")
     console.log([code, error_message, err_uid, warn_message, warn_uid])

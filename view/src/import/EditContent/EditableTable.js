@@ -159,11 +159,12 @@ export const EditableTable = ({
         hooks.allColumns.push((columns) => [
           ...columns,
           {
-            accessor: "error_code",
+            accessor: "valid",
             id: "valid",
             Header: "Status",
             Cell: ({row}) => (
-              (!row.values.error_code[0])  ?
+
+              (row.values.valid)  ?
               <FontAwesomeIcon
                 onClick = {()=> {console.log(row)}}
                 icon={faCircleCheck}
@@ -172,6 +173,7 @@ export const EditableTable = ({
                />
                 : 
                 <FontAwesomeIcon
+                onClick = {()=> {console.log(row)}}
                 icon={faCircleExclamation}
                 size="lg"
                 style={{ color: "red" }}
