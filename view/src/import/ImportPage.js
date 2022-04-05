@@ -36,6 +36,10 @@ export const ImportPage = () => {
   });
 
   const [invalidErrors, setInvalidErrors] = useState({
+    3: [],
+    4: [],
+    5: [],
+    6: [],
     1: [],
     2: [],
     7: [],
@@ -87,8 +91,12 @@ export const ImportPage = () => {
         showAll: "true",
       });
       setUsers(fetchedData.data.users);
-      let a = fetchedData.data.users.map((user) => user.email);
-      setEmails(a);
+      let email = fetchedData.data.users.map((user) => user.email);
+      let uid =  fetchedData.data.users.map((user) => user.uid);
+      let e = {'email': email, 'uid': uid}
+      console.log(e)
+      setEmails(e);
+
     } catch (error) {
       alert(error.response.data);
     }
@@ -129,28 +137,12 @@ export const ImportPage = () => {
   };
 
   const findAndFormatErrors = (data) => {
-    var address_codes = Object.keys(addressErrors);
-    var invalid_codes = Object.keys(invalidErrors);
-    var exist_codes = Object.keys(existErrors);
 
-    for (let i = 0; i < data.length; i++) {
-      var entry = data[i];
-      for (let k = 0; k < entry["error_code"].length; k++) {
-        var code = entry["error_code"][k].toString();
-        if (address_codes.includes(code)) {
-          addToDict(addressErrors, setAddressErrors, code, i);
-        } else if (invalid_codes.includes(code)) {
-          addToDict(invalidErrors, setInvalidErrors, code, i);
-        } else if (exist_codes.includes(code)) {
-          addToDict(existErrors, setExistErrors, code, i);
-        }
-      }
-    }
-    console.log(addressErrors);
-    console.log(invalidErrors);
-    console.log(existErrors);
-
+    setFileData(data)
+    console.log("file data set")
+    console.log(data)
     setProcessingComplete(true);
+    console.log("processing complete")
   };
 
   const resetState = () => {
@@ -190,11 +182,9 @@ export const ImportPage = () => {
       if (dataType === "students") {
         const resp = await validateBulkStudents(validation_input);
         findAndFormatErrors(resp.data.students);
-        setFileData(resp.data.students);
       } else if (dataType === "parents") {
         const resp = await validateBulkParents(validation_input);
         findAndFormatErrors(resp.data.users);
-        setFileData(resp.data.users);
       }
     } catch (e) {
       console.log(e);
@@ -251,12 +241,6 @@ export const ImportPage = () => {
             schoolNames={schoolNames}
             dataType={dataType}
             requiredColumns={requiredColumns}
-            addressErrors={addressErrors}
-            setAddressErrors={setAddressErrors}
-            invalidErrors={invalidErrors}
-            setInvalidErrors={setInvalidErrors}
-            existErrors={existErrors}
-            setExistErrors={setExistErrors}
             processingComplete={processingComplete}
             setProcessingComplete={setProcessingComplete}
             fileData={fileData}

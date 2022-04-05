@@ -1,48 +1,58 @@
 import EditableTable from "./EditableTable";
 import {CssBaseline } from "@mui/material";
-import { useState } from "react";
-import { MapHelper } from "./MapHelper";
+import { useEffect, useState } from "react";
 
-export const EditManager = ({setSelectedIndex, complete, setComplete, errors, setErrors, message, errorDataSubset, fileData, setFileData, columns, editableColumns, checkRow, checkCell, duplicateIndex, setDuplicateIndex}) => {
+export const EditManager = ({setSelectedIndex, complete, setComplete, message, editableFileData, setEditableFileData, columns, editableColumns, checkRow, checkCell, duplicateIndex, setDuplicateIndex, resetDuplicates}) => {
 
-    const [editedData, setEditedData] = useState(errorDataSubset); // we change this copy in the table, and replace 
-
-    // called whenever an editable cell is changed, ONLY checks for validity and updatest the 'valid' key to display that the 
-    // user has fixed the error. editedData is changed dynamically in EditableTable. 
-    const updateEditedDataValid = (rowIndex, columnId, value) => {  
+    
+    // called whenever an editable cell is changed, this function is called, and updates the error_codes list of the corresponding
+    // element. editedData is changed dynamically in EditableTable. 
+    const updateEditedDataErrors = (rowIndex, columnId, value) => {  
         
         // update validity
-        setEditedData(old =>
+        setEditableFileData(old =>
           old.map((row, index) => {
             if (index === rowIndex) {
                 
                 let copy = {...old[rowIndex], [columnId]: value}
- 
-                let row_error = checkRow(copy) // returns error string or '' and checks all validity except maps
-                
+                let [row_errors, uid] = checkRow(copy) // returns [] for valid, [1,2,4] if not.
+   
                 // if editing address and row address does not have a lat or lng, not valid
                 if ((editableColumns.includes('address') && columnId === 'address') && (!value.lat || !value.lng)) {
                     console.log('no lat or lng')
-                    return {
-                        ...copy,
-                        ['valid']: false,
-                    }
+                    row_errors.push(6)
                 } 
                 
-                // if other row error, row is not valid
-                else if (row_error) {
-                    console.log(row_error)
-                    return {
-                        ...copy,
-                        ['valid']: false,
+                // Update the error_code key with new errors
+                if (row_errors.length === 0){
+                    let n = {...copy, ['error_code']: [0]} 
+                    // if entry has duplicate, update hint_uids key. 
+                    if (row_errors.includes(3)){
+                        let duplicates = {...n, ['hint_uids']: [uid]} 
+                        resetDuplicates(uid)
+                        return duplicates
+                    }
+
+                    else {
+                        let no_duplicates = {...n, ['hint_uids']: []} 
+                        resetDuplicates()
+                        return no_duplicates
                     }
                 }
-                // otherwsie, is valid
-                else {  
-                    return {
-                        ...copy,
-                        ['valid']: true,
+                else {
+                    let n = {...copy, ['error_code']: row_errors} 
+                    // if entry has duplicate, update hint_uids key. 
+                    if (row_errors.includes(3)){
+                        let duplicates = {...n, ['hint_uids']: [uid]} 
+                        resetDuplicates(uid)
+                        return duplicates
                     }
+                    else {
+                        let no_duplicates = {...n, ['hint_uids']: []} 
+                        resetDuplicates()
+                        return no_duplicates
+                    }
+                    return n
                 }
             }
             return row;
@@ -63,54 +73,21 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
         setD(d)
     }
 
-    const removeError = (ind) => {
-        let temp = errors
-        delete temp[ind]
-        setErrors(temp)
-    }
 
     // called on row deletion 
     const deleteRow = (ind, newRow) => {
-        removeEntry(fileData, setFileData, newRow['index']) // stored data
-        removeEntry(editedData, setEditedData, ind) // displayed subset
-        removeError(ind)  
-        checkComplete() 
-        console.log(duplicateIndex)
-        if (setDuplicateIndex) {
-            setDuplicateIndex(duplicateIndex + 1)
-        }
+        // removeEntry(fileData, setFileData, newRow['index']) // stored data
+        // removeEntry(editedData, setEditedData, ind) // displayed subset 
+        // checkComplete() 
+        // console.log(duplicateIndex)
+        // if (setDuplicateIndex) {
+        //     setDuplicateIndex(duplicateIndex + 1)
+        // }
     }
 
     // called on row submission
     const submitRow = (ind, newRow) => {
-        console.log(newRow)
-        if (!checkRow(newRow)) {
-            // when changed, address value is {'address': '', 'lat': 12, 'lng':31} and needs to be unpacked to get lat and lng keys
-            if (editableColumns.includes('address') && newRow['address']['lat']) {  
-                newRow['loc'] =  {'lat': newRow['address']['lat'], 'lng': newRow['address']['lng']}
-                newRow['address'] = newRow['address']['address']
-            }
-            removeEntry(editedData, setEditedData, ind) // displayed subset
-            removeError(ind) // errors.filter 
-            updateEntry(fileData, setFileData, newRow['index'], newRow)
-            checkComplete()
-            if (setDuplicateIndex) {
-                setDuplicateIndex(duplicateIndex + 1)
-            }
-            console.log(editedData)
-            console.log(fileData)
-        }
-        else {
-            setEditedData(old =>
-                old.map((row, index) => {
-                  if (index === ind) {
-                    let a = newRow
-                    a['valid'] = false 
-                    return a                  }
-                  return row
-                })
-              )
-        }
+        
     }
 
     const isEmptyDict = (d) => {
@@ -124,10 +101,8 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
     }
 
     const checkComplete = () => {
-        if (isEmptyDict(errors)) {
-            setComplete(true);
-        }
-        let nonempty_count = editedData.filter(Boolean).length
+
+        let nonempty_count = editableFileData.filter(Boolean).length
         
         if (nonempty_count === 0) {
             setComplete(true);
@@ -137,26 +112,28 @@ export const EditManager = ({setSelectedIndex, complete, setComplete, errors, se
             setComplete(true)
         }
     }
+    useEffect(()=> {
+        console.log(editableFileData)
+    }
+    ,[editableFileData])
 
      
     return (
         <div> 
             {!complete && <h5> {message} </h5>}
            
-
             <CssBaseline />
-            {((!complete) && (editedData.length > 0)) && <EditableTable
+            {((!complete) && (editableFileData.length > 0)) && <EditableTable
                 setSelectedIndex ={setSelectedIndex}
                 columns={columns}
                 editableColumns = {editableColumns}
-                editedData={editedData}
-                setEditedData={setEditedData}
-                submitRow={submitRow}
-                deleteRow = {deleteRow}
-                updateEditedDataValid={updateEditedDataValid}
+                editableFileData={editableFileData} 
+                setEditableFileData={setEditableFileData}
+                updateErrorCodes={updateEditedDataErrors}
                 checkRow = {checkRow}
                 isCellValid = {checkCell}
-                
+                duplicateIndex = {duplicateIndex}
+                setDuplicateIndex = {setDuplicateIndex}
              />}
         </div>
 

@@ -72,5 +72,5 @@ export const UserTable = ({displayData}) => {
         </Table>
       </TableContainer>
 
-    )
+    );
 }
