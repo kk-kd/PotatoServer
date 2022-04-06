@@ -199,14 +199,14 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
         {((editableFileData) && (edit)) && 
        (
             <div>                
-                {(!complete && errorDataToShow && errorDataToShow.length !== 0) && 
+                {(errorDataToShow && errorDataToShow.length !== 0) && 
                  <div id="errorContainer">
                     <div> Error: Duplicate entry already exists in our database. </div>
                     <UserTable displayData={errorDataToShow} dataType = {dataType} > </UserTable> 
                 </div>
                 }
 
-                {(!complete && warningDataToShow && warningDataToShow.length !== 0) && 
+                {(warningDataToShow && warningDataToShow.length !== 0) && 
             
                     <div id="warningContainer">
                         <div> Warning: we found an entry with a matching name! </div>

@@ -232,19 +232,35 @@ export const EditManager = ({complete, setComplete, message, editableFileData, s
     }
 
     const checkComplete = () => {
-
-        let nonempty_count = editableFileData.filter(Boolean).length
-        
-        if (nonempty_count === 0) {
-            setComplete(true);
-
+        let not_comp = []
+        if (editableFileData) {
+            editableFileData.map((row, index) => {
+                console.log(row)
+                if (! ('exclude' in row) || !row['exclude']) {
+                    console.log("not excluded")
+                    if (!('valid' in row)) {
+                        console.log("valid key not present")
+                        not_comp.push(index)
+                    } else if (!row['valid']){
+                        console.log("valid key is false")
+                        not_comp.push(index)
+                    }
+                }  
+            })
         }
-        if (complete) {
+        console.log(not_comp)
+        if (not_comp.length > 0) {
+            setComplete(false)
+        }
+        else {
             setComplete(true)
         }
+        
+        
     }
     useEffect(()=> {
         console.log(editableFileData)
+        checkComplete()
     }
     ,[editableFileData])
 
@@ -254,7 +270,7 @@ export const EditManager = ({complete, setComplete, message, editableFileData, s
             {!complete && <h5> {message} </h5>}
            
             <CssBaseline />
-            {((!complete) && (editableFileData.length > 0)) && <EditableTable
+            {((editableFileData.length > 0)) && <EditableTable
                 setSelectedIndex ={setSelectedIndex}
                 columns={columns}
                 editableColumns = {editableColumns}

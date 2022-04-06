@@ -85,7 +85,6 @@ export const CheckStudentCell = (
       return r
     }
   } 
-
   //dodged every wrong case? Return a success.
   return [null,"", "", "", ""];
 };

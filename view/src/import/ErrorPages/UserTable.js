@@ -11,7 +11,7 @@ import TableBody from "@mui/material/TableBody";
 export const UserTable = ({displayData, dataType}) => {
     const [hidden_col_map, setHiddenColMap] = useState ({
       'students': ['address', 'phoneNumber'],
-      'parents': ['school_name', 'student_id', 'parent_email'],
+      'parents': ['school_name', 'student_id','parent_email'],
     })
 
     useEffect(()=> {
@@ -26,14 +26,17 @@ export const UserTable = ({displayData, dataType}) => {
           },
           {
             Header: "Parent Email",
+            id: 'parent_email',
             accessor: row => row.parentUser.email,
           },
           {
             Header: "School",
+            id: 'school_name',
             accessor: row => row.school.name,
           },
           {
             Header: "Student ID",
+            id: 'id',
             accessor: "id",
           },
           {
