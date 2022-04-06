@@ -12,6 +12,7 @@ import {
   getAllUsers,
   filterAllSchools,
   filterAllUsers,
+  filterAllStudents,
 } from "../api/axios_wrapper";
 
 export const ImportPage = () => {
@@ -27,6 +28,7 @@ export const ImportPage = () => {
   const [users, setUsers] = useState();
   const [schools, setSchools] = useState();
   const [databaseUsers, setDatabaseUsers] = useState();
+  const [databaseStudents, setDatabaseStudents] = useState();
   const [schoolNames, setSchoolNames] = useState();
 
   // errors
@@ -76,6 +78,7 @@ export const ImportPage = () => {
       setSchools(fetchedData.data.schools);
       let a = fetchedData.data.schools.map((school) => school.uniqueName);
       setSchoolNames(a);
+      console.log(a)
     } catch (error) {
       alert(error.response.data);
     }
@@ -103,9 +106,35 @@ export const ImportPage = () => {
     }
   };
 
+  const fetchStudentData = async () => {
+    try {
+      const fetchedData = await filterAllStudents({
+        page: 1,
+        size: 500,
+        sort: "none",
+        sortDir: "none",
+        fullNameFilter: "",
+        showAll: "true",
+        idFilter: "",
+      });
+    
+      let parent_email = fetchedData.data.students.map((student) => student.parent_email);
+      let uid = fetchedData.data.students.map((student) => student.uid);
+      let name = fetchedData.data.students.map((student) => student.fullName);
+
+      let e = {'parent_email': parent_email, 'uid': uid, 'fullName': name}
+      console.log(e)
+      setDatabaseStudents(e);
+
+    } catch (error) {
+      alert(error.response.data);
+    }
+  };
+
   useEffect(() => {
     fetchUserData();
     fetchSchoolData();
+    fetchStudentData();
   }, []);
 
   // run validation
@@ -141,6 +170,7 @@ export const ImportPage = () => {
     setFileData(data)
     console.log("file data set")
     console.log(data)
+    console.log(schoolNames)
     setProcessingComplete(true);
     console.log("processing complete")
   };
@@ -238,6 +268,7 @@ export const ImportPage = () => {
             users={users}
             schools={schools}
             databaseUsers={databaseUsers}
+            databaseStudents = {databaseStudents}
             schoolNames={schoolNames}
             dataType={dataType}
             requiredColumns={requiredColumns}

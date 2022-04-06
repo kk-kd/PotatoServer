@@ -15,12 +15,6 @@ export const EditManager = ({complete, setComplete, message, editableFileData, s
 
     const searchFileAgainstNewValue = (old_row, new_index, col, val) => { //(row, rowIndex, columnId, value)
         let existing_dup = old_row['duplicate'] ? old_row['duplicate'] : []
-        console.log("CHECKING")
-        console.log(existing_dup)
-        console.log(old_row)
-        console.log(new_index)
-        console.log(col)
-        console.log(val)
        
         if (col === 'email') {
             // search for email match

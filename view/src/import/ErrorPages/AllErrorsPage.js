@@ -6,11 +6,11 @@
 import React, { useEffect, useState } from "react"
 import { EditManager } from "../EditContent/EditManager"
 import  {UserTable}  from "./UserTable";
-import { getOneUser } from "../../api/axios_wrapper";
+import { getOneStudent, getOneUser } from "../../api/axios_wrapper";
 import "./Error.css"
 
 
-export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, Errors, setErrors, processingComplete, setProcessingComplete, fileData, setFileData}) => {
+export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, activeError, setActiveError, Errors, setErrors, processingComplete, setProcessingComplete, fileData, setFileData, dataType}) => {
     const [editableFileData, setEditableFileData] = useState();
     const [complete, setComplete] = useState(false);
     const [edit, setEdit] = useState(false);
@@ -25,7 +25,7 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
 
     const editableColumns = requiredColumns 
 
-    const fetchUserErrorDuplicates = async (ids) => {
+    const fetchErrorDuplicates = async (ids) => {
         console.log("fetch error with errorids")
         console.log(ids)
         if (ids && (selectedIndex === 0 || selectedIndex)) { 
@@ -33,11 +33,21 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
             try {
                 for (let j = 0; j < ids.length; j++) {
                     if (ids[j]) {
-                        const fetchedData = await getOneUser(ids[j]).catch((error) => {
-                            let message = error.response.data;
-                            throw alert(message);
-                        });
-                        a.push(fetchedData.data);
+                        if (dataType === 'parents') {
+                            const fetchedData = await getOneUser(ids[j]).catch((error) => {
+                                let message = error.response.data;
+                                throw alert(message);
+                            });
+                            a.push(fetchedData.data);
+                        }
+                        if (dataType === 'students') {
+                            const fetchedData = await getOneStudent(ids[j]).catch((error) => {
+                                let message = error.response.data;
+                                throw alert(message);
+                            });
+                            a.push(fetchedData.data);
+                        }
+                        
                         }
                     }
                 
@@ -49,7 +59,7 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
       }  
     };
 
-    const fetchUserWarningDuplicates = async (ids) => {
+    const fetchWarningDuplicates = async (ids) => {
         console.log("fetch error with warningids")
         console.log(ids)
         if (ids && (selectedIndex === 0 || selectedIndex)) { 
@@ -57,11 +67,21 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
             try {
                 for (let j = 0; j < ids.length; j++) {
                     if (ids[j]) {
-                    const fetchedData = await getOneUser(ids[j]).catch((error) => {
-                        let message = error.response.data;
-                        throw alert(message);
-                    });
-                    a.push(fetchedData.data);
+                        if (dataType === 'parents') {
+                            const fetchedData = await getOneUser(ids[j]).catch((error) => {
+                                let message = error.response.data;
+                                throw alert(message);
+                            });
+                            a.push(fetchedData.data);
+                        }
+                        if (dataType === 'students') {
+                            const fetchedData = await getOneStudent(ids[j]).catch((error) => {
+                                let message = error.response.data;
+                                throw alert(message);
+                            });
+                            a.push(fetchedData.data);
+                        } 
+                        
                     }
                 }
                 setWarningDataToShow(a);
@@ -72,6 +92,8 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
       }  
     };
 
+    // TODO pull student data by id
+
     const resetErrorData = (uid) => {
         if (uid) {
             if (!errorIds.includes(uid)) {
@@ -79,7 +101,7 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
                  setErrorDataToShow()
                  let new_ids = [...errorIds, uid]
                  setErrorIds(new_ids);
-                 fetchUserErrorDuplicates(new_ids)
+                 fetchErrorDuplicates(new_ids)
             }
         }
         else {
@@ -95,7 +117,7 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
                  setWarningDataToShow([])
                  let new_ids = [...warningIds, uid]
                  setWarningIds(new_ids)
-                 fetchUserWarningDuplicates(new_ids)
+                 fetchWarningDuplicates(new_ids)
             }
         }
         else {
@@ -115,21 +137,32 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
         if (editableFileData) {
             let currentRow = editableFileData[ind]
             console.log(currentRow)
-            if (currentRow['hint_uids']) {
-                setErrorIds(currentRow['hint_uids'])
-                fetchUserErrorDuplicates(currentRow['hint_uids'])
+            if (dataType === 'parents') {
+                if (currentRow['hint_uids']) {
+                    setErrorIds(currentRow['hint_uids'])
+                    fetchErrorDuplicates(currentRow['hint_uids'])
+                }
+                else {
+                    resetErrorData();
+                }
+                if (currentRow['warning_uids']) {
+                    setWarningIds(currentRow['warning_uids'])
+                    fetchWarningDuplicates(currentRow['warning_uids'])
+                }
+                else {
+                    resetWarningData()
+                }
             }
-            else {
-                resetErrorData();
-            }
-            if (currentRow['warning_uids']) {
-                setWarningIds(currentRow['warning_uids'])
-                fetchUserWarningDuplicates(currentRow['warning_uids'])
-            }
-            else {
-                resetWarningData()
-            }
-            
+            else if (dataType === 'students') {
+                resetErrorData()
+                if (currentRow['warning_uids']) {
+                    setWarningIds(currentRow['warning_uids'])
+                    fetchWarningDuplicates(currentRow['warning_uids'])
+                }
+                else {
+                    resetWarningData()
+                }
+            }        
         }
 
     }
@@ -168,21 +201,21 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
             <div>                
                 {(!complete && errorDataToShow && errorDataToShow.length !== 0) && 
                  <div id="errorContainer">
-                    <div> Similar User Already Exists! </div>
-                    <UserTable displayData={errorDataToShow}></UserTable> 
+                    <div> Error: Duplicate entry already exists in our database. </div>
+                    <UserTable displayData={errorDataToShow} dataType = {dataType} > </UserTable> 
                 </div>
                 }
 
                 {(!complete && warningDataToShow && warningDataToShow.length !== 0) && 
             
                     <div id="warningContainer">
-                        <div> We found a user with a matching name! </div>
-                        <UserTable displayData={warningDataToShow}></UserTable> 
+                        <div> Warning: we found an entry with a matching name! </div>
+                        <UserTable displayData={warningDataToShow} dataType = {dataType}></UserTable> 
                     </div>
                 }
   
                 <EditManager
-                    message = {"Please Fix Entries or Exclude Them"}
+                    message = {""}
                     complete = {complete}
                     setComplete = {setComplete}
                     editableFileData = {editableFileData} 

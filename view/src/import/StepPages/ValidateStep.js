@@ -14,6 +14,7 @@ export const ValidateStep = ({
   schools,
   schoolNames,
   databaseUsers,
+  databaseStudents,
   dataType,
   requiredColumns,
   processingComplete,
@@ -31,7 +32,7 @@ export const ValidateStep = ({
 
   const checkRow = (rowData) => {
     if (dataType === "students") {
-      return CheckStudentRow(rowData, users, schools, databaseUsers, schoolNames);
+      return CheckStudentRow(rowData, users, schools, databaseUsers, databaseStudents, schoolNames);
     } else if (dataType === "parents") {
       return CheckParentRow(rowData, users, schools, databaseUsers, schoolNames);
     }
@@ -40,7 +41,7 @@ export const ValidateStep = ({
 
   const checkCell = (col, val) => {
     if (dataType === "students") {
-      return CheckStudentCell(col, val, users, schools, databaseUsers, schoolNames);
+      return CheckStudentCell(col, val, users, schools, databaseUsers, databaseStudents, schoolNames);
     } else if (dataType === "parents") {
       return CheckParentCell(col, val, users, schools, databaseUsers, schoolNames);
     }

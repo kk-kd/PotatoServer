@@ -161,7 +161,7 @@ export const EditableTable = ({
           {
             accessor: "duplicate",
             id: "duplicate",
-            Header: "Duplicate",
+            Header: "Row Errors",
             Cell: ({row}) => (
               (row.values.duplicate && row.values.duplicate.length > 0) ? 
               <div>

@@ -34,45 +34,60 @@ export const CheckStudentCell = (
   schools,
   users,
   databaseUsers,
+  databaseStudents,
   schoolNames
 ) => {
   if (col === "index" || col === "valid") {
-    return [-1, ''];
+    return [null, '', '', '', ''];
   }
   // catches blank cases
   else if (val === null || val === undefined || val === "") {
     let missing_col_code_map = {
-      'email': 16, 
       'name': 2,
-      'student_id': 8,
       'school_name': 9,
       'parent_email': 10,
     }
     let code = missing_col_code_map[col]
-    return [code, "Blank!"];
+    if (code) {
+      return [code, "Blank!", "", "", ""];
+    }
+    else {
+      return [code, "", "", "", ""];
+    }
   }
   // If the student isn't numerical
   else if (col === "student_id") {
     if (isNaN(val)) {
-      return [15, "Not a number"];
+      return [15, "Not a number", "", "", ""];
     }
   } else if (col === "parent_email") {
     if (!databaseUsers.email.includes(val) && !databaseUsers.email.includes(val.toLowerCase().trim())) {
-      return [12, "Email not registered"];
+      return [12, "Email not registered", "", "", ""];
     }
      if (!EmailValidator.validate(val)) {
-      return [14, "Not Valid"];
+      return [14, "Not Valid" ,"", "", ""];
     }
   } else if (col === "school_name") {
     if (
       !schoolNames.includes(val) &&
       !schoolNames.includes(val.toLowerCase().trim())
     ) {
-      return [11, "School not registered"];
+      return [11, "School not registered", "", "", ""];
     }
   }
+   // name
+   else if (col === 'name') {
+    // name exists
+    if (databaseStudents.fullName.includes(val) || databaseStudents.fullName.includes(val.toLowerCase().trim())) {
+      let dup_name_index = databaseStudents.fullName.indexOf(val.trim())
+      let ui = databaseStudents.uid[dup_name_index]
+      let r = [4, "", null , "May be a Duplicate", ui];
+      return r
+    }
+  } 
+
   //dodged every wrong case? Return a success.
-  return [0,""];
+  return [null,"", "", "", ""];
 };
 
 // * 1 - Email is not valid
@@ -150,15 +165,25 @@ export const CheckParentCell = (
   return [null,"", "", "", ""];
 };
 
-export const CheckStudentRow = (row, schools, users, databaseUsers, schoolNames) => {
-  let errors = []
+export const CheckStudentRow = (row, schools, users, databaseUsers, databaseStudents, schoolNames) => {
+  let codes = []
+  let error_uid = [null]
+  let warning_uid = [null]
+  console.log(schoolNames)
+
   for (const [key, value] of Object.entries(row)) {
-    let error = CheckStudentCell(key, value, schools, users, databaseUsers, schoolNames);
-    if (error[1] !== "") {
-      errors.push(error[0])
+    let [code, error_message, err_uid, warn_message, warn_uid] = CheckStudentCell(key, value, schools, users, databaseUsers, databaseStudents, schoolNames); 
+    if (code) {
+      codes.push(code)
+    }
+    if (err_uid) {
+      error_uid.push(err_uid) 
+    }
+    if (warn_uid) {
+      warning_uid.push(warn_uid)
     }
   }
-  return [errors, ];
+  return [codes, error_uid.pop(), warning_uid.pop()];
 };
 
 export const CheckParentRow = (row, schools, users, databaseUsers, schoolNames) => {
