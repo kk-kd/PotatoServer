@@ -169,8 +169,6 @@ export const CheckParentRow = (row, schools, users, databaseUsers, schoolNames) 
   for (const [key, value] of Object.entries(row)) {
 
     let [code, error_message, err_uid, warn_message, warn_uid] = CheckParentCell(key, value, schools, users, databaseUsers, schoolNames); 
-    console.log("checkCell returned")
-    console.log([code, error_message, err_uid, warn_message, warn_uid])
     if (code) {
       codes.push(code)
     }

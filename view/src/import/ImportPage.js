@@ -138,7 +138,6 @@ export const ImportPage = () => {
   };
 
   const findAndFormatErrors = (data) => {
-
     setFileData(data)
     console.log("file data set")
     console.log(data)

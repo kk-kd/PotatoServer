@@ -73,8 +73,6 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
     };
 
     const resetErrorData = (uid) => {
-        console.log("resestErrorData called with uid")
-        console.log(uid)
         if (uid) {
             if (!errorIds.includes(uid)) {
                  // re fetch error user
@@ -148,8 +146,7 @@ export const ErrorPage = ({checkRow, checkCell, columns, requiredColumns, active
     }
     useEffect(()=> {
         if (processingComplete && fileData) {
-            setEditableFileData(fileData)
-            setSelectedIndex(0);
+            setEditableFileData(fileData)        
         }  
     }
     ,[processingComplete])

@@ -159,6 +159,22 @@ export const EditableTable = ({
         hooks.allColumns.push((columns) => [
           ...columns,
           {
+            accessor: "duplicate",
+            id: "duplicate",
+            Header: "Duplicate",
+            Cell: ({row}) => (
+              (row.values.duplicate && row.values.duplicate.length > 0) ? 
+              <div>
+                 {row.values.duplicate.map(obj =>
+                    (obj[0] && [50].includes(obj[0])) ?
+                        <div style = {{color:'red'}}> {obj[1]} </div> 
+                       : <div style = {{color:'orange'}}> {obj[1]} </div>
+                    )
+                    }
+              </div> :
+              <div></div>)
+          },
+          {
             accessor: "valid",
             id: "valid",
             Header: "Status",
