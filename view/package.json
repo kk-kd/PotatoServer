@@ -38,6 +38,7 @@
     "react-to-print": "^2.14.4",
     "react-tooltip": "^4.2.21",
     "react-use-batched-state": "^1.0.5",
+    "reactjs-popup": "^2.0.5",
     "styled-components": "^5.3.3",
     "web-vitals": "^2.1.3"
   },

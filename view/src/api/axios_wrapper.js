@@ -368,6 +368,34 @@ export async function saveBulkStudents(specifications) {
     headers: getHeaderWithAuthToken(),
   });
 }
+
+export async function filterAllRuns(specifications) {
+  return await axios.get(`/api/runs/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getCurrentUserActiveRuns() {
+  return await axios.get(`/api/runs/currentUser`, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function validateNewRun(specifications) {
+  return await axios.get("/api/runs/validate", {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function saveNewRun(specifications) {
+  return await axios.post("/api/runs/save", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function endRun(uid) {
+  return await axios.get("/api/runs/end/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 // Helpers
 function convertMapToURL(map) {
   return Object.keys(map)

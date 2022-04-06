@@ -14,6 +14,7 @@ import { Student } from "./entity/Student";
 import { StudentController } from "./controller/StudentController";
 import { Route } from "./entity/Route";
 import { RouteController } from "./controller/RouteController";
+import { RunController } from "./controller/RunController";
 
 import { Stop } from "./entity/Stop";
 import { StopController } from "./controller/StopController";
@@ -89,6 +90,8 @@ createConnection()
     // const studentRepository = connection.getCustomRepository(StudentController);
     // const schoolRepository = connection.getCustomRepository(SchoolController);
     // const routeRepository = connection.getCustomRepository(RouteController);
+    //const runRepository = await connection.getCustomRepository(RunController);
+    //await runRepository.query(`TRUNCATE ${"runs"} RESTART IDENTITY CASCADE;`);
 
     // Clean tables
 

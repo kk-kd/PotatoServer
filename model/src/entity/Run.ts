@@ -32,6 +32,12 @@ export class Run {
   @Column({ type: "timestamptz" })
   timeStarted: string;
 
+  @Column({ type: "int", nullable: true })
+  duration: number;
+
+  @Column({ type: "boolean", nullable: true })
+  timedOut: boolean;
+
   @Column({ type: "boolean" })
   ongoing: boolean;
 
