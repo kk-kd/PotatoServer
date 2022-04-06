@@ -123,13 +123,8 @@ export const RunLogs = ({ role }) => {
       useTable({ columns, data });
   return (
       <div id="content">
-        <h2 id="title"> Parents and Administrators </h2>
+        <h2 id="title"> Complete Run Logs </h2>
         <div id="userListing">
-          {(role === "Admin" || role === "School Staff") && (
-              <Link to="/Users/create">
-                <button>Create Parent or Administrator</button>
-              </Link>
-          )}
           <table
               {...getTableProps()}
               class="table table-striped table-bordered border-success rounded"
