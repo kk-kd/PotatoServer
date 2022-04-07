@@ -1,11 +1,16 @@
 import fetch from "node-fetch";
 import { getConnection, getRepository } from "typeorm";
 import { Run } from "../entity/Run";
+import { LOW_PRIORITY } from "./TransitTraqController";
 const Queue = require("bull");
+
 const DEBUG = true;
 const LOWEST_PRIORITY = 20;
 const PRIORITY_OUTDATED = LOWEST_PRIORITY - 2;
 const PRIORITY_REQUESTED = LOWEST_PRIORITY - 1;
+
+const ABORT_MESSAGE = "abort";
+const NO_RECORD_MESSAGE = "no record";
 
 export class TransitTraqHelper {
   static busQueue = new Queue("bus", "redis://127.0.0.1:6379", {
@@ -16,7 +21,26 @@ export class TransitTraqHelper {
   });
 
   static async initQueue() {
-    TransitTraqHelper.busQueue.process(async (job) => {
+    TransitTraqHelper.busQueue.process(5, async (job) => {
+      const existingEntry = await getRepository(Run)
+        .createQueryBuilder("run")
+        .where("run.busNumber = :busNumber", { busNumber: job.data.busId })
+        .andWhere("run.ongoing = :ongoing", { ongoing: true })
+        .getOne();
+
+      if (existingEntry == undefined) {
+        return NO_RECORD_MESSAGE;
+      }
+
+      // TODO: check the logic here
+      if (
+        job.data.requestedTime -
+          new Date(existingEntry.lastFetchTime).getTime() <
+        LOW_PRIORITY
+      ) {
+        return ABORT_MESSAGE;
+      }
+
       const dst = `http://tranzit.colab.duke.edu:8000/get?bus=${job.data.busId}`;
       console.log(`fetching from ${dst}`);
 
@@ -48,16 +72,23 @@ export class TransitTraqHelper {
         !("lng" in result)
       ) {
         console.log("Seems like an invalid response");
+        if (!(result === NO_RECORD_MESSAGE || result === ABORT_MESSAGE)) {
+          var saveStatus = this.saveNewBusLocationToDatabase(result, false);
+        }
+      } else {
+        saveStatus = this.saveNewBusLocationToDatabase(result, true);
       }
 
-      const saveStatus = this.saveNewBusLocationToDatabase(result);
       if (!saveStatus) {
         console.log("Something's wrong when saving to the database");
       }
     });
   }
 
-  private static async saveNewBusLocationToDatabase(response) {
+  private static async saveNewBusLocationToDatabase(
+    response,
+    isValidResponse: boolean
+  ) {
     const existingEntry = await getRepository(Run)
       .createQueryBuilder("run")
       .where("run.busNumber = :busNumber", { busNumber: response.bus })
@@ -67,19 +98,14 @@ export class TransitTraqHelper {
     if (existingEntry == undefined) {
       return false;
     }
-    try {
-      existingEntry.longitude = response.lng;
-      existingEntry.latitude = response.lat;
-      existingEntry.lastFetchTime = new Date().toISOString();
-      await getConnection().manager.save(existingEntry);
-    } catch (e) {
-      console.log(
-        "TransitTraqHelper: failed to save new location to the database"
-      );
-      return false;
-    }
 
-    return true;
+    if (isValidResponse) {
+      await saveValidResponse(existingEntry, response);
+      return false;
+    } else {
+      await getConnection().manager.save({ ...existingEntry, TTErroro: true });
+      return true;
+    }
   }
 
   static addOutdatedBus(data) {
@@ -92,7 +118,7 @@ export class TransitTraqHelper {
 
   static addBusNumberToQueueWithPriority(data, p) {
     TransitTraqHelper.busQueue.add(
-      { busId: data },
+      { busId: data, requestedTime: new Date().getTime() },
       {
         priority: p,
         timeout: 2000,
@@ -102,5 +128,31 @@ export class TransitTraqHelper {
   }
 }
 
+async function saveValidResponse(existingEntry: Run, response) {
+  let newEntry = {
+    ...existingEntry,
+    longitude: response.lng,
+    latitude: response.lat,
+    lastFetchTime: new Date().toISOString(),
+    TTErroro: false,
+    latest: true,
+  };
+  try {
+    await getRepository(Run).save(newEntry);
+  } catch (e) {
+    console.log(
+      "TransitTraqHelper: failed to save new location to the database: " + e
+    );
+
+    try {
+      existingEntry.TTErroro = true;
+      await getRepository(Run).save(existingEntry);
+    } catch (e) {
+      console.log(
+        "TransitTraqHelper: save failed again. Please insepct the database."
+      );
+    }
+  }
+}
 // TransitTraqHelper.initQueue();
 // TransitTraqHelper.addBusNumberToQueue({ busId: 7000 });

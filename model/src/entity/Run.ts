@@ -58,4 +58,9 @@ export class Run {
     nullable: true,
   })
   latitude: number;
+
+  @Column({
+    nullable: true,
+  })
+  TTErroro: boolean;
 }

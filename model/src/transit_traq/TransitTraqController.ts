@@ -4,7 +4,7 @@ import { Run } from "../entity/Run";
 import { TransitTraqHelper } from "./TransitTraqHelper";
 import fetch from "node-fetch";
 
-const LOW_PRIORITY = 500;
+export const LOW_PRIORITY = 500;
 const NEEDS_REFRESH = 1000;
 
 export class TransitTraqController {
@@ -42,35 +42,8 @@ export class TransitTraqController {
     }
 
     // fetch from transit traq
-    const newLoc = await this.fetchBusLocationFromTransitTraq(
-      existingEntry.busNumber
-    );
-
-    // if overtime and failed to fetch from transit traq
-    if (
-      !("bus" in newLoc) ||
-      !("lat" in newLoc) ||
-      !("lng" in newLoc) ||
-      newLoc.bus != existingEntry.busNumber
-    ) {
-      TransitTraqHelper.addOutdatedBus(busNumber);
-      response
-        .status(200)
-        .send({ ...existingEntry, latest: false, timeElapsed: timeElapsed });
-    }
-
-    // if successfully fetched, return and save
-    try {
-      existingEntry.longitude = newLoc.lng;
-      existingEntry.latitude = newLoc.lat;
-      existingEntry.lastFetchTime = currentTime.toISOString();
-
-      await getConnection().manager.save(existingEntry);
-    } catch (e) {
-      console.log("RunController: failed to save new location to the database");
-    }
-
-    response.status(200).send({ ...existingEntry, latest: true });
+    TransitTraqHelper.addOutdatedBus(busNumber);
+    response.status(200).send({ ...existingEntry, latest: false });
   }
 
   async fetchBusLocationFromTransitTraq(busId) {
