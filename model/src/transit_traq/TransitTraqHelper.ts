@@ -72,7 +72,9 @@ export class TransitTraqHelper {
         !("lng" in result)
       ) {
         console.log("Seems like an invalid response");
-        var saveStatus = this.saveNewBusLocationToDatabase(result, false);
+        if (!(result === NO_RECORD_MESSAGE || result === ABORT_MESSAGE)) {
+          var saveStatus = this.saveNewBusLocationToDatabase(result, false);
+        }
       } else {
         saveStatus = this.saveNewBusLocationToDatabase(result, true);
       }
@@ -133,17 +135,18 @@ async function saveValidResponse(existingEntry: Run, response) {
     latitude: response.lat,
     lastFetchTime: new Date().toISOString(),
     TTErroro: false,
+    latest: true,
   };
   try {
-    await getConnection().manager.save(newEntry);
+    await getRepository(Run).save(newEntry);
   } catch (e) {
     console.log(
-      "TransitTraqHelper: failed to save new location to the database"
+      "TransitTraqHelper: failed to save new location to the database: " + e
     );
 
     try {
       existingEntry.TTErroro = true;
-      await getConnection().manager.save(existingEntry);
+      await getRepository(Run).save(existingEntry);
     } catch (e) {
       console.log(
         "TransitTraqHelper: save failed again. Please insepct the database."
