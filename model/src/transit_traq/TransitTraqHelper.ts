@@ -46,7 +46,7 @@ export class TransitTraqHelper {
 
       const response = await fetch(dst);
       const responseJson = await response.json();
-      return responseJson;
+      return { ...responseJson, requestedBusId: job.data.busId };
     });
 
     if (DEBUG) {
@@ -73,10 +73,19 @@ export class TransitTraqHelper {
       ) {
         console.log("Seems like an invalid response");
         if (!(result === NO_RECORD_MESSAGE || result === ABORT_MESSAGE)) {
-          var saveStatus = this.saveNewBusLocationToDatabase(result, false);
+          console.log("saving error message to the database...");
+          var saveStatus = this.saveNewBusLocationToDatabase(
+            result,
+            result.requestedBusId,
+            false
+          );
         }
       } else {
-        saveStatus = this.saveNewBusLocationToDatabase(result, true);
+        saveStatus = this.saveNewBusLocationToDatabase(
+          result,
+          result.bus,
+          true
+        );
       }
 
       if (!saveStatus) {
@@ -87,11 +96,12 @@ export class TransitTraqHelper {
 
   private static async saveNewBusLocationToDatabase(
     response,
+    busId,
     isValidResponse: boolean
   ) {
     const existingEntry = await getRepository(Run)
       .createQueryBuilder("run")
-      .where("run.busNumber = :busNumber", { busNumber: response.bus })
+      .where("run.busNumber = :busNumber", { busNumber: busId })
       .andWhere("run.ongoing = :ongoing", { ongoing: true })
       .getOne();
 
@@ -103,7 +113,7 @@ export class TransitTraqHelper {
       await saveValidResponse(existingEntry, response);
       return false;
     } else {
-      await getConnection().manager.save({ ...existingEntry, TTErroro: true });
+      await getRepository(Run).save({ ...existingEntry, TTErroro: true });
       return true;
     }
   }
