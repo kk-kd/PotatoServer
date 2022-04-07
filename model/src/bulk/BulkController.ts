@@ -6,6 +6,7 @@ import { User } from "../entity/User";
 import { getLngLat } from "./GeoHelper";
 import { School } from "../entity/School";
 import { Student } from "../entity/Student";
+import { StudentController } from "../controller/StudentController";
 
 /**
  * Note - validations while saving shouldn't be necessary. Just leave it there in case.
@@ -36,6 +37,8 @@ import { Student } from "../entity/Student";
  * 14 - invalid email
  * 11 - school does not exist
  * 12 - parent email does not exist
+ * 17 - student email is invalid
+ * 18 - student email already exists
  */
 
 // TODO: add phone number valiation once we have the requiremnt (ev4)
@@ -67,6 +70,7 @@ export class BulkController {
    * school_name: ...,
    * parent_email: ...,
    * error_code: [..., ...],
+   * hint_uids: [..., ...], <only with error code 18>
    * {},
    * ...]};
    */
@@ -150,6 +154,37 @@ export class BulkController {
           ).push(15);
         }
       }
+      // 17 STUDENT EMAIL IS INVALID
+      // Seeing if Email is blank
+      if (student.student_email == null || student.student_email == undefined || student.student_email.trim() == "") {
+        if (!isAPIRequest) return false;
+        else {
+          // 17 - Email is invalid
+          if (!EmailValidator.validate(student.student_email)) {
+            if (!isAPIRequest) return false;
+            (
+              studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
+            ).push(17);
+          }
+        }
+      }
+      // 18- Existing Emails
+      if (student.student_email != null || student.student_email != undefined || student.student_email.trim() == "") {
+        const reptitiveEntry = await getRepository(User)
+          .createQueryBuilder("users")
+          .select()
+          .where("users.email = :email", { email: student.student_email })
+          .getOne();
+
+        if (reptitiveEntry != null) {
+          if (!isAPIRequest) return false;
+          (studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])).push(
+            18
+          );
+          studentToReturn.hint_uids = [reptitiveEntry.uid];
+        }
+      }
+
 
       // 9 SCHOOL NAME ENTRY MISSING
       if (
@@ -382,14 +417,41 @@ export class BulkController {
       newStudent.parentUser = parentEntry;
 
       // Save
-      try {
-        await getRepository(Student).save(newStudent);
-      } catch (error) {
-        response
-          .status(401)
-          .send(
-            `Failed saving student ${newStudent.fullName} to the database: ${error.message}`
-          );
+      if (student.student_email == null || student.student_email == undefined || student.student_email.trim() == "") {
+        try {
+          await getRepository(Student).save(newStudent);
+        } catch (error) {
+          response
+            .status(401)
+            .send(
+              `Failed saving student ${newStudent.fullName} to the database: ${error.message}`
+            );
+        }
+      }
+      else if (!EmailValidator.validate(student.student_email)) {
+        response.status(401).send(`Incorrect Email format for student ${student.student_email}`);
+        return;
+      }
+      // if the student has an email and it is valid, then save the student user
+      else {
+        const newUser = new User();
+        try {
+          newUser.email = student.student_email.toLowerCase();
+          newUser.fullName = student.name;
+          newUser.role = "None";
+          if (student.phone_number != null && student.phone_number != undefined) {
+            newUser.phoneNumber = student.phone_number;
+          }
+          await getRepository(User).save(newUser);
+        }
+        catch (error) {
+          response
+            .status(401)
+            .send(
+              `Failed saving user ${newUser.email} to the database: ${error.message}`
+            );
+        }
+
       }
     }
 
@@ -532,23 +594,23 @@ export class BulkController {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           5
         );
-        } else {
-          // 6 - Geo
-          // await q.add(async () => {
-          var loc;
-          try {
-            loc = await getLngLat(user.address);
-            console.log(loc);
-            userToReturn = { ...userToReturn, loc };
-          } catch (error) {
-            console.log(
-              `${user.email} failed to fetch location, error - ${error}`
-            );
-            if (!isAPIRequest) return false;
-            (
-              userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
-            ).push(6);
-          }
+      } else {
+        // 6 - Geo
+        // await q.add(async () => {
+        var loc;
+        try {
+          loc = await getLngLat(user.address);
+          console.log(loc);
+          userToReturn = { ...userToReturn, loc };
+        } catch (error) {
+          console.log(
+            `${user.email} failed to fetch location, error - ${error}`
+          );
+          if (!isAPIRequest) return false;
+          (
+            userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
+          ).push(6);
+        }
       }
 
       // 7 - Missing phone number
