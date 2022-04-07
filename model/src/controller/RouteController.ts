@@ -166,6 +166,8 @@ export class RouteController extends Repository<Route> {
               .leftJoinAndSelect("routes.students", "students")
               .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
               .leftJoinAndSelect("routes.stops", "stops")
+              .leftJoinAndSelect("routes.runs", "runs")
+              .leftJoinAndSelect("runs.driver", "driver")
               .orderBy(sortSpecification, sortDirSpec)
               .where("routes.name ilike '%' || :name || '%'", { name: nameFilter})
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
@@ -182,6 +184,8 @@ export class RouteController extends Repository<Route> {
             .leftJoinAndSelect("routes.students", "students")
             .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
             .leftJoinAndSelect("routes.stops", "stops")
+            .leftJoinAndSelect("routes.runs", "runs")
+            .leftJoinAndSelect("runs.driver", "driver")
             .orderBy(sortSpecification, sortDirSpec)
             .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
             .getManyAndCount();
@@ -207,6 +211,8 @@ export class RouteController extends Repository<Route> {
               .leftJoinAndSelect("routes.students", "students")
               .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
               .leftJoinAndSelect("routes.stops", "stops")
+              .leftJoinAndSelect("routes.runs", "runs")
+              .leftJoinAndSelect("runs.driver", "driver")
               .orderBy(sortSpecification, sortDirSpec)
               .where("routes.name ilike '%' || :name || '%'", { name: nameFilter})
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
@@ -225,6 +231,8 @@ export class RouteController extends Repository<Route> {
             .leftJoinAndSelect("routes.students", "students")
             .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
             .leftJoinAndSelect("routes.stops", "stops")
+            .leftJoinAndSelect("routes.runs", "runs")
+            .leftJoinAndSelect("runs.driver", "driver")
             .orderBy(sortSpecification, sortDirSpec)
             .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
             .getManyAndCount();
@@ -261,6 +269,8 @@ export class RouteController extends Repository<Route> {
         .leftJoinAndSelect("routes.students", "students")
         .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
         .leftJoinAndSelect("routes.stops", "stops")
+        .leftJoinAndSelect("routes.runs", "runs")
+        .leftJoinAndSelect("runs.driver", "driver")
         .where("routes.name ilike '%' || :name || '%'", { name: nameFilter})
         .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
         .getMany();
@@ -271,6 +281,8 @@ export class RouteController extends Repository<Route> {
       .leftJoinAndSelect("routes.students", "students")
       .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
       .leftJoinAndSelect("routes.stops", "stops")
+      .leftJoinAndSelect("routes.runs", "runs")
+      .leftJoinAndSelect("runs.driver", "driver")
       .where("routes.name ilike '%' || :name || '%'", { name: nameFilter })
       .getMany();
     // return await this.routeRepository

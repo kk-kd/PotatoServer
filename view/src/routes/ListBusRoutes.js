@@ -110,6 +110,18 @@ export const ListBusRoutes = () => {
           </div>
         ),
       },
+      {
+        Header: "Current Run",
+        accessor: "runs",
+        Cell: (props) => (
+            <div>{[...props.value].some(run => run.ongoing) ? (
+                <>
+                  <div>{[...props.value].find(run => run.ongoing).driver.fullName}</div>
+                  <div>{[...props.value].find(run => run.ongoing).busNumber}</div>
+                </>
+            ) : "No Ongoing Runs"}</div>
+        )
+      }
     ],
     []
   );
