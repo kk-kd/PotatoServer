@@ -12,8 +12,9 @@ import {
   faCircleCheck,
   faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
-
+import { useEffect } from "react";
 import Autocomplete from "react-google-autocomplete";
+import { Checkbox } from '@mui/material';
 
 
 import {
@@ -25,28 +26,46 @@ import {
     value: initialValue,
     row: { index },
     column: { id },
-    updateEditedDataValid,
-    editableRowIndex, // index of the row we requested for editing
+    updateErrorCodes,
     editableColumns, // list of editable columns
     isCellValid,
+    setSelectedIndex, 
+    selectedIndex
 
   }) => {
     const [value, setValue] = React.useState(initialValue);
     const [err, setErr] = React.useState();
+    const [warn, setWarn] = React.useState();
       
     const onChange = (e) => {
       setValue(e.target.value);
-      updateEditedDataValid(index, id, e.target.value);
-      setErr(isCellValid(id, e.target.value));
+      updateErrorCodes(index, id, e.target.value);
+      let [code, err_message, error_uid, warning_message, warning_uid] = isCellValid(id, e.target.value); // [code, error_message, error_uid, warning_message, warning_uid]
+      setWarn(warning_message)
+      setErr(err_message)
     };
     
+    const onClick =()=> {
+      setSelectedIndex(index);
+    }
+
     // If the initialValue is changed externally, sync it up with our state
     React.useEffect(() => {
-      setValue(initialValue);
-      setErr(isCellValid(id, initialValue));
+        setValue(initialValue);
+        console.log(initialValue);
+        let e = isCellValid(id, initialValue);
+        console.log(e)
+        if (e[1]) {        
+          if (e[3]) {
+            setWarn(e[1]);
+          }
+          else {
+            setErr(e[1]);
+          }
+        }
     }, [initialValue]);
   
-    return (index === editableRowIndex && editableColumns.includes(id)) ? 
+    return (editableColumns.includes(id)) ? 
     (id === 'address' ? (
       <div>
               <Autocomplete
@@ -54,27 +73,30 @@ import {
                 onPlaceSelected={(place) => {
                   let selected = {'address': place.formatted_address, 'lat': place.geometry.location.lat(), 'lng': place.geometry.location.lng()}
                   setValue(selected)
-                  updateEditedDataValid(index, id,  selected);
+                  updateErrorCodes(index, id,  selected);
                   setErr('');
                 }}
+                onClick = {onClick}
+  
                 defaultValue = {initialValue}
                 onChange = {()=> {
-                  setErr('Invalid Address')
-                  updateEditedDataValid(index, id,  {'address': ''});
+                  updateErrorCodes(index, id,  '');
                 }}
-                
                 options={{
                   fields: ["geometry.location", "formatted_address"],
                   types: ["geocode"],
                 }}
+                style = {{border: (err) ? '1px solid red': '1px solid black'}}
               />  
               <div style = {{color:'red'}}> {err} </div>
               </div>
         ) 
         :
           <div>
-            <input value={value} onChange={onChange} style = {{border: err ? '1px solid red': '1px solid #34815c', position: 'relative'}}/>
+            {!warn && <input value={value} onChange={onChange} onClick = {onClick} style = {{border: (err) ? '1px solid red': '1px solid black', position: 'relative'}}/>} 
+            {warn && <input value={value} onChange={onChange} onClick = {onClick} style = {{border: '1px solid orange', position: 'relative'}}/>} 
             <div style = {{color:'red'}}> {err} </div>
+            <div style = {{color:'orange'}}> {warn} </div>
           </div>
     ) : (
       <p>{value}</p>
@@ -103,16 +125,15 @@ import {
 export const EditableTable = ({
     columns,
     editableColumns,
-    editedData,
-    setEditedData,
-    updateEditedDataValid,
-    submitRow,
-    deleteRow,
+    editableFileData,
+    setEditableFileData,
+    updateErrorCodes,
     isCellValid,
+    selectedIndex, 
+    setSelectedIndex,
   }) => {
     const [editableRowIndex, setEditableRowIndex] = React.useState(0);
-    
-  
+ 
     const {
       getTableProps,
       headerGroups,
@@ -123,76 +144,82 @@ export const EditableTable = ({
       {
         columns,
         editableColumns,
-        data: editedData,
-        setEditedData,
+        data: editableFileData,
+        setEditableFileData,
         defaultColumn,
-        submitRow,
-        deleteRow,
-        updateEditedDataValid,
+        updateErrorCodes,
         editableRowIndex,
         setEditableRowIndex, 
-        isCellValid
+        isCellValid, 
+        selectedIndex, 
+        setSelectedIndex
       },
-
 
       (hooks) => {
         hooks.allColumns.push((columns) => [
           ...columns,
           {
+            accessor: "duplicate",
+            id: "duplicate",
+            Header: "Row Errors",
+            Cell: ({row}) => (
+              (row.values.duplicate && row.values.duplicate.length > 0) ? 
+              <div>
+                 {row.values.duplicate.map(obj =>
+                    (obj[0] && [50].includes(obj[0])) ?
+                        <div style = {{color:'red'}}> {obj[1]} </div> 
+                       : <div style = {{color:'orange'}}> {obj[1]} </div>
+                    )
+                    }
+              </div> :
+              <div></div>)
+          },
+          {
             accessor: "valid",
             id: "valid",
             Header: "Status",
-            Cell: ({ row}) => (
-              (row.values.valid) ?
+            Cell: ({row}) => (
+
+              (row.values.valid)  ?
               <FontAwesomeIcon
+                onClick = {()=> {console.log(row)}}
                 icon={faCircleCheck}
                 size="lg"
                 style={{ color: "green"}}
                />
                 : 
                 <FontAwesomeIcon
+                onClick = {()=> {console.log(row)}}
                 icon={faCircleExclamation}
                 size="lg"
                 style={{ color: "red" }}
                />)
           },
-      
-          {
-            accessor: "edit",
-            id: "edit",
-            Header: "",
-            Cell: ({ row, setEditableRowIndex, editableRowIndex, editableColumns, updateEditedDataValid}) => (
-
-              (row.index === editableRowIndex)) ?
-
-              (row.values.valid ? 
-                <button
-                    className="action-button"
-                    disabled = {!row.values.valid}
-                    onClick={() => {         
-                        const Row = row.values;
-                        delete Row.edit;
-                        updateEditedDataValid(row.index, ['index'], Row['index'])
-                        //move to next column
-                        if (row.values.valid) {
-                            setEditableRowIndex(row.index + 1);
-                            submitRow(row.index, row.values)
-                        }
-                    }
-                    }
-                    > Submit 
-                  </button> 
-                :  <button style={{opacity: 0.3}} disabled = {true}> Submit </button> // backgroundColor: 'rgba(0, 0, 0, 0.38)'
-              ) 
-              : <div></div>
-          },
-          {
+                {
             accessor: "index",
             id: "index",
-            Header: "",
-            Cell: ({row, deleteRow}) => (
-               <button onClick = {(e) => {deleteRow(row.index, row.values); updateEditedDataValid(row.index, 'index', row.index); setEditableRowIndex(row.index +1)}}> Delete </button> 
-            )
+            Header: "Exclude",
+            Cell: ({
+              row,
+              value: initialValue,
+              updateErrorCodes,
+              }) => {
+                
+              const [value, setValue] = React.useState(initialValue);
+
+              React.useEffect(() => {
+                setValue(initialValue);
+              }, [initialValue]);
+               
+              return (
+              <div style={{'text-align':'center'}}>
+                <Checkbox
+                  defaultChecked={row.values.exclude ? true : false} 
+                  onChange={(e) => {
+                    setValue(e.target.checked);
+                    updateErrorCodes(row.values.index, 'exclude', e.target.checked);}}  />
+              </div>
+            )}
           },
         ]);}
     );
@@ -202,10 +229,10 @@ export const EditableTable = ({
   
     const deleteUserHandler = (event) => {
       const newData = removeByIndexs(
-        editedData,
+        editableFileData,
         Object.keys(selectedRowIds).map((x) => parseInt(x, 10))
       );
-      setEditedData(newData);
+      setEditableFileData(newData);
     };
   
     return (
@@ -244,5 +271,7 @@ export const EditableTable = ({
       </TableContainer>
     );
   };
-    
+  
+
+
   export default EditableTable;
