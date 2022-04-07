@@ -4,7 +4,7 @@ import { Run } from "../entity/Run";
 import { TransitTraqHelper } from "./TransitTraqHelper";
 import fetch from "node-fetch";
 
-const LOW_PRIORITY = 500;
+export const LOW_PRIORITY = 500;
 const NEEDS_REFRESH = 1000;
 
 export class TransitTraqController {

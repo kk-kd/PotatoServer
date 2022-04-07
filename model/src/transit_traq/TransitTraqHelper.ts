@@ -1,6 +1,7 @@
 import fetch from "node-fetch";
 import { getConnection, getRepository } from "typeorm";
 import { Run } from "../entity/Run";
+import { LOW_PRIORITY } from "./TransitTraqController";
 const Queue = require("bull");
 
 const DEBUG = true;
@@ -31,8 +32,15 @@ export class TransitTraqHelper {
         return NO_RECORD_MESSAGE;
       }
 
-      if (existingEntry.lastFetchTime) {
+      // TODO: check the logic here
+      if (
+        job.data.requestedTime -
+          new Date(existingEntry.lastFetchTime).getTime() <
+        LOW_PRIORITY
+      ) {
+        return ABORT_MESSAGE;
       }
+
       const dst = `http://tranzit.colab.duke.edu:8000/get?bus=${job.data.busId}`;
       console.log(`fetching from ${dst}`);
 
@@ -108,7 +116,7 @@ export class TransitTraqHelper {
 
   static addBusNumberToQueueWithPriority(data, p) {
     TransitTraqHelper.busQueue.add(
-      { busId: data },
+      { busId: data, requestedTime: new Date().getTime() },
       {
         priority: p,
         timeout: 2000,
