@@ -1,0 +1,10 @@
+#actualModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#startRunModal {
+  background: white;
+  display: inline-block;
+}

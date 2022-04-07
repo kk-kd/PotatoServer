@@ -431,9 +431,33 @@ export const allRoutes = [
   },
 
   {
+    method: "get",
+    route: "/api/runs/filter",
+    controller: RunController,
+    action: "filterAllRuns",
+  },
+  {
+    method: "get",
+    route: "/api/runs/currentUser",
+    controller: RunController,
+    action: "getUserActiveRuns"
+  },
+  {
+    method: "get",
+    route: "/api/runs/validate",
+    controller: RunController,
+    action: "validateNewRun",
+  },
+  {
     method: "post",
-    route: "/api/run/new",
+    route: "/api/runs/save",
     controller: RunController,
     action: "saveNewRun",
+  },
+  {
+    method: "get",
+    route: "/api/runs/end/:uid",
+    controller: RunController,
+    action: "endRun",
   },
 ];

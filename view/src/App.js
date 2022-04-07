@@ -5,6 +5,7 @@ import { BusRoutes } from "./routes/BusRoutes";
 import { Schools } from "./schools/Schools";
 import { useEffect, useState } from "react";
 import LoginPage from "./login/LoginPage";
+import { Runs } from "./run/Runs";
 import { Students } from "./students/Students";
 import { Users } from "./users/Users";
 import { returnUserInfoFromJWT } from "./api/axios_wrapper";
@@ -97,6 +98,7 @@ export const App = () => {
             <Route path="Users/*" element={<Users role={currentUser.role} uid={currentUser.uid} />} />
             <Route path="Students/*" element={<Students role={currentUser.role} />} />
             <Route path="Routes/*" element={<BusRoutes role={currentUser.role} />} />
+            <Route path="Runs/*" element={<Runs role={currentUser.role} />} />
             {currentUser.role !== "Driver" && <Route path="Emails/*" element={<Emails role={currentUser.role} />} />}
             <Route path="Import/*" element={<Import />} />
             <Route path="*" element={<Navigate to="MyStudents" />} />

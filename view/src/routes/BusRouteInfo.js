@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import GoogleMapReact from "google-map-react";
 import { Marker } from "./../map/Marker";
 import { deleteRoute, saveRoute, getOneRoute, updateRoute } from "./../api/axios_wrapper";
+import { StartRunModal } from "./../run/StartRunModal";
 import { PrintableRoster } from "./PrintableRoster";
 import { RouteStops } from "./RouteStops";
 import { RouteStudents } from "./RouteStudents";
@@ -150,6 +151,7 @@ export const BusRouteInfo = ({ role }) => {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center"}}>
+          {role === "Driver" && <StartRunModal route={route} />}
           {(!isEdit && (role === "Admin" || role === "School Staff")) && <button onClick={e => setIsEdit(true)}>Edit Route Details </button>}
           {isEdit && <button onClick={e => setIsEdit(false)}>Cancel Changes</button>}
           {(role === "Admin" || role === "School Staff") && <button onClick={e => setIsDelete(true)}>Delete Route</button>}
