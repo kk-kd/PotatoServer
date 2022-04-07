@@ -4,8 +4,8 @@ import { Run } from "../entity/Run";
 import { TransitTraqHelper } from "./TransitTraqHelper";
 import fetch from "node-fetch";
 
-export const LOW_PRIORITY = 500;
-const NEEDS_REFRESH = 1000;
+export const LOW_PRIORITY = 1000;
+const NEEDS_REFRESH = 2000;
 
 export class TransitTraqController {
   async getBusLocation(request: Request, response: Response) {
