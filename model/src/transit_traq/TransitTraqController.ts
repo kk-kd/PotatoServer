@@ -9,7 +9,7 @@ const NEEDS_REFRESH = 2000;
 
 export class TransitTraqController {
   async getBusLocation(request: Request, response: Response) {
-    const { busNumber } = request.body;
+    const busNumber = request.params.busNumber;
 
     const existingEntry = await getRepository(Run)
       .createQueryBuilder("run")

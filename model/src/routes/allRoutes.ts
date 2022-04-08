@@ -425,7 +425,7 @@ export const allRoutes = [
 
   {
     method: "get",
-    route: "/api/gps",
+    route: "/api/gps/:busNumber",
     controller: TransitTraqController,
     action: "getBusLocation",
   },
@@ -459,5 +459,17 @@ export const allRoutes = [
     route: "/api/runs/end/:uid",
     controller: RunController,
     action: "endRun",
+  },
+  {
+    method: "get",
+    route: "/api/runs/route/active/:uid",
+    controller: RunController,
+    action: "getRouteActiveRun",
+  },
+  {
+    method: "get",
+    route: "/api/runs/route/:uid",
+    controller: RunController,
+    action: "getRouteRuns",
   },
 ];

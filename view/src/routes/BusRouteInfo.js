@@ -5,8 +5,16 @@ import { useReactToPrint } from 'react-to-print';
 import { Link, useNavigate } from "react-router-dom";
 import GoogleMapReact from "google-map-react";
 import { Marker } from "./../map/Marker";
-import { deleteRoute, saveRoute, getOneRoute, updateRoute } from "./../api/axios_wrapper";
+import {
+  deleteRoute,
+  getRouteActiveRun,
+  saveRoute,
+  getOneRoute,
+  updateRoute,
+  getBusLocation
+} from "./../api/axios_wrapper";
 import { StartRunModal } from "./../run/StartRunModal";
+import { BusRouteRuns } from "./BusRouteRuns";
 import { PrintableRoster } from "./PrintableRoster";
 import { RouteStops } from "./RouteStops";
 import { RouteStudents } from "./RouteStudents";
@@ -39,6 +47,9 @@ export const BusRouteInfo = ({ role }) => {
   const [isDelete, setIsDelete] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [school, setSchool] = useState();
+  const [activeBus, setActiveBus] = useState();
+  const [foundBus, setFoundBus] = useState(false);
+  const [data, setData] = useState([]);
   const [name, setName] = useState("");
   const [desciption, setDesciption] = useState("");
   const getRoute = async () => {
@@ -75,6 +86,21 @@ export const BusRouteInfo = ({ role }) => {
   }
   useEffect(() => {
     getRoute();
+  }, []);
+  useEffect(() => {
+    const updateBusLocation = setInterval(async () => {
+      try {
+        const currentBus = await getRouteActiveRun(id);
+        const busLocation = await getBusLocation(currentBus.data.busNumber);
+        console.log(busLocation);
+        setActiveBus(busLocation.data);
+        setFoundBus((busLocation.data.longitude && busLocation.data.latitude) ? true : false);
+      } catch (e) {
+        setFoundBus(false);
+        console.log(e);
+      }
+    }, 1000);
+    return () => clearInterval(updateBusLocation);
   }, []);
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -229,6 +255,11 @@ export const BusRouteInfo = ({ role }) => {
                     detail
                 />
             ))}
+            {foundBus && <Marker
+                lat={parseFloat(activeBus.latitude)}
+                lng={parseFloat(activeBus.longitude)}
+                isBus
+              />}
             <Marker
                 text={school.name}
                 lat={parseFloat(school.latitude)}
@@ -236,8 +267,13 @@ export const BusRouteInfo = ({ role }) => {
                 isSchool
             />
           </GoogleMapReact>
+          {foundBus && <div><h4>Active Run</h4><div>{`Bus: ${activeBus.busNumber}`}</div></div>}
           </div>}
           </div>
+        <div style={{ width: "100%", padding: "50px", display: "inline-block" }}>
+          <h5 id = "sub-header"> Run Logs </h5>
+          <BusRouteRuns uid={id} />
+        </div>
       </div>
   );
 }

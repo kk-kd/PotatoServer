@@ -130,6 +130,8 @@ export class RunController extends Repository<Run> {
             .leftJoinAndSelect("runs.route", "route")
             .leftJoinAndSelect("route.school", "school")
             .leftJoinAndSelect("runs.driver", "driver")
+            .offset(skipNum)
+            .limit(takeNum)
             .orderBy(sortSpecification, sortDirSpec)
             .where("runs.busNumber ilike '%' || :busNumber || '%'", {busNumber: busFilter})
             .andWhere("route.name ilike '%' || :routeName || '%'", {routeName: routeFilter})
@@ -154,6 +156,8 @@ export class RunController extends Repository<Run> {
           .leftJoinAndSelect("route.school", "school")
           .leftJoinAndSelect("runs.driver", "driver")
           .orderBy(sortSpecification, sortDirSpec)
+          .offset(skipNum)
+          .limit(takeNum)
           .where("runs.busNumber ilike '%' || :busNumber || '%'", { busNumber: busFilter })
           .andWhere("route.name ilike '%' || :routeName || '%'", { routeName: routeFilter })
           .andWhere("school.name ilike '%' || :schoolName || '%'", { schoolName: schoolFilter })
@@ -195,6 +199,94 @@ export class RunController extends Repository<Run> {
       .send(
           "New Route (" + request.body + ") couldn't be saved with error " + e
       );
+      return;
+    }
+  }
+
+  async getRouteActiveRun(request: Request, response: Response, next: NextFunction) {
+    try {
+      const uidNumber = request.params.uid; //needed for the await call / can't nest them
+      const runQueryResult = await this.runRepository
+        .createQueryBuilder("runs")
+        .leftJoinAndSelect("runs.route", "route")
+        .where("route.uid = :uid", { uid: uidNumber })
+        .andWhere("runs.ongoing = true")
+        .getOneOrFail();
+      response.status(200);
+      return runQueryResult;
+    } catch (e) {
+      response
+        .status(401)
+        .send("Route with UID: " + request.params.uid + " does not have an active run.");
+      return;
+    }
+  }
+
+  async getRouteRuns(request: Request, response: Response, next: NextFunction) {
+    try {
+      const routeUid = request.params.uid;
+      const pageNum: number = +request.query.page || 0;
+      if (pageNum <= -1) {
+        response.status(401).send("Please specify a positive page number to view results.");
+        return;
+      }
+      const takeNum: number = +request.query.size || 10;
+      var skipNum = pageNum * takeNum;
+      var sortSpecification;
+      var sortDirSpec;
+      if (!request.query.sort || request.query.sort === "none") {
+        sortSpecification = "runs.uid";
+      } else if (request.query.sort === "route.school.name") {
+        sortSpecification = "school.name";
+      } else if (request.query.sort === "busNumber") {
+        sortSpecification =
+            "NULLIF(regexp_replace(runs.busNumber, '\\D', '', 'g'), '')::int";
+      } else if (request.query.sort === "duration") {
+        sortSpecification = "runs.duration";
+      } else if (request.query.sort === "timeStarted") {
+        sortSpecification = "runs.timeStarted";
+      } else if (request.query.sort === "direction") {
+        sortSpecification = "runs.direction";
+      } else {
+        sortSpecification = request.query.sort;
+      }
+
+      if (!request.query.sortDir || request.query.sortDir === "none") {
+        sortDirSpec = "ASC";
+        sortSpecification = "runs.uid";
+      } else if (request.query.sortDir === "ASC") {
+        sortDirSpec = "ASC";
+      } else {
+        sortDirSpec = "DESC";
+      }
+      const schoolFilter = request.query.schoolFilter || "";
+      const driverFilter = request.query.driverFilter || "";
+      const busFilter = request.query.busFilter || "";
+      const [runQueryResult, total] = await this.runRepository
+        .createQueryBuilder("runs")
+        .leftJoinAndSelect("runs.route", "route")
+        .leftJoinAndSelect("route.school", "school")
+        .leftJoinAndSelect("runs.driver", "driver")
+        .orderBy(sortSpecification, sortDirSpec)
+        .offset(skipNum)
+        .limit(takeNum)
+        .where("runs.busNumber ilike '%' || :busNumber || '%'", { busNumber: busFilter })
+        .andWhere("route.uid = :routeUid", { routeUid: routeUid })
+        .andWhere("school.name ilike '%' || :schoolName || '%'", { schoolName: schoolFilter })
+        .andWhere("driver.fullName ilike '%' || :driverName || '%'", { driverName: driverFilter })
+        .getManyAndCount();
+      const expiredRuns = await this.findExpiredRuns(runQueryResult);
+      const currentTime = new Date();
+      response.status(200);
+      return {
+        runs: runQueryResult.map(run => expiredRuns.some(expiredRun => expiredRun === run.uid) ?
+            {...run, ongoing: false, timedOut: true, duration: EXPIRATION} :
+            run
+        ),
+        total: total
+      };
+    } catch (e) {
+      response.status(401).send("Routes were not found with error: " + e);
       return;
     }
   }
