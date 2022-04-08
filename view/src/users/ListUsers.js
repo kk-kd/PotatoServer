@@ -97,11 +97,11 @@ export const ListUsers = ({ role }) => {
     useTable({ columns, data });
   return (
     <div id="content">
-      <h2 id="title"> Parents and Administrators </h2>
+      <h2 id="title"> Users </h2>
       <div id="userListing">
         {(role === "Admin" || role === "School Staff") && (
           <Link to="/Users/create">
-            <button>Create Parent or Administrator</button>
+            <button>Create User</button>
           </Link>
         )}
         <table
@@ -153,7 +153,7 @@ export const ListUsers = ({ role }) => {
                               onChange={(e) => setRoleFilter(e.target.value)}
                             >
                               <option value="">--</option>
-                              <option value="None">None</option>
+                              <option value="Student">Student</option>
                               <option value="Admin">Admin</option>
                               <option value="School Staff">School Staff</option>
                               <option value="Driver">Driver</option>
