@@ -231,7 +231,6 @@
 #routeEditor {
   display: inline-block;
   height: 20vh;
-  padding: 10px 10px 0px 10px;
   width: 100%;
 }
 
@@ -250,7 +249,7 @@
 #stops {
   padding: 7px;
   position:relative; 
-  top:45px;
+  top:10px;
 }
 
 #routeData {
