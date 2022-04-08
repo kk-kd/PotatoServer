@@ -396,6 +396,22 @@ export async function endRun(uid) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function getRouteRuns(uid, specifications) {
+  return await axios.get(`/api/runs/route/` + uid, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getBusLocation(busNumber) {
+  return await axios.get("/api/gps/" + busNumber, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getRouteActiveRun(uid) {
+  return await axios.get("/api/runs/route/active/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 // Helpers
 function convertMapToURL(map) {
   return Object.keys(map)
