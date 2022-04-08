@@ -303,7 +303,7 @@ export class UserController extends Repository<User> {
       const reptitiveEntry = await getRepository(User)
         .createQueryBuilder("users")
         .select()
-        .where("users.email = :email", { email: userEmail })
+        .where("users.email = :email", { email: userEmail.toLowerCase() })
         .getOne();
 
       console.log(reptitiveEntry);
