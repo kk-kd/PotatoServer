@@ -7,6 +7,9 @@ import { getLngLat } from "./GeoHelper";
 import { School } from "../entity/School";
 import { Student } from "../entity/Student";
 import { StudentController } from "../controller/StudentController";
+import { AccountRole } from "../Role";
+import AuthController from "../controller/AuthController";
+import {saveStudent} from "../../../view/src/api/axios_wrapper.js"
 
 /**
  * Note - validations while saving shouldn't be necessary. Just leave it there in case.
@@ -156,7 +159,7 @@ export class BulkController {
       }
       // 17 STUDENT EMAIL IS INVALID
       // Seeing if Email is blank
-      if (student.student_email == null || student.student_email == undefined || student.student_email.trim() == "") {
+      if (student.student_email != null && student.student_email != undefined && student.student_email.trim() != "") {
         if (!isAPIRequest) return false;
         else {
           // 17 - Email is invalid
@@ -166,24 +169,25 @@ export class BulkController {
               studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
             ).push(17);
           }
-        }
-      }
-      // 18- Existing Emails
-      if (student.student_email != null || student.student_email != undefined || student.student_email.trim() == "") {
-        const reptitiveEntry = await getRepository(User)
+          // 18- Existing Emails
+          const reptitiveEntry = await getRepository(User)
           .createQueryBuilder("users")
           .select()
-          .where("users.email = :email", { email: student.student_email })
+          .where("users.email = :email", { email: student.student_email.toLowerCase() })
           .getOne();
 
-        if (reptitiveEntry != null) {
+        if (reptitiveEntry != null || reptitiveEntry != undefined) {
           if (!isAPIRequest) return false;
           (studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])).push(
             18
           );
           studentToReturn.hint_uids = [reptitiveEntry.uid];
         }
+    
       }
+    }
+      
+
 
 
       // 9 SCHOOL NAME ENTRY MISSING
@@ -261,7 +265,7 @@ export class BulkController {
           .createQueryBuilder("users")
           .select()
           .where("users.email = :email", {
-            email: student.parent_email,
+            email: student.parent_email.toLowerCase(),
           })
           .getOne();
 
@@ -326,133 +330,149 @@ export class BulkController {
     for (var student of students) {
       const newStudent = new Student();
 
-      // Validations
-      if (
-        student.name == null ||
-        student.name == undefined ||
-        student.name.trim() == ""
-      ) {
-        response.status(401).send(`Empty name for student ${student.name}`);
-        return;
-      }
-      newStudent.fullName = student.name;
+      // // Validations
+      // if (
+      //   student.name == null ||
+      //   student.name == undefined ||
+      //   student.name.trim() == ""
+      // ) {
+      //   response.status(401).send(`Empty name for student ${student.name}`);
+      //   return;
+      // }
+      // newStudent.fullName = student.name;
 
-      if (student.student_id != null && student.student_id != undefined) {
-        if (!this.isValidId(student.student_id)) {
-          response
-            .status(401)
-            .send(
-              `Student ${student.name} has invalid id. Id needs to be a positive integer.`
-            );
-          return;
-        }
-        newStudent.id = student.student_id;
-      }
+      // if (student.student_id != null && student.student_id != undefined) {
+      //   if (!this.isValidId(student.student_id)) {
+      //     response
+      //       .status(401)
+      //       .send(
+      //         `Student ${student.name} has invalid id. Id needs to be a positive integer.`
+      //       );
+      //     return;
+      //   }
+      //   newStudent.id = student.student_id;
+      // }
 
-      if (
-        student.school_name == null ||
-        student.school_name == undefined ||
-        student.school_name.trim() == ""
-      ) {
-        response
-          .status(401)
-          .send(`No school provided for student ${student.name}`);
-        return;
-      }
+      // if (
+      //   student.school_name == null ||
+      //   student.school_name == undefined ||
+      //   student.school_name.trim() == ""
+      // ) {
+      //   response
+      //     .status(401)
+      //     .send(`No school provided for student ${student.name}`);
+      //   return;
+      // }
 
-      const schoolEntry = await getRepository(School)
-        .createQueryBuilder("schools")
-        .select()
-        .where("schools.uniqueName = :uniqueName", {
-          uniqueName: student.school_name.toLowerCase().trim(),
-        })
-        .getOne();
+      // const schoolEntry = await getRepository(School)
+      //   .createQueryBuilder("schools")
+      //   .select()
+      //   .where("schools.uniqueName = :uniqueName", {
+      //     uniqueName: student.school_name.toLowerCase().trim(),
+      //   })
+      //   .getOne();
 
-      if (schoolEntry == null) {
-        response
-          .status(401)
-          .send(
-            `Student ${student.name}'s school does not exist in the database. Please create the school before adding the student.`
-          );
-        return;
-      }
-      newStudent.school = schoolEntry;
+      // if (schoolEntry == null) {
+      //   response
+      //     .status(401)
+      //     .send(
+      //       `Student ${student.name}'s school does not exist in the database. Please create the school before adding the student.`
+      //     );
+      //   return;
+      // }
+      // newStudent.school = schoolEntry;
 
-      if (
-        student.parent_email == null ||
-        student.parent_email == undefined ||
-        student.parent_email.trim() == ""
-      ) {
-        response
-          .status(401)
-          .send(`No parent email provided for student ${student.name}`);
-        return;
-      }
+      // if (
+      //   student.parent_email == null ||
+      //   student.parent_email == undefined ||
+      //   student.parent_email.trim() == ""
+      // ) {
+      //   response
+      //     .status(401)
+      //     .send(`No parent email provided for student ${student.name}`);
+      //   return;
+      // }
 
-      var parentEntry = await getRepository(User)
-        .createQueryBuilder("users")
-        .select()
-        .where("users.email = :email", {
-          email: student.parent_email.toLowerCase(),
-        })
-        .getOne();
+      // var parentEntry = await getRepository(User)
+      //   .createQueryBuilder("users")
+      //   .select()
+      //   .where("users.email = :email", {
+      //     email: student.parent_email.toLowerCase(),
+      //   })
+      //   .getOne();
 
-      if (parentEntry == null) {
-        parentEntry = await getRepository(User)
-          .createQueryBuilder("users")
-          .select()
-          .where("users.email = :email", {
-            email: student.parent_email,
-          })
-          .getOne();
-        if (parentEntry == null) {
-          response
-            .status(401)
-            .send(
-              `Student ${student.name}'s parent does not exist in the database. Please create the parent before adding the student.`
-            );
-          return;
-        }
-      }
-      newStudent.parentUser = parentEntry;
+      // if (parentEntry == null) {
+      //   parentEntry = await getRepository(User)
+      //     .createQueryBuilder("users")
+      //     .select()
+      //     .where("users.email = :email", {
+      //       email: student.parent_email.toLowerCase(),
+      //     })
+      //     .getOne();
+      //   if (parentEntry == null) {
+      //     response
+      //       .status(401)
+      //       .send(
+      //         `Student ${student.name}'s parent does not exist in the database. Please create the parent before adding the student.`
+      //       );
+      //     return;
+      //   }
+      // }
+      // newStudent.parentUser = parentEntry;
+      // // check email
+      // if (student.student_email != null && student.student_email != undefined && student.student_email.trim() != "") {
+        
+      //     // 17 - Email is invalid
+      //     if (!EmailValidator.validate(student.student_email)) {
+      //       response
+      //       .status(401)
+      //       .send(
+      //         `Student ${student.student_email}'s email is formatted incorrectly.`
+      //       );
+      //     return;
+      //     }
+          
+      //     // 18- Existing Emails
+      //     const reptitiveEntry = await getRepository(User)
+      //     .createQueryBuilder("users")
+      //     .select()
+      //     .where("users.email = :email", { email: student.student_email.toLowerCase() })
+      //     .getOne();
 
-      // Save
-      if (student.student_email == null || student.student_email == undefined || student.student_email.trim() == "") {
-        try {
-          await getRepository(Student).save(newStudent);
-        } catch (error) {
-          response
-            .status(401)
-            .send(
-              `Failed saving student ${newStudent.fullName} to the database: ${error.message}`
-            );
-        }
+      //   if (reptitiveEntry != null || reptitiveEntry != undefined) {
+      //     response
+      //     .status(401)
+      //     .send(
+      //       `Student ${student.student_email}'s matches an existing user's email.`
+      //     );
+      //   }
+      // }
+      // newStudent.email = student.student_email;
+
+    
+      
+      // Put in correct format for the save student all in axios wrapper
+      let form_results = {
+        fullName: student.name,
+        school: student.school_name,
+        id: student.studentid,
+        parentUser: student.parent_email,
+        email: student.student_email.toLowerCase(),
+        phoneNumber: student.phone_number,
+      };
+      //try saving
+      try {
+        await saveStudent(form_results);
       }
-      else if (!EmailValidator.validate(student.student_email)) {
-        response.status(401).send(`Incorrect Email format for student ${student.student_email}`);
-        return;
-      }
-      // if the student has an email and it is valid, then save the student user
-      else {
-        const newUser = new User();
-        try {
-          newUser.email = student.student_email.toLowerCase();
-          newUser.fullName = student.name;
-          newUser.role = "None";
-          if (student.phone_number != null && student.phone_number != undefined) {
-            newUser.phoneNumber = student.phone_number;
+          catch (error) {
+            response
+              .status(401)
+              .send(
+                `Failed saving student ${newStudent} to the database: ${error.message}`
+              );
           }
-          await getRepository(User).save(newUser);
-        }
-        catch (error) {
-          response
-            .status(401)
-            .send(
-              `Failed saving user ${newUser.email} to the database: ${error.message}`
-            );
-        }
-
-      }
+        
+       
     }
 
     response.status(200).send();
@@ -557,7 +577,7 @@ export class BulkController {
         const reptitiveEntry = await getRepository(User)
           .createQueryBuilder("users")
           .select()
-          .where("users.email = :email", { email: user.email })
+          .where("users.email = :email", { email: user.email.toLowerCase() })
           .getOne();
 
         if (reptitiveEntry != null) {
