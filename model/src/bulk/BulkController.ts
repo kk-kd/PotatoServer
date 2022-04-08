@@ -9,7 +9,6 @@ import { Student } from "../entity/Student";
 import { StudentController } from "../controller/StudentController";
 import { AccountRole } from "../Role";
 import AuthController from "../controller/AuthController";
-import {saveStudent} from "../../../view/src/api/axios_wrapper.js"
 
 /**
  * Note - validations while saving shouldn't be necessary. Just leave it there in case.
@@ -113,6 +112,7 @@ export class BulkController {
     uid: number,
     isAPIRequest = true
   ) {
+    console.log("Point 1");
     let returnedStudents = { students: [] };
     for (const student of students) {
       let studentToReturn = { ...student };
@@ -314,13 +314,13 @@ export class BulkController {
         .send("You don't have enough permission for this action.");
       return;
     }
-    const bool = await this.studentsValidationHelper(
-      students,
-      role,
-      userId,
-      false
-    );
-    if (!bool) {
+    // const bool = await this.studentsValidationHelper(
+    //   students,
+    //   role,
+    //   userId,
+    //   false
+    // );
+    if (!true) {
       response
         .status(401)
         .send("There's error with the data. Please validate first.");
@@ -328,7 +328,6 @@ export class BulkController {
     }
 
     for (var student of students) {
-      const newStudent = new Student();
 
       // // Validations
       // if (
@@ -353,72 +352,70 @@ export class BulkController {
       //   newStudent.id = student.student_id;
       // }
 
-      // if (
-      //   student.school_name == null ||
-      //   student.school_name == undefined ||
-      //   student.school_name.trim() == ""
-      // ) {
-      //   response
-      //     .status(401)
-      //     .send(`No school provided for student ${student.name}`);
-      //   return;
-      // }
+      if (
+        student.school_name == null ||
+        student.school_name == undefined ||
+        student.school_name.trim() == ""
+      ) {
+        response
+          .status(401)
+          .send(`No school provided for student ${student.name}`);
+        return;
+      }
 
-      // const schoolEntry = await getRepository(School)
-      //   .createQueryBuilder("schools")
-      //   .select()
-      //   .where("schools.uniqueName = :uniqueName", {
-      //     uniqueName: student.school_name.toLowerCase().trim(),
-      //   })
-      //   .getOne();
+      const schoolEntry = await getRepository(School)
+        .createQueryBuilder("schools")
+        .select()
+        .where("schools.uniqueName = :uniqueName", {
+          uniqueName: student.school_name.toLowerCase().trim(),
+        })
+        .getOne();
 
-      // if (schoolEntry == null) {
-      //   response
-      //     .status(401)
-      //     .send(
-      //       `Student ${student.name}'s school does not exist in the database. Please create the school before adding the student.`
-      //     );
-      //   return;
-      // }
-      // newStudent.school = schoolEntry;
+      if (schoolEntry == null) {
+        response
+          .status(401)
+          .send(
+            `Student ${student.name}'s school does not exist in the database. Please create the school before adding the student.`
+          );
+        return;
+      }
 
-      // if (
-      //   student.parent_email == null ||
-      //   student.parent_email == undefined ||
-      //   student.parent_email.trim() == ""
-      // ) {
-      //   response
-      //     .status(401)
-      //     .send(`No parent email provided for student ${student.name}`);
-      //   return;
-      // }
+      if (
+        student.parent_email == null ||
+        student.parent_email == undefined ||
+        student.parent_email.trim() == ""
+      ) {
+        response
+          .status(401)
+          .send(`No parent email provided for student ${student.name}`);
+        return;
+      }
 
-      // var parentEntry = await getRepository(User)
-      //   .createQueryBuilder("users")
-      //   .select()
-      //   .where("users.email = :email", {
-      //     email: student.parent_email.toLowerCase(),
-      //   })
-      //   .getOne();
+      var parentEntry = await getRepository(User)
+        .createQueryBuilder("users")
+        .select()
+        .where("users.email = :email", {
+          email: student.parent_email.toLowerCase(),
+        })
+        .getOne();
 
-      // if (parentEntry == null) {
-      //   parentEntry = await getRepository(User)
-      //     .createQueryBuilder("users")
-      //     .select()
-      //     .where("users.email = :email", {
-      //       email: student.parent_email.toLowerCase(),
-      //     })
-      //     .getOne();
-      //   if (parentEntry == null) {
-      //     response
-      //       .status(401)
-      //       .send(
-      //         `Student ${student.name}'s parent does not exist in the database. Please create the parent before adding the student.`
-      //       );
-      //     return;
-      //   }
-      // }
-      // newStudent.parentUser = parentEntry;
+      if (parentEntry == null) {
+        parentEntry = await getRepository(User)
+          .createQueryBuilder("users")
+          .select()
+          .where("users.email = :email", {
+            email: student.parent_email,
+          })
+          .getOne();
+        if (parentEntry == null) {
+          response
+            .status(401)
+            .send(
+              `Student ${student.name}'s parent does not exist in the database. Please create the parent before adding the student.`
+            );
+          return;
+        }
+      }
       // // check email
       // if (student.student_email != null && student.student_email != undefined && student.student_email.trim() != "") {
         
@@ -450,34 +447,100 @@ export class BulkController {
       // newStudent.email = student.student_email;
 
     
-      
-      // Put in correct format for the save student all in axios wrapper
-      let form_results = {
-        fullName: student.name,
-        school: student.school_name,
-        id: student.studentid,
-        parentUser: student.parent_email,
-        email: student.student_email.toLowerCase(),
-        phoneNumber: student.phone_number,
-      };
-      //try saving
-      try {
-        await saveStudent(form_results);
+      const studentEmail = student.student_email;
+      if (studentEmail != undefined && !EmailValidator.validate(studentEmail)) {
+        response.status(401).send("Please enter a valid email address.");
+        return;
       }
-          catch (error) {
-            response
-              .status(401)
-              .send(
-                `Failed saving student ${newStudent} to the database: ${error.message}`
-              );
-          }
-        
-       
+  
+      if (studentEmail != undefined) {
+        const existingEmail = await getRepository(User)
+          .createQueryBuilder("users")
+          .where("users.email = :email", { email: studentEmail.toLowerCase() })
+          .getOne();
+  
+        if (existingEmail != undefined || existingEmail != null) {
+          response.status(401).send("This email has already been registered.");
+          return;
+        }
+      }
+  
+      // would like all students live at the same place to have the same bus route
+      // const existingStudent = await getRepository(Student)
+      //   .createQueryBuilder("students")
+      //   .leftJoinAndSelect("students.school", "school")
+      //   .leftJoinAndSelect("students.parentUser", "user")
+      //   .leftJoinAndSelect("students.route", "route")
+      //   .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+      //   .where("school.uniqueName = :school", {
+      //     school: request.body.school.uniqueName,
+      //   })
+      //   .andWhere("user.longitude = :longitude", {
+      //     longitude: request.body.parentUser.longitude,
+      //   })
+      //   .andWhere("user.latitude = :latitude", {
+      //     latitude: request.body.parentUser.latitude,
+      //   })
+      //   .getOne();
+  
+      // if (existingStudent != undefined) {
+      //   request.body.route = existingStudent.route;
+      //   request.body.inRangeStops = existingStudent.inRangeStops;
+      // }
+  
+      if (studentEmail != undefined) {
+        var loginAccount = new User();
+        loginAccount.fullName = student.name;
+        loginAccount.email = studentEmail;
+        loginAccount.role = AccountRole.STUDENT;
+        loginAccount.phoneNumber = student.phoneNumber;
+        request.body.account = loginAccount;
+      }
+      //manipulate student dict around to fit our wanted input format.
+      const saveStudentDict = {
+        fullName: student.name,
+        id: student.student_id,
+        school: schoolEntry,
+        parentUser: parentEntry,
+        account: loginAccount,
+      }
+      let result;
+      try {
+        result = await getRepository(Student).save(saveStudentDict);
+      } catch (e) {
+        response
+          .status(401)
+          .send(
+            "New Student (" + student + ") couldn't be saved with error " + e
+          );
+        return;
+      }
+  
+      if (studentEmail != undefined) {
+        const link = await AuthController.generatePasswordJWT(
+          loginAccount,
+          "14 days"
+        );
+        try {
+          await getRepository(User).save(loginAccount);
+        } catch (error) {
+          response.status(401).send("User Register: " + error);
+          return;
+        }
+  
+        try {
+          await AuthController.sendNewUserEmail(loginAccount, link);
+        } catch (error) {
+          response
+            .status(401)
+            .send("Error sending confirmation email. Please try again.");
+          return;
+        }
+      }
+      response.status(200).send();
     }
-
-    response.status(200).send();
   }
-
+  
   /**
    * request: {users: [
    * {

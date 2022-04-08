@@ -365,6 +365,7 @@ export class StudentController extends Repository<Student> {
       loginAccount.fullName = request.body.fullName;
       loginAccount.email = studentEmail;
       loginAccount.role = AccountRole.STUDENT;
+      loginAccount.phoneNumber = request.body.phoneNumber;
       request.body.account = loginAccount;
     }
 
