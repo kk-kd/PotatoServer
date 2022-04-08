@@ -364,7 +364,7 @@ export class BulkController {
         .createQueryBuilder("schools")
         .select()
         .where("schools.uniqueName = :uniqueName", {
-          uniqueName: student.school_name.toLowerCase().trim(),
+          uniqueName: student.school_name.toLowerCase().trim().replace(/\s\s+/g, ' '),
         })
         .getOne();
 
