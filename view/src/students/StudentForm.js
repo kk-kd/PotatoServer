@@ -61,6 +61,7 @@ export const StudentForm = ({ addStudentToUser }) => {
           fullName: student.fullName,
           school: selectedSchool,
           id: student.studentid,
+          email: student.email,
           // route: selectedRoute
         };
         addStudentToUser(form_results);
