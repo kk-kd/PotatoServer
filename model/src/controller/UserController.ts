@@ -114,6 +114,7 @@ export class UserController extends Repository<User> {
             .createQueryBuilder("users")
             .where("users.uid = :uid", { uid: userId })
             .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+            .leftJoinAndSelect("user.studentInfo", "studentInfo")
             .getOneOrFail();
           const attachedSchools = currentUser.attachedSchools.map(
             (school) => school.uid
@@ -132,6 +133,7 @@ export class UserController extends Repository<User> {
             })
             .leftJoinAndSelect("users.students", "student")
             .leftJoinAndSelect("student.school", "schools")
+            .leftJoinAndSelect("users.studentInfo", "studentInfo")
             .getMany();
           response.status(200);
           const filtered = usersQueryResult.filter((user) =>
@@ -158,6 +160,7 @@ export class UserController extends Repository<User> {
             role: roleFilterData,
           })
           .leftJoinAndSelect("users.students", "student")
+          .leftJoinAndSelect("users.studentInfo", "studentInfo")
           .getManyAndCount();
         response.status(200);
         return {
@@ -171,6 +174,7 @@ export class UserController extends Repository<User> {
             .createQueryBuilder("users")
             .where("users.uid = :uid", { uid: userId })
             .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+            .leftJoinAndSelect("users.studentInfo", "studentInfo")
             .getOneOrFail();
           const attachedSchools = currentUser.attachedSchools.map(
             (school) => school.uid
@@ -189,6 +193,7 @@ export class UserController extends Repository<User> {
             })
             .leftJoinAndSelect("users.students", "student")
             .leftJoinAndSelect("student.school", "schools")
+            .leftJoinAndSelect("users.studentInfo", "studentInfo")
             .getMany();
           response.status(200);
           const filtered = usersQueryResult.filter((user) =>
@@ -217,6 +222,7 @@ export class UserController extends Repository<User> {
             role: roleFilterData,
           })
           .leftJoinAndSelect("users.students", "student")
+          .leftJoinAndSelect("users.studentInfo", "studentInfo")
           .getManyAndCount();
         response.status(200);
         return {

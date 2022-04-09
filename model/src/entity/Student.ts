@@ -42,7 +42,7 @@ export class Student {
   @JoinTable()
   inRangeStops: Stop[];
 
-  @OneToOne(() => User, { cascade: true, onDelete: "CASCADE" })
+  @OneToOne(() => User, (user) => user.studentInfo, { cascade: true, onDelete: "SET NULL", nullable: true })
   @JoinColumn()
   account: User;
 }

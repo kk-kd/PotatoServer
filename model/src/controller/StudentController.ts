@@ -68,6 +68,8 @@ export class StudentController extends Repository<Student> {
         sortSpecification = "students.fullName";
       } else if (request.query.sort == "school.name") {
         sortSpecification = "school.name";
+      } else if (request.query.sort == "account") {
+        sortSpecification = "account.email";
       } else {
         //should error check instead of else
         sortSpecification = "students." + request.query.sort;
@@ -90,6 +92,7 @@ export class StudentController extends Repository<Student> {
       filterSpecification = "students." + request.query.sort;
       const queryIdFilter = request.query.idFilter;
       const queryFullNameFilter = request.query.fullNameFilter;
+      const queryEmailFilter = request.query.emailFilter;
       if (queryIdFilter) {
         if (request.query.showAll && request.query.showAll === "true") {
           if (role == "School Staff") {
@@ -111,11 +114,15 @@ export class StudentController extends Repository<Student> {
               .andWhere("students.fullName ilike '%' || :fullName || '%'", {
                 fullName: queryFullNameFilter,
               })
+              .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+                email: queryEmailFilter
+              })
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
               .leftJoinAndSelect("students.parentUser", "parentUser")
+              .leftJoinAndSelect("students.account", "account")
               .getManyAndCount();
             response.status(200);
             return {
@@ -130,10 +137,14 @@ export class StudentController extends Repository<Student> {
             .andWhere("students.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFullNameFilter,
             })
+            .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+              email: queryEmailFilter
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .leftJoinAndSelect("students.parentUser", "parentUser")
+            .leftJoinAndSelect("students.account", "account")
             .getManyAndCount();
           response.status(200);
           return {
@@ -160,11 +171,15 @@ export class StudentController extends Repository<Student> {
               .andWhere("students.fullName ilike '%' || :fullName || '%'", {
                 fullName: queryFullNameFilter,
               })
+              .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+                email: queryEmailFilter
+              })
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
               .leftJoinAndSelect("students.parentUser", "parentUser")
+              .leftJoinAndSelect("students.account", "account")
               .offset(skipNum)
               .limit(takeNum)
               .getManyAndCount();
@@ -181,10 +196,14 @@ export class StudentController extends Repository<Student> {
             .andWhere("students.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFullNameFilter,
             })
+            .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+              email: queryEmailFilter
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .leftJoinAndSelect("students.parentUser", "parentUser")
+            .leftJoinAndSelect("students.account", "account")
             .offset(skipNum)
             .limit(takeNum)
             .getManyAndCount();
@@ -212,11 +231,15 @@ export class StudentController extends Repository<Student> {
               .where("students.fullName ilike '%' || :fullName || '%'", {
                 fullName: queryFullNameFilter,
               })
+              .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+                email: queryEmailFilter
+              })
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
               .leftJoinAndSelect("students.parentUser", "parentUser")
+              .leftJoinAndSelect("students.account", "account")
               .getManyAndCount();
             response.status(200);
             return {
@@ -230,10 +253,14 @@ export class StudentController extends Repository<Student> {
             .where("students.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFullNameFilter,
             })
+            .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+              email: queryEmailFilter
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .leftJoinAndSelect("students.parentUser", "parentUser")
+            .leftJoinAndSelect("students.account", "account")
             .getManyAndCount();
           response.status(200);
           return {
@@ -257,11 +284,15 @@ export class StudentController extends Repository<Student> {
               .where("students.fullName ilike '%' || :fullName || '%'", {
                 fullName: queryFullNameFilter,
               })
+              .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+                email: queryEmailFilter
+              })
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
               .leftJoinAndSelect("students.parentUser", "parentUser")
+              .leftJoinAndSelect("students.account", "account")
               .offset(skipNum)
               .limit(takeNum)
               .getManyAndCount();
@@ -277,10 +308,14 @@ export class StudentController extends Repository<Student> {
             .where("students.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFullNameFilter,
             })
+            .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+              email: queryEmailFilter
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .leftJoinAndSelect("students.parentUser", "parentUser")
+            .leftJoinAndSelect("students.account", "account")
             .offset(skipNum)
             .limit(takeNum)
             .getManyAndCount();
@@ -403,7 +438,7 @@ export class StudentController extends Repository<Student> {
       }
     }
 
-    response.status(200).send();
+    response.status(200);
     return result;
   }
 
