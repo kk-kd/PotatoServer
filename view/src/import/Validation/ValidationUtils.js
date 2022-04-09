@@ -72,7 +72,7 @@ export const CheckStudentCell = (
       !schoolNames.includes(val) &&
       !schoolNames.includes(val.toLowerCase().trim())
     ) {
-      return [11, "Does not match the name of any authorized schools", "", "", ""];
+      return [11, "Does not match any authorized schools", "", "", ""];
     }
   }
    // name
