@@ -710,7 +710,7 @@ export const BusRoutePlanner = () => {
                       
                     <button
                         className = "btn btn-outline-secondary"
-                        id={changeRoute ? "mapActionButtonSelected" : "mapActionButton"}
+                        id={changeRoute ? "mapActionButtonSelected" : "mapActionButton disabled"}
                         disabled={!firstSelect}
                         onClick={e => {
                           setChangeRoute(!changeRoute);
@@ -732,7 +732,7 @@ export const BusRoutePlanner = () => {
                   </ReactTooltip>
                     <button
                         className = "btn btn-outline-secondary"
-                        id={placeStopLocation ? "mapActionButtonSelected" : "mapActionButton"}
+                        id={placeStopLocation ? "mapActionButtonSelected" : "mapActionButton disabled"}
                         disabled={!stopSelect}
                         onClick={e => {
                           setChangeRoute(false);
