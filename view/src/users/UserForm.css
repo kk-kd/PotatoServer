@@ -41,6 +41,13 @@
   padding:2%;
 }
 
+#main_form_no_map {
+  float: left;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 2%;
+}
 
 #label-user {
   width: 30%;
@@ -54,6 +61,11 @@
   /* Large margin-right to force the next element to the new-line
            and margin-left to create a gutter between the label and input */
   margin: 2% 15% 0 4%;
+}
+#input-user-inline-item {
+  display:inline-flex;
+  margin:2% 15% 0% 4%;
+  width: 40%;
 }
 
 #content {

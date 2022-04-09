@@ -175,7 +175,13 @@ export const ListUsers = ({ role }) => {
               return (
                 <tr
                   {...row.getRowProps()}
-                  onClick={() => navigate(`/Users/info/${row.original.uid}`)}
+                  onClick={() => {
+                    if (row.original.role === "Student") {
+                      navigate(`/Students/info/${row.original.uid}`);
+                    } else {
+                      navigate(`/Users/info/${row.original.uid}`);
+                    }
+                  }}
                 >
                   {row.cells.map((cell) => {
                     return (

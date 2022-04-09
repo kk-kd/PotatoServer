@@ -132,6 +132,7 @@ export const StudentForm = ({ addStudentToUser }) => {
           sortDir: "ASC",
           filterType: "",
           filterData: userFilter,
+          roleFilter: "Parent",
           isCreate: true,
         });
         setFilteredDataUser(fetchedData.data.users);
