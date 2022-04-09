@@ -706,6 +706,7 @@ export const BusRoutePlanner = () => {
                     <div id="tools">
                       
                     <button
+                        className = "btn btn-outline-secondary"
                         id={changeRoute ? "mapActionButtonSelected" : "mapActionButton"}
                         disabled={!firstSelect}
                         onClick={e => {
@@ -715,8 +716,7 @@ export const BusRoutePlanner = () => {
                         data-tip
                         data-for="changeStudentRouteTip"
 
-                    > Select Students
-                      <FontAwesomeIcon
+                    > Student Edit Mode <FontAwesomeIcon
                         icon={faLocationPin}
                         size="xl"
                     /></button>
@@ -728,6 +728,7 @@ export const BusRoutePlanner = () => {
                     Add/remove student(s) to current route by clicking their icon on the map.
                   </ReactTooltip>
                     <button
+                        className = "btn btn-outline-secondary"
                         id={placeStopLocation ? "mapActionButtonSelected" : "mapActionButton"}
                         disabled={!stopSelect}
                         onClick={e => {
@@ -737,7 +738,7 @@ export const BusRoutePlanner = () => {
                         data-tip
                         data-for="placeStopTip"
 
-                    >Move Bus Stops <FontAwesomeIcon
+                    >Edit Bus Stop Mode <FontAwesomeIcon
                         icon={faMapPin}
                         size="xl"
                     />
