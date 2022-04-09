@@ -55,14 +55,6 @@ export const ErrorPage = ({
                 throw alert(message);
               });
               a.push(fetchedData.data);
-         //   }
-            // if (dataType === "students") {
-            //   const fetchedData = await getOneStudent(ids[j]).catch((error) => {
-            //     let message = error.response.data;
-            //     throw alert(message);
-            //   });
-            //   a.push(fetchedData.data);
-            // }
           }
         }
         console.log("Error data")

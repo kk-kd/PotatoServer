@@ -12,7 +12,9 @@ import {
 export const ValidateStep = ({
   users,
   schools,
+  allSchools,
   schoolNames,
+  allSchoolNames,
   databaseUsers,
   databaseStudents,
   dataType,
@@ -32,16 +34,16 @@ export const ValidateStep = ({
 
   const checkRow = (rowData) => {
     if (dataType === "students") {
-      return CheckStudentRow(rowData, users, schools, databaseUsers, databaseStudents, schoolNames);
+      return CheckStudentRow(rowData, users, schools, allSchools, databaseUsers, databaseStudents, schoolNames, allSchoolNames);
     } else if (dataType === "parents") {
-      return CheckParentRow(rowData, users, schools, databaseUsers, schoolNames);
+      return CheckParentRow(rowData, users, schools, allSchools, databaseUsers, schoolNames, allSchoolNames);
     }
     return false;
   };
 
   const checkCell = (col, val) => {
     if (dataType === "students") {
-      return CheckStudentCell(col, val, users, schools, databaseUsers, databaseStudents, schoolNames);
+      return CheckStudentCell(col, val, users, schools, allSchools, databaseUsers, databaseStudents, schoolNames, allSchoolNames);
     } else if (dataType === "parents") {
       return CheckParentCell(col, val, users, schools, databaseUsers, schoolNames);
     }

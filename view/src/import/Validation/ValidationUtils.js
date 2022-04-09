@@ -32,10 +32,12 @@ export const CheckStudentCell = (
   col,
   val,
   schools,
+  allSchools,
   users,
   databaseUsers,
   databaseStudents,
-  schoolNames
+  schoolNames,
+  allSchoolNames,
 ) => {
   if (col === "index" || col === "valid") {
     return [null, '', '', '', ''];
@@ -69,16 +71,24 @@ export const CheckStudentCell = (
     }
   } else if (col === "school_name") {
     if (
+      !allSchoolNames.includes(val) &&
+      !allSchoolNames.includes(val.toLowerCase().trim())
+    ) {
+      return [11, "Not a Registered School.", "", "", ""];
+    }
+    if (
       !schoolNames.includes(val) &&
       !schoolNames.includes(val.toLowerCase().trim())
     ) {
-      return [11, "School not registered", "", "", ""];
+      return [13, "Not Authorized To Change This School.", "", "", ""];
     }
+
+    
   }
    // name
    else if (col === 'name') {
     // name exists
-    if (databaseStudents.fullName.includes(val) || databaseStudents.fullName.includes(val.toLowerCase().trim())) {
+    if (databaseStudents.fullName.includes(val) || databaseStudents.fullName.includes(val.trim())) {
       let dup_name_index = databaseStudents.fullName.indexOf(val.trim())
       let ui = databaseStudents.uid[dup_name_index]
       let r = [4, "", null , "May be a Duplicate", ui];
@@ -177,14 +187,15 @@ export const CheckParentCell = (
   return [null,"", "", "", ""];
 };
 
-export const CheckStudentRow = (row, schools, users, databaseUsers, databaseStudents, schoolNames) => {
+export const CheckStudentRow = (row, schools, allSchools, users, databaseUsers, databaseStudents, schoolNames, allSchoolNames) => {
   let codes = []
   let error_uid = [null]
   let warning_uid = [null]
   console.log(schoolNames)
+  console.log(allSchoolNames)
 
   for (const [key, value] of Object.entries(row)) {
-    let [code, error_message, err_uid, warn_message, warn_uid] = CheckStudentCell(key, value, schools, users, databaseUsers, databaseStudents, schoolNames); 
+    let [code, error_message, err_uid, warn_message, warn_uid] = CheckStudentCell(key, value, schools, allSchools, users, databaseUsers, databaseStudents, schoolNames, allSchoolNames); 
     if (code) {
       codes.push(code)
     }

@@ -8,8 +8,8 @@ import "./ImportPage.css";
 import {
   validateBulkStudents,
   validateBulkParents,
-  getAllSchools,
   getAllUsers,
+  getAllSchools,
   filterAllSchools,
   filterAllUsers,
   filterAllStudents,
@@ -27,9 +27,11 @@ export const ImportPage = () => {
 
   const [users, setUsers] = useState();
   const [schools, setSchools] = useState();
+  const [allSchools, setAllSchools] = useState();
   const [databaseUsers, setDatabaseUsers] = useState();
   const [databaseStudents, setDatabaseStudents] = useState();
   const [schoolNames, setSchoolNames] = useState();
+  const [allSchoolNames, setAllSchoolNames] = useState();
 
   // errors
   const [addressErrors, setAddressErrors] = useState({
@@ -80,6 +82,25 @@ export const ImportPage = () => {
       setSchoolNames(a);
       console.log(a)
     } catch (error) {
+      alert(error.response.data);
+    }
+  };
+
+  const fetchAllSchoolData = async () => {
+    try {
+      const fetchedData = await getAllSchools({
+        page: 1,
+        size: 500,
+      });
+
+      setAllSchools(fetchedData.data.schools);
+      let a = fetchedData.data.schools.map((school) => school.uniqueName);
+      setAllSchoolNames(a);
+      console.log("All school names")
+      console.log(a)
+
+    } catch (error) {
+      setAllSchoolNames(["school 2"]);
       alert(error.response.data);
     }
   };
@@ -136,6 +157,7 @@ export const ImportPage = () => {
   useEffect(() => {
     fetchUserData();
     fetchSchoolData();
+    fetchAllSchoolData();
     fetchStudentData();
   }, []);
 
@@ -269,9 +291,11 @@ export const ImportPage = () => {
           <ValidateStep
             users={users}
             schools={schools}
+            allSchools={allSchools}
             databaseUsers={databaseUsers}
             databaseStudents = {databaseStudents}
             schoolNames={schoolNames}
+            allSchoolNames={allSchoolNames}
             dataType={dataType}
             requiredColumns={requiredColumns}
             processingComplete={processingComplete}
