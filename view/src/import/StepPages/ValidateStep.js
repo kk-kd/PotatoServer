@@ -67,6 +67,14 @@ export const ValidateStep = ({
         accessor: "student_id",
       },
       {
+        Header: "Student Email",
+        accessor: "student_email",
+      },
+      {
+        Header: "Phone Number",
+        accessor: "phone_number",
+      },
+      {
         Header: "",
         accessor: "error_code",
         Cell: ({ row }) => <div></div>

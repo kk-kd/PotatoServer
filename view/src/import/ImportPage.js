@@ -117,6 +117,8 @@ export const ImportPage = () => {
         showAll: "true",
         idFilter: "",
       });
+      console.log("Student Database Data")
+      console.log( fetchedData.data.students)
     
       let parent_email = fetchedData.data.students.map((student) => student.parent_email);
       let uid = fetchedData.data.students.map((student) => student.uid);

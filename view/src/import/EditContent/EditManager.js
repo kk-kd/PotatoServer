@@ -19,7 +19,6 @@ export const EditManager = ({
 }) => {
   // this triggers a check on page load, which allows checking for file duplicates.
   useEffect(() => {
-    console.log("calling update");
     updateEditedDataErrors(0, "name", editableFileData[0]["name"]);
   }, []);
 
@@ -120,7 +119,7 @@ export const EditManager = ({
           let address = [];
           let valid = [true];
 
-          console.log("check parent returned");
+          console.log("check row returned");
           console.log(checkRow(copy));
 
           // if editing address and row address does not have a lat or lng, not valid
@@ -164,8 +163,6 @@ export const EditManager = ({
           }
           let dup = searchFileData(copy, index);
           for (let i = 0; i < dup.length; i++) {
-            console.log(dup[i]);
-            console.log(dup[i][0]);
             if (dup[i][0] === 50) {
               row_errors.push(50);
               valid.push(false);
@@ -194,8 +191,8 @@ export const EditManager = ({
             ["valid"]: v,
             ["duplicate"]: dup,
           };
-          console.log("updated keys and values are");
-          console.log(a);
+        //   console.log("updated keys and values are");
+        //   console.log(a);
           resetWarningData(warning_uid);
           resetErrorData(error_uid);
           return a;
@@ -267,20 +264,18 @@ export const EditManager = ({
     let not_comp = [];
     if (editableFileData) {
       editableFileData.map((row, index) => {
-        console.log(row);
         if (!("exclude" in row) || !row["exclude"]) {
-          console.log("not excluded");
+        
           if (!("valid" in row)) {
-            console.log("valid key not present");
+          
             not_comp.push(index);
           } else if (!row["valid"]) {
-            console.log("valid key is false");
+           
             not_comp.push(index);
           }
         }
       });
     }
-    console.log(not_comp);
     if (not_comp.length > 0) {
       setComplete(false);
     } else {
@@ -288,7 +283,7 @@ export const EditManager = ({
     }
   };
   useEffect(() => {
-    console.log(editableFileData);
+  
     checkComplete();
   }, [editableFileData]);
 
