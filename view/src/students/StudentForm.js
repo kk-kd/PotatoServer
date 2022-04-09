@@ -26,6 +26,7 @@ export const StudentForm = ({ addStudentToUser }) => {
   const [filteredDataSchool, setFilteredDataSchool] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState();
   const [schoolFilter, setSchoolFilter] = useState("");
+  const [makeUser, setMakeUser] = useState(false);
 
   const [routeFilter, setRouteFilter] = useState("");
   // const [selectedRoute, setSelectedRoute] = useState();
@@ -48,6 +49,9 @@ export const StudentForm = ({ addStudentToUser }) => {
     if (!user && !addStudentToUser) {
       return { valid: false, error: "Student Must have a User" };
     }
+    if (makeUser && !student.email) {
+      return { valid: false, error: "Student must have an email to be granted user access."}
+    }
 
     return { valid: true, error: "" };
   };
@@ -61,9 +65,11 @@ export const StudentForm = ({ addStudentToUser }) => {
           fullName: student.fullName,
           school: selectedSchool,
           id: student.studentid,
-          email: student.email,
           // route: selectedRoute
         };
+        if (makeUser) {
+          form_results.email = student.email;
+        }
         addStudentToUser(form_results);
       } else {
         console.log("Make New Student");
@@ -80,8 +86,10 @@ export const StudentForm = ({ addStudentToUser }) => {
       school: selectedSchool,
       id: student.studentid,
       parentUser: user,
-      email: student.email,
     };
+    if (makeUser) {
+      form_results.email = student.email;
+    }
     console.log(form_results);
 
     if (!student.studentid || student.studentid.length === 0) {
@@ -132,6 +140,7 @@ export const StudentForm = ({ addStudentToUser }) => {
           sortDir: "ASC",
           filterType: "",
           filterData: userFilter,
+          roleFilter: "Parent",
           isCreate: true,
         });
         setFilteredDataUser(fetchedData.data.users);
@@ -159,14 +168,21 @@ export const StudentForm = ({ addStudentToUser }) => {
         onChange={(e) => setStudent({ ...student, fullName: e.target.value })}
       />
 
-      <label id="input-label-student"> Email </label>
+      <label id="input-label-student"> Grant User Access </label>
       <input
+          id="input-input-student"
+          type="checkbox"
+          onInput={e => setMakeUser(e.target.checked)}
+      />
+
+      {makeUser && <label id="input-label-student"> Email* </label>}
+      {makeUser && <input
         id="input-input-student"
         type="text"
         maxLength="100"
         value={student.email}
         onChange={(e) => setStudent({ ...student, email: e.target.value })}
-      />
+      />}
 
       <label id="input-label-student" for="lastName">
         {" "}
