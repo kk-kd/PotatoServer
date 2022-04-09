@@ -25,11 +25,6 @@ export const Header = ({ setLoggedIn, role }) => {
       </div>
 
       <TableLinks hash="MyStudents" link="MyStudents" display="My Students" />
-      <TableLinks
-        hash="ChangeMyPassword"
-        link="ChangeMyPassword"
-        display="Change Password"
-      />
       {role === "Driver" && <StartRunModal isHeader />}
       {role === "Driver" && <StopRun />}
       {anyRights && (
@@ -62,6 +57,11 @@ export const Header = ({ setLoggedIn, role }) => {
           display="Send Announcement"
         />
       )}
+      <TableLinks
+        hash="ChangeMyPassword"
+        link="ChangeMyPassword"
+        display="Change Password"
+      />
       <LogOut setLoggedIn={setLoggedIn} />
     </div>
   );
