@@ -58,9 +58,8 @@
 
 #content {
   background: #f6f9f7;
-  height: auto;
   margin: auto auto 20px;
-  overflow: auto;
+  overflow-x: auto;
   padding-bottom: 20px;
   width: 95%;
 }

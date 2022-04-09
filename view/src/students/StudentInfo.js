@@ -34,7 +34,7 @@ export const StudentInfo = ({ edit, role }) => {
 
   const [student, setStudent] = useState();
   const [user, setUser] = useState();
-  const [studentAccount, setStudentAccount] = useState();
+  const [studentAccount, setStudentAccount] = useState({});
   const [userDefault, setUserDefault] = "";
   const [studentLoaded, setStudentLoaded] = useState(false);
   const [removeInRangeStops, setRemoveInRangeStops] = useState(false);
@@ -82,6 +82,12 @@ export const StudentInfo = ({ edit, role }) => {
         id: student.studentid,
         account: studentAccount,
       };
+
+      form_results.account = {
+        ...form_results.account,
+        fullName: student.fullName,
+        role: "Student",
+      };
       if (removeInRangeStops) {
         form_results.inRangeStops = [];
       }
@@ -120,32 +126,6 @@ export const StudentInfo = ({ edit, role }) => {
       throw alert(message);
     }
   };
-
-  async function UpdateStudent(e) {
-    let form_results = {
-      fullName: student.fullName,
-      school: selectedSchool,
-      id: student.studentid,
-      parentUser: user,
-      route: selectedRoute,
-    };
-    console.log(form_results);
-    if (!selectedRoute) {
-      form_results["route"] = null;
-    }
-    if (student.studentid.length === 0) {
-      form_results["id"] = null;
-    }
-
-    try {
-      let create_student_response = await saveStudent(form_results);
-    } catch (error) {
-      let message = error.response.data;
-      throw alert(message);
-    }
-    alert("Successfully Created Student");
-    navigate("/Students/list");
-  }
 
   const fetchStudentData = async () => {
     try {
@@ -260,7 +240,7 @@ export const StudentInfo = ({ edit, role }) => {
         )}
       </div>
 
-      <label id="input-label-student"> Name: </label>
+      <label id="input-label-student"> Name* </label>
       <input
         id="input-input-student"
         disabled={!editable}
@@ -269,7 +249,6 @@ export const StudentInfo = ({ edit, role }) => {
         value={student ? student.fullName : ""}
         onChange={(e) => {
           setStudent({ ...student, fullName: e.target.value });
-          setStudentAccount({ ...studentAccount, fullName: e.target.value });
         }}
       />
 
@@ -290,7 +269,7 @@ export const StudentInfo = ({ edit, role }) => {
 
       <label id="input-label-student" for="lastName">
         {" "}
-        Student email:{" "}
+        Student email{" "}
       </label>
       <input
         id="input-input-student"

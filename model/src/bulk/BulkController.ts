@@ -1,4 +1,4 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import * as EmailValidator from "email-validator";
 import { getRepository } from "typeorm";
 import { User } from "../entity/User";
@@ -6,6 +6,9 @@ import { User } from "../entity/User";
 import { getLngLat } from "./GeoHelper";
 import { School } from "../entity/School";
 import { Student } from "../entity/Student";
+import { StudentController } from "../controller/StudentController";
+import { AccountRole } from "../Role";
+import AuthController from "../controller/AuthController";
 
 /**
  * Note - validations while saving shouldn't be necessary. Just leave it there in case.
@@ -36,6 +39,8 @@ import { Student } from "../entity/Student";
  * 14 - invalid email
  * 11 - school does not exist
  * 12 - parent email does not exist
+ * 17 - student email is invalid
+ * 18 - student email already exists
  */
 
 // TODO: add phone number valiation once we have the requiremnt (ev4)
@@ -67,6 +72,7 @@ export class BulkController {
    * school_name: ...,
    * parent_email: ...,
    * error_code: [..., ...],
+   * hint_uids: [..., ...], <only with error code 18>
    * {},
    * ...]};
    */
@@ -106,6 +112,7 @@ export class BulkController {
     uid: number,
     isAPIRequest = true
   ) {
+    console.log("Point 1");
     let returnedStudents = { students: [] };
     for (const student of students) {
       let studentToReturn = { ...student };
@@ -150,6 +157,38 @@ export class BulkController {
           ).push(15);
         }
       }
+      // 17 STUDENT EMAIL IS INVALID
+      // Seeing if Email is blank
+      if (student.student_email != null && student.student_email != undefined && student.student_email.trim() != "") {
+        if (!isAPIRequest) return false;
+        else {
+          // 17 - Email is invalid
+          if (!EmailValidator.validate(student.student_email)) {
+            if (!isAPIRequest) return false;
+            (
+              studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
+            ).push(17);
+          }
+          // 18- Existing Emails
+          const reptitiveEntry = await getRepository(User)
+          .createQueryBuilder("users")
+          .select()
+          .where("users.email = :email", { email: student.student_email.toLowerCase() })
+          .getOne();
+
+        if (reptitiveEntry != null || reptitiveEntry != undefined) {
+          if (!isAPIRequest) return false;
+          (studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])).push(
+            18
+          );
+          studentToReturn.hint_uids = [reptitiveEntry.uid];
+        }
+    
+      }
+    }
+      
+
+
 
       // 9 SCHOOL NAME ENTRY MISSING
       if (
@@ -226,7 +265,7 @@ export class BulkController {
           .createQueryBuilder("users")
           .select()
           .where("users.email = :email", {
-            email: student.parent_email,
+            email: student.parent_email.toLowerCase(),
           })
           .getOne();
 
@@ -275,13 +314,13 @@ export class BulkController {
         .send("You don't have enough permission for this action.");
       return;
     }
-    const bool = await this.studentsValidationHelper(
-      students,
-      role,
-      userId,
-      false
-    );
-    if (!bool) {
+    // const bool = await this.studentsValidationHelper(
+    //   students,
+    //   role,
+    //   userId,
+    //   false
+    // );
+    if (!true) {
       response
         .status(401)
         .send("There's error with the data. Please validate first.");
@@ -289,30 +328,29 @@ export class BulkController {
     }
 
     for (var student of students) {
-      const newStudent = new Student();
 
-      // Validations
-      if (
-        student.name == null ||
-        student.name == undefined ||
-        student.name.trim() == ""
-      ) {
-        response.status(401).send(`Empty name for student ${student.name}`);
-        return;
-      }
-      newStudent.fullName = student.name;
+      // // Validations
+      // if (
+      //   student.name == null ||
+      //   student.name == undefined ||
+      //   student.name.trim() == ""
+      // ) {
+      //   response.status(401).send(`Empty name for student ${student.name}`);
+      //   return;
+      // }
+      // newStudent.fullName = student.name;
 
-      if (student.student_id != null && student.student_id != undefined) {
-        if (!this.isValidId(student.student_id)) {
-          response
-            .status(401)
-            .send(
-              `Student ${student.name} has invalid id. Id needs to be a positive integer.`
-            );
-          return;
-        }
-        newStudent.id = student.student_id;
-      }
+      // if (student.student_id != null && student.student_id != undefined) {
+      //   if (!this.isValidId(student.student_id)) {
+      //     response
+      //       .status(401)
+      //       .send(
+      //         `Student ${student.name} has invalid id. Id needs to be a positive integer.`
+      //       );
+      //     return;
+      //   }
+      //   newStudent.id = student.student_id;
+      // }
 
       if (
         student.school_name == null ||
@@ -329,7 +367,7 @@ export class BulkController {
         .createQueryBuilder("schools")
         .select()
         .where("schools.uniqueName = :uniqueName", {
-          uniqueName: student.school_name.toLowerCase().trim(),
+          uniqueName: student.school_name.toLowerCase().trim().replace(/\s\s+/g, ' '),
         })
         .getOne();
 
@@ -341,7 +379,6 @@ export class BulkController {
           );
         return;
       }
-      newStudent.school = schoolEntry;
 
       if (
         student.parent_email == null ||
@@ -379,23 +416,131 @@ export class BulkController {
           return;
         }
       }
-      newStudent.parentUser = parentEntry;
+      // // check email
+      // if (student.student_email != null && student.student_email != undefined && student.student_email.trim() != "") {
+        
+      //     // 17 - Email is invalid
+      //     if (!EmailValidator.validate(student.student_email)) {
+      //       response
+      //       .status(401)
+      //       .send(
+      //         `Student ${student.student_email}'s email is formatted incorrectly.`
+      //       );
+      //     return;
+      //     }
+          
+      //     // 18- Existing Emails
+      //     const reptitiveEntry = await getRepository(User)
+      //     .createQueryBuilder("users")
+      //     .select()
+      //     .where("users.email = :email", { email: student.student_email.toLowerCase() })
+      //     .getOne();
 
-      // Save
+      //   if (reptitiveEntry != null || reptitiveEntry != undefined) {
+      //     response
+      //     .status(401)
+      //     .send(
+      //       `Student ${student.student_email}'s matches an existing user's email.`
+      //     );
+      //   }
+      // }
+      // newStudent.email = student.student_email;
+
+    
+      const studentEmail = student.student_email;
+      if (studentEmail != undefined && !EmailValidator.validate(studentEmail)) {
+        response.status(401).send("Please enter a valid email address.");
+        return;
+      }
+  
+      if (studentEmail != undefined) {
+        const existingEmail = await getRepository(User)
+          .createQueryBuilder("users")
+          .where("users.email = :email", { email: studentEmail.toLowerCase() })
+          .getOne();
+  
+        if (existingEmail != undefined || existingEmail != null) {
+          response.status(401).send("This email has already been registered.");
+          return;
+        }
+      }
+  
+      // would like all students live at the same place to have the same bus route
+      // const existingStudent = await getRepository(Student)
+      //   .createQueryBuilder("students")
+      //   .leftJoinAndSelect("students.school", "school")
+      //   .leftJoinAndSelect("students.parentUser", "user")
+      //   .leftJoinAndSelect("students.route", "route")
+      //   .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+      //   .where("school.uniqueName = :school", {
+      //     school: request.body.school.uniqueName,
+      //   })
+      //   .andWhere("user.longitude = :longitude", {
+      //     longitude: request.body.parentUser.longitude,
+      //   })
+      //   .andWhere("user.latitude = :latitude", {
+      //     latitude: request.body.parentUser.latitude,
+      //   })
+      //   .getOne();
+  
+      // if (existingStudent != undefined) {
+      //   request.body.route = existingStudent.route;
+      //   request.body.inRangeStops = existingStudent.inRangeStops;
+      // }
+  
+      if (studentEmail != undefined) {
+        var loginAccount = new User();
+        loginAccount.fullName = student.name;
+        loginAccount.email = studentEmail;
+        loginAccount.role = AccountRole.STUDENT;
+        loginAccount.phoneNumber = student.phoneNumber;
+        request.body.account = loginAccount;
+      }
+      //manipulate student dict around to fit our wanted input format.
+      const saveStudentDict = {
+        fullName: student.name,
+        id: student.student_id,
+        school: schoolEntry,
+        parentUser: parentEntry,
+        account: loginAccount,
+      }
+      let result;
       try {
-        await getRepository(Student).save(newStudent);
-      } catch (error) {
+        result = await getRepository(Student).save(saveStudentDict);
+      } catch (e) {
         response
           .status(401)
           .send(
-            `Failed saving student ${newStudent.fullName} to the database: ${error.message}`
+            "New Student (" + student + ") couldn't be saved with error " + e
           );
+        return;
       }
+  
+      if (studentEmail != undefined) {
+        const link = await AuthController.generatePasswordJWT(
+          loginAccount,
+          "14 days"
+        );
+        try {
+          await getRepository(User).save(loginAccount);
+        } catch (error) {
+          response.status(401).send("User Register: " + error);
+          return;
+        }
+  
+        try {
+          await AuthController.sendNewUserEmail(loginAccount, link);
+        } catch (error) {
+          response
+            .status(401)
+            .send("Error sending confirmation email. Please try again.");
+          return;
+        }
+      }
+      response.status(200).send();
     }
-
-    response.status(200).send();
   }
-
+  
   /**
    * request: {users: [
    * {
@@ -495,7 +640,7 @@ export class BulkController {
         const reptitiveEntry = await getRepository(User)
           .createQueryBuilder("users")
           .select()
-          .where("users.email = :email", { email: user.email })
+          .where("users.email = :email", { email: user.email.toLowerCase() })
           .getOne();
 
         if (reptitiveEntry != null) {
@@ -532,23 +677,23 @@ export class BulkController {
         (userToReturn["error_code"] ?? (userToReturn["error_code"] = [])).push(
           5
         );
-        } else {
-          // 6 - Geo
-          // await q.add(async () => {
-          var loc;
-          try {
-            loc = await getLngLat(user.address);
-            console.log(loc);
-            userToReturn = { ...userToReturn, loc };
-          } catch (error) {
-            console.log(
-              `${user.email} failed to fetch location, error - ${error}`
-            );
-            if (!isAPIRequest) return false;
-            (
-              userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
-            ).push(6);
-          }
+      } else {
+        // 6 - Geo
+        // await q.add(async () => {
+        var loc;
+        try {
+          loc = await getLngLat(user.address);
+          console.log(loc);
+          userToReturn = { ...userToReturn, loc };
+        } catch (error) {
+          console.log(
+            `${user.email} failed to fetch location, error - ${error}`
+          );
+          if (!isAPIRequest) return false;
+          (
+            userToReturn["error_code"] ?? (userToReturn["error_code"] = [])
+          ).push(6);
+        }
       }
 
       // 7 - Missing phone number

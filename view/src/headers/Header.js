@@ -1,6 +1,8 @@
 import "./Header.css";
 import { LogOut } from "./../login/LogOut";
 import { TableLinks } from "./TableLinks";
+import { StartRunModal } from "./../run/StartRunModal";
+import { StopRun } from "./../run/StopRun";
 
 export const Header = ({ setLoggedIn, role }) => {
   const anyRights =
@@ -23,6 +25,13 @@ export const Header = ({ setLoggedIn, role }) => {
       </div>
 
       <TableLinks hash="MyStudents" link="MyStudents" display="My Students" />
+      <TableLinks
+        hash="ChangeMyPassword"
+        link="ChangeMyPassword"
+        display="Change Password"
+      />
+      {role === "Driver" && <StartRunModal isHeader />}
+      {role === "Driver" && <StopRun />}
       {anyRights && (
         <TableLinks hash="Schools" link="Schools/list" display="Schools" />
       )}
@@ -34,6 +43,9 @@ export const Header = ({ setLoggedIn, role }) => {
       )}
       {anyRights && (
         <TableLinks hash="Routes" link="Routes/list" display="Routes" />
+      )}
+      {anyRights && (
+          <TableLinks hash="Runs" link="Runs/list" display="Transit Runs" />
       )}
       {emailRights && (
         <TableLinks
@@ -50,11 +62,6 @@ export const Header = ({ setLoggedIn, role }) => {
           display="Send Announcement"
         />
       )}
-      <TableLinks
-        hash="ChangeMyPassword"
-        link="ChangeMyPassword"
-        display="Change Password"
-      />
       <LogOut setLoggedIn={setLoggedIn} />
     </div>
   );

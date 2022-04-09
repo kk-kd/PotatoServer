@@ -328,10 +328,10 @@ export class StudentController extends Repository<Student> {
     if (studentEmail != undefined) {
       const existingEmail = await getRepository(User)
         .createQueryBuilder("users")
-        .where("users.email = :email", { email: studentEmail })
+        .where("users.email = :email", { email: studentEmail.toLowerCase() })
         .getOne();
 
-      if (existingEmail != undefined) {
+      if (existingEmail != undefined || existingEmail != null) {
         response.status(401).send("This email has already been registered.");
         return;
       }
@@ -365,6 +365,7 @@ export class StudentController extends Repository<Student> {
       loginAccount.fullName = request.body.fullName;
       loginAccount.email = studentEmail;
       loginAccount.role = AccountRole.STUDENT;
+      loginAccount.phoneNumber = request.body.phoneNumber;
       request.body.account = loginAccount;
     }
 

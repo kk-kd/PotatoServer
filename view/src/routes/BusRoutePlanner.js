@@ -482,8 +482,7 @@ export const BusRoutePlanner = () => {
                               index === selectedRoute ? {...r, desciption: e.target.value} : r)});
                       }}
                   /></div>}
-                  <h5 style={{width: "100%"}}>{`Students on route: ${firstSelect ? school.routes[selectedRoute].students.length: 0}`}</h5>
-                    
+                  <h5 style={{width: "100%", padding: "0"}}>{`Students on route: ${firstSelect ? school.routes[selectedRoute].students.length: 0}`}</h5>
                   </div>
 
                   <div id="stops">

@@ -1,6 +1,6 @@
 
 import { useTable } from "react-table";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
@@ -8,18 +8,41 @@ import TableRow from "@mui/material/TableRow";
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody";
 
-export const UserTable = ({displayData}) => {
+export const UserTable = ({displayData, dataType}) => {
+    const [hidden_col_map, setHiddenColMap] = useState ({
+      'students': ['address', 'phoneNumber'],
+      'parents': ['school_name', 'student_id','parent_email'],
+    })
+
+    useEffect(()=> {
+      setHiddenColumns(hidden_col_map[dataType])
+    }, [])
+    
     const columns = useMemo(
         () => [
           {
             Header: "Name",
-            accessor: "fullName",
+            accessor: row => row.fullName ? row.fullName : row.name,
+          },
+          {
+            Header: "Parent Email",
+            id: 'parent_email',
+            accessor: row => row.parentUser.email,
+          },
+          {
+            Header: "School",
+            id: 'school_name',
+            accessor: row => row.school.name,
+          },
+          {
+            Header: "Student ID",
+            id: 'id',
+            accessor: "id",
           },
           {
             Header: "Email",
             accessor: "email",
           },
-
           {
             Header: "Address",
             accessor: "address",
@@ -36,7 +59,7 @@ export const UserTable = ({displayData}) => {
         console.log(displayData)
     }, [])
 
-    const { getTableProps, rows, prepareRow,  headerGroups } = useTable({ columns, data: displayData });
+    const { getTableProps, rows, prepareRow,  headerGroups, setHiddenColumns} = useTable({ columns, data: displayData});
     return (
         <TableContainer>
         <Table {...getTableProps()}>
@@ -72,5 +95,5 @@ export const UserTable = ({displayData}) => {
         </Table>
       </TableContainer>
 
-    )
+    );
 }
