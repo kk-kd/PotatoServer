@@ -393,8 +393,7 @@ export const BusRoutePlanner = () => {
                     <p>Make sure to save before leaving the page, or all of your progress will be lost.</p>
                   </ReactTooltip></h2>
               <div id = "action-bar"> 
-             
-                    <button onClick={e => saveData()}>Save All Changes</button>
+                    <button onClick={e => saveData()} className = "btn btn-outline-secondary">Save All Changes</button>
               </div>
       <div >
         {loading ? <h3>Loading</h3> :
@@ -460,7 +459,7 @@ export const BusRoutePlanner = () => {
                         <option value={index}>{route.name || "New Route"}</option>
                     ))}
                   </select>
-                  <button onClick={e => createRoute()}>New Route</button>
+                  <button onClick={e => createRoute()} className = "btn btn-outline-secondary">New Route</button>
                     </div>
 
                   {firstSelect && <div style={{width: "100%"}}><label id="plannerLabelDisplay"> Name: </label><input
@@ -534,6 +533,7 @@ export const BusRoutePlanner = () => {
                       ))}
                     </select>
                     <button
+                        className = "btn btn-outline-secondary"
                         onClick={e => {
                           setSchool({...school, routes: school.routes.map((route, index) =>
                                 index === selectedRoute ? {...route, stops: [...route.stops, {
@@ -645,6 +645,7 @@ export const BusRoutePlanner = () => {
                       </div>
                       <div style={{ flex: "30%" }}>
                         <button
+                            className = "btn btn-outline-secondary"
                             onClick={e => {
                               setSchool({...school, routes: school.routes.map((route, index) =>
                                     index === selectedRoute ? {...route, stops: route.stops.filter(stop =>
@@ -671,10 +672,12 @@ export const BusRoutePlanner = () => {
                     </div>}
                     {firstSelect && <div style = {{display: "inline-flex"}}>
                       <button
+                          className = "btn btn-outline-secondary"
                           disabled={validatedRoutes[selectedRoute]}
                           onClick={e => calculateRoutes()}
                       >Visualize Route</button>
                       <button
+                          className = "btn btn-outline-secondary"
                           onClick={e => {
                             setDeletedRoutes([...deletedRoutes, school.routes[selectedRoute]]);
                             setSchool({...school, routes: school.routes.filter((route, index) => index !== selectedRoute)});
