@@ -586,13 +586,23 @@ export const StudentInfo = ({ edit, role }) => {
                   defaultCenter={{ lat: parseFloat(student.parentUser.latitude), lng: parseFloat(student.parentUser.longitude) }}
                   defaultZoom={13}
               >
-                <Marker text="Your Address" lat={student.parentUser.latitude} lng={student.parentUser.longitude} isUser />
+                <Marker text="Your Address" lat={student.parentUser.latitude} lng={student.parentUser.longitude} isHome />
                 {foundBus && <Marker
                     lat={parseFloat(activeBus.latitude)}
                     lng={parseFloat(activeBus.longitude)}
                     isBus
                     stop={activeBus}
                 />}
+                {
+                  student.inRangeStops.map(stop => (
+                      <Marker
+                          lat={parseFloat(stop.latitude)}
+                          lng={parseFloat(stop.longitude)}
+                          stop={stop}
+                          isStop
+                          detail
+                      />
+                  ))}
               </GoogleMapReact>
               {foundBus && <div><h4>Active Run</h4><div>{`Bus: ${activeBus.busNumber}`}</div></div>}
             </div>
