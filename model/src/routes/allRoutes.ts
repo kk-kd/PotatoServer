@@ -474,6 +474,12 @@ export const allRoutes = [
   },
   {
     method: "get",
+    route: "/api/runs/active",
+    controller: RunController,
+    action: "getActiveRuns",
+  },
+  {
+    method: "get",
     route: "/api/runs/school/active/:uid",
     controller: RunController,
     action: "getSchoolActiveRuns",

@@ -412,6 +412,11 @@ export async function getRouteActiveRun(uid) {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function getActiveRuns() {
+  return await axios.get("/api/runs/active", {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 export async function getSchoolActiveRuns(uid) {
   return await axios.get("/api/runs/school/active/" + uid, {
     headers: getHeaderWithAuthToken(),

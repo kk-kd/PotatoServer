@@ -222,15 +222,29 @@ export class RunController extends Repository<Run> {
     }
   }
 
-  async getSchoolActiveRuns(request: Request, response: Response, next: NextFunction) {
+  async getActiveRuns(request: Request, response: Response, next: NextFunction) {
     try {
-      const uidNumber = request.params.uid;
-      const runQueryResult = await this.runRepository
+      if (response.locals.jwtPayload.role === "School Staff") {
+        const userId = response.locals.jwtPayload.uid;
+        const currentUser = await this.userRepository
+          .createQueryBuilder("users")
+          .where("users.uid = :uid", {uid: userId})
+          .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+          .getOneOrFail();
+        const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+        const runQueryResult = this.runRepository
+          .createQueryBuilder("runs")
+          .where("school.uid = ANY(:uids)", {uids: attachedSchools})
+          .andWhere("runs.ongoing = true")
+          .leftJoinAndSelect("runs.route", "route")
+          .leftJoinAndSelect("route.school", "school")
+          .getMany();
+        response.status(200);
+        return runQueryResult;
+      }
+      const runQueryResult = this.runRepository
         .createQueryBuilder("runs")
-        .leftJoinAndSelect("runs.route", "route")
-        .leftJoinAndSelect("route.school", "school")
-        .where("school.uid = :uid", { uid: uidNumber })
-        .andWhere("runs.ongoing = true")
+        .where("runs.ongoing = true")
         .getMany();
       response.status(200);
       return runQueryResult;
@@ -238,6 +252,26 @@ export class RunController extends Repository<Run> {
       response
         .status(401)
         .send("School with UID: " + request.params.uid + " does not have any active runs");
+      return;
+    }
+  }
+
+  async getSchoolActiveRuns(request: Request, response: Response, next: NextFunction) {
+    try {
+      const uidNumber = request.params.uid;
+      const runQueryResult = await this.runRepository
+      .createQueryBuilder("runs")
+      .leftJoinAndSelect("runs.route", "route")
+      .leftJoinAndSelect("route.school", "school")
+      .where("school.uid = :uid", { uid: uidNumber })
+      .andWhere("runs.ongoing = true")
+      .getMany();
+      response.status(200);
+      return runQueryResult;
+    } catch (e) {
+      response
+      .status(401)
+      .send("School with UID: " + request.params.uid + " does not have any active runs");
       return;
     }
   }
