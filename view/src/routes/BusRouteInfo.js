@@ -259,6 +259,7 @@ export const BusRouteInfo = ({ role }) => {
                 lat={parseFloat(activeBus.latitude)}
                 lng={parseFloat(activeBus.longitude)}
                 isBus
+                stop={activeBus}
               />}
             <Marker
                 text={school.name}

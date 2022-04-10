@@ -591,10 +591,10 @@ export const StudentInfo = ({ edit, role }) => {
                     lat={parseFloat(activeBus.latitude)}
                     lng={parseFloat(activeBus.longitude)}
                     isBus
+                    stop={activeBus}
                 />}
               </GoogleMapReact>
               {foundBus && <div><h4>Active Run</h4><div>{`Bus: ${activeBus.busNumber}`}</div></div>}
-              {foundBus && busError && <div>There was an error fetching the bus' location, so the map display may be out of date.</div>}
             </div>
           </div>
       )}

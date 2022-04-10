@@ -222,6 +222,26 @@ export class RunController extends Repository<Run> {
     }
   }
 
+  async getSchoolActiveRuns(request: Request, response: Response, next: NextFunction) {
+    try {
+      const uidNumber = request.params.uid;
+      const runQueryResult = await this.runRepository
+        .createQueryBuilder("runs")
+        .leftJoinAndSelect("runs.route", "route")
+        .leftJoinAndSelect("route.school", "school")
+        .where("school.uid = :uid", { uid: uidNumber })
+        .andWhere("runs.ongoing = true")
+        .getMany();
+      response.status(200);
+      return runQueryResult;
+    } catch (e) {
+      response
+        .status(401)
+        .send("School with UID: " + request.params.uid + " does not have any active runs");
+      return;
+    }
+  }
+
   async getRouteRuns(request: Request, response: Response, next: NextFunction) {
     try {
       const routeUid = request.params.uid;
