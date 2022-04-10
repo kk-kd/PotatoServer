@@ -21,11 +21,23 @@ export const Marker = ({ text, onRoute, stop, inRangeStop, detail, isSchool, isS
     );
   } else if (isBus) {
     return (
-        <FontAwesomeIcon
-            icon={faCar}
-            size="2xl"
-            id="busMarker"
-        />
+        <>
+          <FontAwesomeIcon
+              icon={faCar}
+              size="2xl"
+              id="busMarker"
+              data-tip
+              data-for={`runTooltip${stop.uid}`}
+          />
+          <ReactTooltip
+              id={`runTooltip${stop.uid}`}
+              place="top"
+              effect="solid"
+          >
+            <div>{`Bus: ${stop.busNumber}`}</div>
+            {stop.TTErroro && <div>{`There was an issue locating this bus, so this location may be out of date.`}</div>}
+          </ReactTooltip>
+        </>
     );
   } else if (isStop && detail) {
     return (
