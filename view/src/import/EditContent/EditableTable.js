@@ -52,9 +52,7 @@ import {
     // If the initialValue is changed externally, sync it up with our state
     React.useEffect(() => {
         setValue(initialValue);
-        console.log(initialValue);
         let e = isCellValid(id, initialValue);
-        console.log(e)
         if (e[1]) {        
           if (e[3]) {
             setWarn(e[1]);
@@ -161,7 +159,7 @@ export const EditableTable = ({
           {
             accessor: "duplicate",
             id: "duplicate",
-            Header: "Row Errors",
+            Header: "Row Warnings",
             Cell: ({row}) => (
               (row.values.duplicate && row.values.duplicate.length > 0) ? 
               <div>

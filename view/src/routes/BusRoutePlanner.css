@@ -73,7 +73,7 @@
 }
 
 #mapActionButton:hover:enabled {
-  background-color: #0d6efd;
+  background-color: #34815c;
   opacity: 0.33;
   color: white;
 }
@@ -81,10 +81,12 @@
 #mapActionButtonSelected {
   height: 80px;
   width: 80px;
-  background-color: #0d6efd;
+  background-color: #34815c;
   color: white;
   margin: 0px;
   bottom: 0px;
+  
+
 }
 
 #mapKey {

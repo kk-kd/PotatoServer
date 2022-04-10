@@ -417,6 +417,11 @@ export async function getActiveRuns() {
     headers: getHeaderWithAuthToken(),
   });
 }
+export async function getSchoolActiveRuns(uid) {
+  return await axios.get("/api/runs/school/active/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
 // Helpers
 function convertMapToURL(map) {
   return Object.keys(map)

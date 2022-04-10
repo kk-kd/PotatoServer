@@ -72,7 +72,7 @@ export const CheckStudentCell = (
       !schoolNames.includes(val) &&
       !schoolNames.includes(val.toLowerCase().trim())
     ) {
-      return [11, "School not registered", "", "", ""];
+      return [11, "Does not match any authorized schools", "", "", ""];
     }
   }
    // name
@@ -85,6 +85,19 @@ export const CheckStudentCell = (
       return r
     }
   } 
+  else if (col === 'student_email') {
+    //email already taken
+    if (databaseUsers.email.includes(val.toLowerCase()) || databaseUsers.email.includes(val.toLowerCase().trim())) {
+      let dup_email_index = databaseUsers.email.indexOf(val.toLowerCase().trim())
+      let ui = databaseUsers.uid[dup_email_index]
+      
+      return [18, "Existing Email", ui, null, null];
+    }
+    //if email is valid
+    if (!EmailValidator.validate(val)) {
+      return [17, "Not Valid", "", "", ""];
+    } 
+  }
   //dodged every wrong case? Return a success.
   return [null,"", "", "", ""];
 };
