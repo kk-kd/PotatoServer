@@ -472,4 +472,10 @@ export const allRoutes = [
     controller: RunController,
     action: "getRouteRuns",
   },
+  {
+    method: "get",
+    route: "/api/runs/active",
+    controller: RunController,
+    action: "getActiveRuns",
+  },
 ];
