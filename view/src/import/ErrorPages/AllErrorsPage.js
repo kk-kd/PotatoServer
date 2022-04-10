@@ -7,6 +7,7 @@
 import React, { useEffect, useState } from "react";
 import { EditManager } from "../EditContent/EditManager";
 import { UserTable } from "./UserTable";
+import { StudentTable } from "./StudentTable";
 import { getOneStudent, getOneUser } from "../../api/axios_wrapper";
 import "./Error.css";
 import loadingLogo from "../ErrorPages/Spinner-1s-200.gif";
@@ -48,22 +49,24 @@ export const ErrorPage = ({
       try {
         for (let j = 0; j < ids.length; j++) {
           if (ids[j]) {
-            if (dataType === "parents") {
+        //    if (dataType === "parents") {
               const fetchedData = await getOneUser(ids[j]).catch((error) => {
                 let message = error.response.data;
                 throw alert(message);
               });
               a.push(fetchedData.data);
-            }
-            if (dataType === "students") {
-              const fetchedData = await getOneStudent(ids[j]).catch((error) => {
-                let message = error.response.data;
-                throw alert(message);
-              });
-              a.push(fetchedData.data);
-            }
+         //   }
+            // if (dataType === "students") {
+            //   const fetchedData = await getOneStudent(ids[j]).catch((error) => {
+            //     let message = error.response.data;
+            //     throw alert(message);
+            //   });
+            //   a.push(fetchedData.data);
+            // }
           }
         }
+        console.log("Error data")
+        console.log(a)
 
         setErrorDataToShow(a);
       } catch (error) {
@@ -146,13 +149,13 @@ export const ErrorPage = ({
     if (editableFileData) {
       let currentRow = editableFileData[ind];
       console.log(currentRow);
-      if (dataType === "parents") {
-        if (currentRow["hint_uids"]) {
+    if (currentRow["hint_uids"]) {
           setErrorIds(currentRow["hint_uids"]);
           fetchErrorDuplicates(currentRow["hint_uids"]);
         } else {
           resetErrorData();
         }
+    if (dataType === 'parents') {
         if (currentRow["warning_uids"]) {
           setWarningIds(currentRow["warning_uids"]);
           fetchWarningDuplicates(currentRow["warning_uids"]);
@@ -160,7 +163,7 @@ export const ErrorPage = ({
           resetWarningData();
         }
       } else if (dataType === "students") {
-        resetErrorData();
+        resetWarningData();
         if (currentRow["warning_uids"]) {
           setWarningIds(currentRow["warning_uids"]);
           fetchWarningDuplicates(currentRow["warning_uids"]);
@@ -232,19 +235,17 @@ export const ErrorPage = ({
                 {" "}
                 Error: Duplicate entry already exists in our database.{" "}
               </div>
-              <UserTable displayData={errorDataToShow} dataType={dataType}>
-                {" "}
-              </UserTable>
+                <UserTable displayData={errorDataToShow}/> 
             </div>
           )}
 
           {warningDataToShow && warningDataToShow.length !== 0 && (
             <div id="warningContainer">
               <div> Warning: we found an entry with a matching name! </div>
-              <UserTable
-                displayData={warningDataToShow}
-                dataType={dataType}
-              ></UserTable>
+             {dataType == "students" && <StudentTable
+                displayData={warningDataToShow}></StudentTable>}
+             {dataType == "parents" && <UserTable
+                displayData={warningDataToShow}></UserTable>}
             </div>
           )}
 

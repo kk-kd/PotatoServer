@@ -8,7 +8,7 @@ import TableRow from "@mui/material/TableRow";
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody";
 
-export const UserTable = ({displayData, dataType}) => {
+export const StudentTable = ({displayData}) => {
     
     const columns = useMemo(
         () => [
@@ -17,12 +17,23 @@ export const UserTable = ({displayData, dataType}) => {
             accessor: row => row.fullName ? row.fullName : row.name,
           },
           {
-            Header: "Email",
-            accessor: "email",
+            Header: "Parent Email",
+            id: 'parent_email',
+            accessor: row => row.parentUser.email,
           },
           {
-            Header: "Address",
-            accessor: "address",
+            Header: "School",
+            id: 'school_name',
+            accessor: row => row.school.name,
+          },
+          {
+            Header: "Student ID",
+            id: 'id',
+            accessor: "id",
+          },
+          {
+            Header: "Email",
+            accessor: "email",
           },
           {
             Header: "Phone Number",
@@ -36,7 +47,7 @@ export const UserTable = ({displayData, dataType}) => {
         console.log(displayData)
     }, [])
 
-    const { getTableProps, rows, prepareRow,  headerGroups, setHiddenColumns} = useTable({ columns, data: displayData});
+    const { getTableProps, rows, prepareRow,  headerGroups} = useTable({ columns, data: displayData});
     return (
         <TableContainer>
         <Table {...getTableProps()}>
