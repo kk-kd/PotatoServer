@@ -7,6 +7,9 @@ import {
 import { NextFunction, Request, Response } from "express";
 import { Student } from "../entity/Student";
 import { User } from "../entity/User";
+import * as EmailValidator from "email-validator";
+import { AccountRole } from "../Role";
+import AuthController from "./AuthController";
 
 @EntityRepository(Student)
 export class StudentController extends Repository<Student> {
@@ -45,11 +48,8 @@ export class StudentController extends Repository<Student> {
       return;
     }
   }
-  async filterAllStudents(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
+
+  async filterAllStudents(request: Request, response: Response) {
     try {
       const pageNum: number = +request.query.page;
       if (pageNum <= -1) {
@@ -68,6 +68,8 @@ export class StudentController extends Repository<Student> {
         sortSpecification = "students.fullName";
       } else if (request.query.sort == "school.name") {
         sortSpecification = "school.name";
+      } else if (request.query.sort == "account") {
+        sortSpecification = "account.email";
       } else {
         //should error check instead of else
         sortSpecification = "students." + request.query.sort;
@@ -90,6 +92,7 @@ export class StudentController extends Repository<Student> {
       filterSpecification = "students." + request.query.sort;
       const queryIdFilter = request.query.idFilter;
       const queryFullNameFilter = request.query.fullNameFilter;
+      const queryEmailFilter = request.query.emailFilter;
       if (queryIdFilter) {
         if (request.query.showAll && request.query.showAll === "true") {
           if (role == "School Staff") {
@@ -99,19 +102,27 @@ export class StudentController extends Repository<Student> {
               .where("users.uid = :uid", { uid: userId })
               .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
               .getOneOrFail();
-            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const attachedSchools = currentUser.attachedSchools.map(
+              (school) => school.uid
+            );
             const [studentsQueryResult, total] = await this.studentRepository
               .createQueryBuilder("students")
               .orderBy(sortSpecification, sortDirSpec)
-              .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
+              .where("students.id ilike '%' || :id || '%'", {
+                id: queryIdFilter,
+              })
               .andWhere("students.fullName ilike '%' || :fullName || '%'", {
                 fullName: queryFullNameFilter,
+              })
+              .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+                email: queryEmailFilter
               })
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
               .leftJoinAndSelect("students.parentUser", "parentUser")
+              .leftJoinAndSelect("students.account", "account")
               .getManyAndCount();
             response.status(200);
             return {
@@ -126,10 +137,14 @@ export class StudentController extends Repository<Student> {
             .andWhere("students.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFullNameFilter,
             })
+            .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+              email: queryEmailFilter
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .leftJoinAndSelect("students.parentUser", "parentUser")
+            .leftJoinAndSelect("students.account", "account")
             .getManyAndCount();
           response.status(200);
           return {
@@ -144,19 +159,27 @@ export class StudentController extends Repository<Student> {
               .where("users.uid = :uid", { uid: userId })
               .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
               .getOneOrFail();
-            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const attachedSchools = currentUser.attachedSchools.map(
+              (school) => school.uid
+            );
             const [studentsQueryResult, total] = await this.studentRepository
               .createQueryBuilder("students")
               .orderBy(sortSpecification, sortDirSpec)
-              .where("students.id ilike '%' || :id || '%'", { id: queryIdFilter })
+              .where("students.id ilike '%' || :id || '%'", {
+                id: queryIdFilter,
+              })
               .andWhere("students.fullName ilike '%' || :fullName || '%'", {
                 fullName: queryFullNameFilter,
+              })
+              .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+                email: queryEmailFilter
               })
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
               .leftJoinAndSelect("students.parentUser", "parentUser")
+              .leftJoinAndSelect("students.account", "account")
               .offset(skipNum)
               .limit(takeNum)
               .getManyAndCount();
@@ -173,10 +196,14 @@ export class StudentController extends Repository<Student> {
             .andWhere("students.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFullNameFilter,
             })
+            .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+              email: queryEmailFilter
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .leftJoinAndSelect("students.parentUser", "parentUser")
+            .leftJoinAndSelect("students.account", "account")
             .offset(skipNum)
             .limit(takeNum)
             .getManyAndCount();
@@ -195,18 +222,24 @@ export class StudentController extends Repository<Student> {
               .where("users.uid = :uid", { uid: userId })
               .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
               .getOneOrFail();
-            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const attachedSchools = currentUser.attachedSchools.map(
+              (school) => school.uid
+            );
             const [studentsQueryResult, total] = await this.studentRepository
               .createQueryBuilder("students")
               .orderBy(sortSpecification, sortDirSpec)
               .where("students.fullName ilike '%' || :fullName || '%'", {
                 fullName: queryFullNameFilter,
               })
+              .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+                email: queryEmailFilter
+              })
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
               .leftJoinAndSelect("students.parentUser", "parentUser")
+              .leftJoinAndSelect("students.account", "account")
               .getManyAndCount();
             response.status(200);
             return {
@@ -220,10 +253,14 @@ export class StudentController extends Repository<Student> {
             .where("students.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFullNameFilter,
             })
+            .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+              email: queryEmailFilter
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .leftJoinAndSelect("students.parentUser", "parentUser")
+            .leftJoinAndSelect("students.account", "account")
             .getManyAndCount();
           response.status(200);
           return {
@@ -238,18 +275,24 @@ export class StudentController extends Repository<Student> {
               .where("users.uid = :uid", { uid: userId })
               .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
               .getOneOrFail();
-            const attachedSchools = currentUser.attachedSchools.map(school => school.uid);
+            const attachedSchools = currentUser.attachedSchools.map(
+              (school) => school.uid
+            );
             const [studentsQueryResult, total] = await this.studentRepository
               .createQueryBuilder("students")
               .orderBy(sortSpecification, sortDirSpec)
               .where("students.fullName ilike '%' || :fullName || '%'", {
                 fullName: queryFullNameFilter,
               })
+              .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+                email: queryEmailFilter
+              })
               .andWhere("school.uid = ANY(:uids)", { uids: attachedSchools })
               .leftJoinAndSelect("students.route", "route")
               .leftJoinAndSelect("students.school", "school")
               .leftJoinAndSelect("students.inRangeStops", "stops")
               .leftJoinAndSelect("students.parentUser", "parentUser")
+              .leftJoinAndSelect("students.account", "account")
               .offset(skipNum)
               .limit(takeNum)
               .getManyAndCount();
@@ -265,10 +308,14 @@ export class StudentController extends Repository<Student> {
             .where("students.fullName ilike '%' || :fullName || '%'", {
               fullName: queryFullNameFilter,
             })
+            .andWhere("COALESCE(account.email, '') ilike '%' || :email || '%'", {
+              email: queryEmailFilter
+            })
             .leftJoinAndSelect("students.route", "route")
             .leftJoinAndSelect("students.school", "school")
             .leftJoinAndSelect("students.inRangeStops", "stops")
             .leftJoinAndSelect("students.parentUser", "parentUser")
+            .leftJoinAndSelect("students.account", "account")
             .offset(skipNum)
             .limit(takeNum)
             .getManyAndCount();
@@ -294,6 +341,7 @@ export class StudentController extends Repository<Student> {
         .leftJoinAndSelect("students.school", "school")
         .leftJoinAndSelect("students.parentUser", "user")
         .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+        .leftJoinAndSelect("students.account", "account")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -305,36 +353,60 @@ export class StudentController extends Repository<Student> {
     }
   }
 
-  async saveNewStudent(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
-    try {
-      const existingStudent = await this.studentRepository
-        .createQueryBuilder("students")
-        .leftJoinAndSelect("students.school", "school")
-        .leftJoinAndSelect("students.parentUser", "user")
-        .leftJoinAndSelect("students.route", "route")
-        .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
-        .where("school.uniqueName = :school", {
-          school: request.body.school.uniqueName,
-        })
-        .andWhere("user.longitude = :longitude", {
-          longitude: request.body.parentUser.longitude,
-        })
-        .andWhere("user.latitude = :latitude", {
-          latitude: request.body.parentUser.latitude,
-        })
+  async saveNewStudent(request: Request, response: Response) {
+    const studentEmail = request.body.email;
+    if (studentEmail != undefined && !EmailValidator.validate(studentEmail)) {
+      response.status(401).send("Please enter a valid email address.");
+      return;
+    }
+
+    if (studentEmail != undefined) {
+      const existingEmail = await getRepository(User)
+        .createQueryBuilder("users")
+        .where("users.email = :email", { email: studentEmail.toLowerCase() })
         .getOne();
 
-      if (existingStudent != undefined) {
-        request.body.route = existingStudent.route;
-        request.body.inRangeStops = existingStudent.inRangeStops;
+      if (existingEmail != undefined || existingEmail != null) {
+        response.status(401).send("This email has already been registered.");
+        return;
       }
-      const result = await this.studentRepository.save(request.body);
-      response.status(200);
-      return result;
+    }
+
+    // would like all students live at the same place to have the same bus route
+    const existingStudent = await this.studentRepository
+      .createQueryBuilder("students")
+      .leftJoinAndSelect("students.school", "school")
+      .leftJoinAndSelect("students.parentUser", "user")
+      .leftJoinAndSelect("students.route", "route")
+      .leftJoinAndSelect("students.inRangeStops", "inRangeStops")
+      .where("school.uniqueName = :school", {
+        school: request.body.school.uniqueName,
+      })
+      .andWhere("user.longitude = :longitude", {
+        longitude: request.body.parentUser.longitude,
+      })
+      .andWhere("user.latitude = :latitude", {
+        latitude: request.body.parentUser.latitude,
+      })
+      .getOne();
+
+    if (existingStudent != undefined) {
+      request.body.route = existingStudent.route;
+      request.body.inRangeStops = existingStudent.inRangeStops;
+    }
+
+    if (studentEmail != undefined) {
+      var loginAccount = new User();
+      loginAccount.fullName = request.body.fullName;
+      loginAccount.email = studentEmail;
+      loginAccount.role = AccountRole.STUDENT;
+      loginAccount.phoneNumber = request.body.phoneNumber;
+      request.body.account = loginAccount;
+    }
+
+    let result;
+    try {
+      result = await this.studentRepository.save(request.body);
     } catch (e) {
       response
         .status(401)
@@ -343,46 +415,126 @@ export class StudentController extends Repository<Student> {
         );
       return;
     }
+
+    if (studentEmail != undefined) {
+      const link = await AuthController.generatePasswordJWT(
+        loginAccount,
+        "14 days"
+      );
+      try {
+        await getRepository(User).save(loginAccount);
+      } catch (error) {
+        response.status(401).send("User Register: " + error);
+        return;
+      }
+
+      try {
+        await AuthController.sendNewUserEmail(loginAccount, link);
+      } catch (error) {
+        response
+          .status(401)
+          .send("Error sending confirmation email. Please try again.");
+        return;
+      }
+    }
+
+    response.status(200);
+    return result;
   }
 
-  async updateStudent(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
+  async updateStudent(request: Request, response: Response) {
+    console.log(request.body);
+    const studentEmail = request.body.account.email;
+    if (studentEmail != undefined && !EmailValidator.validate(studentEmail)) {
+      response.status(401).send("Please enter a valid email address.");
+      return;
+    }
+
+    if (studentEmail != undefined) {
+      const existingEmail = await getRepository(User)
+        .createQueryBuilder("users")
+        .where("users.email = :email", { email: studentEmail })
+        .getOne();
+
+      if (existingEmail != undefined) {
+        console.log("Update associated user account...");
+
+        if (request.body.account.uid != existingEmail.uid) {
+          response.status(401).send("This email has already been registered.");
+          return;
+        }
+
+        // try {
+        //   await getRepository(User).save({
+        //     ...existingEmail,
+        //     fullName: request.body.fullName,
+        //     email: request.body.email,
+        //   });
+        // } catch (e) {
+        //   response
+        //     .status(401)
+        //     .send(
+        //       "There's an error while updating the associated account with this student: " +
+        //         e
+        //     );
+        //   return;
+        // }
+      }
+    }
+
     try {
-      const uidNumber = request.params.uid;
-      const a = await getConnection()
-        .createQueryBuilder()
-        .update(Student)
-        .where("uid = :uid", { uid: uidNumber })
-        .set(request.body)
-        .execute();
-      response.status(200);
-      return a;
+      await getRepository(Student).save(request.body);
+    } catch (e) {
+      response
+        .status(401)
+        .send("There's an error while updating the student: " + e);
+      return;
+    }
+
+    response.status(200).send();
+    return;
+  }
+
+  async deleteStudent(request: Request, response: Response) {
+    const uidNumber = request.params.uid; //needed for the await call / can't nest them     '
+
+    try {
+      var student = await this.studentRepository
+        .createQueryBuilder("students")
+        .leftJoinAndSelect("students.account", "account")
+        .where("students.uid = :uid", { uid: uidNumber })
+        .getOneOrFail();
     } catch (e) {
       response
         .status(401)
         .send(
-          "Student with UID " +
-            request.params.uid +
-            " and details(" +
-            request.body +
-            ") couldn't be updated with error " +
+          "There's something wrong when deleting the student. Likely the student is not registered in the system: " +
             e
         );
       return;
     }
-  }
 
-  async deleteStudent(
-    request: Request,
-    response: Response,
-    next: NextFunction
-  ) {
+    console.log(student);
+
+    if (student.account != null) {
+      try {
+        const userAccount = await getRepository(User)
+          .createQueryBuilder("users")
+          .delete()
+          .where("users.uid = :userId", { userId: student.account.uid })
+          .execute();
+      } catch (e) {
+        response
+          .status(401)
+          .send(
+            "There's something wrong when deleting the student's account. " + e
+          );
+        return;
+      }
+    }
+
     try {
-      const uidNumber = request.params.uid; //needed for the await call / can't nest them
-      const studentQueryResult = await this.studentRepository
+      var studentQueryResult = await this.studentRepository
         .createQueryBuilder("students")
         .delete()
         .where("students.uid = :uid", { uid: uidNumber })
@@ -400,6 +552,7 @@ export class StudentController extends Repository<Student> {
       return;
     }
   }
+
   findByStudentID(uid: number) {
     return this.createQueryBuilder("students")
       .where("students.uid = :uid", { uid })

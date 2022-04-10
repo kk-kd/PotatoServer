@@ -1,8 +1,8 @@
-import { HorizontalStepper } from "./HorizontalStepper";
-import { PickTypeStep } from "./PickTypeStep";
-import { UploadStep } from "./UploadStep";
-import { ValidateStep } from "./ValidateStep";
-import { SubmitStep } from "./SubmitStep";
+import { HorizontalStepper } from "./StepNavigation/HorizontalStepper";
+import { PickTypeStep } from "./StepPages/PickTypeStep";
+import { UploadStep } from "./StepPages/UploadStep";
+import { ValidateStep } from "./StepPages/ValidateStep";
+import { SubmitStep } from "./StepPages/SubmitStep";
 import { useState, useEffect } from "react";
 import "./ImportPage.css";
 import {
@@ -12,6 +12,7 @@ import {
   getAllUsers,
   filterAllSchools,
   filterAllUsers,
+  filterAllStudents,
 } from "../api/axios_wrapper";
 
 export const ImportPage = () => {
@@ -26,7 +27,8 @@ export const ImportPage = () => {
 
   const [users, setUsers] = useState();
   const [schools, setSchools] = useState();
-  const [emails, setEmails] = useState();
+  const [databaseUsers, setDatabaseUsers] = useState();
+  const [databaseStudents, setDatabaseStudents] = useState();
   const [schoolNames, setSchoolNames] = useState();
 
   // errors
@@ -35,19 +37,23 @@ export const ImportPage = () => {
     6: [],
   });
 
-  const [missingErrors, setMissingErrors] = useState({
+  const [invalidErrors, setInvalidErrors] = useState({
+    3: [],
+    4: [],
+    5: [],
+    6: [],
     1: [],
     2: [],
     7: [],
     9: [],
     10: [],
     99: [],
-  });
-  const [invalidErrors, setInvalidErrors] = useState({
+    16: [],
     8: [],
     11: [],
     12: [],
     14: [],
+    15: [],
   });
 
   const [existErrors, setExistErrors] = useState({
@@ -72,6 +78,7 @@ export const ImportPage = () => {
       setSchools(fetchedData.data.schools);
       let a = fetchedData.data.schools.map((school) => school.uniqueName);
       setSchoolNames(a);
+      console.log(a)
     } catch (error) {
       alert(error.response.data);
     }
@@ -87,8 +94,40 @@ export const ImportPage = () => {
         showAll: "true",
       });
       setUsers(fetchedData.data.users);
-      let a = fetchedData.data.users.map((user) => user.email);
-      setEmails(a);
+      let email = fetchedData.data.users.map((user) => user.email);
+      let uid =  fetchedData.data.users.map((user) => user.uid);
+      let name =  fetchedData.data.users.map((user) => user.fullName);
+      let e = {'email': email, 'uid': uid, 'fullName': name}
+      console.log(e)
+      setDatabaseUsers(e);
+
+    } catch (error) {
+      alert(error.response.data);
+    }
+  };
+
+  const fetchStudentData = async () => {
+    try {
+      const fetchedData = await filterAllStudents({
+        page: 1,
+        size: 500,
+        sort: "none",
+        sortDir: "none",
+        fullNameFilter: "",
+        showAll: "true",
+        idFilter: "",
+      });
+      console.log("Student Database Data")
+      console.log( fetchedData.data.students)
+    
+      let parent_email = fetchedData.data.students.map((student) => student.parent_email);
+      let uid = fetchedData.data.students.map((student) => student.uid);
+      let name = fetchedData.data.students.map((student) => student.fullName);
+
+      let e = {'parent_email': parent_email, 'uid': uid, 'fullName': name}
+      console.log(e)
+      setDatabaseStudents(e);
+
     } catch (error) {
       alert(error.response.data);
     }
@@ -97,6 +136,7 @@ export const ImportPage = () => {
   useEffect(() => {
     fetchUserData();
     fetchSchoolData();
+    fetchStudentData();
   }, []);
 
   // run validation
@@ -129,32 +169,12 @@ export const ImportPage = () => {
   };
 
   const findAndFormatErrors = (data) => {
-    var address_codes = Object.keys(addressErrors);
-    var missing_codes = Object.keys(missingErrors);
-    var invalid_codes = Object.keys(invalidErrors);
-    var exist_codes = Object.keys(existErrors);
-
-    for (let i = 0; i < data.length; i++) {
-      var entry = data[i];
-      for (let k = 0; k < entry["error_code"].length; k++) {
-        var code = entry["error_code"][k].toString();
-        if (address_codes.includes(code)) {
-          addToDict(addressErrors, setAddressErrors, code, i);
-        } else if (missing_codes.includes(code)) {
-          addToDict(missingErrors, setMissingErrors, code, i);
-        } else if (invalid_codes.includes(code)) {
-          addToDict(invalidErrors, setInvalidErrors, code, i);
-        } else if (exist_codes.includes(code)) {
-          addToDict(existErrors, setExistErrors, code, i);
-        }
-      }
-    }
-    console.log(addressErrors);
-    console.log(missingErrors);
-    console.log(invalidErrors);
-    console.log(existErrors);
-
+    setFileData(data)
+    console.log("file data set")
+    console.log(data)
+    console.log(schoolNames)
     setProcessingComplete(true);
+    console.log("processing complete")
   };
 
   const resetState = () => {
@@ -166,19 +186,21 @@ export const ImportPage = () => {
       6: [],
     });
     setInvalidErrors({
-      8: [],
-      11: [],
-      12: [],
-      14: [],
-    });
-    setMissingErrors({
       1: [],
       2: [],
       7: [],
+      8: [],
       9: [],
       10: [],
+      11: [],
+      12: [],
+      14: [],
+      15: [],
+      16: [],
       99: [],
+      16: [],
     });
+
     setExistErrors({
       3: [],
       4: [],
@@ -187,29 +209,14 @@ export const ImportPage = () => {
     setActiveStep(0);
   };
 
-  {
-    activeStep === 3 && (
-      <div id="step">
-        <SubmitStep
-          dataType={dataType}
-          resetState={resetState}
-          fileData={fileData}
-          setFileData={setFileData}
-        />
-      </div>
-    );
-  }
-
   async function callValidate(validation_input) {
     try {
       if (dataType === "students") {
         const resp = await validateBulkStudents(validation_input);
         findAndFormatErrors(resp.data.students);
-        setFileData(resp.data.students);
       } else if (dataType === "parents") {
         const resp = await validateBulkParents(validation_input);
         findAndFormatErrors(resp.data.users);
-        setFileData(resp.data.users);
       }
     } catch (e) {
       console.log(e);
@@ -262,18 +269,11 @@ export const ImportPage = () => {
           <ValidateStep
             users={users}
             schools={schools}
-            emails={emails}
+            databaseUsers={databaseUsers}
+            databaseStudents = {databaseStudents}
             schoolNames={schoolNames}
             dataType={dataType}
             requiredColumns={requiredColumns}
-            addressErrors={addressErrors}
-            setAddressErrors={setAddressErrors}
-            missingErrors={missingErrors}
-            setMissingErrors={setMissingErrors}
-            invalidErrors={invalidErrors}
-            setInvalidErrors={setInvalidErrors}
-            existErrors={existErrors}
-            setExistErrors={setExistErrors}
             processingComplete={processingComplete}
             setProcessingComplete={setProcessingComplete}
             fileData={fileData}

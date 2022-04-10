@@ -41,6 +41,13 @@
   padding:2%;
 }
 
+#main_form_no_map {
+  float: left;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 2%;
+}
 
 #label-user {
   width: 30%;
@@ -55,12 +62,16 @@
            and margin-left to create a gutter between the label and input */
   margin: 2% 15% 0 4%;
 }
+#input-user-inline-item {
+  display:inline-flex;
+  margin:2% 15% 0% 4%;
+  width: 40%;
+}
 
 #content {
   background: #f6f9f7;
-  height: auto;
   margin: auto auto 20px;
-  overflow: auto;
+  overflow-x: auto;
   padding-bottom: 20px;
   width: 95%;
 }

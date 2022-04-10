@@ -280,8 +280,8 @@ export async function updateUser(uid, specifications, changePassword) {
     headers: getHeaderWithAuthToken(),
   });
 }
-export async function updateStudent(uid, specifications) {
-  return await axios.put("/api/students/" + uid, specifications, {
+export async function updateStudent(specifications) {
+  return await axios.put("/api/students/update", specifications, {
     headers: getHeaderWithAuthToken(),
   });
 }
@@ -365,6 +365,60 @@ export async function validateBulkStudents(specifications) {
 
 export async function saveBulkStudents(specifications) {
   return await axios.post("/api/bulk/students/save", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+
+export async function filterAllRuns(specifications) {
+  return await axios.get(`/api/runs/filter`, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getCurrentUserActiveRuns() {
+  return await axios.get(`/api/runs/currentUser`, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function validateNewRun(specifications) {
+  return await axios.get("/api/runs/validate", {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function saveNewRun(specifications) {
+  return await axios.post("/api/runs/save", specifications, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function endRun(uid) {
+  return await axios.get("/api/runs/end/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getRouteRuns(uid, specifications) {
+  return await axios.get(`/api/runs/route/` + uid, {
+    params: specifications,
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getBusLocation(busNumber) {
+  return await axios.get("/api/gps/" + busNumber, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getRouteActiveRun(uid) {
+  return await axios.get("/api/runs/route/active/" + uid, {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getActiveRuns() {
+  return await axios.get("/api/runs/active", {
+    headers: getHeaderWithAuthToken(),
+  });
+}
+export async function getSchoolActiveRuns(uid) {
+  return await axios.get("/api/runs/school/active/" + uid, {
     headers: getHeaderWithAuthToken(),
   });
 }

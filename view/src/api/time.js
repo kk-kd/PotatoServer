@@ -1,3 +1,23 @@
+export const millisecondsToDisplay = (milliseconds) => {
+  const hours = Math.trunc(milliseconds/3600000);
+  const minutes = Math.trunc((milliseconds%3600000)/60000);
+  const seconds = Math.trunc(((milliseconds%3600000)%60000)/1000);
+  if (hours >= 1 && minutes >= 1) {
+    return `${hours} hours, ${minutes} minutes`;
+  } else if (hours >= 1) {
+    return `${hours} hours`;
+  } else if (minutes >= 1) {
+    return `${minutes} minutes`;
+  } else {
+    return `${seconds} seconds`;
+  }
+}
+
+export const dateToDisplay = (date) => {
+  const da = new Date(date);
+  return `${da.toDateString()}, ${getDisplayTime(minutesToTimeString(da.getHours()*60+da.getMinutes()))}`;
+}
+
 export const addDriveTime = (departureTime, driveTime) => {
   const originalMinutes = timeStringToMinutes(departureTime);
   const endMinutes = originalMinutes + driveTime;

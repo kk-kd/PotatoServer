@@ -8,6 +8,21 @@
   border: 1px solid grey;
 }
 
+#map {
+  float: right;
+  width: 40%;
+  padding-bottom: "20px";
+  padding: 2%;
+}
+
+#student-info-content {
+  float: left;
+  align-items: center;
+  justify-content: center;
+  width:60%;
+  padding:2%;
+}
+
 #student-content {
   margin: auto;
   height: auto;

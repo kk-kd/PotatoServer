@@ -2,7 +2,7 @@ button {
   width: 170px;
   height: 60px;
   width: fit-content;
-  min-width: 150px;
+  min-width: 115px;
   margin: 5px;
   background-color: #34815c;
   color:white;
@@ -14,7 +14,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-#selected {
+#selected { 
   cursor: not-allowed;
   background-color: black;
   color: white;

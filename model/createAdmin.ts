@@ -1,4 +1,4 @@
-import { createConnection } from "typeorm";
+import { createConnection, getRepository } from "typeorm";
 import * as bcrypt from "bcryptjs";
 import { User } from "./src/entity/User";
 
@@ -7,8 +7,8 @@ require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 createConnection().then(async (connection) => {
   const firstAdmin = new User();
   firstAdmin.email = "admin@example.com";
-  firstAdmin.fullName = "Admin";
-  firstAdmin.password = await bcrypt.hash("Potato458!", 10);
+  firstAdmin.fullName = "admin";
+  firstAdmin.password = await bcrypt.hash("Omg458!!", 10);
   firstAdmin.address = "1 Fake Street";
   firstAdmin.longitude = 0;
   firstAdmin.latitude = 0;

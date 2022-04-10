@@ -5,6 +5,8 @@ import { SchoolController } from "../controller/SchoolController";
 import { EmailController } from "../mailer/EmailController";
 import { StopController } from "../controller/StopController";
 import { BulkController } from "../bulk/BulkController";
+import { TransitTraqController } from "../transit_traq/TransitTraqController";
+import { RunController } from "../controller/RunController";
 
 /*
 
@@ -147,7 +149,7 @@ export const allRoutes = [
   },
   {
     method: "put",
-    route: "/api/students/:uid",
+    route: "/api/students/update",
     controller: StudentController,
     action: "updateStudent",
   },
@@ -419,5 +421,67 @@ export const allRoutes = [
     route: "/api/bulk/students/save",
     controller: BulkController,
     action: "saveStudents",
+  },
+
+  {
+    method: "get",
+    route: "/api/gps/:busNumber",
+    controller: TransitTraqController,
+    action: "getBusLocation",
+  },
+
+  {
+    method: "get",
+    route: "/api/runs/filter",
+    controller: RunController,
+    action: "filterAllRuns",
+  },
+  {
+    method: "get",
+    route: "/api/runs/currentUser",
+    controller: RunController,
+    action: "getUserActiveRuns"
+  },
+  {
+    method: "get",
+    route: "/api/runs/validate",
+    controller: RunController,
+    action: "validateNewRun",
+  },
+  {
+    method: "post",
+    route: "/api/runs/save",
+    controller: RunController,
+    action: "saveNewRun",
+  },
+  {
+    method: "get",
+    route: "/api/runs/end/:uid",
+    controller: RunController,
+    action: "endRun",
+  },
+  {
+    method: "get",
+    route: "/api/runs/route/active/:uid",
+    controller: RunController,
+    action: "getRouteActiveRun",
+  },
+  {
+    method: "get",
+    route: "/api/runs/route/:uid",
+    controller: RunController,
+    action: "getRouteRuns",
+  },
+  {
+    method: "get",
+    route: "/api/runs/active",
+    controller: RunController,
+    action: "getActiveRuns",
+  },
+  {
+    method: "get",
+    route: "/api/runs/school/active/:uid",
+    controller: RunController,
+    action: "getSchoolActiveRuns",
   },
 ];

@@ -6,7 +6,7 @@ import {
   JoinColumn,
   JoinTable,
   OneToMany,
-  ManyToMany
+  ManyToMany,
 } from "typeorm";
 import { Route } from "./Route";
 import { Student } from "./Student";
@@ -44,19 +44,19 @@ export class School {
   })
   routes: Route[];
 
-  @ManyToMany(() => User, user => user.attachedSchools, {
-    cascade: true
+  @ManyToMany(() => User, (user) => user.attachedSchools, {
+    cascade: true,
   })
   @JoinTable()
   staff: User[];
 
   @Column({
-    type: "time"
+    type: "time",
   })
   arrivalTime: string;
 
   @Column({
-    type: "time"
+    type: "time",
   })
   departureTime: string;
 }

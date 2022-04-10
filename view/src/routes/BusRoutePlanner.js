@@ -392,10 +392,6 @@ export const BusRoutePlanner = () => {
                     <p>Use this page to update the routes and stops for the current school.</p>
                     <p>Make sure to save before leaving the page, or all of your progress will be lost.</p>
                   </ReactTooltip></h2>
-              <div id = "action-bar"> 
-             
-                    <button onClick={e => saveData()}>Save All Changes</button>
-              </div>
       <div >
         {loading ? <h3>Loading</h3> :
             <div >
@@ -460,7 +456,7 @@ export const BusRoutePlanner = () => {
                         <option value={index}>{route.name || "New Route"}</option>
                     ))}
                   </select>
-                  <button onClick={e => createRoute()}>New Route</button>
+                  <button onClick={e => createRoute()} className = "btn btn-outline-secondary">New Route</button>
                     </div>
 
                   {firstSelect && <div style={{width: "100%"}}><label id="plannerLabelDisplay"> Name: </label><input
@@ -482,8 +478,7 @@ export const BusRoutePlanner = () => {
                               index === selectedRoute ? {...r, desciption: e.target.value} : r)});
                       }}
                   /></div>}
-                  <h5 style={{width: "100%"}}>{`Students on route: ${firstSelect ? school.routes[selectedRoute].students.length: 0}`}</h5>
-                    
+                  <h5 style={{width: "100%", padding: "0"}}>{`Students on route: ${firstSelect ? school.routes[selectedRoute].students.length: 0}`}</h5>
                   </div>
 
                   <div id="stops">
@@ -535,6 +530,7 @@ export const BusRoutePlanner = () => {
                       ))}
                     </select>
                     <button
+                        className = "btn btn-outline-secondary"
                         onClick={e => {
                           setSchool({...school, routes: school.routes.map((route, index) =>
                                 index === selectedRoute ? {...route, stops: [...route.stops, {
@@ -646,6 +642,7 @@ export const BusRoutePlanner = () => {
                       </div>
                       <div style={{ flex: "30%" }}>
                         <button
+                            className = "btn btn-outline-secondary"
                             onClick={e => {
                               setSchool({...school, routes: school.routes.map((route, index) =>
                                     index === selectedRoute ? {...route, stops: route.stops.filter(stop =>
@@ -672,10 +669,12 @@ export const BusRoutePlanner = () => {
                     </div>}
                     {firstSelect && <div style = {{display: "inline-flex"}}>
                       <button
+                          className = "btn btn-outline-secondary"
                           disabled={validatedRoutes[selectedRoute]}
                           onClick={e => calculateRoutes()}
                       >Visualize Route</button>
                       <button
+                          className = "btn btn-outline-secondary"
                           onClick={e => {
                             setDeletedRoutes([...deletedRoutes, school.routes[selectedRoute]]);
                             setSchool({...school, routes: school.routes.filter((route, index) => index !== selectedRoute)});
@@ -707,7 +706,8 @@ export const BusRoutePlanner = () => {
                     <div id="tools">
                       
                     <button
-                        id={changeRoute ? "mapActionButtonSelected" : "mapActionButton"}
+                        className = "btn btn-outline-secondary"
+                        id={changeRoute ? "mapActionButtonSelected" : "mapActionButton disabled"}
                         disabled={!firstSelect}
                         onClick={e => {
                           setChangeRoute(!changeRoute);
@@ -716,8 +716,7 @@ export const BusRoutePlanner = () => {
                         data-tip
                         data-for="changeStudentRouteTip"
 
-                    > Select Students
-                      <FontAwesomeIcon
+                    > Student Edit Mode <FontAwesomeIcon
                         icon={faLocationPin}
                         size="xl"
                     /></button>
@@ -729,7 +728,8 @@ export const BusRoutePlanner = () => {
                     Add/remove student(s) to current route by clicking their icon on the map.
                   </ReactTooltip>
                     <button
-                        id={placeStopLocation ? "mapActionButtonSelected" : "mapActionButton"}
+                        className = "btn btn-outline-secondary"
+                        id={placeStopLocation ? "mapActionButtonSelected" : "mapActionButton disabled"}
                         disabled={!stopSelect}
                         onClick={e => {
                           setChangeRoute(false);
@@ -738,7 +738,7 @@ export const BusRoutePlanner = () => {
                         data-tip
                         data-for="placeStopTip"
 
-                    >Move Bus Stops <FontAwesomeIcon
+                    >Edit Bus Stop Mode <FontAwesomeIcon
                         icon={faMapPin}
                         size="xl"
                     />
@@ -888,6 +888,9 @@ export const BusRoutePlanner = () => {
               </div>
             </div>
         }
+      </div>
+      <div id = "action-bar">
+        <button onClick={e => saveData()} className = "btn btn-outline-secondary">Save All Changes</button>
       </div>
       </div>
   );

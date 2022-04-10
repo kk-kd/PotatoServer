@@ -24,6 +24,7 @@ export const ListStudents = ({ role }) => {
   const [sortDirec, setSortDirec] = useState("ASC");
   const [idFilter, setIdFilter] = useState("");
   const [fullNameFilter, setFullNameFilter] = useState("");
+  const [emailFilter, setEmailFilter] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,6 +35,7 @@ export const ListStudents = ({ role }) => {
           sortDir: sortDirec,
           fullNameFilter: fullNameFilter,
           idFilter: idFilter,
+          emailFilter: emailFilter,
           showAll: showAll,
         });
         console.log(fetchedData);
@@ -44,7 +46,7 @@ export const ListStudents = ({ role }) => {
       }
     };
     fetchData();
-  }, [page, size, sortDirec, idFilter, fullNameFilter, showAll]);
+  }, [page, size, sortDirec, idFilter, fullNameFilter, emailFilter, showAll]);
 
   const nextSort = (id) => {
     if (sortBy !== id) {
@@ -134,6 +136,13 @@ export const ListStudents = ({ role }) => {
           </div>
         ),
       },
+      {
+        HeaderName: "Email",
+        accessor: "account",
+        Cell: (props) => (
+            <div>{props.value ? props.value.email : ""}</div>
+        )
+      },
     ],
     []
   );
@@ -158,7 +167,8 @@ export const ListStudents = ({ role }) => {
                   <th {...column.getHeaderProps()}>
                     {column.id === "fullName" ||
                     column.id === "id" ||
-                    column.id === "school.name" ? (
+                    column.id === "school.name" ||
+                    column.id === "account" ? (
                       <div>
                         <label
                           onClick={() => {
@@ -180,7 +190,7 @@ export const ListStudents = ({ role }) => {
                             setFilter={
                               column.id === "id"
                                 ? setIdFilter
-                                : setFullNameFilter
+                                : (column.id === "account" ? setEmailFilter : setFullNameFilter)
                             }
                           />
                         )}

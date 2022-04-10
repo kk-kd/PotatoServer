@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { saveBulkParents, saveBulkStudents } from "../api/axios_wrapper";
+import { saveBulkParents, saveBulkStudents } from "../../api/axios_wrapper";
 
 export const SubmitStep = ({ dataType, fileData, setFileData, resetState }) => {
   const [emails, setEmails] = useState();

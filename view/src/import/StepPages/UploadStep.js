@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { StepButtons } from "./StepButtons";
+import { StepButtons } from "../StepNavigation/StepButtons";
 import PropTypes from "prop-types";
 import { parse } from "papaparse";
 

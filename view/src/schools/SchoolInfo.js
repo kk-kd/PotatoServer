@@ -9,6 +9,8 @@ import {
   getOneSchool,
   updateSchool,
   saveRoute,
+  getSchoolActiveRuns,
+  getBusLocation
 } from "./../api/axios_wrapper";
 import {
   addDriveTime,
@@ -40,6 +42,7 @@ export const SchoolInfo = ({ edit, role }) => {
   const [lng, setLng] = useState();
   const [showMap, setShowMap] = useState(false);
   const [error, setError] = useState(false);
+  const [activeBusses, setActiveBusses] = useState([]);
 
   const fetchSchoolData = async () => {
     try {
@@ -71,6 +74,25 @@ export const SchoolInfo = ({ edit, role }) => {
   // load data on page load
   useEffect(() => {
     fetchSchoolData();
+  }, []);
+
+  useEffect(() => {
+    const updateBusLocation = setInterval(async () => {
+      try {
+        const currentBusses = await getSchoolActiveRuns(id);
+        console.log(currentBusses);
+        let busLocations = [];
+        for (var i = 0; i < currentBusses.data.length; i++) {
+          const busLocation = await getBusLocation(currentBusses.data[i].busNumber);
+          busLocations = [...busLocations, busLocation.data];
+        }
+        console.log(busLocations);
+        setActiveBusses(busLocations);
+      } catch (e) {
+        console.log(e);
+      }
+    }, 5000);
+    return () => clearInterval(updateBusLocation);
   }, []);
 
   useEffect(() => {
@@ -428,6 +450,14 @@ export const SchoolInfo = ({ edit, role }) => {
               onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
             >
               <Marker text="Your Address" lat={lat} lng={lng} isSchool />
+              {activeBusses.map(bus => (
+                  <Marker
+                      lat={parseFloat(bus.latitude)}
+                      lng={parseFloat(bus.longitude)}
+                      stop={bus}
+                      isBus
+                  />
+              ))}
             </GoogleMapReact>
           </div>
         </div>

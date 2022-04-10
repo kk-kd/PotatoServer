@@ -4,8 +4,10 @@ import {
   Column,
   Unique,
   OneToMany,
+  OneToOne,
   ManyToMany,
 } from "typeorm";
+import { Run } from "./Run";
 import { School } from "./School";
 import { Student } from "./Student";
 
@@ -21,16 +23,20 @@ export class User {
   @Column()
   fullName: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   address: string;
 
   @Column({
     type: "decimal",
+    nullable: true,
   })
   longitude: number;
 
   @Column({
     type: "decimal",
+    nullable: true,
   })
   latitude: number;
 
@@ -54,6 +60,17 @@ export class User {
   })
   confirmationCode: string;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   phoneNumber: string;
+
+  @OneToMany(() => Run, (run) => run.driver, {
+    cascade: true,
+    eager: true
+  })
+  runs: Run[];
+
+  @OneToOne(() => Student, (student) => student.account, { nullable: true, onDelete: "CASCADE" })
+  studentInfo: Student;
 }
