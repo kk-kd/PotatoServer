@@ -5,6 +5,7 @@ import { User } from "../entity/User";
 import { Student } from "../entity/Student";
 import { publishMessage } from "./emailWorker";
 import { Request, Response } from "express";
+import { AccountRole } from "../Role";
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
 const FROM = "noreply@potato.com";
@@ -101,10 +102,8 @@ export class EmailController {
   };
 
   private extractName = (user) => {
-    return (
-      user.fullName
-    );
-  }
+    return user.fullName;
+  };
 
   sendGeneralAnnouncementToAll = async (
     request: Request,
@@ -117,6 +116,7 @@ export class EmailController {
     const allUserEmails = await userRepository
       .createQueryBuilder("users")
       .select("users.email")
+      .where("users.role = :role", { role: AccountRole.PARENT })
       .getMany();
 
     const allEmails = allUserEmails
@@ -142,6 +142,8 @@ export class EmailController {
     const allEmails = await userRepository
       .createQueryBuilder("users")
       .select(["users.email", "users.uid"])
+      .where("users.role = :role", { role: AccountRole.PARENT })
+
       .getMany();
 
     allEmails.forEach(async (user) => {
