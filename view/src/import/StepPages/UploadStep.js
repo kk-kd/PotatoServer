@@ -81,26 +81,20 @@ export const UploadStep = ({
   // - if there's already a file selected, don't make them resubmit. Handles when they go backwards!
   // - define column conversions
   useEffect(() => {
-    console.log(dataType);
     if (fileData) {
       setValidFile(true);
       setFileData(fileData);
       setFileName(fileName);
-    }
-    if (dataType === "students") {
-      setColumnMap({
-        //TODO: define student column map
-      });
-    } else if (dataType === "users") {
-      setColumnMap({
-        //TODO: define user column map
-      });
     }
   }, []);
 
   return (
     <div>
       <div id="question"> What File Do You Want to Use? </div>
+      {dataType === "parents" && <div> {"Files for users must have the following headers, exactly as shown below: \n"} </div>}
+      {dataType === "students" && <div> {"Files for students must have the following headers, exactly as shown below: \n"} </div>}
+      {<p> <b> {requiredColumns.join(", ")} </b> </p>}
+
 
       {fileName && <div id="file-display"> {fileName} </div>}
 

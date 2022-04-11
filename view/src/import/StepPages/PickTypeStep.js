@@ -20,7 +20,7 @@ export const PickTypeStep = ({dataType, setRequiredColumns, setDataType, step_la
                     value={dataType}
                     onChange={(e) => {
                         setDataType(e.target.value); 
-                        let studentKeys = ['name', 'parent_email', 'school_name', 'student_id', 'index', 'student_email', 'phone_number']
+                        let studentKeys = ['name', 'parent_email', 'school_name', 'student_id', 'student_email', 'phone_number']
                         let parentKeys = ['name', 'email', 'address', 'phone_number']
                         const required = (e.target.value === 'students') ? studentKeys : parentKeys;
                         setRequiredColumns(required)

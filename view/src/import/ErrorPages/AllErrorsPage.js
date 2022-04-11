@@ -11,6 +11,7 @@ import { StudentTable } from "./StudentTable";
 import { getOneStudent, getOneUser } from "../../api/axios_wrapper";
 import "./Error.css";
 import loadingLogo from "../ErrorPages/Spinner-1s-200.gif";
+import { StepButtons } from "../StepNavigation/StepButtons";
 
 export const ErrorPage = ({
   checkRow,
@@ -27,7 +28,13 @@ export const ErrorPage = ({
   setFileData,
   dataType,
   submissionData, 
-  setSubmissionData
+  setSubmissionData,
+  step_labels, 
+  activeStep, 
+  setActiveStep,
+  setRunValidation, 
+  resetState
+
 }) => {
   const [editableFileData, setEditableFileData] = useState();
   const [complete, setComplete] = useState(false);
@@ -236,14 +243,19 @@ export const ErrorPage = ({
         </div>
       )}
       {complete && (
-        <div>
-          <h6> No Errors Left! </h6>
-          <button onClick={(e) => {setSubmissionData(removeExcludedRows()); setActiveError(activeError + 1)}}>
-            {" "}
-            Continue
-          </button>
-        </div>
+         <div>
+           <h6> No Errors Left! </h6>
+       </div>
       )}
+       <StepButtons
+         nextButtonValid={complete}
+         step_labels={step_labels}
+         activeStep={activeStep}
+         setActiveStep={setActiveStep}
+         setRunValidation={setRunValidation}
+         resetState={resetState}
+         additionalNextFunction = {() => {setSubmissionData(removeExcludedRows()); setActiveError(activeError + 1)}}
+       ></StepButtons>
     </div>
   );
 };

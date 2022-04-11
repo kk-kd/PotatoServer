@@ -8,12 +8,16 @@ export const StepButtons = ({
   setActiveStep,
   setRunValidation,
   resetState,
+  additionalNextFunction
 }) => {
   const handleNext = () => {
     if (activeStep === 1) {
       setRunValidation(true);
     }
     setActiveStep(activeStep + 1);
+    if (additionalNextFunction) {
+      additionalNextFunction();
+    }
   };
 
   const handleBack = () => {

@@ -125,11 +125,11 @@ export const ValidateStep = ({
     }
   }, []);
 
-  useEffect(() => {
-    if (activeError === 1) {
-      setValid(true);
-    }
-  }, [activeError]);
+  // useEffect(() => {
+  //   if (activeError === 1) {
+  //     setValid(true);
+  //   }
+  // }, [activeError]);
 
   return (
     <div>
@@ -148,19 +148,13 @@ export const ValidateStep = ({
           setFileData={setFileData}
           submissionData = {submissionData}
           setSubmissionData = {setSubmissionData}
+          step_labels = {step_labels}
+          activeStep = {activeStep}
+          setActiveStep = {setActiveStep}
+          setRunValidation = {setRunValidation} 
+          resetState = {resetState}
         />
       )}
-
-      {activeError === 1 && <h6>All Errors Fixed!</h6>}
-
-      <StepButtons
-        nextButtonValid={valid}
-        step_labels={step_labels}
-        activeStep={activeStep}
-        setActiveStep={setActiveStep}
-        setRunValidation={setRunValidation}
-        resetState={resetState}
-      ></StepButtons>
     </div>
   );
 };
