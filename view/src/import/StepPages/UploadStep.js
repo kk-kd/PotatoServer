@@ -14,6 +14,7 @@ export const UploadStep = ({
   activeStep,
   setActiveStep,
   setRunValidation,
+  resetState
 }) => {
   const [validFile, setValidFile] = useState(false);
   const [columnMap, setColumnMap] = useState();
@@ -121,6 +122,7 @@ export const UploadStep = ({
         activeStep={activeStep}
         setActiveStep={setActiveStep}
         setRunValidation={setRunValidation}
+        resetState={resetState}
       >
         {" "}
       </StepButtons>

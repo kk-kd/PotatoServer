@@ -3,7 +3,7 @@ import { StepButtons } from "../StepNavigation/StepButtons"
 import { RadioGroup, FormControlLabel, Radio } from "@mui/material"
 import { useEffect } from "react";
 
-export const PickTypeStep = ({dataType, setRequiredColumns, setDataType, step_labels, activeStep, setActiveStep, setRunValidation}) => {
+export const PickTypeStep = ({dataType, setRequiredColumns, setDataType, step_labels, activeStep, setActiveStep, setRunValidation, resetState}) => {
     // if going backwards, remember their selection
     useEffect(() => {
         if (dataType) {
@@ -38,6 +38,7 @@ export const PickTypeStep = ({dataType, setRequiredColumns, setDataType, step_la
                 activeStep = {activeStep} 
                 setActiveStep = {setActiveStep}
                 setRunValidation = {setRunValidation}
+                resetState={resetState}
                  > 
             </StepButtons>
         </div>

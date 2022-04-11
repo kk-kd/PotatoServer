@@ -62,7 +62,7 @@ export const EditManager = ({
           val &&
           old_row.student_email.toLowerCase().trim() === val.toLowerCase().trim()
         ) {
-          console.log("Match Found")
+        //   console.log("Match Found")
           existing_dup.push([52, "Student Email Matches Row " + new_index]);
         }
         // if not, remove error from existing_dup
@@ -70,8 +70,8 @@ export const EditManager = ({
           //remove it
           console.log("Removing 52 emails with index")
           for (let i = 0; i < existing_dup.length; i++) {
-            console.log("Row " + new_index)
-            console.log(existing_dup[i][1])
+            // console.log("Row " + new_index)
+            // console.log(existing_dup[i][1])
             if (existing_dup[i] && existing_dup[i][0] === 52 && existing_dup[i][1].includes("Row " + new_index)) {
               existing_dup.splice(i, 1);
             }
@@ -215,8 +215,8 @@ export const EditManager = ({
             }
           }
           let dup = searchFileData(copy, index);
-          console.log("Search File Results")
-          console.log(dup)
+        //   console.log("Search File Results")
+        //   console.log(dup)
           for (let i = 0; i < dup.length; i++) {
             if (dup[i][0] === 50) {
               row_errors.push(50);
@@ -251,7 +251,7 @@ export const EditManager = ({
                   dup_wo_up.push(dup[i])
               }
           }
-          console.log(dup_wo_up)
+          //console.log(dup_wo_up)
           let a = {
             ...copy,
             ["hint_uids"]: [error_uid],
@@ -300,8 +300,8 @@ export const EditManager = ({
                 row.loc.latitude
             );
      
-            console.log(has_loc)
-            console.log(has_loc_from_validate)
+            // console.log(has_loc)
+            // console.log(has_loc_from_validate)
            
             // if no set location, has error
             if (!(has_loc || has_loc_from_validate)) {
@@ -334,22 +334,22 @@ export const EditManager = ({
           let dup_wo_up = []
           let dups = []
           let dup_ids = []
-          console.log("Dup prior")
-          console.log(dup)
+        //   console.log("Dup prior")
+        //   console.log(dup)
           
           for (let i =0; i< dup.length; i++){
-              console.log("Checking dup index " + i)
-              console.log(dup[i])
-              console.log(!(dups.includes(dup[i][0])))
-              console.log(!(dup.includes(dup[i][1])))
+            //   console.log("Checking dup index " + i)
+            //   console.log(dup[i])
+            //   console.log(!(dups.includes(dup[i][0])))
+            //   console.log(!(dup.includes(dup[i][1])))
               if (!(dup_ids.includes(dup[i][1]))) {
                   dups.push(dup[i][0])
                   dup_ids.push(dup[i][1])
                   dup_wo_up.push(dup[i])
               }
           }
-          console.log("Returning Duplicates")
-          console.log(dup_wo_up)
+        //   console.log("Returning Duplicates")
+        //   console.log(dup_wo_up)
 
           return { ...row, ["duplicate"]: dup_wo_up, ["valid"]: v,  ["address"]: address[0],};
         }
@@ -399,9 +399,7 @@ export const EditManager = ({
     if (editableFileData) {
       editableFileData.map((row, index) => {
         if (!("exclude" in row) || !row["exclude"]) {
-        
           if (!("valid" in row)) {
-          
             not_comp.push(index);
           } else if (!row["valid"]) {
            

@@ -21,10 +21,13 @@ export const ValidateStep = ({
   setProcessingComplete,
   fileData,
   setFileData,
+  submissionData, 
+  setSubmissionData,
   step_labels,
   activeStep,
   setActiveStep,
   setRunValidation,
+  resetState
 }) => {
   const [activeError, setActiveError] = useState(0); // keeps track of which type of error
   const [valid, setValid] = useState(false);
@@ -143,6 +146,8 @@ export const ValidateStep = ({
           setProcessingComplete={setProcessingComplete}
           fileData={fileData}
           setFileData={setFileData}
+          submissionData = {submissionData}
+          setSubmissionData = {setSubmissionData}
         />
       )}
 
@@ -154,6 +159,7 @@ export const ValidateStep = ({
         activeStep={activeStep}
         setActiveStep={setActiveStep}
         setRunValidation={setRunValidation}
+        resetState={resetState}
       ></StepButtons>
     </div>
   );

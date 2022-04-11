@@ -12,7 +12,6 @@ import {
   faCircleCheck,
   faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
-import { useEffect } from "react";
 import Autocomplete from "react-google-autocomplete";
 import { Checkbox } from '@mui/material';
 
@@ -155,6 +154,16 @@ export const EditableTable = ({
 
       (hooks) => {
         hooks.allColumns.push((columns) => [
+         {
+            accessor: "id",
+            id: "id",
+            Header: "Row",
+            Cell: ({row}) => 
+    
+              <div>
+                {row.id} 
+              </div> 
+          },
           ...columns,
           {
             accessor: "duplicate",

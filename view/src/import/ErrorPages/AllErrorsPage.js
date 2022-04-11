@@ -26,11 +26,11 @@ export const ErrorPage = ({
   fileData,
   setFileData,
   dataType,
+  submissionData, 
+  setSubmissionData
 }) => {
   const [editableFileData, setEditableFileData] = useState();
   const [complete, setComplete] = useState(false);
-  const [edit, setEdit] = useState(false);
-  const [selected, setSelected] = useState(false);
 
   const [errorDataToShow, setErrorDataToShow] = useState([]);
   const [errorIds, setErrorIds] = useState([]);
@@ -49,24 +49,13 @@ export const ErrorPage = ({
       try {
         for (let j = 0; j < ids.length; j++) {
           if (ids[j]) {
-        //    if (dataType === "parents") {
               const fetchedData = await getOneUser(ids[j]).catch((error) => {
                 let message = error.response.data;
                 throw alert(message);
               });
               a.push(fetchedData.data);
-         //   }
-            // if (dataType === "students") {
-            //   const fetchedData = await getOneStudent(ids[j]).catch((error) => {
-            //     let message = error.response.data;
-            //     throw alert(message);
-            //   });
-            //   a.push(fetchedData.data);
-            // }
           }
         }
-        console.log("Error data")
-        console.log(a)
 
         setErrorDataToShow(a);
       } catch (error) {
@@ -139,8 +128,6 @@ export const ErrorPage = ({
   };
 
   useEffect(() => {
-    console.log("selectd index use effect");
-    console.log(selectedIndex);
     checkForErrorAndWarningData(selectedIndex);
   }, [selectedIndex]);
 
@@ -174,21 +161,32 @@ export const ErrorPage = ({
     }
   };
 
-  const removeEntries = () => {
-    // // remove all entries from data
-    // for (let i = 0; i < data.length; i++) {
-    //     let ind = data[i]['index']
-    //     delete data[i]
-    //     setData(data)
-    // }
-    // console.log(data)
-    // setComplete(true);
-  };
   useEffect(() => {
     if (processingComplete && fileData) {
       setEditableFileData(fileData);
     }
   }, [processingComplete]);
+
+  const removeExcludedRows = () => {
+      let included = []
+      for (let i=0; i< editableFileData.length; i++) {
+          if (editableFileData[i]) {
+              console.log("Checking ")
+              console.log(editableFileData[i])
+              if (!('exclude' in editableFileData[i])) {
+                console.log("Adding bc didn't find exclude key")
+                included.push(editableFileData[i])
+              }
+              else if (editableFileData[i]['exclude'] === false) {
+                console.log("Adding bc excluded was false")
+                included.push(editableFileData[i])
+              }
+          }
+      }
+      console.log("included")
+      console.log(included)
+      return included;
+  }
 
   return (
     <div>
@@ -198,36 +196,7 @@ export const ErrorPage = ({
           <img src={loadingLogo} alt="loading..." />
         </div>
       )}{" "}
-      {!selected && editableFileData && !complete && processingComplete && (
-        <div>
-          <h6>
-            {" "}
-            We found X entries in your submission. What would you like to do?{" "}
-          </h6>
-          <div>
-            <button
-              onClick={() => {
-                setEdit(true);
-                setSelected(true);
-              }}
-            >
-              {" "}
-              Fix Errors{" "}
-            </button>
-            <button
-              onClick={() => {
-                setEdit(false);
-                setSelected(true);
-                removeEntries();
-              }}
-            >
-              {" "}
-              Remove Entries With Errors{" "}
-            </button>
-          </div>
-        </div>
-      )}
-      {editableFileData && edit && (
+      {editableFileData && (
         <div>
           {errorDataToShow && errorDataToShow.length !== 0 && (
             <div id="errorContainer">
@@ -269,7 +238,7 @@ export const ErrorPage = ({
       {complete && (
         <div>
           <h6> No Errors Left! </h6>
-          <button onClick={(e) => setActiveError(activeError + 1)}>
+          <button onClick={(e) => {setSubmissionData(removeExcludedRows()); setActiveError(activeError + 1)}}>
             {" "}
             Continue
           </button>
