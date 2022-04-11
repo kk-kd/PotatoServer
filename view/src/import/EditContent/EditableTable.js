@@ -164,7 +164,7 @@ export const EditableTable = ({
               (row.values.duplicate && row.values.duplicate.length > 0) ? 
               <div>
                  {row.values.duplicate.map(obj =>
-                    (obj[0] && [50].includes(obj[0])) ?
+                    (obj[0] && [50, 52].includes(obj[0])) ?
                         <div style = {{color:'red'}}> {obj[1]} </div> 
                        : <div style = {{color:'orange'}}> {obj[1]} </div>
                     )

@@ -19,8 +19,17 @@ export const EditManager = ({
 }) => {
   // this triggers a check on page load, which allows checking for file duplicates.
   useEffect(() => {
-    updateEditedDataErrors(0, "name", editableFileData[0]["name"]);
-    updateEditedDataErrors(0, "name", editableFileData[0]["name"]);
+    for (let i = 0; i < editableFileData.length; i++) {
+        if (editableColumns.includes('student_email')) {
+            updateEditedDataErrors(i, "student_email", editableFileData[i]["student_email"]);
+        }
+        if (editableColumns.includes('email')) {
+            updateEditedDataErrors(i, "email", editableFileData[i]["email"]);
+        }
+        if (editableColumns.includes('name')) {
+            updateEditedDataErrors(i, "name", editableFileData[i]["name"]);
+        }
+    }
   }, []);
 
   const searchFileAgainstNewValue = (old_row, new_index, col, val) => {
@@ -40,34 +49,36 @@ export const EditManager = ({
       else if (existing_dup.length > 0) {
         //remove it
         for (let i = 0; i < existing_dup.length; i++) {
-          if (existing_dup[i] && existing_dup[i][0] === 50) {
+          if (existing_dup[i] && existing_dup[i][0] === 50  && existing_dup[i][1].includes("Row " + new_index)) {
             existing_dup.splice(i, 1);
           }
         }
       }
     }
-    else if (col === "student_email") {
+    if (col === "student_email") {
         // search for email match
-        console.log("student email")
-        console.log(old_row)
-        console.log(val)
         if (
           old_row.student_email &&
           val &&
           old_row.student_email.toLowerCase().trim() === val.toLowerCase().trim()
         ) {
-          existing_dup.push([50, "Email Matches Row " + new_index]);
+          console.log("Match Found")
+          existing_dup.push([52, "Student Email Matches Row " + new_index]);
         }
         // if not, remove error from existing_dup
         else if (existing_dup.length > 0) {
           //remove it
+          console.log("Removing 52 emails with index")
           for (let i = 0; i < existing_dup.length; i++) {
-            if (existing_dup[i] && existing_dup[i][0] === 50) {
+            console.log("Row " + new_index)
+            console.log(existing_dup[i][1])
+            if (existing_dup[i] && existing_dup[i][0] === 52 && existing_dup[i][1].includes("Row " + new_index)) {
               existing_dup.splice(i, 1);
             }
           }
         }
     }
+
 
     if (col === "name") {
       // check for name match
@@ -118,31 +129,28 @@ export const EditManager = ({
     }, []);
 
     if (matching_email_indexes.length > 0) {
-      if (matching_email_indexes.length > 1) {
-        ret.push([
-          50,
-          "Email Matches Rows " + matching_email_indexes.join(","),
-        ]);
-      } else {
-        ret.push([50, "Email Matches Row " + matching_email_indexes.join(",")]);
-      }
+        for (let i = 0; i < matching_email_indexes.length; i++) {
+            ret.push([
+                50,
+                "Email Matches Row " + matching_email_indexes[i],
+            ]);
+        }
     }
     if (matching_student_email_indexes.length > 0) {
-        if (matching_student_email_indexes.length > 1) {
-          ret.push([
-            50,
-            "Email Matches Rows " + matching_student_email_indexes.join(","),
-          ]);
-        } else {
-          ret.push([50, "Email Matches Row " + matching_student_email_indexes.join(",")]);
+       for (let i = 0; i < matching_student_email_indexes.length; i++) {
+            ret.push([
+                52,
+                "Student Email Matches Row " + matching_student_email_indexes[i],
+            ]);
         }
       }
     if (matching_name_indexes.length > 0) {
-      if (matching_name_indexes.length > 1) {
-        ret.push([51, "Name Matches Rows " + matching_name_indexes.join(",")]);
-      } else {
-        ret.push([51, "Name Matches Row " + matching_name_indexes.join(",")]);
-      }
+        for (let i = 0; i < matching_name_indexes.length; i++) {
+            ret.push([
+                51,
+                "Name Matches Row " + matching_name_indexes[i],
+            ]);
+        }
     }
     return ret;
   };
@@ -160,11 +168,11 @@ export const EditManager = ({
           let loc_values = {};
           let address = [];
           let valid = [true];
-          console.log("checking row");
-          console.log(copy);
+        //   console.log("checking row");
+        //   console.log(copy);
 
-          console.log("check row returned");
-          console.log(checkRow(copy));
+        //   console.log("check row returned");
+        //   console.log(checkRow(copy));
 
           // if editing address and row address does not have a lat or lng, not valid
           if (editableColumns.includes("address")) {
@@ -185,9 +193,7 @@ export const EditManager = ({
             let has_new_loc = Boolean(
               copy.address && copy.address["lat"] && copy.address["lng"]
             );
-            console.log(has_loc)
-            console.log(has_loc_from_validate)
-            console.log(has_new_loc)
+
             // if no set location, has error
             if (!(has_loc || has_new_loc || has_loc_from_validate)) {
               row_errors.push(6);
@@ -209,11 +215,18 @@ export const EditManager = ({
             }
           }
           let dup = searchFileData(copy, index);
+          console.log("Search File Results")
+          console.log(dup)
           for (let i = 0; i < dup.length; i++) {
             if (dup[i][0] === 50) {
               row_errors.push(50);
               valid.push(false);
             }
+            if (dup[i][0] === 52) {
+                row_errors.push(52);
+                valid.push(false);
+              }
+            
           }
 
           // check if any of the error codes are in this sample (and are not warnings)
@@ -227,7 +240,18 @@ export const EditManager = ({
           }
 
           let v = valid.pop();
-
+          // remove any duplicates from dup (irony, I know)
+          let dup_wo_up = []
+          let dups = []
+          let dup_ids = []
+          for (let i =0; i< dup.length; i++){
+              if (!(dups.includes(dup[i][0]) && dup_ids.includes(dup[i][1]))) {
+                  dups.push(dup[i][0])
+                  dup_ids.push(dup[i][1])
+                  dup_wo_up.push(dup[i])
+              }
+          }
+          console.log(dup_wo_up)
           let a = {
             ...copy,
             ["hint_uids"]: [error_uid],
@@ -236,7 +260,7 @@ export const EditManager = ({
             ["loc"]: loc_values,
             ["address"]: address[0],
             ["valid"]: v,
-            ["duplicate"]: dup,
+            ["duplicate"]: dup_wo_up,
           };
         //   console.log("updated keys and values are");
         //   console.log(a);
@@ -247,7 +271,8 @@ export const EditManager = ({
         // NOT editing this row 
         else {
           let dup = searchFileAgainstNewValue(row, rowIndex, columnId, value);
-          let row_errors = row["error_code"];
+
+          let row_errors = row["error_code"] //? row['error_code']: [];
           let valid = [true];
           let loc_values = {};
           let address = [];
@@ -305,7 +330,28 @@ export const EditManager = ({
           }
           let v = valid.pop();
 
-          return { ...row, ["duplicate"]: dup, ["valid"]: v,  ["address"]: address[0],};
+          // remove any duplicates from dup (irony, I know)
+          let dup_wo_up = []
+          let dups = []
+          let dup_ids = []
+          console.log("Dup prior")
+          console.log(dup)
+          
+          for (let i =0; i< dup.length; i++){
+              console.log("Checking dup index " + i)
+              console.log(dup[i])
+              console.log(!(dups.includes(dup[i][0])))
+              console.log(!(dup.includes(dup[i][1])))
+              if (!(dup_ids.includes(dup[i][1]))) {
+                  dups.push(dup[i][0])
+                  dup_ids.push(dup[i][1])
+                  dup_wo_up.push(dup[i])
+              }
+          }
+          console.log("Returning Duplicates")
+          console.log(dup_wo_up)
+
+          return { ...row, ["duplicate"]: dup_wo_up, ["valid"]: v,  ["address"]: address[0],};
         }
       })
     );

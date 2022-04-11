@@ -87,14 +87,14 @@ export const CheckStudentCell = (
   } 
   else if (col === 'student_email') {
     //email already taken
-    if (databaseUsers.email.includes(val.toLowerCase()) || databaseUsers.email.includes(val.toLowerCase().trim())) {
+    if (databaseUsers.email.includes(val.toLowerCase().trim()) || databaseUsers.email.includes(val.toLowerCase().trim())) {
       let dup_email_index = databaseUsers.email.indexOf(val.toLowerCase().trim())
       let ui = databaseUsers.uid[dup_email_index]
       
       return [18, "Existing Email", ui, null, null];
     }
     //if email is valid
-    if (!EmailValidator.validate(val)) {
+    if (!EmailValidator.validate(val.toLowerCase().trim())) {
       return [17, "Not Valid", "", "", ""];
     } 
   }
@@ -153,7 +153,6 @@ export const CheckParentCell = (
   } 
   // address
   else if (col === "address") {
-    console.log(val)
     if (!val) {
       return [6,"Invalid Address", "", ""];
     }
@@ -181,7 +180,6 @@ export const CheckStudentRow = (row, schools, users, databaseUsers, databaseStud
   let codes = []
   let error_uid = [null]
   let warning_uid = [null]
-  console.log(schoolNames)
 
   for (const [key, value] of Object.entries(row)) {
     let [code, error_message, err_uid, warn_message, warn_uid] = CheckStudentCell(key, value, schools, users, databaseUsers, databaseStudents, schoolNames); 
