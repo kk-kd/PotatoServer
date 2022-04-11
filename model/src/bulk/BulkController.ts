@@ -448,7 +448,7 @@ export class BulkController {
 
     
       const studentEmail = student.student_email;
-      if (studentEmail != undefined && !EmailValidator.validate(studentEmail)) {
+      if (studentEmail != undefined && studentEmail.trim() != "" && studentEmail != null && !EmailValidator.validate(studentEmail)) {
         response.status(401).send("Please enter a valid email address.");
         return;
       }
