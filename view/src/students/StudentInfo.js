@@ -237,6 +237,7 @@ export const StudentInfo = ({ edit, role }) => {
           sortDir: "ASC",
           filterType: "",
           filterData: userFilter,
+          roleFilter: "Parent",
           isCreate: true,
         });
         setFilteredDataUser(fetchedData.data.users);
