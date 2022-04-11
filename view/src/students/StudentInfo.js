@@ -45,6 +45,7 @@ export const StudentInfo = ({ edit, role }) => {
   const [userDefault, setUserDefault] = "";
   const [studentLoaded, setStudentLoaded] = useState(false);
   const [removeInRangeStops, setRemoveInRangeStops] = useState(false);
+  const [existingBusLocation, setExistingBusLocation] = useState(false);
 
   // filter search state
   const [filteredDataSchool, setFilteredDataSchool] = useState([]);
@@ -77,10 +78,12 @@ export const StudentInfo = ({ edit, role }) => {
         const busLocation = await getBusLocation(currentBus.data.busNumber);
         console.log(busLocation);
         setActiveBus(busLocation.data);
-        setFoundBus((busLocation.data.longitude && busLocation.data.latitude) ? true : false);
+        setFoundBus(true);
+        setExistingBusLocation((busLocation.data.longitude && busLocation.data.latitude) ? true : false);
         setBusError(busLocation.data.TTErroro);
       } catch (e) {
         setFoundBus(false);
+        setExistingBusLocation(false);
         console.log(e);
       }
     }, 1000);
@@ -114,14 +117,14 @@ export const StudentInfo = ({ edit, role }) => {
         school: selectedSchool,
         parentUser: user,
         id: student.studentid,
-        account: studentAccount,
       };
-
-      form_results.account = {
-        ...form_results.account,
-        fullName: student.fullName,
-        role: "Student",
-      };
+      if (hasAccount) {
+        form_results.account = {
+          ...form_results.account,
+          fullName: student.fullName,
+          role: "Student",
+        };
+      }
       if (removeInRangeStops) {
         form_results.inRangeStops = [];
       }
@@ -587,7 +590,7 @@ export const StudentInfo = ({ edit, role }) => {
                   defaultZoom={13}
               >
                 <Marker text="Your Address" lat={student.parentUser.latitude} lng={student.parentUser.longitude} isHome />
-                {foundBus && <Marker
+                {existingBusLocation && <Marker
                     lat={parseFloat(activeBus.latitude)}
                     lng={parseFloat(activeBus.longitude)}
                     isBus
@@ -604,7 +607,12 @@ export const StudentInfo = ({ edit, role }) => {
                       />
                   ))}
               </GoogleMapReact>
-              {foundBus && <div><h4>Active Run</h4><div>{`Bus: ${activeBus.busNumber}`}</div></div>}
+              {foundBus && <div>
+                <h4>Active Run</h4>
+                <div>{`Bus: ${activeBus.busNumber}`}</div>
+                <div>{`Driver: ${activeBus.driver.fullName}`}</div>
+                {existingBusLocation || <div>This bus' location was not able to be found.  We are very sorry for the inconvenience</div>}
+              </div>}
             </div>
           </div>
       )}

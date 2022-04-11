@@ -444,7 +444,12 @@ export class StudentController extends Repository<Student> {
 
   async updateStudent(request: Request, response: Response) {
     console.log(request.body);
-    const studentEmail = request.body.account.email;
+    var studentEmail;
+    if (request.body.account) {
+      studentEmail = request.body.account.email;
+    } else {
+      studentEmail = null;
+    }
     if (studentEmail != undefined && !EmailValidator.validate(studentEmail)) {
       response.status(401).send("Please enter a valid email address.");
       return;
