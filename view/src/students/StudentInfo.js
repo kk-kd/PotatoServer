@@ -120,7 +120,7 @@ export const StudentInfo = ({ edit, role }) => {
       };
       if (hasAccount) {
         form_results.account = {
-          ...form_results.account,
+          ...studentAccount,
           fullName: student.fullName,
           role: "Student",
         };
@@ -237,6 +237,7 @@ export const StudentInfo = ({ edit, role }) => {
           sortDir: "ASC",
           filterType: "",
           filterData: userFilter,
+          roleFilter: "Parent",
           isCreate: true,
         });
         setFilteredDataUser(fetchedData.data.users);
