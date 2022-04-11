@@ -487,7 +487,8 @@ export class BulkController {
       //   request.body.route = existingStudent.route;
       //   request.body.inRangeStops = existingStudent.inRangeStops;
       // }
-  
+      var saveStudentDict = {};
+
       if (studentEmail != undefined) {
         var loginAccount = new User();
         loginAccount.fullName = student.name;
@@ -495,15 +496,25 @@ export class BulkController {
         loginAccount.role = AccountRole.STUDENT;
         loginAccount.phoneNumber = student.phoneNumber;
         request.body.account = loginAccount;
-      }
-      //manipulate student dict around to fit our wanted input format.
-      const saveStudentDict = {
+      
+      saveStudentDict = {
         fullName: student.name,
         id: student.student_id,
         school: schoolEntry,
         parentUser: parentEntry,
         account: loginAccount,
+        }
       }
+      else{
+        saveStudentDict = {
+          fullName: student.name,
+          id: student.student_id,
+          school: schoolEntry,
+          parentUser: parentEntry,
+          }
+      }
+      //manipulate student dict around to fit our wanted input format.
+
       let result;
       try {
         result = await getRepository(Student).save(saveStudentDict);
