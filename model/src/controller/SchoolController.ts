@@ -277,6 +277,20 @@ export class SchoolController extends Repository<School> {
       }
       const uidNumber = request.params.uid; //needed for the await call / can't nest them
       const schoolQueryResult = await this.schoolRepository.createQueryBuilder("schools").delete().where("schools.uid = :uid", { uid: uidNumber }).execute();
+      const studentAccounts = await this.userRepository
+        .createQueryBuilder("users")
+        .where("users.role = 'Student'")
+        .leftJoinAndSelect("users.studentInfo", "studentInfo")
+        .getMany();
+      const strandedStudentAccounts = studentAccounts.filter(user => !user.studentInfo);
+      if (strandedStudentAccounts.length > 0) {
+        const strandedStudentIds = strandedStudentAccounts.map(user => user.uid);
+        await this.userRepository
+          .createQueryBuilder("users")
+          .delete()
+          .where("users.uid = ANY(:uids)", { uids: strandedStudentIds })
+          .execute();
+      }
       response.status(200);
       return schoolQueryResult;
     }
