@@ -22,7 +22,7 @@ export const SubmitStep = ({ dataType, submissionData, setSubmissionData, resetS
         alert(submissionData.length + " Entry Added Successfully!");
       }
       
-      resetState();
+      window.location.reload()
     } catch (e) {
       alert(e.response.data)
       return false;
