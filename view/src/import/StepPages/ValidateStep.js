@@ -125,12 +125,6 @@ export const ValidateStep = ({
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (activeError === 1) {
-  //     setValid(true);
-  //   }
-  // }, [activeError]);
-
   return (
     <div>
       {activeError === 0 && (

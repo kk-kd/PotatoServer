@@ -4,6 +4,7 @@ import { UploadStep } from "./StepPages/UploadStep";
 import { ValidateStep } from "./StepPages/ValidateStep";
 import { SubmitStep } from "./StepPages/SubmitStep";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import "./ImportPage.css";
 import {
   validateBulkStudents,
@@ -33,6 +34,7 @@ export const ImportPage = () => {
   const [schoolNames, setSchoolNames] = useState();
 
   const [runValidation, setRunValidation] = useState(false);
+  let navigate = useNavigate();
 
   const fetchSchoolData = async () => {
     try {
@@ -135,9 +137,6 @@ export const ImportPage = () => {
 
   const findAndFormatErrors = (data) => {
     setFileData(data)
-    console.log("file data set")
-    console.log(data)
-    console.log(schoolNames)
     setProcessingComplete(true);
     console.log("processing complete")
   };
@@ -168,7 +167,7 @@ export const ImportPage = () => {
   return (
     <div id="content">
       <h2 id="title"> Import </h2>
-
+      
       <div id="stepper">
         <HorizontalStepper
           step_labels={step_labels}

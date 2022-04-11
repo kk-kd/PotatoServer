@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { saveBulkParents, saveBulkStudents } from "../../api/axios_wrapper";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 
 export const SubmitStep = ({ dataType, submisisonData, setSubmissionData, resetState, activeStep, setActiveStep}) => {
+  let navigate = useNavigate();
   useEffect ( () => {
     console.log(submisisonData)
   } ,
@@ -50,14 +52,23 @@ export const SubmitStep = ({ dataType, submisisonData, setSubmissionData, resetS
   };
 
   const handleCancel = () => {
-    setActiveStep(activeStep -1)
+    let confirm = window.confirm("Please Confirm You Would Like To Cancel This Submission. All edits will be lost.");
+    
+    if (confirm) {
+     window.location.reload()
+    }
   };
 
   return (
     <div>
-      <h6> Confirmation </h6>
+    <div>
       <button onClick={handleSubmit}> Submit </button>
-      <button onClick={handleCancel}> Back </button>
+    </div>
+    <div>
+      <button onClick={()=> setActiveStep(activeStep -1)}> Back </button>
+      <button onClick={handleCancel}> Cancel Import </button>
+      
+    </div>
     </div>
   );
 };
