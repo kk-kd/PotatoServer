@@ -49,8 +49,8 @@ export const ErrorPage = ({
   const editableColumns = requiredColumns;
 
   const fetchErrorDuplicates = async (ids) => {
-    console.log("fetch error with errorids");
-    console.log(ids);
+   // console.log("fetch error with errorids");
+    //console.log(ids);
     if (ids && (selectedIndex === 0 || selectedIndex)) {
       let a = [];
       try {
@@ -72,8 +72,8 @@ export const ErrorPage = ({
   };
 
   const fetchWarningDuplicates = async (ids) => {
-    console.log("fetch error with warningids");
-    console.log(ids);
+    //console.log("fetch error with warningids");
+    //console.log(ids);
     if (ids && (selectedIndex === 0 || selectedIndex)) {
       let a = [];
       try {
@@ -188,6 +188,10 @@ export const ErrorPage = ({
                 console.log("Adding bc excluded was false")
                 included.push(editableFileData[i])
               }
+              else if (editableFileData[i]['exclude'] === undefined) {
+                console.log("Adding bc excluded was undefined")
+                included.push(editableFileData[i])
+              }
           }
       }
       console.log("included")
@@ -203,6 +207,12 @@ export const ErrorPage = ({
           <img src={loadingLogo} alt="loading..." />
         </div>
       )}{" "}
+
+    {complete && (
+         <div>
+           <h6 style = {{color: "#34815c"}}> All errors are either resolved or excluded. Double check the information below before continuing! </h6>
+       </div>
+      )}
       {editableFileData && (
         <div>
           {errorDataToShow && errorDataToShow.length !== 0 && (
@@ -242,11 +252,7 @@ export const ErrorPage = ({
           />
         </div>
       )}
-      {complete && (
-         <div>
-           <h6> No Errors Left! </h6>
-       </div>
-      )}
+
        <StepButtons
          nextButtonValid={complete}
          step_labels={step_labels}

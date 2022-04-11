@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { saveBulkParents, saveBulkStudents } from "../../api/axios_wrapper";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 
-export const SubmitStep = ({ dataType, submisisonData, setSubmissionData, resetState, activeStep, setActiveStep}) => {
+export const SubmitStep = ({ dataType, submissionData, setSubmissionData, resetState, activeStep, setActiveStep}) => {
   let navigate = useNavigate();
   useEffect ( () => {
-    console.log(submisisonData)
+    console.log(submissionData)
   } ,
     [])
   async function callSave(validation_input) {
@@ -15,7 +15,13 @@ export const SubmitStep = ({ dataType, submisisonData, setSubmissionData, resetS
       } else if (dataType === "parents") {
         const resp = await saveBulkParents(validation_input);
       }
-      alert("Entries Added Successfully!");
+      if (submissionData.length > 1) {
+        alert(submissionData.length + " Entries Added Successfully!");
+      }
+      else {
+        alert(submissionData.length + " Entry Added Successfully!");
+      }
+      
       resetState();
     } catch (e) {
       alert(e.response.data)
@@ -31,18 +37,20 @@ export const SubmitStep = ({ dataType, submisisonData, setSubmissionData, resetS
     if (confirm) {
       if (dataType === "students") {
     
-        const validation_input_filtered = submisisonData.filter((element) => {
+        const validation_input_filtered = submissionData.filter((element) => {
           return element !== null;
-        });        
+        });   
+        console.log(validation_input_filtered)    
         const validation_input = {
           students: validation_input_filtered,
         };
         callSave(validation_input);
 
       } else {
-        const filter1 = submisisonData.filter((element) => {
+        const filter1 = submissionData.filter((element) => {
           return element !== null;
         });
+     
         const validation_input = {
           users: filter1,
         };

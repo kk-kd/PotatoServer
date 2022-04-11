@@ -13,8 +13,6 @@ import {
   faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import Autocomplete from "react-google-autocomplete";
-import { Checkbox } from '@mui/material';
-
 
 import {
     useTable
@@ -168,7 +166,7 @@ export const EditableTable = ({
           {
             accessor: "duplicate",
             id: "duplicate",
-            Header: "Row Warnings",
+            Header: "File Duplicates",
             Cell: ({row}) => (
               (row.values.duplicate && row.values.duplicate.length > 0) ? 
               <div>
@@ -203,8 +201,8 @@ export const EditableTable = ({
                />)
           },
                 {
-            accessor: "index",
-            id: "index",
+            accessor: "exclude",
+            id: "exclude",
             Header: "Exclude",
             Cell: ({
               row,
@@ -216,16 +214,21 @@ export const EditableTable = ({
 
               React.useEffect(() => {
                 setValue(initialValue);
+                updateErrorCodes(row.index, 'exclude', initialValue);
               }, [initialValue]);
                
               return (
-              <div style={{'text-align':'center'}}>
-                <Checkbox
-                  defaultChecked={row.values.exclude ? true : false} 
+      
+                
+                <input
+                  style = {{height: "25px", width: "25px"}}
+                  type="checkbox"
+                  checked={value}
                   onChange={(e) => {
-                    setValue(e.target.checked);
-                    updateErrorCodes(row.values.index, 'exclude', e.target.checked);}}  />
-              </div>
+                  setValue(e.target.checked);
+                  updateErrorCodes(row.index, 'exclude', e.target.checked);
+                }}        
+              />
             )}
           },
         ]);}
@@ -233,15 +236,7 @@ export const EditableTable = ({
   
     const removeByIndexs = (array, indexs) =>
       array.filter((_, i) => !indexs.includes(i));
-  
-    const deleteUserHandler = (event) => {
-      const newData = removeByIndexs(
-        editableFileData,
-        Object.keys(selectedRowIds).map((x) => parseInt(x, 10))
-      );
-      setEditableFileData(newData);
-    };
-  
+    
     return (
       <TableContainer>
         <Table {...getTableProps()}>

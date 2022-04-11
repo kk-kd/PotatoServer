@@ -1,6 +1,6 @@
 import EditableTable from "./EditableTable";
 import { CssBaseline } from "@mui/material";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export const EditManager = ({
   complete,
@@ -18,6 +18,8 @@ export const EditManager = ({
   resetWarningData,
 }) => {
   // this triggers a check on page load, which allows checking for file duplicates.
+  const [checkDuplicates, setCheckDuplicates] = useState();
+
   useEffect(() => {
     for (let i = 0; i < editableFileData.length; i++) {
         if (editableColumns.includes('student_email')) {
@@ -30,7 +32,25 @@ export const EditManager = ({
             updateEditedDataErrors(i, "name", editableFileData[i]["name"]);
         }
     }
+    setCheckDuplicates(true)    
   }, []);
+
+  useEffect(()=> {
+    if (checkDuplicates) {
+        console.log("Starting duplicate check! Data is")
+        console.log(editableFileData)
+        for (let i = 0; i < editableFileData.length; i++) { 
+            console.log("Checking row " + i)
+            console.log(editableFileData[i]['duplicate'])
+            console.log(editableFileData[i]['duplicate'].length> 0)
+            
+            if (editableFileData[i]['duplicate'] && editableFileData[i]['duplicate'].length> 0) {
+                console.log("Updating exclude for row " + i)
+                updateEditedDataErrors(i, "exclude",  true);
+            }
+        }
+    }
+  }, [checkDuplicates])
 
   const searchFileAgainstNewValue = (old_row, new_index, col, val) => {
     //(row, rowIndex, columnId, value)
@@ -168,11 +188,6 @@ export const EditManager = ({
           let loc_values = {};
           let address = [];
           let valid = [true];
-        //   console.log("checking row");
-        //   console.log(copy);
-
-        //   console.log("check row returned");
-        //   console.log(checkRow(copy));
 
           // if editing address and row address does not have a lat or lng, not valid
           if (editableColumns.includes("address")) {
@@ -338,19 +353,12 @@ export const EditManager = ({
         //   console.log(dup)
           
           for (let i =0; i< dup.length; i++){
-            //   console.log("Checking dup index " + i)
-            //   console.log(dup[i])
-            //   console.log(!(dups.includes(dup[i][0])))
-            //   console.log(!(dup.includes(dup[i][1])))
               if (!(dup_ids.includes(dup[i][1]))) {
                   dups.push(dup[i][0])
                   dup_ids.push(dup[i][1])
                   dup_wo_up.push(dup[i])
               }
           }
-        //   console.log("Returning Duplicates")
-        //   console.log(dup_wo_up)
-
           return { ...row, ["duplicate"]: dup_wo_up, ["valid"]: v,  ["address"]: address[0],};
         }
       })
