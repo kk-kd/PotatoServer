@@ -34,6 +34,7 @@ export const CheckStudentCell = (
   schools,
   users,
   databaseUsers,
+  databaseAllUsers,
   databaseStudents,
   schoolNames
 ) => {
@@ -64,7 +65,7 @@ export const CheckStudentCell = (
     if (!databaseUsers.email.includes(val) && !databaseUsers.email.includes(val.toString().toLowerCase().trim())) {
       return [12, "Email not registered parent", "", "", ""];
     }
-     if (!EmailValidator.validate(val)) {
+     if (!EmailValidator.validate(val.toString().toLowerCase().trim())) {
       return [14, "Not Valid" ,"", "", ""];
     }
   } else if (col === "school_name") {
@@ -87,9 +88,9 @@ export const CheckStudentCell = (
   } 
   else if (col === 'student_email') {
     //email already taken
-    if (databaseUsers.email.includes(val.toString().toLowerCase().trim()) || databaseUsers.email.includes(val.toString().toLowerCase().trim())) {
-      let dup_email_index = databaseUsers.email.indexOf(val.toString().toLowerCase().trim())
-      let ui = databaseUsers.uid[dup_email_index]
+    if (databaseAllUsers.email.includes(val.toString().toLowerCase().trim()) || databaseAllUsers.email.includes(val.toString().toLowerCase().trim())) {
+      let dup_email_index = databaseAllUsers.email.indexOf(val.toString().toLowerCase().trim())
+      let ui = databaseAllUsers.uid[dup_email_index]
       
       return [18, "Existing Email", ui, null, null];
     }
@@ -117,6 +118,7 @@ export const CheckParentCell = (
   schools,
   users,
   databaseUsers,
+  databaseAllUsers,
   schoolNames
 ) => {
   if (col === "index" || col === "valid") {
@@ -141,9 +143,9 @@ export const CheckParentCell = (
   //email cases
   else if (col === "email") {
     //email already taken
-    if (databaseUsers.email.includes(val.toString().toLowerCase()) || databaseUsers.email.includes(val.toString().toLowerCase().trim())) {
-      let dup_email_index = databaseUsers.email.indexOf(val.toString().toLowerCase().trim())
-      let ui = databaseUsers.uid[dup_email_index]
+    if (databaseAllUsers.email.includes(val.toString().toLowerCase()) || databaseAllUsers.email.includes(val.toString().toLowerCase().trim())) {
+      let dup_email_index = databaseAllUsers.email.indexOf(val.toString().toLowerCase().trim())
+      let ui = databaseAllUsers.uid[dup_email_index]
 
       return [3, "Existing Email", ui, null, null];
     }
@@ -164,9 +166,9 @@ export const CheckParentCell = (
   // name
   else if (col === 'name') {
     // name exists
-    if (databaseUsers.fullName.includes(val) || databaseUsers.fullName.includes(val.toString().trim())) {
-      let dup_name_index = databaseUsers.fullName.indexOf(val.toString().trim())
-      let ui = databaseUsers.uid[dup_name_index]
+    if (databaseAllUsers.fullName.includes(val) || databaseAllUsers.fullName.includes(val.toString().trim())) {
+      let dup_name_index = databaseAllUsers.fullName.indexOf(val.toString().trim())
+      let ui = databaseAllUsers.uid[dup_name_index]
       let r = [4, "", null , "May be a Duplicate", ui];
       return r
     }
@@ -177,13 +179,13 @@ export const CheckParentCell = (
   return [null,"", "", "", ""];
 };
 
-export const CheckStudentRow = (row, schools, users, databaseUsers, databaseStudents, schoolNames) => {
+export const CheckStudentRow = (row, schools, users, databaseUsers, databaseAllUsers, databaseStudents, schoolNames) => {
   let codes = []
   let error_uid = [null]
   let warning_uid = [null]
 
   for (const [key, value] of Object.entries(row)) {
-    let [code, error_message, err_uid, warn_message, warn_uid] = CheckStudentCell(key, value, schools, users, databaseUsers, databaseStudents, schoolNames); 
+    let [code, error_message, err_uid, warn_message, warn_uid] = CheckStudentCell(key, value, schools, users, databaseUsers, databaseAllUsers, databaseStudents, schoolNames); 
     if (code) {
       codes.push(code)
     }
@@ -197,14 +199,14 @@ export const CheckStudentRow = (row, schools, users, databaseUsers, databaseStud
   return [codes, error_uid.pop(), warning_uid.pop()];
 };
 
-export const CheckParentRow = (row, schools, users, databaseUsers, schoolNames) => {
+export const CheckParentRow = (row, schools, users, databaseUsers,databaseAllUsers, schoolNames) => {
   let codes = []
   let error_uid = [null]
   let warning_uid = [null]
 
   for (const [key, value] of Object.entries(row)) {
 
-    let [code, error_message, err_uid, warn_message, warn_uid] = CheckParentCell(key, value, schools, users, databaseUsers, schoolNames); 
+    let [code, error_message, err_uid, warn_message, warn_uid] = CheckParentCell(key, value, schools, users, databaseUsers, databaseAllUsers, schoolNames); 
     if (code) {
       codes.push(code)
     }

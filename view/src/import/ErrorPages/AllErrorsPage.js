@@ -211,8 +211,11 @@ export const ErrorPage = ({
       )}{" "}
 
     
-    <div style = {{border: '1px solid black', width: '80%', margin: 'auto'}}>
+    <div style = {{border: '1px solid black', width: '80%', margin: 'auto', marginBottom: '25px'}}>
         <h5 id = "sub-header" style = {{width: '100%'}}> Instructions </h5> 
+        <div></div>
+        <div></div>
+        <div></div>
         <div> Your submitted data is shown below. Errors are highlighted in red, and must be fixed, or the row must be excluded from submission. Warnings are shown in yellow, and
           it's recommended that they are reviewed prior to submission. Note: all potential duplicates have been excluded by default! </div>
         <div></div>
