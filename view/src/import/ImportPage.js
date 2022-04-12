@@ -28,8 +28,10 @@ export const ImportPage = () => {
   const [fileName, setFileName] = useState();
 
   const [users, setUsers] = useState();
+  const [allUsers, setAllUsers] = useState();
   const [schools, setSchools] = useState();
   const [databaseUsers, setDatabaseUsers] = useState();
+  const [databaseAllUsers, setDatabaseAllUsers] = useState();
   const [databaseStudents, setDatabaseStudents] = useState();
   const [schoolNames, setSchoolNames] = useState();
 
@@ -81,6 +83,28 @@ export const ImportPage = () => {
     }
   };
 
+  const fetchAllUserData = async () => {
+    try {
+      const fetchedData = await filterAllUsers({
+        page: 1,
+        size: 500,
+        sort: "none",
+        sortDir: "none",
+        showAll: "true",
+      });
+      setAllUsers(fetchedData.data.users);
+      let email = fetchedData.data.users.map((user) => user.email);
+      let uid =  fetchedData.data.users.map((user) => user.uid);
+      let name =  fetchedData.data.users.map((user) => user.fullName);
+      let e = {'email': email, 'uid': uid, 'fullName': name}
+      console.log(e)
+      setDatabaseAllUsers(e);
+
+    } catch (error) {
+      alert(error.response.data);
+    }
+  };
+
   const fetchStudentData = async () => {
     try {
       const fetchedData = await filterAllStudents({
@@ -110,6 +134,7 @@ export const ImportPage = () => {
 
   useEffect(() => {
     fetchUserData();
+    fetchAllUserData();
     fetchSchoolData();
     fetchStudentData();
   }, []);
@@ -213,6 +238,7 @@ export const ImportPage = () => {
             users={users}
             schools={schools}
             databaseUsers={databaseUsers}
+            databaseAllUsers={databaseAllUsers}
             databaseStudents = {databaseStudents}
             schoolNames={schoolNames}
             dataType={dataType}
