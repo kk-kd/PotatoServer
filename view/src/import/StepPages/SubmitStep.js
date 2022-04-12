@@ -1,89 +1,89 @@
 import { useEffect, useState } from "react";
 import { saveBulkParents, saveBulkStudents } from "../../api/axios_wrapper";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 
-export const SubmitStep = ({ dataType, fileData, setFileData, resetState }) => {
-  const [emails, setEmails] = useState();
+export const SubmitStep = ({ dataType, submissionData, setSubmissionData, resetState, activeStep, setActiveStep}) => {
+  let navigate = useNavigate();
+  useEffect ( () => {
+    console.log(submissionData)
+  } ,
+    [])
   async function callSave(validation_input) {
     try {
       if (dataType === "students") {
         const resp = await saveBulkStudents(validation_input);
-
-        setFileData(resp);
       } else if (dataType === "parents") {
         const resp = await saveBulkParents(validation_input);
-        setFileData(resp);
       }
-      alert("Entries Added Successfully!");
-      resetState();
+      if (submissionData.length > 1) {
+        alert(submissionData.length + " Entries Added Successfully!");
+      }
+      else {
+        alert(submissionData.length + " Entry Added Successfully!");
+      }
+      
+      window.location.reload()
     } catch (e) {
       alert(e.response.data)
-      resetState();
       return false;
     }
     return true;
   }
 
-  const fixAddresses = () => {
-    const v = fileData.map(user => Object.assign(user, {'address': '998 Chevis Rd, Savannah, GA 31419'}));
-    const e = v.map(user => Object.assign(user, {'loc': { longitude: -81.239594, latitude: 31.9619613}}));
-    setFileData(e)
-    console.log(e)
-  }
-
-  useEffect(() => {
-    if (dataType === 'parents'){
-      fixAddresses();
-    }
-  }, [])
-
   const handleSubmit = () => {
-    let confirm = window.confirm("Do you want to import this data?");
+
+    let confirm = window.confirm("Please Confirm You Would Like To Submit This Data.");
+    
     if (confirm) {
+
       if (dataType === "students") {
-        let emails = []
-        const validation_input_filtered = fileData.filter((element) => {
+    
+        const validation_input_filtered = submissionData.filter((element) => {
           return element !== null;
-        });        
+        });   
+        console.log(validation_input_filtered)    
         const validation_input = {
           students: validation_input_filtered,
         };
-        let val2 = callSave(validation_input);
-        // if (val2) {
-        //   alert("Entries Added Successfully!");
-        //   resetState();
-        // }
+        if (validation_input_filtered.length === 0) {
+          alert("Your Submission has no rows. Please go back to the previous step.")
+        }
+        callSave(validation_input);
 
       } else {
-        const filter1 = fileData.filter((element) => {
+        const filter1 = submissionData.filter((element) => {
           return element !== null;
         });
+     
         const validation_input = {
           users: filter1,
         };
-        console.log(validation_input)
-        let val = callSave(validation_input);
-        // if (val) {
-        //   alert("Entries Added Successfully!");
-        //   resetState();
-        // }
-
+        if (filter1.length === 0) {
+          alert("Your Submission has no rows. Please go back to the previous step.")
+        }
+        callSave(validation_input);
       }
     }
   };
 
   const handleCancel = () => {
-    let confirm = window.confirm("Do you want to cancel this import?");
+    let confirm = window.confirm("Please Confirm You Would Like To Cancel This Submission. All edits will be lost.");
+    
     if (confirm) {
-      //reset state
-      resetState();
+     window.location.reload()
     }
   };
 
   return (
     <div>
-      <h6> Confirmation </h6>
+    <div>
       <button onClick={handleSubmit}> Submit </button>
-      <button onClick={handleCancel}> Cancel </button>
+    </div>
+    <div>
+      <button onClick={()=> setActiveStep(activeStep -1)}> Back </button>
+      <button onClick={handleCancel}> Cancel Import </button>
+      
+    </div>
     </div>
   );
 };

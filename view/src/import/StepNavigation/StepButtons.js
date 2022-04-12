@@ -7,18 +7,24 @@ export const StepButtons = ({
   activeStep,
   setActiveStep,
   setRunValidation,
+  resetState,
+  additionalNextFunction
 }) => {
   const handleNext = () => {
     if (activeStep === 1) {
       setRunValidation(true);
     }
     setActiveStep(activeStep + 1);
+    if (additionalNextFunction) {
+      additionalNextFunction();
+    }
   };
 
   const handleBack = () => {
-    if (activeStep > 1) {
-      setActiveStep(0);
-    }
+    // if (activeStep > 1) {
+    //   setActiveStep(1);
+    //   // resetState();
+    // }
     setActiveStep(activeStep - 1);
   };
 
@@ -31,7 +37,7 @@ export const StepButtons = ({
           onClick={handleBack}
           sx={{ mr: 1 }}
         >
-          {activeStep > 1 ? "Restart" : "Back"}
+         Back
         </Button>
 
         <Button onClick={handleNext} disabled={!nextButtonValid}>
