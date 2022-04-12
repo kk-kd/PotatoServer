@@ -27,7 +27,7 @@ export const PickTypeStep = ({dataType, setRequiredColumns, setDataType, step_la
                     }}
                 >
                     <FormControlLabel value="students" control={<Radio />} label="Students" />
-                    <FormControlLabel value="parents" control={<Radio />} label="Admin, Staff, or Parents" />
+                    <FormControlLabel value="parents" control={<Radio />} label="Parents" />
                 </RadioGroup>
             </div>
            
