@@ -35,6 +35,7 @@ class AuthController {
       latitude,
       role,
       attachedSchools,
+      studentInfo
     } = request.body;
     if (!(email && fullName && role != null)) {
       response
@@ -72,6 +73,7 @@ class AuthController {
     user.latitude = latitude;
     user.role = role;
     user.attachedSchools = attachedSchools;
+    user.studentInfo = studentInfo;
 
     try {
       await userRepository.save(user);

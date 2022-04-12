@@ -1,0 +1,9 @@
+#bigMap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  height: 70vh;
+  padding: 2%;
+  margin: auto;
+}

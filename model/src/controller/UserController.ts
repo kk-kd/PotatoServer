@@ -114,6 +114,7 @@ export class UserController extends Repository<User> {
             .createQueryBuilder("users")
             .where("users.uid = :uid", { uid: userId })
             .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+            .leftJoinAndSelect("user.studentInfo", "studentInfo")
             .getOneOrFail();
           const attachedSchools = currentUser.attachedSchools.map(
             (school) => school.uid
@@ -132,6 +133,7 @@ export class UserController extends Repository<User> {
             })
             .leftJoinAndSelect("users.students", "student")
             .leftJoinAndSelect("student.school", "schools")
+            .leftJoinAndSelect("users.studentInfo", "studentInfo")
             .getMany();
           response.status(200);
           const filtered = usersQueryResult.filter((user) =>
@@ -158,6 +160,7 @@ export class UserController extends Repository<User> {
             role: roleFilterData,
           })
           .leftJoinAndSelect("users.students", "student")
+          .leftJoinAndSelect("users.studentInfo", "studentInfo")
           .getManyAndCount();
         response.status(200);
         return {
@@ -171,6 +174,7 @@ export class UserController extends Repository<User> {
             .createQueryBuilder("users")
             .where("users.uid = :uid", { uid: userId })
             .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+            .leftJoinAndSelect("users.studentInfo", "studentInfo")
             .getOneOrFail();
           const attachedSchools = currentUser.attachedSchools.map(
             (school) => school.uid
@@ -189,6 +193,7 @@ export class UserController extends Repository<User> {
             })
             .leftJoinAndSelect("users.students", "student")
             .leftJoinAndSelect("student.school", "schools")
+            .leftJoinAndSelect("users.studentInfo", "studentInfo")
             .getMany();
           response.status(200);
           const filtered = usersQueryResult.filter((user) =>
@@ -217,6 +222,7 @@ export class UserController extends Repository<User> {
             role: roleFilterData,
           })
           .leftJoinAndSelect("users.students", "student")
+          .leftJoinAndSelect("users.studentInfo", "studentInfo")
           .getManyAndCount();
         response.status(200);
         return {
@@ -243,6 +249,7 @@ export class UserController extends Repository<User> {
         .leftJoinAndSelect("users.students", "students")
         .leftJoinAndSelect("students.school", "school")
         .leftJoinAndSelect("students.route", "route")
+        .leftJoinAndSelect("users.studentInfo", "studentInfo")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -277,6 +284,8 @@ export class UserController extends Repository<User> {
         .leftJoinAndSelect("students.inRangeStops", "stops")
         .leftJoinAndSelect("students.school", "school")
         .leftJoinAndSelect("users.attachedSchools", "attachedSchools")
+        .leftJoinAndSelect("users.runs", "runs")
+        .leftJoinAndSelect("runs.route", "runRoute")
         .getOneOrFail();
       response.status(200);
       return usersQueryResult;
@@ -397,6 +406,20 @@ export class UserController extends Repository<User> {
         .delete()
         .where("users.uid = :uid", { uid: uidNumber })
         .execute();
+      const studentAccounts = await this.userRepository
+        .createQueryBuilder("users")
+        .where("users.role = 'Student'")
+        .leftJoinAndSelect("users.studentInfo", "studentInfo")
+        .getMany();
+      const strandedStudentAccounts = studentAccounts.filter(user => !user.studentInfo);
+      if (strandedStudentAccounts.length > 0) {
+        const strandedStudentIds = strandedStudentAccounts.map(user => user.uid);
+        await this.userRepository
+          .createQueryBuilder("users")
+          .delete()
+          .where("users.uid = ANY(:uids)", { uids: strandedStudentIds })
+          .execute();
+      }
       response.status(200);
       return userQuereyResult;
     } catch (e) {

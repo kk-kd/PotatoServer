@@ -49,6 +49,7 @@ export const BusRouteInfo = ({ role }) => {
   const [school, setSchool] = useState();
   const [activeBus, setActiveBus] = useState();
   const [foundBus, setFoundBus] = useState(false);
+  const [existingBusLocation, setExistingBusLocation] = useState(false);
   const [data, setData] = useState([]);
   const [name, setName] = useState("");
   const [desciption, setDesciption] = useState("");
@@ -94,9 +95,11 @@ export const BusRouteInfo = ({ role }) => {
         const busLocation = await getBusLocation(currentBus.data.busNumber);
         console.log(busLocation);
         setActiveBus(busLocation.data);
-        setFoundBus((busLocation.data.longitude && busLocation.data.latitude) ? true : false);
+        setFoundBus(true);
+        setExistingBusLocation((busLocation.data.longitude && busLocation.data.latitude) ? true : false);
       } catch (e) {
         setFoundBus(false);
+        setExistingBusLocation(false);
         console.log(e);
       }
     }, 1000);
@@ -255,10 +258,11 @@ export const BusRouteInfo = ({ role }) => {
                     detail
                 />
             ))}
-            {foundBus && <Marker
+            {existingBusLocation && <Marker
                 lat={parseFloat(activeBus.latitude)}
                 lng={parseFloat(activeBus.longitude)}
                 isBus
+                stop={activeBus}
               />}
             <Marker
                 text={school.name}
@@ -267,7 +271,11 @@ export const BusRouteInfo = ({ role }) => {
                 isSchool
             />
           </GoogleMapReact>
-          {foundBus && <div><h4>Active Run</h4><div>{`Bus: ${activeBus.busNumber}`}</div></div>}
+          {foundBus && <div>
+            <h4>Active Run</h4>
+            <div>{`Bus: ${activeBus.busNumber}`}</div>
+            {existingBusLocation || <div>This bus' location was not able to be found.  We are very sorry for the inconvenience</div>}
+          </div>}
           </div>}
           </div>
         <div style={{ width: "100%", padding: "50px", display: "inline-block" }}>

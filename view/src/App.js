@@ -61,7 +61,7 @@ export const App = () => {
   } else {
     if (!currentUser) {
       return <h1>Loading</h1>;
-    } else if (!currentUser.role || !(currentUser.role == "Admin" || currentUser.role == "Driver" || currentUser.role == "School Staff")) {
+    } else if (currentUser.role === "Parent") {
       return (
         <div className="App">
           <Header setLoggedIn={setLoggedIn} role={currentUser.role} />
@@ -79,21 +79,26 @@ export const App = () => {
           </Routes>
         </div>
       );
+    } else if (currentUser.role === "Student") {
+      return (
+          <div className="App">
+            <Header setLoggedIn={setLoggedIn} role={currentUser.role} />
+            <Routes>
+              <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
+              <Route
+                  path="MyStudents/:id"
+                  element={<ParentStudentInfo user={currentUser} />}
+              />
+              <Route path="*" element={<Navigate to={`MyStudents/${currentUser.studentInfo.uid}`} />} />
+            </Routes>
+          </div>
+      );
     } else {
       return (
         <div className="App">
           <Header setLoggedIn={setLoggedIn} role={currentUser.role} />
           <Routes>
             <Route path="ChangeMyPassword" element={<ChangeMyPassword />} />
-            <Route
-                path="MyStudents/:id"
-                element={<ParentStudentInfo user={currentUser} />}
-            />
-            <Route
-              path="MyStudents"
-              element={<MyStudents user={currentUser} />}
-            />
-            
             <Route path="Schools/*" element={<Schools role={currentUser.role} />} />
             <Route path="Users/*" element={<Users role={currentUser.role} uid={currentUser.uid} />} />
             <Route path="Students/*" element={<Students role={currentUser.role} />} />
@@ -101,7 +106,7 @@ export const App = () => {
             <Route path="Runs/*" element={<Runs role={currentUser.role} />} />
             {currentUser.role !== "Driver" && <Route path="Emails/*" element={<Emails role={currentUser.role} />} />}
             <Route path="Import/*" element={<Import />} />
-            <Route path="*" element={<Navigate to="MyStudents" />} />
+            <Route path="*" element={<Navigate to="Schools" />} />
           </Routes>
         </div>
       );

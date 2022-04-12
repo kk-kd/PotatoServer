@@ -124,6 +124,9 @@ export const RunLogs = ({ role }) => {
   return (
       <div id="content">
         <h2 id="title"> Complete Run Logs </h2>
+        <Link to="/Runs/map">
+          <button>Transit Map</button>
+        </Link>
         <div id="userListing">
           <table
               {...getTableProps()}

@@ -33,7 +33,7 @@ import { fontSize } from "@mui/system";
 export const UserForm = ({ role }) => {
   let navigate = useNavigate();
 
-  const action_text = "Create New User";
+  const action_text = "Create New Parent, Administrator, or School Staff";
 
   // user
   const [user, setUser] = useState({
@@ -113,7 +113,6 @@ export const UserForm = ({ role }) => {
     let valid_results = validate_user_entries();
     if (valid_results.valid) {
       CreateUser(e);
-      console.log("Make New User");
     } else {
       alert(valid_results.error);
     }
@@ -142,10 +141,11 @@ export const UserForm = ({ role }) => {
       console.log(madeUser.data);
       console.log("Students = ");
       console.log(students);
-
-      for (const student of students) {
-        console.log(student);
-        const name = await addStudent(student, madeUser.data);
+      if (user.role === "Parent") {
+        for (const student of students) {
+          console.log(student);
+          const name = await addStudent(student, madeUser.data);
+        }
       }
     } catch (error) {
       message = error.response.data;
@@ -216,7 +216,7 @@ export const UserForm = ({ role }) => {
     <div id="content">
       <h2 id="title"> {action_text} </h2>
 
-      <div id="main_form">
+      <div id={user.role === "Parent" ? "main_form" : "main_form_no_map"}>
         <h5 id="sub-header">Information</h5>
 
         <label id="label-user"> Name* </label>

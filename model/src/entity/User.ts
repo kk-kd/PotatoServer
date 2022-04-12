@@ -4,6 +4,7 @@ import {
   Column,
   Unique,
   OneToMany,
+  OneToOne,
   ManyToMany,
 } from "typeorm";
 import { Run } from "./Run";
@@ -69,4 +70,7 @@ export class User {
     eager: true
   })
   runs: Run[];
+
+  @OneToOne(() => Student, (student) => student.account, { nullable: true, onDelete: "CASCADE" })
+  studentInfo: Student;
 }

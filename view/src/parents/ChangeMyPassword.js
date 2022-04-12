@@ -40,10 +40,17 @@ export const ChangeMyPassword = () => {
   return (
     <div id="content">
       <h2 id="title">Change Password</h2>
-      <div >
-        <div style = {{margin: 'auto', width: '70%'}}>
+      <div>
+        <div style={{ margin: "auto", width: "70%", textAlign: "center" }}>
           <form onSubmit={(e) => submitChange(e)}>
-            <div class="mb-3">
+            <div
+              class="mb-3"
+              style={{
+                maxWidth: "16em",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            >
               <label
                 for="exampleInputPassword2"
                 class="form-label center"
@@ -64,7 +71,14 @@ export const ChangeMyPassword = () => {
                 registered it! Case sensitive!
               </div>
             </div>
-            <div class="mb-3">
+            <div
+              class="mb-3"
+              style={{
+                maxWidth: "16em",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            >
               <label
                 id="schoolInput"
                 for="exampleInputPassword3"
@@ -85,7 +99,14 @@ export const ChangeMyPassword = () => {
                 case letter.
               </div>
             </div>
-            <div class="mb-3">
+            <div
+              class="mb-3"
+              style={{
+                maxWidth: "16em",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+            >
               <label
                 for="exampleInputPassword4"
                 class="form-label center"
@@ -105,9 +126,7 @@ export const ChangeMyPassword = () => {
                 forget it!
               </div>
             </div>
-            <button
-              type= "submit"
-            > Submit </button>
+            <button type="submit"> Submit </button>
           </form>
         </div>
       </div>

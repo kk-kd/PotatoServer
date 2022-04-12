@@ -157,6 +157,7 @@ export const ListUsers = ({ role }) => {
                               <option value="Admin">Admin</option>
                               <option value="School Staff">School Staff</option>
                               <option value="Driver">Driver</option>
+                              <option value="Parent">Parent</option>
                             </select>
                           </>
                         )}
@@ -175,7 +176,13 @@ export const ListUsers = ({ role }) => {
               return (
                 <tr
                   {...row.getRowProps()}
-                  onClick={() => navigate(`/Users/info/${row.original.uid}`)}
+                  onClick={() => {
+                    if (row.original.role === "Student") {
+                      navigate(`/Students/info/${row.original.studentInfo.uid}`);
+                    } else {
+                      navigate(`/Users/info/${row.original.uid}`);
+                    }
+                  }}
                 >
                   {row.cells.map((cell) => {
                     return (

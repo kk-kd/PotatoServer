@@ -13,6 +13,7 @@ export class TransitTraqController {
 
     const existingEntry = await getRepository(Run)
       .createQueryBuilder("run")
+      .leftJoinAndSelect("run.driver", "driver")
       .where("run.busNumber = :busNumber", { busNumber: busNumber })
       .andWhere("run.ongoing = :ongoing", { ongoing: true })
       .getOne();

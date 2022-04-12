@@ -1,7 +1,7 @@
 import GoogleMapReact from "google-map-react";
 import "./ParentStudent.css"
 import React, { useEffect, useState, Fragment } from "react";
-import { getAllStudents, updateStudent } from "../api/axios_wrapper";
+import { getAllStudents, updateStudent, getRouteActiveRun, getBusLocation } from "../api/axios_wrapper";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {getOneStudent} from "../api/axios_wrapper";
 import TextField from "@mui/material/TextField";
@@ -26,6 +26,9 @@ export const ParentStudentInfo = ({user}) => {
 
   const [selectedRoute, setSelectedRoute] = useState();
   const [selectedSchool, setSelectedSchool] = useState();
+  const [activeBus, setActiveBus] = useState();
+  const [foundBus, setFoundBus] = useState(false);
+  const [existingBusLocation, setExistingBusLocation] = useState(false);
 
    // maps
    const [ mapReady,  setMapReady ] = useState(false);
@@ -47,7 +50,7 @@ export const ParentStudentInfo = ({user}) => {
     try {
       const fetchedData = await getOneStudent(id);
       const matching_student = user.students.find(student => student.uid == id);
-      if (matching_student) {
+      if (matching_student || (user.studentInfo && id == user.studentInfo.uid)) {
         setStudent({ ...fetchedData.data, studentid: fetchedData.data.id });
 
         if (fetchedData.data.school) {
@@ -74,6 +77,30 @@ export const ParentStudentInfo = ({user}) => {
     fetchStudentData();
   }, []);
 
+  useEffect(() => {
+    if (!student) {
+      return;
+    }
+    const updateBusLocation = setInterval(async () => {
+      try {
+        if (!student.route){
+          return;
+        }
+        const currentBus = await getRouteActiveRun(student.route.uid);
+        const busLocation = await getBusLocation(currentBus.data.busNumber);
+        console.log(busLocation);
+        setActiveBus(busLocation.data);
+        setFoundBus(true);
+        setExistingBusLocation((busLocation.data.longitude && busLocation.data.latitude) ? true : false);
+      } catch (e) {
+        setFoundBus(false);
+        setExistingBusLocation(false);
+        console.log(e);
+      }
+    }, 1000);
+    return () => clearInterval(updateBusLocation);
+  }, [student]);
+
 
   const updateStudentLoading = (data) => {
     setStudentLoaded(true);
@@ -85,14 +112,10 @@ export const ParentStudentInfo = ({user}) => {
 }
 
   useEffect(() => {
-    if ((apiLoaded) && (studentLoaded) && (student.inRangeStops)) {
+    if ((apiLoaded) && (studentLoaded)) {
       setMapReady(true);
-      if (user.latitude && user.longitude) {
-        let lat_center = user.latitude 
-        let lng_center = user.longitude
-        mapApi.map.setCenter({lat: parseFloat(lat_center) , lng: parseFloat(lng_center)});
-        mapApi.map.setZoom(16);
-      }
+      mapApi.map.setCenter({lat: parseFloat(student.parentUser.latitude) , lng: parseFloat(student.parentUser.longitude)});
+      mapApi.map.setZoom(16);
     } 
   }, [apiLoaded, studentLoaded]);
 
@@ -103,12 +126,12 @@ export const ParentStudentInfo = ({user}) => {
         {student ? student.fullName : ""} {" "}
       </h2>
       {!student ? "Whoops! You do not have access to this student's information. In the case of a mistake, please contact your bus administrator." : ""}
-      
-      <div>
+
+      {user.role === "Parent" && <div>
           {
               <button onClick={e => navigate("/MyStudents")}> Back To All Students </button>
           }
-      </div>
+      </div>}
 
     {student && <div id = "main_form"> 
     <h5 id = "sub-header"> Student Information </h5>     
@@ -222,10 +245,16 @@ export const ParentStudentInfo = ({user}) => {
                 
                 <Marker
                   text="Your Address"
-                  lat={parseFloat(user.latitude)}
-                  lng={parseFloat(user.longitude)}
+                  lat={parseFloat(student.parentUser.latitude)}
+                  lng={parseFloat(student.parentUser.longitude)}
                   isHome
                 />
+                  {existingBusLocation && <Marker
+                      lat={parseFloat(activeBus.latitude)}
+                      lng={parseFloat(activeBus.longitude)}
+                      isBus
+                      stop={activeBus}
+                  />}
                 
                 {
                 student.inRangeStops.map(stop => (
@@ -238,6 +267,11 @@ export const ParentStudentInfo = ({user}) => {
                         />
                       ))}
                 </GoogleMapReact>
+              {foundBus && <div>
+                <h4>Active Run</h4>
+                <div>{`Bus: ${activeBus.busNumber}`}</div>
+                {existingBusLocation || <div>This bus' location was not able to be found.  We are very sorry for the inconvenience</div>}
+              </div>}
              </div>
             }
         </div>

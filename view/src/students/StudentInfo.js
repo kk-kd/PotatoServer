@@ -10,7 +10,13 @@ import {
   saveStudent,
   getOneStudent,
   deleteStudent,
+  registerUser,
+  deleteUser,
+  getRouteActiveRun,
+  getBusLocation
 } from "../api/axios_wrapper";
+import GoogleMapReact from "google-map-react";
+import { Marker } from "../map/Marker";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import ReactSelect from "react-select";
@@ -34,10 +40,12 @@ export const StudentInfo = ({ edit, role }) => {
 
   const [student, setStudent] = useState();
   const [user, setUser] = useState();
+  const [hasAccount, setHasAccount] = useState(false);
   const [studentAccount, setStudentAccount] = useState({});
   const [userDefault, setUserDefault] = "";
   const [studentLoaded, setStudentLoaded] = useState(false);
   const [removeInRangeStops, setRemoveInRangeStops] = useState(false);
+  const [existingBusLocation, setExistingBusLocation] = useState(false);
 
   // filter search state
   const [filteredDataSchool, setFilteredDataSchool] = useState([]);
@@ -50,8 +58,37 @@ export const StudentInfo = ({ edit, role }) => {
   const [filteredDataUser, setFilteredDataUser] = useState([]);
 
   const [userFilter, setUserFilter] = useState("");
+  const [activeBus, setActiveBus] = useState();
+  const [foundBus, setFoundBus] = useState(false);
+  const [busError, setBusError] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
 
   let navigate = useNavigate();
+
+  useEffect(() => {
+    if (!student) {
+      return;
+    }
+    const updateBusLocation = setInterval(async () => {
+      try {
+        if (!student.route){
+          return;
+        }
+        const currentBus = await getRouteActiveRun(student.route.uid);
+        const busLocation = await getBusLocation(currentBus.data.busNumber);
+        console.log(busLocation);
+        setActiveBus(busLocation.data);
+        setFoundBus(true);
+        setExistingBusLocation((busLocation.data.longitude && busLocation.data.latitude) ? true : false);
+        setBusError(busLocation.data.TTErroro);
+      } catch (e) {
+        setFoundBus(false);
+        setExistingBusLocation(false);
+        console.log(e);
+      }
+    }, 1000);
+    return () => clearInterval(updateBusLocation);
+  }, [student]);
 
   const validate_student_entries = () => {
     if (!student.fullName || !student.fullName.trim().length === 0) {
@@ -80,14 +117,14 @@ export const StudentInfo = ({ edit, role }) => {
         school: selectedSchool,
         parentUser: user,
         id: student.studentid,
-        account: studentAccount,
       };
-
-      form_results.account = {
-        ...form_results.account,
-        fullName: student.fullName,
-        role: "Student",
-      };
+      if (hasAccount) {
+        form_results.account = {
+          ...studentAccount,
+          fullName: student.fullName,
+          role: "Student",
+        };
+      }
       if (removeInRangeStops) {
         form_results.inRangeStops = [];
       }
@@ -134,10 +171,15 @@ export const StudentInfo = ({ edit, role }) => {
 
       if (fetchedData.data.parentUser) {
         setUser(fetchedData.data.parentUser);
+        setMapReady(true);
       }
 
       if (fetchedData.data.account) {
         setStudentAccount(fetchedData.data.account);
+        setHasAccount(true);
+      } else {
+        setStudentAccount({});
+        setHasAccount(false);
       }
 
       if (fetchedData.data.school) {
@@ -195,6 +237,7 @@ export const StudentInfo = ({ edit, role }) => {
           sortDir: "ASC",
           filterType: "",
           filterData: userFilter,
+          roleFilter: "Parent",
           isCreate: true,
         });
         setFilteredDataUser(fetchedData.data.users);
@@ -226,6 +269,46 @@ export const StudentInfo = ({ edit, role }) => {
             Edit Student{" "}
           </button>
         )}
+        {!editable && (role === "Admin" || role === "School Staff") && !hasAccount && (
+            <button
+                onClick={async e => {
+                  let newEmail = window.prompt("To grant this student user access, please enter the student's email.");
+                  if (newEmail) {
+                    let form_results = {
+                      email: newEmail,
+                      fullName: student.fullName,
+                      role: "Student",
+                      studentInfo: student
+                    };
+                    try {
+                      await registerUser(form_results);
+                      await fetchStudentData();
+                    } catch (e) {
+                      alert(e.response.data);
+                    }
+                  }
+                }}
+            >
+              {" "}Grant User Access{" "}
+            </button>
+        )}
+        {!editable && (role === "Admin" || role === "School Staff") && hasAccount && (
+            <button
+                onClick={async e => {
+                  let newEmail = window.confirm("Do you really wish to revoke user access for this student? They will no longer be able to login to the site.");
+                  if (newEmail) {
+                    try {
+                      await deleteUser(studentAccount.uid);
+                      await fetchStudentData();
+                    } catch (e) {
+                      alert(e.response.data);
+                    }
+                  }
+                }}
+            >
+              {" "}Revoke User Access{" "}
+            </button>
+        )}
         {!editable && (role === "Admin" || role === "School Staff") && (
           <button
             onClick={(e) => {
@@ -239,6 +322,7 @@ export const StudentInfo = ({ edit, role }) => {
           <button onClick={(e) => setEditable(false)}> Cancel Edits </button>
         )}
       </div>
+      <div id="student-info-content">
 
       <label id="input-label-student"> Name* </label>
       <input
@@ -267,11 +351,11 @@ export const StudentInfo = ({ edit, role }) => {
         }}
       />
 
-      <label id="input-label-student" for="lastName">
+      {hasAccount && <label id="input-label-student" for="lastName">
         {" "}
         Student email{" "}
-      </label>
-      <input
+      </label>}
+      {hasAccount && <input
         id="input-input-student"
         disabled={!editable}
         type="text"
@@ -280,7 +364,7 @@ export const StudentInfo = ({ edit, role }) => {
         onChange={(e) => {
           setStudentAccount({ ...studentAccount, email: e.target.value });
         }}
-      />
+      />}
 
       {!editable && (
         <div>
@@ -493,6 +577,46 @@ export const StudentInfo = ({ edit, role }) => {
         </div>
       )}
       <div></div>
+      </div>
+      {(mapReady) && (
+          <div id="map">
+            <div
+                style={{ height: "50vh", width: "80%", display: "inline-block" }}
+            >
+              <GoogleMapReact
+                  bootstrapURLKeys={{
+                    key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`,
+                  }}
+                  defaultCenter={{ lat: parseFloat(student.parentUser.latitude), lng: parseFloat(student.parentUser.longitude) }}
+                  defaultZoom={13}
+              >
+                <Marker text="Your Address" lat={student.parentUser.latitude} lng={student.parentUser.longitude} isHome />
+                {existingBusLocation && <Marker
+                    lat={parseFloat(activeBus.latitude)}
+                    lng={parseFloat(activeBus.longitude)}
+                    isBus
+                    stop={activeBus}
+                />}
+                {
+                  student.inRangeStops.map(stop => (
+                      <Marker
+                          lat={parseFloat(stop.latitude)}
+                          lng={parseFloat(stop.longitude)}
+                          stop={stop}
+                          isStop
+                          detail
+                      />
+                  ))}
+              </GoogleMapReact>
+              {foundBus && <div>
+                <h4>Active Run</h4>
+                <div>{`Bus: ${activeBus.busNumber}`}</div>
+                <div>{`Driver: ${activeBus.driver.fullName}`}</div>
+                {existingBusLocation || <div>This bus' location was not able to be found.  We are very sorry for the inconvenience</div>}
+              </div>}
+            </div>
+          </div>
+      )}
     </div>
   );
 };

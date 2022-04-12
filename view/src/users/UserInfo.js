@@ -3,7 +3,7 @@ import GoogleMapReact from "google-map-react";
 import { useEffect, useState, useMemo } from "react";
 import { Marker } from "../map/Marker";
 import { saveStudent } from "../api/axios_wrapper";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   filterAllSchools,
   getOneUser,
@@ -47,6 +47,7 @@ export const UserInfo = ({ edit, role, uid }) => {
     address: "",
     role: "",
     attachedSchools: [],
+    runs: []
   });
 
   const [students, setStudents] = useState([]);
@@ -82,6 +83,7 @@ export const UserInfo = ({ edit, role, uid }) => {
   const [makeStudent, setMakeStudent] = useState(false);
 
   // maps
+  const [mapReady, setMapReady] = useState(false);
   const [mapApi, setMapApi] = useState();
   const [lat, setLat] = useState();
   const [lng, setLng] = useState();
@@ -139,6 +141,7 @@ export const UserInfo = ({ edit, role, uid }) => {
       fullName: user.fullName,
       address: user.address,
       isAdmin: user.isAdmin,
+      runs: user.runs,
       latitude: lat,
       longitude: lng,
       password: user.password,
@@ -246,6 +249,10 @@ export const UserInfo = ({ edit, role, uid }) => {
       }
       setUser(fetchedData.data);
       setStudents([fetchedData.data][0].students);
+      setLat(fetchedData.data.latitude);
+      setLng(fetchedData.data.longitude);
+      setMapReady(true);
+      console.log(fetchedData.data.longitude);
       updateUserLoading(fetchedData.data);
       console.log("User from API Call:");
       console.log(fetchedData.data);
@@ -427,7 +434,7 @@ export const UserInfo = ({ edit, role, uid }) => {
         </div>
       )}
 
-      <div id="main_form">
+      <div id={user.role === "Parent" ? "main_form" : "main_form_no_map"}>
         {/* <Divider id = 'divider'>Information {editable}</Divider> */}
         <h5 id="sub-header"> Information </h5>
 
@@ -483,14 +490,25 @@ export const UserInfo = ({ edit, role, uid }) => {
           id="input-user"
           value={user.role}
           onChange={(e) => setUser({ ...user, role: e.target.value })}
-          disabled={!editable || role !== "Admin" || user.uid === uid}
+          disabled={!editable || role !== "Admin" || user.role === "Parent" || user.role === "Student" || user.uid === uid}
         >
-          <option value="Parent">Parent</option>
-          <option value="Driver">Driver</option>
-          <option value="School Staff">School Staff</option>
-          <option value="Admin">Admin</option>
-          <option value="Student">Student</option>
+          {user.role === "Parent" && <option value="Parent">Parent</option>}
+          {(user.role === "Driver" || user.role === "School Staff" || user.role === "Admin") && <option value="Driver">Driver</option>}
+          {(user.role === "Driver" || user.role === "School Staff" || user.role === "Admin") && <option value="School Staff">School Staff</option>}
+          {(user.role === "Driver" || user.role === "School Staff" || user.role === "Admin") && <option value="Admin">Admin</option>}
+          {user.role === "Student" && <option value="Student">Student</option>}
         </select>
+
+        {(!editable && user.runs.some(run => run.ongoing)) && (
+            <div>
+              <label id="label-user"> Current Run </label>
+                  <span id="input-user-inline-item">
+              {" "}
+                    <Link to={"/Routes/info/" + user.runs.find(run => run.ongoing).route.uid}> {`${user.runs.find(run => run.ongoing).route.name}, Bus Number: ${user.runs.find(run => run.ongoing).busNumber}`}</Link>{" "}
+            </span>
+              {!user && <span id="input-input-inline-item"> None Parent </span>}
+            </div>
+        )}
 
         {user.role === "School Staff" && (
           <Box
@@ -736,7 +754,7 @@ export const UserInfo = ({ edit, role, uid }) => {
         )}
       </div>
 
-      {user.role === "Parent" && (
+      {(user.role === "Parent" && mapReady) && (
         <div id="map">
           {error && <div>{error}</div>}
           <div
@@ -746,7 +764,7 @@ export const UserInfo = ({ edit, role, uid }) => {
               bootstrapURLKeys={{
                 key: `${process.env.REACT_APP_GOOGLE_MAPS_API}`,
               }}
-              defaultCenter={defaultProps.center}
+              defaultCenter={{ lat: parseFloat(lat), lng: parseFloat(lng) }}
               defaultZoom={defaultProps.zoom}
               yesIWantToUseGoogleMapApiInternals
               onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
