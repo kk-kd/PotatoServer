@@ -7,8 +7,10 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Table from "@mui/material/Table"
 import TableBody from "@mui/material/TableBody";
+import { Button } from "@mui/material";
 
 export const UserTable = ({displayData, dataType}) => {
+   
     
     const columns = useMemo(
         () => [
@@ -70,7 +72,5 @@ export const UserTable = ({displayData, dataType}) => {
             })}
           </TableBody>
         </Table>
-      </TableContainer>
-
-    );
-}
+      </TableContainer>)
+};
