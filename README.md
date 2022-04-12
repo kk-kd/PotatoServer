@@ -1,18 +1,7 @@
-# PotatoServer
+# Potato Web Service
 
-## Server Links
+### A Fully Functioning School Bus Logistics Management System
 
-- **Submission**: production!  
-  ssh zz160@vcm-23793.vm.duke.edu  
-   [website](https://potato.colab.duke.edu)
-- **Beta** = production-light  
-  ssh zz160@vcm-23919.vm.duke.edu  
-   [website](https://potato-beta.colab.duke.edu)
-- **Gamma** = integration  
-  ssh zz160@vcm-23920.vm.duke.edu
+[Duke ECE458 Spring 2022](https://people.duke.edu/~tkb13/courses/ece458/) Course Project. Supported features can be found [here](https://people.duke.edu/~tkb13/courses/ece458/ev4.pdf).
 
-# Connect to Remote Database for Local Testing
-
-Forward local port 5432 to the database  
-Beta server - `ssh -L 5432:127.0.0.1:5432 vcm-23919.vm.duke.edu -l zz160`  
-Dev server - `ssh -L 5432:127.0.0.1:5432 vcm-23920.vm.duke.edu -l zz160`
+### Website Screenshots
