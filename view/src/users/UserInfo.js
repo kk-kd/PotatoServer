@@ -616,7 +616,7 @@ export const UserInfo = ({ edit, role, uid }) => {
             </button>
           </div>
         )}
-        {user.role === "Parent" && (
+        {students.length !== 0 && (
           <div>
             <p> </p>
             <p> </p>
