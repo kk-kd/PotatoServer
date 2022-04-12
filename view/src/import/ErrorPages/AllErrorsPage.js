@@ -11,6 +11,7 @@ import { StudentTable } from "./StudentTable";
 import { getOneStudent, getOneUser } from "../../api/axios_wrapper";
 import "./Error.css";
 import loadingLogo from "../ErrorPages/Spinner-1s-200.gif";
+import { StepButtons } from "../StepNavigation/StepButtons";
 
 export const ErrorPage = ({
   checkRow,
@@ -26,11 +27,18 @@ export const ErrorPage = ({
   fileData,
   setFileData,
   dataType,
+  submissionData, 
+  setSubmissionData,
+  step_labels, 
+  activeStep, 
+  setActiveStep,
+  setRunValidation, 
+  resetState
+
 }) => {
   const [editableFileData, setEditableFileData] = useState();
   const [complete, setComplete] = useState(false);
-  const [edit, setEdit] = useState(false);
-  const [selected, setSelected] = useState(false);
+  const [show, setShow] = useState(false);
 
   const [errorDataToShow, setErrorDataToShow] = useState([]);
   const [errorIds, setErrorIds] = useState([]);
@@ -42,42 +50,31 @@ export const ErrorPage = ({
   const editableColumns = requiredColumns;
 
   const fetchErrorDuplicates = async (ids) => {
-    console.log("fetch error with errorids");
-    console.log(ids);
+//    console.log("fetch error with errorids");
+//     console.log(ids);
     if (ids && (selectedIndex === 0 || selectedIndex)) {
       let a = [];
       try {
         for (let j = 0; j < ids.length; j++) {
           if (ids[j]) {
-        //    if (dataType === "parents") {
               const fetchedData = await getOneUser(ids[j]).catch((error) => {
                 let message = error.response.data;
                 throw alert(message);
               });
               a.push(fetchedData.data);
-         //   }
-            // if (dataType === "students") {
-            //   const fetchedData = await getOneStudent(ids[j]).catch((error) => {
-            //     let message = error.response.data;
-            //     throw alert(message);
-            //   });
-            //   a.push(fetchedData.data);
-            // }
           }
         }
-        console.log("Error data")
-        console.log(a)
 
         setErrorDataToShow(a);
       } catch (error) {
-        console.log(error);
+       // console.log(error);
       }
     }
   };
 
   const fetchWarningDuplicates = async (ids) => {
-    console.log("fetch error with warningids");
-    console.log(ids);
+    //console.log("fetch error with warningids");
+    //console.log(ids);
     if (ids && (selectedIndex === 0 || selectedIndex)) {
       let a = [];
       try {
@@ -109,11 +106,12 @@ export const ErrorPage = ({
   // TODO pull student data by id
 
   const resetErrorData = (uid) => {
+
     if (uid) {
       if (!errorIds.includes(uid)) {
         // re fetch error user
         setErrorDataToShow();
-        let new_ids = [...errorIds, uid];
+        let new_ids = [uid];
         setErrorIds(new_ids);
         fetchErrorDuplicates(new_ids);
       }
@@ -139,8 +137,6 @@ export const ErrorPage = ({
   };
 
   useEffect(() => {
-    console.log("selectd index use effect");
-    console.log(selectedIndex);
     checkForErrorAndWarningData(selectedIndex);
   }, [selectedIndex]);
 
@@ -148,7 +144,7 @@ export const ErrorPage = ({
   const checkForErrorAndWarningData = (ind) => {
     if (editableFileData) {
       let currentRow = editableFileData[ind];
-      console.log(currentRow);
+      // console.log(currentRow);
     if (currentRow["hint_uids"]) {
           setErrorIds(currentRow["hint_uids"]);
           fetchErrorDuplicates(currentRow["hint_uids"]);
@@ -174,21 +170,36 @@ export const ErrorPage = ({
     }
   };
 
-  const removeEntries = () => {
-    // // remove all entries from data
-    // for (let i = 0; i < data.length; i++) {
-    //     let ind = data[i]['index']
-    //     delete data[i]
-    //     setData(data)
-    // }
-    // console.log(data)
-    // setComplete(true);
-  };
   useEffect(() => {
     if (processingComplete && fileData) {
       setEditableFileData(fileData);
     }
   }, [processingComplete]);
+
+  const removeExcludedRows = () => {
+      let included = []
+      for (let i=0; i< editableFileData.length; i++) {
+          if (editableFileData[i]) {
+              // console.log("Checking ")
+              // console.log(editableFileData[i])
+              if (!('exclude' in editableFileData[i])) {
+                //console.log("Adding bc didn't find exclude key")
+                included.push(editableFileData[i])
+              }
+              else if (editableFileData[i]['exclude'] === false) {
+                //console.log("Adding bc excluded was false")
+                included.push(editableFileData[i])
+              }
+              else if (editableFileData[i]['exclude'] === undefined) {
+                //console.log("Adding bc excluded was undefined")
+                included.push(editableFileData[i])
+              }
+          }
+      }
+      // console.log("included")
+      // console.log(included)
+      return included;
+  }
 
   return (
     <div>
@@ -198,44 +209,22 @@ export const ErrorPage = ({
           <img src={loadingLogo} alt="loading..." />
         </div>
       )}{" "}
-      {!selected && editableFileData && !complete && processingComplete && (
-        <div>
-          <h6>
-            {" "}
-            We found X entries in your submission. What would you like to do?{" "}
-          </h6>
-          <div>
-            <button
-              onClick={() => {
-                setEdit(true);
-                setSelected(true);
-              }}
-            >
-              {" "}
-              Fix Errors{" "}
-            </button>
-            <button
-              onClick={() => {
-                setEdit(false);
-                setSelected(true);
-                removeEntries();
-              }}
-            >
-              {" "}
-              Remove Entries With Errors{" "}
-            </button>
-          </div>
-        </div>
+
+    {complete && (
+         <div>
+           <h6 style = {{color: "#34815c"}}> All errors are either resolved or excluded. Double check the information below before continuing! </h6>
+       </div>
       )}
-      {editableFileData && edit && (
+      {editableFileData && (
         <div>
           {errorDataToShow && errorDataToShow.length !== 0 && (
             <div id="errorContainer">
               <div>
                 {" "}
                 Error: Duplicate entry already exists in our database.{" "}
+                
               </div>
-                <UserTable displayData={errorDataToShow}/> 
+              <UserTable displayData={errorDataToShow}/>
             </div>
           )}
 
@@ -266,15 +255,16 @@ export const ErrorPage = ({
           />
         </div>
       )}
-      {complete && (
-        <div>
-          <h6> No Errors Left! </h6>
-          <button onClick={(e) => setActiveError(activeError + 1)}>
-            {" "}
-            Continue
-          </button>
-        </div>
-      )}
+
+       <StepButtons
+         nextButtonValid={complete}
+         step_labels={step_labels}
+         activeStep={activeStep}
+         setActiveStep={setActiveStep}
+         setRunValidation={setRunValidation}
+         resetState={resetState}
+         additionalNextFunction = {() => {setSubmissionData(removeExcludedRows()); setActiveError(activeError + 1)}}
+       ></StepButtons>
     </div>
   );
 };

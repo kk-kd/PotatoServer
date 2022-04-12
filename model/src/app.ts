@@ -7,8 +7,12 @@ import { checkJwt } from "./middlewares/checkJwt";
 
 // create express app
 const app = express();
+app.use(express.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 app.use(bodyParser.json());
 app.use("/api", authRoutes);
+
+
 // var cors = require("cors"); //neeeded? cady: beaware - use cors cause potential security problems
 // app.use(cors()); //etc ^
 // // register all express routes from defined application routes

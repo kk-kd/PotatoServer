@@ -4,6 +4,7 @@ import { UploadStep } from "./StepPages/UploadStep";
 import { ValidateStep } from "./StepPages/ValidateStep";
 import { SubmitStep } from "./StepPages/SubmitStep";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import "./ImportPage.css";
 import {
   validateBulkStudents,
@@ -16,13 +17,14 @@ import {
 } from "../api/axios_wrapper";
 
 export const ImportPage = () => {
-  const step_labels = ["Select Task", "Upload File", "Fix", "Submit"];
+  const step_labels = ["Select Task", "Upload File", "Review", "Submit"];
   const [activeStep, setActiveStep] = useState(0);
   const [processingComplete, setProcessingComplete] = useState(false);
   const [requiredColumns, setRequiredColumns] = useState();
 
   const [dataType, setDataType] = useState();
   const [fileData, setFileData] = useState();
+  const [submissionData, setSubmissionData] = useState();
   const [fileName, setFileName] = useState();
 
   const [users, setUsers] = useState();
@@ -31,37 +33,8 @@ export const ImportPage = () => {
   const [databaseStudents, setDatabaseStudents] = useState();
   const [schoolNames, setSchoolNames] = useState();
 
-  // errors
-  const [addressErrors, setAddressErrors] = useState({
-    5: [],
-    6: [],
-  });
-
-  const [invalidErrors, setInvalidErrors] = useState({
-    3: [],
-    4: [],
-    5: [],
-    6: [],
-    1: [],
-    2: [],
-    7: [],
-    9: [],
-    10: [],
-    99: [],
-    16: [],
-    8: [],
-    11: [],
-    12: [],
-    14: [],
-    15: [],
-  });
-
-  const [existErrors, setExistErrors] = useState({
-    3: [],
-    4: [],
-  });
-
   const [runValidation, setRunValidation] = useState(false);
+  let navigate = useNavigate();
 
   const fetchSchoolData = async () => {
     try {
@@ -161,52 +134,19 @@ export const ImportPage = () => {
     }
   }, [runValidation]);
 
-  const addToDict = (arr, setArr, key, val) => {
-    let newCopy = arr[key];
-    newCopy.push(val);
-    const newArr = { ...arr, key: newCopy };
-    setArr(newArr);
-  };
 
   const findAndFormatErrors = (data) => {
     setFileData(data)
-    console.log("file data set")
-    console.log(data)
-    console.log(schoolNames)
     setProcessingComplete(true);
     console.log("processing complete")
   };
 
   const resetState = () => {
     setFileName("");
-    setFileData([]);
+    setFileData();
     setProcessingComplete(false);
-    setAddressErrors({
-      5: [],
-      6: [],
-    });
-    setInvalidErrors({
-      1: [],
-      2: [],
-      7: [],
-      8: [],
-      9: [],
-      10: [],
-      11: [],
-      12: [],
-      14: [],
-      15: [],
-      16: [],
-      99: [],
-      16: [],
-    });
-
-    setExistErrors({
-      3: [],
-      4: [],
-    });
-    setDataType();
     setActiveStep(0);
+    setFileName("")
   };
 
   async function callValidate(validation_input) {
@@ -227,7 +167,7 @@ export const ImportPage = () => {
   return (
     <div id="content">
       <h2 id="title"> Import </h2>
-
+      
       <div id="stepper">
         <HorizontalStepper
           step_labels={step_labels}
@@ -261,6 +201,7 @@ export const ImportPage = () => {
             activeStep={activeStep}
             setActiveStep={setActiveStep}
             setRunValidation={setRunValidation}
+            resetState={resetState}
           />
         </div>
       )}
@@ -278,10 +219,13 @@ export const ImportPage = () => {
             setProcessingComplete={setProcessingComplete}
             fileData={fileData}
             setFileData={setFileData}
+            submissionData = {submissionData}
+            setSubmissionData = {setSubmissionData}
             step_labels={step_labels}
             activeStep={activeStep}
             setActiveStep={setActiveStep}
             setRunValidation={setRunValidation}
+            resetState={resetState}
           />
         </div>
       )}
@@ -289,9 +233,11 @@ export const ImportPage = () => {
         <div id="step">
           <SubmitStep
             dataType={dataType}
-            fileData={fileData}
-            setFileData={setFileData}
+            submissionData = {submissionData}
+            setSubmissionData = {setSubmissionData}
             resetState={resetState}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
           />
         </div>
       )}
