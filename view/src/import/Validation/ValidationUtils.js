@@ -61,7 +61,7 @@ export const CheckStudentCell = (
       return [15, "Not a number", "", "", ""];
     }
   } else if (col === "parent_email") {
-    if (!databaseUsers.email.includes(val) && !databaseUsers.email.includes(val.toLowerCase().trim())) {
+    if (!databaseUsers.email.includes(val) && !databaseUsers.email.includes(val.toString().toLowerCase().trim())) {
       return [12, "Email not registered", "", "", ""];
     }
      if (!EmailValidator.validate(val)) {
@@ -70,7 +70,7 @@ export const CheckStudentCell = (
   } else if (col === "school_name") {
     if (
       !schoolNames.includes(val) &&
-      !schoolNames.includes(val.toLowerCase().trim())
+      !schoolNames.includes(val.toString().toLowerCase().trim())
     ) {
       return [11, "Does not match any authorized schools", "", "", ""];
     }
@@ -78,8 +78,8 @@ export const CheckStudentCell = (
    // name
    else if (col === 'name') {
     // name exists
-    if (databaseStudents.fullName.includes(val) || databaseStudents.fullName.includes(val.toLowerCase().trim())) {
-      let dup_name_index = databaseStudents.fullName.indexOf(val.trim())
+    if (databaseStudents.fullName.includes(val) || databaseStudents.fullName.includes(val.toString().toLowerCase().trim())) {
+      let dup_name_index = databaseStudents.fullName.indexOf(val.toString().trim())
       let ui = databaseStudents.uid[dup_name_index]
       let r = [4, "", null , "May be a Duplicate", ui];
       return r
@@ -87,14 +87,14 @@ export const CheckStudentCell = (
   } 
   else if (col === 'student_email') {
     //email already taken
-    if (databaseUsers.email.includes(val.toLowerCase().trim()) || databaseUsers.email.includes(val.toLowerCase().trim())) {
-      let dup_email_index = databaseUsers.email.indexOf(val.toLowerCase().trim())
+    if (databaseUsers.email.includes(val.toString().toLowerCase().trim()) || databaseUsers.email.includes(val.toString().toLowerCase().trim())) {
+      let dup_email_index = databaseUsers.email.indexOf(val.toString().toLowerCase().trim())
       let ui = databaseUsers.uid[dup_email_index]
       
       return [18, "Existing Email", ui, null, null];
     }
     //if email is valid
-    if (!EmailValidator.validate(val.toLowerCase().trim())) {
+    if (!EmailValidator.validate(val.toString().toLowerCase().trim())) {
       return [17, "Not Valid", "", "", ""];
     } 
   }
@@ -127,6 +127,7 @@ export const CheckParentCell = (
     let missing_col_code_map = {
       'email': 16, 
       'name': 2,
+      'phone_number': 7
     }
     let code = missing_col_code_map[col]
     if (code) {
@@ -140,10 +141,10 @@ export const CheckParentCell = (
   //email cases
   else if (col === "email") {
     //email already taken
-    if (databaseUsers.email.includes(val.toLowerCase()) || databaseUsers.email.includes(val.toLowerCase().trim())) {
-      let dup_email_index = databaseUsers.email.indexOf(val.toLowerCase().trim())
+    if (databaseUsers.email.includes(val.toString().toLowerCase()) || databaseUsers.email.includes(val.toString().toLowerCase().trim())) {
+      let dup_email_index = databaseUsers.email.indexOf(val.toString().toLowerCase().trim())
       let ui = databaseUsers.uid[dup_email_index]
-      
+
       return [3, "Existing Email", ui, null, null];
     }
     //if email is valid
@@ -163,8 +164,8 @@ export const CheckParentCell = (
   // name
   else if (col === 'name') {
     // name exists
-    if (databaseUsers.fullName.includes(val) || databaseUsers.fullName.includes(val.trim())) {
-      let dup_name_index = databaseUsers.fullName.indexOf(val.trim())
+    if (databaseUsers.fullName.includes(val) || databaseUsers.fullName.includes(val.toString().trim())) {
+      let dup_name_index = databaseUsers.fullName.indexOf(val.toString().trim())
       let ui = databaseUsers.uid[dup_name_index]
       let r = [4, "", null , "May be a Duplicate", ui];
       return r

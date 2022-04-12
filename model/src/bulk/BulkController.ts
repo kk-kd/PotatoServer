@@ -159,11 +159,14 @@ export class BulkController {
       }
       // 17 STUDENT EMAIL IS INVALID
       // Seeing if Email is blank
-      if (student.student_email != null && student.student_email != undefined && student.student_email.trim() != "") {
+      console.log(student.student_email)
+      const studentEmail = student.student_email;
+      if (studentEmail != undefined && studentEmail != null && studentEmail != "" && studentEmail.toString().trim() != "" ) {
+      // if (studentEmail != undefined && student.student_email != undefined && student.student_email != "" && student.student_email.trim() != "") {
         if (!isAPIRequest) return false;
         else {
           // 17 - Email is invalid
-          if (!EmailValidator.validate(student.student_email)) {
+          if (!EmailValidator.validate(studentEmail)) {
             if (!isAPIRequest) return false;
             (
               studentToReturn["error_code"] ?? (studentToReturn["error_code"] = [])
@@ -173,7 +176,7 @@ export class BulkController {
           const reptitiveEntry = await getRepository(User)
           .createQueryBuilder("users")
           .select()
-          .where("users.email = :email", { email: student.student_email.toLowerCase() })
+          .where("users.email = :email", { email: studentEmail.toString().toLowerCase() })
           .getOne();
 
         if (reptitiveEntry != null || reptitiveEntry != undefined) {
@@ -448,7 +451,8 @@ export class BulkController {
 
     
       const studentEmail = student.student_email;
-      if (studentEmail != undefined && studentEmail.trim() != "" && studentEmail != null && !EmailValidator.validate(studentEmail)) {
+
+      if (studentEmail != undefined && studentEmail != null && studentEmail != "" && studentEmail.trim() != "" && studentEmail != null && !EmailValidator.validate(studentEmail)) {
         response.status(401).send("Please enter a valid email address.");
         return;
       }

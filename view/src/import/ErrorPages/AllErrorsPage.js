@@ -38,6 +38,7 @@ export const ErrorPage = ({
 }) => {
   const [editableFileData, setEditableFileData] = useState();
   const [complete, setComplete] = useState(false);
+  const [show, setShow] = useState(false);
 
   const [errorDataToShow, setErrorDataToShow] = useState([]);
   const [errorIds, setErrorIds] = useState([]);
@@ -49,8 +50,8 @@ export const ErrorPage = ({
   const editableColumns = requiredColumns;
 
   const fetchErrorDuplicates = async (ids) => {
-   // console.log("fetch error with errorids");
-    //console.log(ids);
+//    console.log("fetch error with errorids");
+//     console.log(ids);
     if (ids && (selectedIndex === 0 || selectedIndex)) {
       let a = [];
       try {
@@ -66,7 +67,7 @@ export const ErrorPage = ({
 
         setErrorDataToShow(a);
       } catch (error) {
-        console.log(error);
+       // console.log(error);
       }
     }
   };
@@ -105,11 +106,12 @@ export const ErrorPage = ({
   // TODO pull student data by id
 
   const resetErrorData = (uid) => {
+
     if (uid) {
       if (!errorIds.includes(uid)) {
         // re fetch error user
         setErrorDataToShow();
-        let new_ids = [...errorIds, uid];
+        let new_ids = [uid];
         setErrorIds(new_ids);
         fetchErrorDuplicates(new_ids);
       }
@@ -142,7 +144,7 @@ export const ErrorPage = ({
   const checkForErrorAndWarningData = (ind) => {
     if (editableFileData) {
       let currentRow = editableFileData[ind];
-      console.log(currentRow);
+      // console.log(currentRow);
     if (currentRow["hint_uids"]) {
           setErrorIds(currentRow["hint_uids"]);
           fetchErrorDuplicates(currentRow["hint_uids"]);
@@ -178,24 +180,24 @@ export const ErrorPage = ({
       let included = []
       for (let i=0; i< editableFileData.length; i++) {
           if (editableFileData[i]) {
-              console.log("Checking ")
-              console.log(editableFileData[i])
+              // console.log("Checking ")
+              // console.log(editableFileData[i])
               if (!('exclude' in editableFileData[i])) {
-                console.log("Adding bc didn't find exclude key")
+                //console.log("Adding bc didn't find exclude key")
                 included.push(editableFileData[i])
               }
               else if (editableFileData[i]['exclude'] === false) {
-                console.log("Adding bc excluded was false")
+                //console.log("Adding bc excluded was false")
                 included.push(editableFileData[i])
               }
               else if (editableFileData[i]['exclude'] === undefined) {
-                console.log("Adding bc excluded was undefined")
+                //console.log("Adding bc excluded was undefined")
                 included.push(editableFileData[i])
               }
           }
       }
-      console.log("included")
-      console.log(included)
+      // console.log("included")
+      // console.log(included)
       return included;
   }
 
@@ -220,8 +222,9 @@ export const ErrorPage = ({
               <div>
                 {" "}
                 Error: Duplicate entry already exists in our database.{" "}
+                
               </div>
-                <UserTable displayData={errorDataToShow}/> 
+              <UserTable displayData={errorDataToShow}/>
             </div>
           )}
 

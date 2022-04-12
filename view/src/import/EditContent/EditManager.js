@@ -92,7 +92,7 @@ export const EditManager = ({
           for (let i = 0; i < existing_dup.length; i++) {
             // console.log("Row " + new_index)
             // console.log(existing_dup[i][1])
-            if (existing_dup[i] && existing_dup[i][0] === 52 && existing_dup[i][1].includes("Row " + new_index)) {
+            if (existing_dup[i] && existing_dup[i][0] === 52 && existing_dup[i][1].includes("Email Matches Row " + new_index)) {
               existing_dup.splice(i, 1);
             }
           }
@@ -102,14 +102,14 @@ export const EditManager = ({
 
     if (col === "name") {
       // check for name match
-      if (old_row.name && val && old_row.name.trim() === val.trim()) {
+      if (old_row.name && val && old_row.name.toLowerCase().trim() === val.toLowerCase().trim()) {
         existing_dup.push([51, "Name Matches Row " + new_index]);
       }
       // if not, remove error from existing_dup
       else if (existing_dup.length > 0) {
         //remove it
         for (let i = 0; i < existing_dup.length; i++) {
-          if (existing_dup[i] && existing_dup[i][0] === 51) {
+          if (existing_dup[i] && existing_dup[i][0] === 51 && existing_dup[i][1].includes("Name Matches Row " + new_index)) {
             existing_dup.splice(i, 1);
           }
         }
@@ -185,6 +185,8 @@ export const EditManager = ({
         if (index === rowIndex) {
           let copy = { ...old[rowIndex], [columnId]: value };
           let [row_errors, error_uid, warning_uid] = checkRow(copy);
+          //console.log("checkRow found error ids")
+          //console.log(error_uid)
           let loc_values = {};
           let address = [];
           let valid = [true];
@@ -277,8 +279,8 @@ export const EditManager = ({
             ["valid"]: v,
             ["duplicate"]: dup_wo_up,
           };
-        //   console.log("updated keys and values are");
-        //   console.log(a);
+        //   console.log("error id in resetErrorData is");
+        //   console.log(error_uid);
           resetWarningData(warning_uid);
           resetErrorData(error_uid);
           return a;
@@ -287,7 +289,7 @@ export const EditManager = ({
         else {
           let dup = searchFileAgainstNewValue(row, rowIndex, columnId, value);
 
-          let row_errors = row["error_code"] //? row['error_code']: [];
+          let row_errors = row["error_code"] ? row['error_code']: [];
           let valid = [true];
           let loc_values = {};
           let address = [];
