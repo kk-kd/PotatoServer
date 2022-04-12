@@ -1,6 +1,7 @@
 import EditableTable from "./EditableTable";
 import { CssBaseline } from "@mui/material";
 import { useEffect, useState } from "react";
+import loadingLogo from "../ErrorPages/Spinner-1s-200.gif";
 
 export const EditManager = ({
   complete,
@@ -19,6 +20,7 @@ export const EditManager = ({
 }) => {
   // this triggers a check on page load, which allows checking for file duplicates.
   const [checkDuplicates, setCheckDuplicates] = useState();
+  const [readyToShow, setReadyToShow] = useState(false);
 
   useEffect(() => {
     for (let i = 0; i < editableFileData.length; i++) {
@@ -32,7 +34,9 @@ export const EditManager = ({
             updateEditedDataErrors(i, "name", editableFileData[i]["name"]);
         }
     }
-    setCheckDuplicates(true)    
+    setCheckDuplicates(true)   
+    setReadyToShow(true)
+    console.log("Ready to show") 
   }, []);
 
   useEffect(()=> {
@@ -88,7 +92,7 @@ export const EditManager = ({
         // if not, remove error from existing_dup
         else if (existing_dup.length > 0) {
           //remove it
-          console.log("Removing 52 emails with index")
+          //console.log("Removing 52 emails with index")
           for (let i = 0; i < existing_dup.length; i++) {
             // console.log("Row " + new_index)
             // console.log(existing_dup[i][1])
@@ -432,9 +436,17 @@ export const EditManager = ({
   return (
     <div>
       {!complete && <h5> {message} </h5>}
+      
+      {!readyToShow && (
+        <div>
+          <h6>Loading</h6>
+          <img src={loadingLogo} alt="loading..." />
+        </div>
+      )}
+      
 
       <CssBaseline />
-      {editableFileData.length > 0 && (
+      {readyToShow && editableFileData.length > 0 && (
         <EditableTable
           setSelectedIndex={setSelectedIndex}
           columns={columns}

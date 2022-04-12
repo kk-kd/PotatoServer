@@ -35,6 +35,7 @@ export const SubmitStep = ({ dataType, submissionData, setSubmissionData, resetS
     let confirm = window.confirm("Please Confirm You Would Like To Submit This Data.");
     
     if (confirm) {
+
       if (dataType === "students") {
     
         const validation_input_filtered = submissionData.filter((element) => {
@@ -44,6 +45,9 @@ export const SubmitStep = ({ dataType, submissionData, setSubmissionData, resetS
         const validation_input = {
           students: validation_input_filtered,
         };
+        if (validation_input_filtered.length === 0) {
+          alert("Your Submission has no rows. Please go back to the previous step.")
+        }
         callSave(validation_input);
 
       } else {
@@ -54,6 +58,9 @@ export const SubmitStep = ({ dataType, submissionData, setSubmissionData, resetS
         const validation_input = {
           users: filter1,
         };
+        if (filter1.length === 0) {
+          alert("Your Submission has no rows. Please go back to the previous step.")
+        }
         callSave(validation_input);
       }
     }

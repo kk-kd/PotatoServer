@@ -210,11 +210,23 @@ export const ErrorPage = ({
         </div>
       )}{" "}
 
-    {complete && (
+    
+    <div style = {{border: '1px solid black', width: '80%', margin: 'auto'}}>
+        <h5 id = "sub-header" style = {{width: '100%'}}> Instructions </h5> 
+        <div> Your submitted data is shown below. Errors are highlighted in red, and must be fixed, or the row must be excluded from submission. Warnings are shown in yellow, and
+          it's recommended that they are reviewed prior to submission. Note: all potential duplicates have been excluded by default! </div>
+        <div></div>
+        <div></div>
+        <div></div>
+        {
+        complete && (
          <div>
-           <h6 style = {{color: "#34815c"}}> All errors are either resolved or excluded. Double check the information below before continuing! </h6>
+           <h4 style = {{color: "#34815c"}}> All errors are either resolved or excluded. Double check the information below before continuing! </h4>
        </div>
       )}
+    </div>
+
+    
       {editableFileData && (
         <div>
           {errorDataToShow && errorDataToShow.length !== 0 && (

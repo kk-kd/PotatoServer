@@ -65,6 +65,8 @@ export const ImportPage = () => {
         sort: "none",
         sortDir: "none",
         showAll: "true",
+        roleFilter: "parent", 
+        isCreate: true,
       });
       setUsers(fetchedData.data.users);
       let email = fetchedData.data.users.map((user) => user.email);

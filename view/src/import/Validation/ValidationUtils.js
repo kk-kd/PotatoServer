@@ -62,7 +62,7 @@ export const CheckStudentCell = (
     }
   } else if (col === "parent_email") {
     if (!databaseUsers.email.includes(val) && !databaseUsers.email.includes(val.toString().toLowerCase().trim())) {
-      return [12, "Email not registered", "", "", ""];
+      return [12, "Email not registered parent", "", "", ""];
     }
      if (!EmailValidator.validate(val)) {
       return [14, "Not Valid" ,"", "", ""];
