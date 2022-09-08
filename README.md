@@ -2,7 +2,7 @@
 
 ### A Fully Functioning School Bus Logistics Management System
 
-[Duke ECE458 Spring 2022](https://people.duke.edu/~tkb13/courses/ece458/) Course Project. Supported features can be found [here](https://people.duke.edu/~tkb13/courses/ece458/ev4.pdf).
+[Duke ECE458 Spring 2022](https://people.duke.edu/~tkb13/courses/ece458-2022sp/) Course Project. Supported features can be found [here](https://people.duke.edu/~tkb13/courses/ece458/ev4.pdf).
 
 ### Website Screenshots
 ![Screenshot 2022-04-12 001016](https://user-images.githubusercontent.com/21980161/162881146-96ed7525-82e8-4d04-874c-523a377ae586.png)
